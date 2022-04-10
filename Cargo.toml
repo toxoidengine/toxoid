@@ -1,0 +1,13 @@
+[workspace]
+members = [
+    "crates/toxoid_app",
+		"crates/toxoid_core",
+		"crates/toxoid_ecs",
+		"crates/toxoid_netcode",
+		"crates/toxoid_physics",
+		"crates/toxoid_audio",
+]
+resolver = "2"
+
+[profile.dev]
+opt-level = 3
