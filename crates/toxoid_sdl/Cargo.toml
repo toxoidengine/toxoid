@@ -1,0 +1,15 @@
+[package]
+name = "toxoid_sdl"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+crate-type = ["lib"]
+
+[dependencies]
+sdl2 = { version="0.35.2", default-features = false, features = ["unsafe_textures", "image"] }
+
+[build-dependencies]
+gl_generator = "0.14.0"
+cmake = "0.1.49"
+curl = "0.4.44"
