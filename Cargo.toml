@@ -1,13 +1,34 @@
+[package]
+name = "toxoid"
+version = "0.1.0"
+# existing package info here
+build = "build.rs"
+
 [workspace]
 members = [
-    "crates/toxoid_app",
+    	# Crates
+		"crates/toxoid_app",
 		"crates/toxoid_core",
 		"crates/toxoid_ecs",
 		"crates/toxoid_netcode",
 		"crates/toxoid_physics",
 		"crates/toxoid_audio",
+		"crates/toxoid_sdl",
+		"crates/toxoid_cli",
+		
+		# Examples
+		"examples/snake/snake",
+		"examples/snake/runner"
 ]
+
+# Workspace ignore
+exclude = []
+
 resolver = "2"
 
 [profile.dev]
 opt-level = 3
+
+[[bin]]
+name = "snake"
+path = "examples/snake/runner/src/main.rs"

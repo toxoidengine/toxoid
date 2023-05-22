@@ -4,7 +4,7 @@ pub struct App {
 
 impl App {
 	pub fn new() -> App {
-			App::default()
+		App::default()
 	}
 
 	pub fn default() -> App {
