@@ -18,7 +18,8 @@ members = [
 		
 		# Examples
 		"examples/snake/snake",
-		"examples/snake/runner"
+		"examples/snake/snake_runner",
+		"examples/snake/snake_engine",
 ]
 
 # Workspace ignore

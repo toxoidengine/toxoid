@@ -240,6 +240,10 @@ name = "snake"
 version = "0.1.0"
 
 [[package]]
+name = "snake_engine"
+version = "0.1.0"
+
+[[package]]
 name = "snake_runner"
 version = "0.1.0"
 dependencies = [

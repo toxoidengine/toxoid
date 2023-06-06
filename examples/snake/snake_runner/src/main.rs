@@ -11,8 +11,12 @@ fn main() {
     println!("{}", markup.into_string());
     */
 
-    let root_path = "../"; // TODO: Make this programmatic
-    let file_ext = ".exe"; // TODO: Make this programmatic
+    let root_path = "./"; // TODO: Make this programmatic
+    let file_ext = if cfg!(target_os = "windows") {
+        ".exe"
+    } else {
+        "" // Assuming non-Windows operating systems have no file extension
+    };
 
     let package_name = std::env::var("CARGO_PKG_NAME")
         .expect("Failed to retrieve package name");
