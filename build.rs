@@ -3,5 +3,4 @@ fn main() {
     
     // Set env var WORKSPACE_ROOT to the root of the workspace
     let workspace_root = std::env::var("WORKSPACE_ROOT").expect("Failed to retrieve workspace root directory");
-
 }
