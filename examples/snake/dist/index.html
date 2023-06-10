@@ -4,18 +4,18 @@
     <body>
         <script type="module">
             import snake_engine_wasm from './snake_engine.js'
-            
-            const snake_engine = await snake_engine_wasm()
-            const res = await fetch('snake.wasm')
-            const bytes = await res.arrayBuffer()
+            console.log(await snake_engine_wasm())
+            // const snake_engine = await snake_engine_wasm()
+            // const res = await fetch('snake.wasm')
+            // const bytes = await res.arrayBuffer()
 
-            snake_engine.FS.writeFile('snake.wasm', new Uint8Array(bytes))
-            await snake_engine.loadDynamicLibrary('snake.wasm', {
-                global: true, 
-                nodelete: true, 
-                loadAsync: true
-            })
-            snake_engine._init_engine()
+            // snake_engine.FS.writeFile('snake.wasm', new Uint8Array(bytes))
+            // await snake_engine.loadDynamicLibrary('snake.wasm', {
+            //     global: true, 
+            //     nodelete: true, 
+            //     loadAsync: true
+            // })
+            // snake_engine._init_engine()
         </script>
     </body>
 </html>
