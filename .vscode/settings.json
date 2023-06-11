@@ -1,5 +1,6 @@
 {
     "rust-analyzer.linkedProjects": [
-        "./examples/snake/snake_runner/Cargo.toml"
+        "./examples/snake/snake_runner/Cargo.toml",
+        "./libs/flecs-polyglot/rust/flecs_core/Cargo.toml",
     ]
 }
