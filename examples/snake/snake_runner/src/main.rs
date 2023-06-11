@@ -1,8 +1,8 @@
 // TODO: Make these programmatic / templated
 const PACKAGES: [&str; 2] = ["snake_engine", "snake"];
-// const PACKAGES: [&str; 1] = ["snake_engine"];
 const TARGET: &str = "wasm32-unknown-emscripten";
 const DEBUG: bool = false;
+const PORT: i16 = 5000;
 
 fn generate_html() -> Result<(), Box<dyn std::error::Error>> {
     use maud::html;
@@ -113,7 +113,7 @@ fn build_packages() -> Result<(), Box<dyn std::error::Error>> {
 
 fn serve() -> Result<(), Box<dyn std::error::Error>> {
     use tiny_file_server::FileServer;
-    println!("Serving project files at port 9080");
+    println!("Serving project files at port {}", PORT);
     let package_path = env!("CARGO_MANIFEST_DIR", "Failed to retrieve package path");
     let package_path = std::path::Path::new(package_path)
         .parent()
@@ -121,7 +121,7 @@ fn serve() -> Result<(), Box<dyn std::error::Error>> {
         .to_str()
         .ok_or("Could not convert package path parent to string")?;
     let destination_path = format!("{}/dist", package_path);
-    FileServer::http("127.0.0.1:9080")
+    FileServer::http(format!("127.0.0.1:{}", PORT))
         .expect("Failed to start HTTP server")
         .run(destination_path)?;
     Ok(())
