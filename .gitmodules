@@ -1,0 +1,4 @@
+[submodule "flecs-polyglot"]
+	path = libs/flecs-polyglot
+	url = https://github.com/flecs-hub/flecs-polyglot.git
+	branch = main

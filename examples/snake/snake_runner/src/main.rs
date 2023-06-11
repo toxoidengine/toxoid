@@ -75,13 +75,8 @@ fn copy_files() -> Result<(), Box<dyn std::error::Error>> {
 
 fn build_packages() -> Result<(), Box<dyn std::error::Error>> {
     use std::process::Command;
-    
     for package in PACKAGES {
         let mut command = Command::new("cargo");
-        if TARGET.contains("emscripten") {
-            // Set to nightly to support Emscripten dynamic linking
-            command.arg("+nightly");
-        }
         command
             .arg("build")
             .arg("--package")
@@ -97,11 +92,6 @@ fn build_packages() -> Result<(), Box<dyn std::error::Error>> {
                 // If emscripten target library, set Emscripten environment variables for library / side module
                 // That will be dynamically linked at runtime
                 command.env("EMCC_CFLAGS", "-sSIDE_MODULE=2");
-                //  "-Zlink-native-libraries=no": workaround for a wasm-ld error during linking
-                // "-Cpanic=abort": # workaround for a runtime error related to dyncalls
-                command.env("RUSTFLAGS", "-Zlink-native-libraries=no -Cpanic=abort");
-                command.arg("-Z");
-                command.arg("build-std=panic_abort,std");
             }
         }
         command
