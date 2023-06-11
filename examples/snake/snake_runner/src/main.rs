@@ -1,8 +1,8 @@
 // TODO: Make these programmatic / templated
-// const PACKAGES: [&str; 2] = ["snake_engine", "snake"];
-const PACKAGES: [&str; 1] = ["snake_engine"];
+const PACKAGES: [&str; 2] = ["snake_engine", "snake"];
+// const PACKAGES: [&str; 1] = ["snake_engine"];
 const TARGET: &str = "wasm32-unknown-emscripten";
-const DEBUG: bool = true;
+const DEBUG: bool = false;
 
 fn generate_html() -> Result<(), Box<dyn std::error::Error>> {
     use maud::html;
@@ -75,17 +75,20 @@ fn copy_files() -> Result<(), Box<dyn std::error::Error>> {
 
 fn build_packages() -> Result<(), Box<dyn std::error::Error>> {
     use std::process::Command;
-    let debug = if DEBUG {""} else {"--release"};
+    
     for package in PACKAGES {
         let mut command = Command::new("cargo");
+        if TARGET.contains("emscripten") {
+            // Set to nightly to support Emscripten dynamic linking
+            command.arg("+nightly");
+        }
         command
             .arg("build")
             .arg("--package")
             .arg(package)
             .arg("--target")
-            .arg(TARGET)
-            .arg(debug);
-        
+            .arg(TARGET);
+        if !DEBUG || TARGET.contains("emscripten") {command.arg("--release");};
         if TARGET.contains("emscripten") {
             if package.contains("engine") {
                 // If Emscripten target engine, set Emscripten environment variables for main module
@@ -93,7 +96,10 @@ fn build_packages() -> Result<(), Box<dyn std::error::Error>> {
             } else {
                 // If emscripten target library, set Emscripten environment variables for library / side module
                 // That will be dynamically linked at runtime
-                command.env("EMCC_CFLAGS", "");
+                command.env("EMCC_CFLAGS", "-sSIDE_MODULE=2");
+                //  "-Zlink-native-libraries=no": workaround for a wasm-ld error during linking
+                // "-Cpanic=abort": # workaround for a runtime error related to dyncalls
+                command.env("RUSTFLAGS", "-Zlink-native-libraries=no -Cpanic=abort");
             }
         }
         command
