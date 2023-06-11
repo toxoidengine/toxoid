@@ -87,7 +87,18 @@ fn build_packages() -> Result<(), Box<dyn std::error::Error>> {
         if TARGET.contains("emscripten") {
             if package.contains("engine") {
                 // If Emscripten target engine, set Emscripten environment variables for main module
-                command.env("EMCC_CFLAGS", "-sMAIN_MODULE=2 -sEXPORT_ES6=1 -sMODULARIZE=1 -sFORCE_FILESYSTEM -sEXPORTED_RUNTIME_METHODS=FS,loadDynamicLibrary -sERROR_ON_UNDEFINED_SYMBOLS=0");
+               let flags = [
+                    "-O0", 
+                    "-sMAIN_MODULE=2", 
+                    "-sFORCE_FILESYSTEM=1",
+                    "-sERROR_ON_UNDEFINED_SYMBOLS=0", 
+                    "-sEXPORT_ES6=1", 
+                    "-sMODULARIZE=1", 
+                    "-sUSE_ES6_IMPORT_META=1", 
+                    "-sEXPORTED_RUNTIME_METHODS=[_free,_malloc,allocateUTF8,UTF8ToString,writeArrayToMemory,FS,loadDynamicLibrary]", 
+                    "-sALLOW_MEMORY_GROWTH=1"
+               ];
+               command.env("EMCC_CFLAGS", flags.join(" "));
             } else {
                 // If emscripten target library, set Emscripten environment variables for library / side module
                 // That will be dynamically linked at runtime
