@@ -15,4 +15,9 @@ pub unsafe extern "C" fn app_init() {
 
 fn main() {
     println!("Hello world!");
+    flecs_core::init();
+    println!("Flecs Initialized!");
+    unsafe {
+        println!("World: {:?}", flecs_core::WORLD);
+    }
 }
