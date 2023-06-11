@@ -100,6 +100,8 @@ fn build_packages() -> Result<(), Box<dyn std::error::Error>> {
                 //  "-Zlink-native-libraries=no": workaround for a wasm-ld error during linking
                 // "-Cpanic=abort": # workaround for a runtime error related to dyncalls
                 command.env("RUSTFLAGS", "-Zlink-native-libraries=no -Cpanic=abort");
+                command.arg("-Z");
+                command.arg("build-std=panic_abort,std");
             }
         }
         command
