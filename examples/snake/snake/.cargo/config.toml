@@ -1,8 +1,0 @@
-[env]
-# EMCC_CFLAGS="-sSIDE_MODULE=2"
-
-[target.wasm32-unknown-emscripten]
-rustflags = [
-    # "-Zlink-native-libraries=no", # workaround for a wasm-ld error during linking
-    # "-Cpanic=abort", # workaround for a runtime error related to dyncalls
-]
