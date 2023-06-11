@@ -29,7 +29,7 @@ fn copy_files() -> Result<(), Box<dyn std::error::Error>> {
         .ok_or("Could not get executable path parent's parent")?
         .to_str()
         .ok_or("Could not convert executable path parent to string")?;
-    let debug = if DEBUG {"debug"} else {"release"};
+    let debug = if DEBUG { "debug" } else { "release" };
     println!(
         "\nPackage Path: {}, \nExecutable Path: {}, \nBuild Type: {}",
         package_path, exe_path, debug
@@ -53,10 +53,7 @@ fn copy_files() -> Result<(), Box<dyn std::error::Error>> {
 
         for file_ext in file_exts {
             // Source path for projects that will be run
-            let source_path = format!(
-                "{}/{}/{}/{}{}",
-                exe_path, TARGET, debug, package, file_ext
-            );
+            let source_path = format!("{}/{}/{}/{}{}", exe_path, TARGET, debug, package, file_ext);
             // Output path for projects that will be run
             // and libraries that will be dynamically linked at runtime
             let destination_path = format!("{}/dist/{}{}", package_path, package, file_ext);
@@ -83,11 +80,13 @@ fn build_packages() -> Result<(), Box<dyn std::error::Error>> {
             .arg(package)
             .arg("--target")
             .arg(TARGET);
-        if !DEBUG || TARGET.contains("emscripten") {command.arg("--release");};
+        if !DEBUG || TARGET.contains("emscripten") {
+            command.arg("--release");
+        };
         if TARGET.contains("emscripten") {
             if package.contains("engine") {
                 // If Emscripten target engine, set Emscripten environment variables for main module
-               let flags = [
+                let flags = [
                     "-O0", 
                     "-sMAIN_MODULE=2", 
                     "-sFORCE_FILESYSTEM=1",
@@ -98,7 +97,7 @@ fn build_packages() -> Result<(), Box<dyn std::error::Error>> {
                     "-sEXPORTED_RUNTIME_METHODS=[_free,_malloc,allocateUTF8,UTF8ToString,writeArrayToMemory,FS,loadDynamicLibrary]", 
                     "-sALLOW_MEMORY_GROWTH=1"
                ];
-               command.env("EMCC_CFLAGS", flags.join(" "));
+                command.env("EMCC_CFLAGS", flags.join(" "));
             } else {
                 // If emscripten target library, set Emscripten environment variables for library / side module
                 // That will be dynamically linked at runtime
