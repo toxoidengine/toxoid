@@ -269,6 +269,7 @@ name = "snake_engine"
 version = "0.1.0"
 dependencies = [
  "flecs_core",
+ "toxoid_sdl",
 ]
 
 [[package]]

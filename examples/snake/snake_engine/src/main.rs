@@ -11,6 +11,7 @@ pub unsafe extern "C" fn sephiroth(a: i32, b: i32) -> i32 {
 #[no_mangle]
 pub unsafe extern "C" fn app_init() {
     app_main();
+    toxoid_sdl::create_sdl_loop();
 }
 
 fn main() {

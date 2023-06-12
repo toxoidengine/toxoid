@@ -1,4 +1,5 @@
 target
 static
-SDL2-devel-2.24.2-VC.zip
 dist
+SDL2-2.24.2
+SDL2-devel-2.24.2-VC.zip
