@@ -56,10 +56,23 @@ pub unsafe extern "C" fn toxoid_create_tag(name: *const i8, name_len: usize) -> 
 pub unsafe extern "C" fn toxoid_create_component(
         component_name: *const c_char,
         member_names: *const *const c_char,
-        // member_names_count: u32,
+        member_names_count: u32,
         // member_types: *const *const u8,
         // member_types_size: u32
-    ) -> i32 {
+) -> i32 {
+    use std::ffi::CStr;
+
+    // Convert the component name to a Rust string
+    let component_name = CStr::from_ptr(component_name).to_string_lossy().into_owned();
+    println!("Component Name: {}", component_name);
+
+    // Iterate over the member names
+    for i in 0..member_names_count {
+        let member_name_ptr = *member_names.add(i as usize);
+        let member_name = CStr::from_ptr(member_name_ptr).to_string_lossy().into_owned();
+        println!("Member Name #{}: {}", i, member_name);
+    }
+    
     // flecs_core::flecs_component_create(
     //     component_name,
     //     member_names,
@@ -67,10 +80,5 @@ pub unsafe extern "C" fn toxoid_create_component(
     //     member_types,
     //     member_types_size,
     // ) as i32
-    50
-}
-
-#[no_mangle]
-pub unsafe extern "C" fn hello_test(member_names: *const *const c_char) {
-    println!("HELLO TEST FUNCTION");
+    0
 }

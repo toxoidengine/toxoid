@@ -1,9 +1,9 @@
 #![allow(non_camel_case_types)]
-use alloc::vec::Vec;
 
 pub type ecs_id_t = i32;
 pub type ecs_entity_t = ecs_id_t;
 pub type c_char = i8;
+pub const MAX_ELEMENTS: usize = 100;
 
 extern "C" {
     pub fn toxoid_print_i32(v: i32);
@@ -13,11 +13,10 @@ extern "C" {
     pub fn toxoid_create_component(
         component_name: *const c_char,
         member_names: *const *const c_char,
-        // member_names_count: u32,
+        member_names_count: u32,
         // member_types: *const *const u8,
         // member_types_size: u32
     ) -> ecs_entity_t;
-    pub fn hello_test(member_names: *const *const c_char);
 }
 
 #[no_mangle]
@@ -48,29 +47,26 @@ pub fn create_tag(name: &str) -> ecs_entity_t {
 
 pub fn create_component(name: &str, member_names: &[&str], member_types: &[u8]) -> ecs_entity_t {
     unsafe {
-        // convert_str_slice(member_names);
-        // let member_names = convert_str_slice(member_names);
-        let mut c_strings: [*const c_char; 100] = [core::ptr::null(); 100]; 
+        let mut c_member_names: [*const c_char; MAX_ELEMENTS] = [core::ptr::null(); MAX_ELEMENTS]; 
         for (i, &s) in member_names.iter().enumerate() {
-            c_strings[i] = s.as_ptr() as *const c_char;
+            c_member_names[i] = s.as_ptr() as *const c_char;
         }
-        hello_test(c_strings.as_ptr());
         toxoid_create_component(
             name.as_bytes().as_ptr() as *const c_char,
-            member_names,
-            // member_names.len() as u32,
+            c_member_names.as_ptr(),
+            member_names.len() as u32,
             // member_types.as_ptr(),
             // member_types.len() as u32
         )
     }
 }
 
-pub fn convert_str_slice(input: &[&str]) -> *const *const c_char {
-    let c_strings: Vec<*const c_char> = input.iter().map(|&s| s.as_ptr() as *const c_char).collect();
-    let c_array = c_strings.as_ptr();
-    core::mem::forget(c_strings);
-    c_array
-}
+// pub fn convert_str_slice(input: &[&str]) -> *const *const c_char {
+//     let c_strings: Vec<*const c_char> = input.iter().map(|&s| s.as_ptr() as *const c_char).collect();
+//     let c_array = c_strings.as_ptr();
+//     core::mem::forget(c_strings);
+//     c_array
+// }
 
 // pub const MAX_ELEMENTS: usize = 100;
 // pub fn convert_str_slice(input: &[&str; MAX_ELEMENTS]) -> *const *const c_char {
