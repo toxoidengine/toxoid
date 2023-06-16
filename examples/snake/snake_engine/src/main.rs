@@ -1,3 +1,5 @@
+use std::ffi::c_char;
+
 extern "C" {
     pub fn app_main();
 }
@@ -29,15 +31,6 @@ pub unsafe extern "C" fn toxoid_print_string(v: *const i8) {
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn toxoid_register_tag(name: *const i8, name_len: usize) -> i32 {
-    let slice = std::slice::from_raw_parts(name as *mut u8, name_len);
-    let rust_string = std::str::from_utf8_unchecked(slice);
-    println!("Created tag named: {}", rust_string);
-    let c_string = std::ffi::CString::new(rust_string).expect("Failed to convert to CString");
-    flecs_core::flecs_tag_create(c_string.as_ptr()) as i32
-}
-
-#[no_mangle]
 pub fn toxoid_entity_get_name(id: i32) {
     unsafe {
         let world = *flecs_core::WORLD.as_mut().unwrap_unchecked();
@@ -48,4 +41,36 @@ pub fn toxoid_entity_get_name(id: i32) {
         let tag_name = tag_name.to_string_lossy().into_owned();
         println!("Found tag name: {:?}", tag_name);
     }
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn toxoid_create_tag(name: *const i8, name_len: usize) -> i32 {
+    let slice = std::slice::from_raw_parts(name as *mut u8, name_len);
+    let rust_string = std::str::from_utf8_unchecked(slice);
+    println!("Created tag named: {}", rust_string);
+    let c_string = std::ffi::CString::new(rust_string).expect("Failed to convert to CString");
+    flecs_core::flecs_tag_create(c_string.as_ptr()) as i32
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn toxoid_create_component(
+        component_name: *const c_char,
+        member_names: *const *const c_char,
+        // member_names_count: u32,
+        // member_types: *const *const u8,
+        // member_types_size: u32
+    ) -> i32 {
+    // flecs_core::flecs_component_create(
+    //     component_name,
+    //     member_names,
+    //     member_names_count,
+    //     member_types,
+    //     member_types_size,
+    // ) as i32
+    50
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn hello_test(member_names: *const *const c_char) {
+    println!("HELLO TEST FUNCTION");
 }

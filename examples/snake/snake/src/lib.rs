@@ -1,23 +1,31 @@
 #![allow(non_camel_case_types)]
+use alloc::vec::Vec;
+
 pub type ecs_id_t = i32;
 pub type ecs_entity_t = ecs_id_t;
-pub type c_char = u8;
+pub type c_char = i8;
 
 extern "C" {
     pub fn toxoid_print_i32(v: i32);
     pub fn toxoid_print_string(v: *const i8);
-    pub fn toxoid_register_tag(name: *const i8, name_len: usize) -> ecs_entity_t;
     pub fn toxoid_entity_get_name(id: i32);
+    pub fn toxoid_create_tag(name: *const i8, name_len: usize) -> ecs_entity_t;
+    pub fn toxoid_create_component(
+        component_name: *const c_char,
+        member_names: *const *const c_char,
+        // member_names_count: u32,
+        // member_types: *const *const u8,
+        // member_types_size: u32
+    ) -> ecs_entity_t;
+    pub fn hello_test(member_names: *const *const c_char);
 }
 
 #[no_mangle]
 pub unsafe extern "C" fn app_main() {
-    let tag = register_tag("PositionTag");
-    let tag_2 = register_tag("PositionTagTwo");
-    let tag_3 = register_tag("PositionTagThree");
+    let tag = create_tag("PositionTag");
     toxoid_entity_get_name(tag);
-    toxoid_entity_get_name(tag_2);
-    toxoid_entity_get_name(tag_3);
+    // create_component("Position", &["x", "y"], &["i32", "i32"]);
+    create_component("Position", &["x", "y"], &[2, 2]);
 }
 
 pub fn print_i32(v: i32) {
@@ -32,10 +40,43 @@ pub fn print_string(v: &str) {
     }
 }
 
-pub fn register_component() {}
-
-pub fn register_tag(name: &str) -> ecs_entity_t {
+pub fn create_tag(name: &str) -> ecs_entity_t {
     unsafe {
-        toxoid_register_tag(name.as_bytes().as_ptr() as *const i8, name.len())
+        toxoid_create_tag(name.as_bytes().as_ptr() as *const i8, name.len())
     }
 }
+
+pub fn create_component(name: &str, member_names: &[&str], member_types: &[u8]) -> ecs_entity_t {
+    unsafe {
+        // convert_str_slice(member_names);
+        // let member_names = convert_str_slice(member_names);
+        let mut c_strings: [*const c_char; 100] = [core::ptr::null(); 100]; 
+        for (i, &s) in member_names.iter().enumerate() {
+            c_strings[i] = s.as_ptr() as *const c_char;
+        }
+        hello_test(c_strings.as_ptr());
+        toxoid_create_component(
+            name.as_bytes().as_ptr() as *const c_char,
+            member_names,
+            // member_names.len() as u32,
+            // member_types.as_ptr(),
+            // member_types.len() as u32
+        )
+    }
+}
+
+pub fn convert_str_slice(input: &[&str]) -> *const *const c_char {
+    let c_strings: Vec<*const c_char> = input.iter().map(|&s| s.as_ptr() as *const c_char).collect();
+    let c_array = c_strings.as_ptr();
+    core::mem::forget(c_strings);
+    c_array
+}
+
+// pub const MAX_ELEMENTS: usize = 100;
+// pub fn convert_str_slice(input: &[&str; MAX_ELEMENTS]) -> *const *const c_char {
+//     let mut c_strings: [*const c_char; MAX_ELEMENTS] = [core::ptr::null(); MAX_ELEMENTS];    
+//     for (i, &s) in input.iter().enumerate() {
+//         c_strings[i] = s.as_ptr() as *const c_char;
+//     }
+//     c_strings.as_ptr()
+// }
