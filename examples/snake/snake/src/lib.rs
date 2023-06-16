@@ -14,8 +14,10 @@ extern "C" {
 pub unsafe extern "C" fn app_main() {
     let tag = register_tag("PositionTag");
     let tag_2 = register_tag("PositionTagTwo");
+    let tag_3 = register_tag("PositionTagThree");
     toxoid_entity_get_name(tag);
     toxoid_entity_get_name(tag_2);
+    toxoid_entity_get_name(tag_3);
 }
 
 pub fn print_i32(v: i32) {
