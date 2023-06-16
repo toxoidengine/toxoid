@@ -7,14 +7,15 @@ extern "C" {
     pub fn toxoid_print_i32(v: i32);
     pub fn toxoid_print_string(v: *const i8);
     pub fn toxoid_register_tag(name: *const i8, name_len: usize) -> ecs_entity_t;
+    pub fn toxoid_entity_get_name(id: i32);
 }
 
 #[no_mangle]
 pub unsafe extern "C" fn app_main() {
     let tag = register_tag("PositionTag");
     let tag_2 = register_tag("PositionTagTwo");
-    print_i32(tag);
-    print_i32(tag_2);
+    toxoid_entity_get_name(tag);
+    toxoid_entity_get_name(tag_2);
 }
 
 pub fn print_i32(v: i32) {
