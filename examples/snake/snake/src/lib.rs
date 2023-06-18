@@ -1,5 +1,7 @@
 #![allow(non_camel_case_types)]
 
+use toxoid_ffi_macro::Components;
+
 pub type ecs_id_t = i32;
 pub type ecs_entity_t = ecs_id_t;
 pub type c_char = i8;
@@ -26,7 +28,7 @@ pub enum Type {
 
 extern "C" {
     pub fn toxoid_print_i32(v: i32);
-    pub fn toxoid_print_string(v: *const i8);
+    pub fn toxoid_print_string(v: *const i8, v_len: usize);
     pub fn toxoid_entity_get_name(id: i32);
     pub fn toxoid_create_tag(name: *const i8, name_len: usize) -> ecs_entity_t;
     pub fn toxoid_create_component(
@@ -40,20 +42,33 @@ extern "C" {
     ) -> ecs_entity_t;
 }
 
+#[derive(Components)]
+pub struct Position {
+    x: u32,
+    y: u32,
+}
+
+#[derive(Components)]
+pub struct Velocity {
+    dx: f32,
+    dy: f32,
+}
+
 #[no_mangle]
 pub unsafe extern "C" fn app_main() {
     let tag = create_tag("LocalPlayer");
     toxoid_entity_get_name(tag);
-    components! {
-        Position {
-            x: u32,
-            y: u32,
-        },
-        Velocity {
-            dx: f32,
-            dy: f32,
-        },
-    }
+
+    let mut position = Position { x: 0, y: 0 };
+    position.set_x(77);
+    position.set_y(99);
+    // position.x(10);
+    // position.y(12);
+
+    print_string("X:");
+    print_i32(position.x as i32);
+    print_string("Y:");
+    print_i32(position.y as i32);
 }
 
 pub fn print_i32(v: i32) {
@@ -64,7 +79,7 @@ pub fn print_i32(v: i32) {
 
 pub fn print_string(v: &str) {
     unsafe {
-        toxoid_print_string(v.as_bytes().as_ptr() as *const i8);
+        toxoid_print_string(v.as_bytes().as_ptr() as *const i8, v.len());
     }
 }
 
@@ -133,7 +148,7 @@ macro_rules! component {
                 "Vec<u32>" => Type::U32Array as u8,
                 "Vec<f32>" => Type::F32Array as u8,
                 _ => {
-                    toxoid_print_string("Error: unknown type for component member".as_bytes().as_ptr() as *const i8);
+                    print_string("Error: unknown type for component member");
                     0
                 },
             }, )* ];
@@ -143,11 +158,33 @@ macro_rules! component {
     };
 }
 
-#[macro_export]
-macro_rules! components {
-    ($($name:ident { $($field:ident: $ftype:ty),* $(,)? }),* $(,)?) => {
-        $(
-            component!($name, $($field: $ftype),*);
-        )*
-    };
-}
+// #[macro_export]
+// macro_rules! components {
+//     ($($name:ident { $($field:ident: $ftype:ty),* $(,)? }),* $(,)?) => {
+//         $(
+//             pub struct $name {
+//                 $(pub $field: $ftype),*
+//             }
+
+//             impl $name {
+//                 $(
+//                     pub fn $field(&mut self, value: $ftype) {
+//                         self.$field = value;
+//                         match () {
+//                             _ if std::any::TypeId::of::<$ftype>() == std::any::TypeId::of::<u32>() => {
+//                                 print_string("Type is u32");
+//                             }
+//                             _ if std::any::TypeId::of::<$ftype>() == std::any::TypeId::of::<f32>() => {
+//                                 print_string("Type is f32");
+//                             }
+//                             _ => print_string("Unknown type"),
+//                         }
+//                     }
+//                 )*
+//             }
+
+//             component!($name, $($field: $ftype),*);
+//         )*
+//     };
+// }
+

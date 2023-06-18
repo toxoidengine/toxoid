@@ -263,6 +263,9 @@ dependencies = [
 [[package]]
 name = "snake"
 version = "0.1.0"
+dependencies = [
+ "toxoid_script_rs",
+]
 
 [[package]]
 name = "snake_engine"
@@ -354,6 +357,14 @@ version = "0.1.0"
 [[package]]
 name = "toxoid_physics"
 version = "0.1.0"
+
+[[package]]
+name = "toxoid_script_rs"
+version = "0.1.0"
+dependencies = [
+ "quote",
+ "syn",
+]
 
 [[package]]
 name = "toxoid_sdl"
