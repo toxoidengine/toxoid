@@ -7,14 +7,8 @@ build = "build.rs"
 [workspace]
 members = [
     	# Crates
-		"crates/toxoid_app",
-		"crates/toxoid_core",
-		"crates/toxoid_ecs",
-		"crates/toxoid_netcode",
-		"crates/toxoid_physics",
-		"crates/toxoid_audio",
 		"crates/toxoid_sdl",
-		"crates/toxoid_cli",
+		"crates/toxoid_ffi_macro",
 		
 		# Examples
 		"examples/snake/snake",
