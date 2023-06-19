@@ -60,9 +60,9 @@ pub unsafe extern "C" fn app_main() {
     let tag = register_tag("LocalPlayer");
     toxoid_entity_get_name(tag);
 
-    let mut position = Position { x: 0, y: 0 };
-    position.set_x(77);
-    position.set_y(99);
+let mut position = Position { x: 0, y: 0 };
+position.set_x(77);
+position.set_y(99);
     // position.x(10);
     // position.y(12);
 
@@ -70,6 +70,9 @@ pub unsafe extern "C" fn app_main() {
     print_i32(position.x as i32);
     print_string("Y:");
     print_i32(position.y as i32);
+
+    Position::register();
+    Velocity::register();
 }
 
 pub fn print_i32(v: i32) {
