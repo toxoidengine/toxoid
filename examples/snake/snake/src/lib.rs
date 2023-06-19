@@ -1,4 +1,5 @@
 #![allow(non_camel_case_types)]
+extern crate toxoid_ffi_macro;
 
 use toxoid_ffi_macro::Components;
 

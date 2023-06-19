@@ -24,12 +24,12 @@ enum FieldType {
 }
 
 extern "C" {
-    fn toxoid_print_string(v: *const i8, v_len: usize);
+    // fn toxoid_print_string(v: *const i8, v_len: usize);
 }
 
 fn print_string(v: &str) {
     unsafe {
-        toxoid_print_string(v.as_bytes().as_ptr() as *const i8, v.len());
+        // toxoid_print_string(v.as_bytes().as_ptr() as *const i8, v.len());
     }
 }
 
@@ -138,11 +138,11 @@ pub fn components_derive(input: TokenStream) -> TokenStream {
 
     // Create the final token stream.
     let expanded = quote! {
+        #default_impl
         impl #struct_name {
             #(#getter_tokens)*
             #(#setter_tokens)*
             #register_impl
-            #default_impl
         }
     };
 
@@ -152,44 +152,25 @@ pub fn components_derive(input: TokenStream) -> TokenStream {
 
 fn get_type_code(ty: &Type) -> u8 {
     match ty {
+        Type::Path(tp) if tp.path.is_ident("u8") => FieldType::U8 as u8,
+        Type::Path(tp) if tp.path.is_ident("u16") => FieldType::U16 as u8,
         Type::Path(tp) if tp.path.is_ident("u32") => FieldType::U32 as u8,
+        Type::Path(tp) if tp.path.is_ident("u64") => FieldType::U64 as u8,
+        Type::Path(tp) if tp.path.is_ident("i8") => FieldType::I8 as u8,
+        Type::Path(tp) if tp.path.is_ident("i16") => FieldType::I16 as u8,
+        Type::Path(tp) if tp.path.is_ident("i32") => FieldType::I32 as u8,
+        Type::Path(tp) if tp.path.is_ident("i64") => FieldType::I64 as u8,
         Type::Path(tp) if tp.path.is_ident("f32") => FieldType::F32 as u8,
-        // add more type matches as needed
+        Type::Path(tp) if tp.path.is_ident("f64") => FieldType::F64 as u8,
+        Type::Path(tp) if tp.path.is_ident("bool") => FieldType::Bool as u8,
+        Type::Path(tp) if tp.path.is_ident("String") => FieldType::String as u8,
+        // Type::Array(tp) if tp.elem.is_ident("u8") => FieldType::Array as u8,
+        Type::Path(tp) if tp.path.is_ident("Vec<u8>") => FieldType::Array as u8,
+        Type::Path(tp) if tp.path.is_ident("Vec<u32>") => FieldType::U32Array as u8,
+        Type::Path(tp) if tp.path.is_ident("Vec<f32>") => FieldType::F32Array as u8,
         _ => {
             print_string("Unsupported field type");
             FieldType::Bool as u8
         },
     }
 }
-
-// #[macro_export]
-// macro_rules! component {
-//     ($name:ident, $($field:ident: $ftype:ty),* $(,)?) => {
-//         {
-//             let name = stringify!($name);
-//             let fields = &[ $( stringify!($field), )* ];
-//             let types = &[ $( match stringify!($ftype) {
-//                 "u8" => Type::U8 as u8,
-//                 "u16" => Type::U16 as u8,
-//                 "u32" => Type::U32 as u8,
-//                 "u64" => Type::U64 as u8,
-//                 "i8" => Type::I8 as u8,
-//                 "i16" => Type::I16 as u8,
-//                 "i32" => Type::I32 as u8,
-//                 "i64" => Type::I64 as u8,
-//                 "f32" => Type::F32 as u8,
-//                 "f64" => Type::F64 as u8,
-//                 "bool" => Type::Bool as u8,
-//                 "String" => Type::String as u8,
-//                 "Vec<u32>" => Type::U32Array as u8,
-//                 "Vec<f32>" => Type::F32Array as u8,
-//                 _ => {
-//                     print_string("Error: unknown type for component member");
-//                     0
-//                 },
-//             }, )* ];
-//             register_component(name, fields, types);
-//             // register_component("Position", &["x", "y"], &[Type::U32 as u8, Type::U32 as u8]);
-//         }
-//     };
-// }
