@@ -30,8 +30,8 @@ extern "C" {
     pub fn toxoid_print_i32(v: i32);
     pub fn toxoid_print_string(v: *const i8, v_len: usize);
     pub fn toxoid_entity_get_name(id: i32);
-    pub fn toxoid_create_tag(name: *const i8, name_len: usize) -> ecs_entity_t;
-    pub fn toxoid_create_component(
+    pub fn toxoid_register_tag(name: *const i8, name_len: usize) -> ecs_entity_t;
+    pub fn toxoid_register_component(
         component_name: *const c_char,
         component_name_len: u8,
         member_names: *const *const c_char,
@@ -56,7 +56,7 @@ pub struct Velocity {
 
 #[no_mangle]
 pub unsafe extern "C" fn app_main() {
-    let tag = create_tag("LocalPlayer");
+    let tag = register_tag("LocalPlayer");
     toxoid_entity_get_name(tag);
 
     let mut position = Position { x: 0, y: 0 };
@@ -83,13 +83,13 @@ pub fn print_string(v: &str) {
     }
 }
 
-pub fn create_tag(name: &str) -> ecs_entity_t {
+pub fn register_tag(name: &str) -> ecs_entity_t {
     unsafe {
-        toxoid_create_tag(name.as_bytes().as_ptr() as *const i8, name.len())
+        toxoid_register_tag(name.as_bytes().as_ptr() as *const i8, name.len())
     }
 }
 
-pub fn create_component(name: &str, member_names: &[&str], member_types: &[u8]) -> ecs_entity_t {
+pub fn register_component(name: &str, member_names: &[&str], member_types: &[u8]) -> ecs_entity_t {
     unsafe {
         let mut c_member_names: [*const c_char; MAX_ELEMENTS] = [core::ptr::null(); MAX_ELEMENTS]; 
         let mut c_member_names_len: [u8; MAX_ELEMENTS] = [0; MAX_ELEMENTS];
@@ -97,7 +97,7 @@ pub fn create_component(name: &str, member_names: &[&str], member_types: &[u8]) 
             c_member_names[i] = s.as_ptr() as *const c_char;
             c_member_names_len[i] = s.len() as u8;
         }
-        toxoid_create_component(
+        toxoid_register_component(
             name.as_bytes().as_ptr() as *const c_char,
             name.len() as u8,
             c_member_names.as_ptr(),
@@ -108,83 +108,3 @@ pub fn create_component(name: &str, member_names: &[&str], member_types: &[u8]) 
         )
     }
 }
-
-// pub fn convert_str_slice(input: &[&str]) -> *const *const c_char {
-//     let c_strings: Vec<*const c_char> = input.iter().map(|&s| s.as_ptr() as *const c_char).collect();
-//     let c_array = c_strings.as_ptr();
-//     core::mem::forget(c_strings);
-//     c_array
-// }
-
-// pub const MAX_ELEMENTS: usize = 100;
-// pub fn convert_str_slice(input: &[&str; MAX_ELEMENTS]) -> *const *const c_char {
-//     let mut c_strings: [*const c_char; MAX_ELEMENTS] = [core::ptr::null(); MAX_ELEMENTS];    
-//     for (i, &s) in input.iter().enumerate() {
-//         c_strings[i] = s.as_ptr() as *const c_char;
-//     }
-//     c_strings.as_ptr()
-// }
-
-
-#[macro_export]
-macro_rules! component {
-    ($name:ident, $($field:ident: $ftype:ty),* $(,)?) => {
-        {
-            let name = stringify!($name);
-            let fields = &[ $( stringify!($field), )* ];
-            let types = &[ $( match stringify!($ftype) {
-                "u8" => Type::U8 as u8,
-                "u16" => Type::U16 as u8,
-                "u32" => Type::U32 as u8,
-                "u64" => Type::U64 as u8,
-                "i8" => Type::I8 as u8,
-                "i16" => Type::I16 as u8,
-                "i32" => Type::I32 as u8,
-                "i64" => Type::I64 as u8,
-                "f32" => Type::F32 as u8,
-                "f64" => Type::F64 as u8,
-                "bool" => Type::Bool as u8,
-                "String" => Type::String as u8,
-                "Vec<u32>" => Type::U32Array as u8,
-                "Vec<f32>" => Type::F32Array as u8,
-                _ => {
-                    print_string("Error: unknown type for component member");
-                    0
-                },
-            }, )* ];
-            create_component(name, fields, types);
-            // create_component("Position", &["x", "y"], &[Type::U32 as u8, Type::U32 as u8]);
-        }
-    };
-}
-
-// #[macro_export]
-// macro_rules! components {
-//     ($($name:ident { $($field:ident: $ftype:ty),* $(,)? }),* $(,)?) => {
-//         $(
-//             pub struct $name {
-//                 $(pub $field: $ftype),*
-//             }
-
-//             impl $name {
-//                 $(
-//                     pub fn $field(&mut self, value: $ftype) {
-//                         self.$field = value;
-//                         match () {
-//                             _ if std::any::TypeId::of::<$ftype>() == std::any::TypeId::of::<u32>() => {
-//                                 print_string("Type is u32");
-//                             }
-//                             _ if std::any::TypeId::of::<$ftype>() == std::any::TypeId::of::<f32>() => {
-//                                 print_string("Type is f32");
-//                             }
-//                             _ => print_string("Unknown type"),
-//                         }
-//                     }
-//                 )*
-//             }
-
-//             component!($name, $($field: $ftype),*);
-//         )*
-//     };
-// }
-

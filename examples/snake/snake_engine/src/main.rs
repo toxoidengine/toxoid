@@ -44,7 +44,7 @@ pub fn toxoid_entity_get_name(id: i32) {
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn toxoid_create_tag(name: *const i8, name_len: usize) -> i32 {
+pub unsafe extern "C" fn toxoid_register_tag(name: *const i8, name_len: usize) -> i32 {
     let slice = std::slice::from_raw_parts(name as *mut u8, name_len);
     let rust_string = std::str::from_utf8_unchecked(slice);
 
@@ -55,7 +55,7 @@ pub unsafe extern "C" fn toxoid_create_tag(name: *const i8, name_len: usize) -> 
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn toxoid_create_component(
+pub unsafe extern "C" fn toxoid_register_component(
         component_name: *const c_char,
         component_name_len: u8,
         member_names: *const *const c_char,

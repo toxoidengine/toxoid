@@ -264,7 +264,7 @@ dependencies = [
 name = "snake"
 version = "0.1.0"
 dependencies = [
- "toxoid_script_rs",
+ "toxoid_ffi_macro",
 ]
 
 [[package]]
@@ -331,35 +331,7 @@ name = "toxoid"
 version = "0.1.0"
 
 [[package]]
-name = "toxoid_app"
-version = "0.1.0"
-
-[[package]]
-name = "toxoid_audio"
-version = "0.1.0"
-
-[[package]]
-name = "toxoid_cli"
-version = "0.1.0"
-
-[[package]]
-name = "toxoid_core"
-version = "0.1.0"
-
-[[package]]
-name = "toxoid_ecs"
-version = "0.1.0"
-
-[[package]]
-name = "toxoid_netcode"
-version = "0.1.0"
-
-[[package]]
-name = "toxoid_physics"
-version = "0.1.0"
-
-[[package]]
-name = "toxoid_script_rs"
+name = "toxoid_ffi_macro"
 version = "0.1.0"
 dependencies = [
  "quote",
