@@ -17,7 +17,9 @@ members = [
 ]
 
 # Workspace ignore
-exclude = []
+exclude = [
+	"crates/toxoid_render"
+]
 
 resolver = "2"
 

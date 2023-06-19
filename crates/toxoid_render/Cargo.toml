@@ -1,0 +1,11 @@
+[package]
+name = "toxoid_render"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+wgpu = "0.16.1"
+glow = "0.12.2"
+bytemuck = "1.13.1"
