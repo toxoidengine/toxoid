@@ -1,5 +1,5 @@
 // 2D sprite renderer with automatic geometry batching.
-// This renderer can efficiently draw large numbers of 2
+// This renderer can efficiently draw large numbers of
 // 2D sprites with varying positions, sizes, rotations, colors, and textures.
 use std::collections::HashMap;
 
