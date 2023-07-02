@@ -38,8 +38,8 @@ extern "C" {
         member_names: *const *const c_char,
         member_names_count: u32,
         member_names_len: *const u8,
-        // member_types: *const *const u8,
-        // member_types_size: u32
+        member_types: *const *const u8,
+        member_types_count: u32
     ) -> ecs_entity_t;
 }
 
@@ -60,19 +60,20 @@ pub unsafe extern "C" fn app_main() {
     let tag = register_tag("LocalPlayer");
     toxoid_entity_get_name(tag);
 
-let mut position = Position { x: 0, y: 0 };
-position.set_x(77);
-position.set_y(99);
-    // position.x(10);
-    // position.y(12);
+    let mut position = Position { x: 0, y: 0 };
+    position.set_x(77);
+    position.set_y(99);
 
     print_string("X:");
     print_i32(position.x as i32);
     print_string("Y:");
     print_i32(position.y as i32);
 
-    Position::register();
-    Velocity::register();
+    let pos_id = Position::register();
+    let vel_id = Velocity::register();
+
+    toxoid_entity_get_name(pos_id);
+    toxoid_entity_get_name(vel_id);
 }
 
 pub fn print_i32(v: i32) {
@@ -101,14 +102,27 @@ pub fn register_component(name: &str, member_names: &[&str], member_types: &[u8]
             c_member_names[i] = s.as_ptr() as *const c_char;
             c_member_names_len[i] = s.len() as u8;
         }
+
+        // let mut c_member_types: [u8; MAX_ELEMENTS] = [0; MAX_ELEMENTS];
+        // for (i, &t) in member_types.iter().enumerate() {
+        //     c_member_types[i] = t;
+        // }
+
+        // TODO: Since this is Rust, it can probably just be the u8 value
+        // instead of a pointer to the value.
+        let mut c_member_types: [*const u8; MAX_ELEMENTS] = [core::ptr::null(); MAX_ELEMENTS];
+        for (i, &t) in member_types.iter().enumerate() {
+            c_member_types[i] = &t as *const u8;
+        }
+
         toxoid_register_component(
             name.as_bytes().as_ptr() as *const c_char,
             name.len() as u8,
             c_member_names.as_ptr(),
             member_names.len() as u32,
             c_member_names_len.as_ptr(),
-            // member_types.as_ptr(),
-            // member_types.len() as u32
+            c_member_types.as_ptr(),
+            c_member_types.len() as u32
         )
     }
 }

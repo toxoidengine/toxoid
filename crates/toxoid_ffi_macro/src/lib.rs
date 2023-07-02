@@ -23,15 +23,15 @@ enum FieldType {
     F32Array,
 }
 
-extern "C" {
-    // fn toxoid_print_string(v: *const i8, v_len: usize);
-}
+// extern "C" {
+//     fn toxoid_print_string(v: *const i8, v_len: usize);
+// }
 
-fn print_string(v: &str) {
-    unsafe {
-        // toxoid_print_string(v.as_bytes().as_ptr() as *const i8, v.len());
-    }
-}
+// fn print_string(v: &str) {
+//     unsafe {
+//         toxoid_print_string(v.as_bytes().as_ptr() as *const i8, v.len());
+//     }
+// }
 
 #[proc_macro_derive(Components)]
 pub fn components_derive(input: TokenStream) -> TokenStream {
@@ -130,9 +130,8 @@ pub fn components_derive(input: TokenStream) -> TokenStream {
 
     // Create the register implementation.
     let register_impl = quote! {
-        pub fn register() -> Self {
-            #register_component_tokens;
-            Self::default()
+        pub fn register() -> i32 {
+            #register_component_tokens
         }
     };
 
@@ -169,7 +168,7 @@ fn get_type_code(ty: &Type) -> u8 {
         Type::Path(tp) if tp.path.is_ident("Vec<u32>") => FieldType::U32Array as u8,
         Type::Path(tp) if tp.path.is_ident("Vec<f32>") => FieldType::F32Array as u8,
         _ => {
-            print_string("Unsupported field type");
+            // print_string("Unsupported field type");
             FieldType::Bool as u8
         },
     }

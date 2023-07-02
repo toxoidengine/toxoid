@@ -25,6 +25,7 @@ pub unsafe extern "C" fn toxoid_print_i32(v: i32) {
 
 #[no_mangle]
 pub unsafe extern "C" fn toxoid_print_string(v: *const i8, v_len: usize) {
+    // Convert the C String to a Rust string
     let slice = std::slice::from_raw_parts(v as *mut u8, v_len);
     let rust_string = std::str::from_utf8_unchecked(slice);
     println!("Printing from Toxoid Engine: {}", rust_string);
@@ -39,17 +40,20 @@ pub fn toxoid_entity_get_name(id: i32) {
         // Convert to Rust string
         let tag_name = std::ffi::CStr::from_ptr(tag_name as *const i8);
         let tag_name = tag_name.to_string_lossy().into_owned();
-        println!("Found tag name: {:?}", tag_name);
+        println!("Found entity name: {:?}", tag_name);
     }
 }
 
 #[no_mangle]
 pub unsafe extern "C" fn toxoid_register_tag(name: *const i8, name_len: usize) -> i32 {
+    // Convert the C String to a Rust string using a specific length
+    // to deal with FFI memory issues
     let slice = std::slice::from_raw_parts(name as *mut u8, name_len);
     let rust_string = std::str::from_utf8_unchecked(slice);
 
     println!("Created tag named: {}", rust_string);
     
+    // Convert back to C string with specific length
     let c_string = std::ffi::CString::new(rust_string).expect("Failed to convert to CString");
     flecs_core::flecs_tag_create(c_string.as_ptr()) as i32
 }
@@ -61,13 +65,17 @@ pub unsafe extern "C" fn toxoid_register_component(
         member_names: *const *const c_char,
         member_names_count: u32,
         member_names_len: *const u8,
-        // member_types: *const *const u8,
-        // member_types_size: u32
+        member_types: *const *const u8,
+        member_types_count: u32
 ) -> i32 {
-    // Convert the component name to a Rust string
+    // Convert the C String to a Rust string using a specific length
+    // to deal with FFI memory issues
     let component_name_slice = std::slice::from_raw_parts(component_name as *mut u8, component_name_len as usize);
     let component_name = std::str::from_utf8_unchecked(component_name_slice);
     println!("Component Name: {}", component_name);
+
+    // Convert back to C string with specific length
+    let component_name = std::ffi::CString::new(component_name).expect("Failed to convert to CString");
 
     // Iterate over the member names
     for i in 0..member_names_count {
@@ -78,12 +86,11 @@ pub unsafe extern "C" fn toxoid_register_component(
         println!("Member Name #{}: {}", i, member_name);
     }
     
-    // flecs_core::flecs_component_create(
-    //     component_name,
-    //     member_names,
-    //     member_names_count,
-    //     member_types,
-    //     member_types_size,
-    // ) as i32
-    0
+    flecs_core::flecs_component_create(
+        component_name.as_ptr(),
+        member_names,
+        member_names_count,
+        member_types,
+        member_types_count,
+    ) as i32
 }
