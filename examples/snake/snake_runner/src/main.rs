@@ -7,10 +7,10 @@ const PORT: i16 = 5000;
 fn generate_html() -> Result<(), Box<dyn std::error::Error>> {
     use maud::html;
     let name = "Rou";
-    let markup = html! {
+    let _markup = html! {
         p { "Hi, " (name) "!" }
     };
-    println!("Generated HTML: {}", markup.into_string());
+    // println!("Generated HTML: {}", markup.into_string());
     Ok(())
 }
 
@@ -30,10 +30,10 @@ fn copy_files() -> Result<(), Box<dyn std::error::Error>> {
         .to_str()
         .ok_or("Could not convert executable path parent to string")?;
     let debug = if DEBUG { "debug" } else { "release" };
-    println!(
-        "\nPackage Path: {}, \nExecutable Path: {}, \nBuild Type: {}",
-        package_path, exe_path, debug
-    );
+    // println!(
+    //     "\nPackage Path: {}, \nExecutable Path: {}, \nBuild Type: {}",
+    //     package_path, exe_path, debug
+    // );
     for package in PACKAGES {
         let file_exts = if TARGET.contains("emscripten") {
             if package.contains("engine") {
@@ -58,12 +58,12 @@ fn copy_files() -> Result<(), Box<dyn std::error::Error>> {
             // and libraries that will be dynamically linked at runtime
             let destination_path = format!("{}/dist/{}{}", package_path, package, file_ext);
 
-            println!("Source Path: {}", source_path);
-            println!("Destination Path: {}", destination_path);
+            // println!("Source Path: {}", source_path);
+            // println!("Destination Path: {}", destination_path);
 
             match std::fs::copy(source_path, destination_path) {
-                Ok(_) => println!("File copied successfully."),
-                Err(e) => eprintln!("Failed to copy file: {}", e),
+                Ok(_) => (), // println!("File copied successfully."),
+                Err(_e) => () // eprintln!("Failed to copy file: {}", e),
             }
         }
     }
