@@ -1,5 +1,7 @@
 extern crate proc_macro;
 
+use core::ffi::c_void;
+
 use proc_macro::TokenStream;
 use quote::quote;
 use syn::{parse_macro_input, Data, DeriveInput, Fields, Ident, Type};
@@ -23,9 +25,10 @@ enum FieldType {
     F32Array,
 }
 
-// extern "C" {
-//     fn toxoid_print_string(v: *const i8, v_len: usize);
-// }
+extern "C" {
+    pub fn toxoid_print_string(v: *const i8, v_len: usize);
+    pub fn toxoid_component_set_member_u32(component_ptr: *mut c_void, offset: u32, value: u32);
+}
 
 // fn print_string(v: &str) {
 //     unsafe {
@@ -77,6 +80,9 @@ pub fn components_derive(input: TokenStream) -> TokenStream {
                         match () {
                             _ if std::any::TypeId::of::<#ty>() == std::any::TypeId::of::<u32>() => {
                                 print_string("Setting a u32 value");
+                                unsafe {
+                                    toxoid_component_set_member_u32(core::ptr::null_mut(), 0, value as u32);
+                                }
                                 ()
                             }
                             _ if std::any::TypeId::of::<#ty>() == std::any::TypeId::of::<f32>() => {

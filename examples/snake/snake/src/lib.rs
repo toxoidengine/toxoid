@@ -2,11 +2,86 @@
 extern crate toxoid_ffi_macro;
 
 use toxoid_ffi_macro::Components;
+use core::ffi::c_void;
 
 pub type ecs_id_t = i32;
 pub type ecs_entity_t = ecs_id_t;
 pub type c_char = i8;
 pub const MAX_ELEMENTS: usize = 100;
+
+extern "C" {
+    pub fn toxoid_print_i32(v: i32);
+    pub fn toxoid_print_string(v: *const i8, v_len: usize);
+    pub fn toxoid_entity_get_name(id: i32);
+    pub fn toxoid_register_tag(name: *const i8, name_len: usize) -> ecs_entity_t;
+    pub fn toxoid_register_component(
+        component_name: *const c_char,
+        component_name_len: u8,
+        member_names: *const *const c_char,
+        member_names_count: u32,
+        member_names_len: *const u8,
+        member_types: *const *const u8,
+        member_types_count: u32
+    ) -> ecs_entity_t;
+    pub fn toxoid_component_set_member_u32(component_ptr: *mut c_void, offset: u32, value: u32);
+    pub fn toxoid_entity_create() -> ecs_entity_t;
+    pub fn toxoid_entity_add_component(entity: u32, component: u32) -> ecs_entity_t;
+    pub fn toxoid_entity_add_tag(entity: u32, tag: u32) -> ecs_entity_t;
+}
+
+pub struct Query;
+
+impl Query {
+    pub fn new() -> Self {
+        Query
+    }
+
+    pub fn iter(&self) -> Query {
+        Query
+    }
+
+    pub fn next(&self) -> Query {
+        Query
+    }
+
+    pub fn field(&self, name: &str) -> Query {
+        Query
+    }
+
+    pub fn entities(&self) -> Query {
+        Query
+    }
+}
+
+pub struct Entity {
+    id: ecs_id_t
+}
+
+impl Entity {
+    pub fn new() -> Self {
+        unsafe {
+            Entity {
+                id: toxoid_entity_create(),
+            }
+        }
+    }
+
+    pub fn add(&mut self, component: ecs_id_t) {
+        unsafe {
+            toxoid_entity_add_component(self.id as u32, component as u32);
+        }
+    }
+
+    pub fn add_tag(&mut self, tag: ecs_entity_t) {
+        unsafe {
+            toxoid_entity_add_tag(self.id as u32, tag as u32);
+        }
+    }
+
+    pub fn get_id(&self) -> ecs_entity_t {
+        self.id
+    }
+}
 
 #[repr(u8)]
 pub enum Type {
@@ -27,22 +102,6 @@ pub enum Type {
     F32Array,
 }
 
-extern "C" {
-    pub fn toxoid_print_i32(v: i32);
-    pub fn toxoid_print_string(v: *const i8, v_len: usize);
-    pub fn toxoid_entity_get_name(id: i32);
-    pub fn toxoid_register_tag(name: *const i8, name_len: usize) -> ecs_entity_t;
-    pub fn toxoid_register_component(
-        component_name: *const c_char,
-        component_name_len: u8,
-        member_names: *const *const c_char,
-        member_names_count: u32,
-        member_names_len: *const u8,
-        member_types: *const *const u8,
-        member_types_count: u32
-    ) -> ecs_entity_t;
-}
-
 #[derive(Components)]
 pub struct Position {
     x: u32,
@@ -57,23 +116,36 @@ pub struct Velocity {
 
 #[no_mangle]
 pub unsafe extern "C" fn app_main() {
+    // Create a new tag.
     let tag = register_tag("LocalPlayer");
+    // Print the name of the tag.
     toxoid_entity_get_name(tag);
 
+    // Create a new component.
     let mut position = Position { x: 0, y: 0 };
+    // Set the values of the component.
     position.set_x(77);
     position.set_y(99);
-
+    // Print the values of the component.
     print_string("X:");
     print_i32(position.x as i32);
     print_string("Y:");
     print_i32(position.y as i32);
 
+    // Register the component.
     let pos_id = Position::register();
     let vel_id = Velocity::register();
 
+    // Print the name of the component.
     toxoid_entity_get_name(pos_id);
     toxoid_entity_get_name(vel_id);
+
+    // Create a new entity.
+    let mut player = Entity::new();
+    // Add the component to the entity.
+    player.add(pos_id);
+    player.add(vel_id);
+    player.add_tag(tag);
 }
 
 pub fn print_i32(v: i32) {
