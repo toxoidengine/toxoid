@@ -99,3 +99,18 @@ pub unsafe extern "C" fn toxoid_register_component(
 pub unsafe extern "C" fn toxoid_component_set_member_u32(component_ptr: *mut c_void, offset: u32, value: u32) {
     println!("Setting member at offset {} to {}", offset, value);
 }
+
+#[no_mangle]
+pub unsafe fn toxoid_entity_create() -> flecs_core::ecs_entity_t {
+    flecs_core::flecs_entity_create()
+}
+
+#[no_mangle]
+pub unsafe fn toxoid_entity_add_component(entity: u32, component: u32) -> *mut c_void {
+    flecs_core::flecs_entity_add_component(entity, component)
+}
+
+#[no_mangle]
+pub unsafe fn toxoid_entity_add_tag(entity: u32, tag: u32) {
+    flecs_core::flecs_entity_add_tag(entity, tag)
+}
