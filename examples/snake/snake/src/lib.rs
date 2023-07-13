@@ -27,30 +27,35 @@ extern "C" {
     pub fn toxoid_entity_create() -> ecs_entity_t;
     pub fn toxoid_entity_add_component(entity: u32, component: u32) -> *mut c_void;
     pub fn toxoid_entity_add_tag(entity: u32, tag: u32);
+
 }
 
-pub struct Query;
+pub struct Query {
+    query: *const c_void,
+    iter: *const c_void,
+    indexes: [ecs_id_t; MAX_ELEMENTS],
+}
 
 impl Query {
-    pub fn new() -> Self {
-        Query
-    }
+    // pub fn new() -> Self {
+    //     Query
+    // }
 
-    pub fn iter(&self) -> Query {
-        Query
-    }
+    // pub fn iter(&self) -> Query {
+    //     Query
+    // }
 
-    pub fn next(&self) -> Query {
-        Query
-    }
+    // pub fn next(&self) -> Query {
+    //     Query
+    // }
 
-    pub fn field(&self, name: &str) -> Query {
-        Query
-    }
+    // pub fn field(&self, name: &str) -> Query {
+    //     Query
+    // }
 
-    pub fn entities(&self) -> Query {
-        Query
-    }
+    // pub fn entities(&self) -> Query {
+    //     Query
+    // }
 }
 
 pub struct Entity {

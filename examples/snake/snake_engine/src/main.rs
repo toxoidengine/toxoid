@@ -114,3 +114,28 @@ pub unsafe fn toxoid_entity_add_component(entity: u32, component: u32) -> *mut c
 pub unsafe fn toxoid_entity_add_tag(entity: u32, tag: u32) {
     flecs_core::flecs_entity_add_tag(entity, tag)
 }
+
+#[no_mangle]
+pub unsafe fn toxoid_query_iter(query: *mut flecs_core::ecs_query_t) -> *mut flecs_core::ecs_iter_t {
+    flecs_core::flecs_query_iter(query)
+}
+
+#[no_mangle]
+pub unsafe fn toxoid_query_next(iter: *mut flecs_core::ecs_iter_t) -> bool {
+    flecs_core::flecs_query_next(iter)
+}
+
+#[no_mangle]
+pub unsafe fn toxoid_iter_count(iter: *mut flecs_core::ecs_iter_t) -> i32 {
+    flecs_core::flecs_iter_count(iter)
+}
+
+#[no_mangle]
+pub unsafe fn toxoid_query_field(
+    iter: *mut flecs_core::ecs_iter_t,
+    term_index: i32,
+    count: u32,
+    index: u32
+) -> *const c_void {
+    flecs_core::flecs_query_field(iter, term_index, count, index)
+}
