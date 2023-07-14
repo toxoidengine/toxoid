@@ -96,7 +96,7 @@ pub unsafe extern "C" fn toxoid_register_component(
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn toxoid_component_set_member_u32(component_ptr: *mut c_void, offset: u32, value: u32) {
+pub unsafe extern "C" fn toxoid_component_set_member_u32(_component_ptr: *mut c_void, offset: u32, value: u32) {
     println!("Setting member at offset {} to {}", offset, value);
 }
 

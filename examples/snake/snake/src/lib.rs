@@ -31,9 +31,9 @@ extern "C" {
 }
 
 pub struct Query {
-    query: *const c_void,
-    iter: *const c_void,
-    indexes: [ecs_id_t; MAX_ELEMENTS],
+    // query: *const c_void,
+    // iter: *const c_void,
+    // indexes: [ecs_id_t; MAX_ELEMENTS],
 }
 
 impl Query {
