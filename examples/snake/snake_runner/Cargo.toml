@@ -8,3 +8,4 @@ edition = "2021"
 [dependencies]
 maud = "0.25.0"
 tiny_file_server = "0.1.5"
+notify = "6.0.1"
