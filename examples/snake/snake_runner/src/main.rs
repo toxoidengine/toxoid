@@ -158,6 +158,7 @@ fn copy_files() -> Result<(), Box<dyn std::error::Error>> {
                     watcher.unwatch(package_path)?;
                     build_packages()?;
                     copy_files()?;
+                    watcher.watch(package_path, RecursiveMode::Recursive)?;
                 },
                 Err(error) => println!("watch error: {:?}", error),
             }
