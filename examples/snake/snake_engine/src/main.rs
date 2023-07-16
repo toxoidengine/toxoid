@@ -115,6 +115,13 @@ pub unsafe fn toxoid_entity_add_tag(entity: u32, tag: u32) {
     flecs_core::flecs_entity_add_tag(entity, tag)
 }
 
+
+#[no_mangle]
+pub unsafe fn toxoid_query_create(ids: *mut i32, components_count: i32) -> *mut flecs_core::ecs_query_t {
+    flecs_core::flecs_query_create(ids, components_count)
+}
+
+
 #[no_mangle]
 pub unsafe fn toxoid_query_iter(query: *mut flecs_core::ecs_query_t) -> *mut flecs_core::ecs_iter_t {
     flecs_core::flecs_query_iter(query)

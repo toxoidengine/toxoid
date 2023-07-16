@@ -27,19 +27,23 @@ extern "C" {
     pub fn toxoid_entity_create() -> ecs_entity_t;
     pub fn toxoid_entity_add_component(entity: u32, component: u32) -> *mut c_void;
     pub fn toxoid_entity_add_tag(entity: u32, tag: u32);
-
+    pub fn toxoid_query_create(ids: *mut i32, components_count: i32) -> *mut c_void;
 }
 
 pub struct Query {
-    // query: *const c_void,
-    // iter: *const c_void,
-    // indexes: [ecs_id_t; MAX_ELEMENTS],
+    query: *const c_void,
+    iter: *const c_void,
+    indexes: [ecs_id_t; MAX_ELEMENTS],
 }
 
 impl Query {
-    // pub fn new() -> Self {
-    //     Query
-    // }
+    pub fn new() -> Self {
+        Query {
+            query: std::ptr::null(),
+            iter: std::ptr::null(),
+            indexes: [0; MAX_ELEMENTS],
+        }
+    }
 
     // pub fn iter(&self) -> Query {
     //     Query
@@ -201,5 +205,11 @@ pub fn register_component(name: &str, member_names: &[&str], member_types: &[u8]
             c_member_types.as_ptr(),
             c_member_types.len() as u32
         )
+    }
+}
+
+pub fn query(ids: &mut [ecs_id_t; MAX_ELEMENTS]) -> *mut c_void {
+    unsafe {
+        toxoid_query_create(ids.as_mut_ptr() as *mut i32, 2)
     }
 }
