@@ -36,23 +36,26 @@ extern "C" {
 pub struct Query {
     query: *mut c_void,
     iter: *mut c_void,
-    indexes: [ecs_id_t; MAX_ELEMENTS],
+    _indexes: [ecs_id_t; MAX_ELEMENTS],
 }
 
 impl Query {
-    pub fn new() -> Self {
-        Query {
-            query: std::ptr::null_mut(),
-            iter: std::ptr::null_mut(),
-            indexes: [0; MAX_ELEMENTS],
+    pub fn new(ids: &mut [ecs_id_t]) -> Self {
+        unsafe {
+            Query {
+                query: toxoid_query_create(ids.as_mut_ptr() as *mut i32, ids.len() as i32),
+                iter: std::ptr::null_mut(),
+                _indexes: [0; MAX_ELEMENTS],
+            }
         }
+        
     }
 
-    pub fn iter(&mut self) -> *mut c_void {
+    pub fn iter(&mut self) -> &mut Query {
         self.iter = unsafe { 
             toxoid_query_iter(self.query)
         };
-        self.iter
+        self
     }
 
     pub fn next(&self) -> bool {
@@ -163,6 +166,12 @@ pub unsafe extern "C" fn app_main() {
     player.add(pos_id);
     player.add(vel_id);
     player.add_tag(tag);
+
+    let mut query = Query::new(&mut [pos_id, vel_id]);
+    let query = query.iter();
+    while query.next() {
+        print_string("Hello query");
+    }
 }
 
 pub fn print_i32(v: i32) {
@@ -213,11 +222,5 @@ pub fn register_component(name: &str, member_names: &[&str], member_types: &[u8]
             c_member_types.as_ptr(),
             c_member_types.len() as u32
         )
-    }
-}
-
-pub fn query(ids: &mut [ecs_id_t; MAX_ELEMENTS]) -> *mut c_void {
-    unsafe {
-        toxoid_query_create(ids.as_mut_ptr() as *mut i32, ids.len() as i32)
     }
 }

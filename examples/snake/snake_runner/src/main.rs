@@ -154,11 +154,15 @@ fn copy_files() -> Result<(), Box<dyn std::error::Error>> {
         for res in rx {
             match res {
                 Ok(event) => { 
-                    println!("Rebuilding... Changed file: {:?}", event.paths[0].display());
-                    watcher.unwatch(package_path)?;
-                    build_packages()?;
-                    copy_files()?;
-                    watcher.watch(package_path, RecursiveMode::Recursive)?;
+                    if !event.paths.is_empty() {
+                        println!("Rebuilding... Changed file: {:?}", event.paths[0].display());
+                        watcher.unwatch(package_path)?;
+                        build_packages()?;
+                        copy_files()?;
+                        watcher.watch(package_path, RecursiveMode::Recursive)?;
+                    } else {
+                        println!("Build failed {:?}", event)
+                    }
                 },
                 Err(error) => println!("watch error: {:?}", error),
             }
