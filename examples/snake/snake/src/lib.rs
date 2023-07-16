@@ -28,38 +28,46 @@ extern "C" {
     pub fn toxoid_entity_add_component(entity: u32, component: u32) -> *mut c_void;
     pub fn toxoid_entity_add_tag(entity: u32, tag: u32);
     pub fn toxoid_query_create(ids: *mut i32, components_count: i32) -> *mut c_void;
+    pub fn toxoid_query_iter(query: *mut c_void) -> *mut c_void;
+    pub fn toxoid_query_next(iter: *mut c_void) -> bool;
+    pub fn toxoid_query_count(iter: *mut c_void) -> i32;
 }
 
 pub struct Query {
-    query: *const c_void,
-    iter: *const c_void,
+    query: *mut c_void,
+    iter: *mut c_void,
     indexes: [ecs_id_t; MAX_ELEMENTS],
 }
 
 impl Query {
     pub fn new() -> Self {
         Query {
-            query: std::ptr::null(),
-            iter: std::ptr::null(),
+            query: std::ptr::null_mut(),
+            iter: std::ptr::null_mut(),
             indexes: [0; MAX_ELEMENTS],
         }
     }
 
-    // pub fn iter(&self) -> Query {
-    //     Query
-    // }
+    pub fn iter(&mut self) -> *mut c_void {
+        self.iter = unsafe { 
+            toxoid_query_iter(self.query)
+        };
+        self.iter
+    }
 
-    // pub fn next(&self) -> Query {
-    //     Query
-    // }
+    pub fn next(&self) -> bool {
+        unsafe {
+            toxoid_query_next(self.iter)
+        }
+    }
 
-    // pub fn field(&self, name: &str) -> Query {
-    //     Query
-    // }
+    pub fn field(&self) -> *mut *mut c_void {
+        std::ptr::null_mut()
+    }
 
-    // pub fn entities(&self) -> Query {
-    //     Query
-    // }
+    pub fn entities(&self) -> *mut *mut c_void {
+        std::ptr::null_mut()
+    }
 }
 
 pub struct Entity {
@@ -210,6 +218,6 @@ pub fn register_component(name: &str, member_names: &[&str], member_types: &[u8]
 
 pub fn query(ids: &mut [ecs_id_t; MAX_ELEMENTS]) -> *mut c_void {
     unsafe {
-        toxoid_query_create(ids.as_mut_ptr() as *mut i32, 2)
+        toxoid_query_create(ids.as_mut_ptr() as *mut i32, ids.len() as i32)
     }
 }
