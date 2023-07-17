@@ -31,6 +31,7 @@ extern "C" {
     pub fn toxoid_query_iter(query: *mut c_void) -> *mut c_void;
     pub fn toxoid_query_next(iter: *mut c_void) -> bool;
     pub fn toxoid_query_count(iter: *mut c_void) -> i32;
+    pub fn toxoid_query_field(iter: *mut c_void, term_index: i32, count: u32, index: u32) -> *const c_void;
 }
 
 pub struct Query {
@@ -64,8 +65,10 @@ impl Query {
         }
     }
 
-    pub fn field(&self) -> *mut *mut c_void {
-        std::ptr::null_mut()
+    pub fn field(&self) -> *const c_void {
+        unsafe {
+            toxoid_query_field(self.iter, 0, 1, 0)
+        }
     }
 
     pub fn entities(&self) -> *mut *mut c_void {
@@ -167,10 +170,28 @@ pub unsafe extern "C" fn app_main() {
     player.add(vel_id);
     player.add_tag(tag);
 
+    let mut player_2 = Entity::new();
+    // Add the component to the entity.
+    player_2.add(pos_id);
+    player_2.add(vel_id);
+    player_2.add_tag(tag);
+
+    let mut player_3 = Entity::new();
+    // Add the component to the entity.
+    player_3.add(pos_id);
+    player_3.add(vel_id);
+    player_3.add_tag(tag);
+
+    print_i32(player.id);
+    print_i32(player_2.id);
+    print_i32(player_3.id);
+
     let mut query = Query::new(&mut [pos_id, vel_id]);
     let query = query.iter();
     while query.next() {
         print_string("Hello query");
+        let field = query.field();
+        print_i32(*(field as *const i32));
     }
 }
 
