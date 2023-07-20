@@ -146,3 +146,14 @@ pub unsafe fn toxoid_query_field(
 ) -> *const c_void {
     flecs_core::flecs_query_field(iter, term_index, count, index)
 }
+
+// Function to convert your *mut u64 to a &[u64]
+pub unsafe fn to_u64_slice(ptr: *mut u64, len: usize) -> &'static [u64] {
+    let slice = core::slice::from_raw_parts(ptr, len);
+    slice
+}
+
+#[no_mangle]
+pub unsafe fn toxoid_query_entity_list(iter: *mut flecs_core::ecs_iter_t) -> *mut u64 {
+    flecs_core::flecs_query_entity_list(iter)
+}
