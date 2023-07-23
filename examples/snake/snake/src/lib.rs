@@ -143,18 +143,17 @@ impl Entity {
         self.id
     }
 
-    // pub fn get_component<T: Default>(&self) -> Option<&T> {
-    //     unsafe {
-    //         // let ptr = T::default();
-    //         //Some(&ptr)
-    //         alloc::boxed::Box::new(42)
-    //         // if ptr.is_null() {
-    //         //     None
-    //         // } else {
-    //         //     Some(&*(ptr as *const T))
-    //         // }
-    //     }
-    // }
+    pub fn get_component<T: Default + 'static>(&self) -> T {
+        unsafe {
+            let test = core::any::TypeId::of::<T>();
+            let mut map = HashMap::new();
+            map.insert(test, "Hello TYPEID!");
+            let value = map.get(&test).unwrap();
+            print_string(value);
+
+            T::default()
+        }
+    }
 }
 
 #[repr(u8)]
@@ -190,22 +189,22 @@ pub struct Velocity {
 
 #[no_mangle]
 pub unsafe extern "C" fn app_main() {
-    let ptr = ALLOCATOR.alloc(Layout::from_size_align(1, 1).unwrap());
-    ALLOCATOR.dealloc(ptr, Layout::from_size_align(1, 1).unwrap());
+    // let ptr = ALLOCATOR.alloc(Layout::from_size_align(1, 1).unwrap());
+    // ALLOCATOR.dealloc(ptr, Layout::from_size_align(1, 1).unwrap());
 
-    let mut vec = Vec::new();
+    // let mut vec = Vec::new();
 
-    for i in 1..10 {
-        vec.push(i);
-    }
+    // for i in 1..10 {
+    //     vec.push(i);
+    // }
 
-    for item in vec.iter() {
-        print_string("HELLO ITEMS!");
-    }
+    // for item in vec.iter() {
+    //     print_string("HELLO ITEMS!");
+    // }
 
-    let mut map = HashMap::new();
-    map.insert(1, "one");
-    print_string(map.get(&1).unwrap());
+    // let mut map = HashMap::new();
+    // map.insert(1, "one");
+    // print_string(map.get(&1).unwrap());
 
     // Create a new tag.
     let tag = register_tag("LocalPlayer");
@@ -257,6 +256,8 @@ pub unsafe extern "C" fn app_main() {
         let entities = query.entities();
         for entity in entities.iter() {
             print_i32(entity.get_id());
+
+            let pos = entity.get_component::<Position>();
         }
     }
 }
