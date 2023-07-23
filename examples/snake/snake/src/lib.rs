@@ -1,10 +1,9 @@
 #![allow(non_camel_case_types)]
+#![allow(improper_ctypes)]
 extern crate toxoid_ffi_macro;
 
 use toxoid_ffi_macro::Components;
 use core::ffi::c_void;
-use core::mem;
-use core::slice;
 
 pub type ecs_id_t = i32;
 pub type ecs_entity_t = ecs_id_t;
@@ -34,13 +33,10 @@ extern "C" {
     pub fn toxoid_query_next(iter: *mut c_void) -> bool;
     pub fn toxoid_query_count(iter: *mut c_void) -> i32;
     pub fn toxoid_query_field(iter: *mut c_void, term_index: i32, count: u32, index: u32) -> *const c_void;
-    pub fn toxoid_query_entity_list(iter: *mut c_void) -> *mut u64;
-}
-
-// Function to convert your *mut u64 to a &[u64]
-pub unsafe fn to_u64_slice(ptr: *mut u64, len: usize) -> &'static [u64] {
-    let slice = core::slice::from_raw_parts(ptr, len);
-    slice
+    // pub fn toxoid_query_entity_list(iter: *mut c_void) -> *mut u64;
+    // pub fn toxoid_query_entity_list(iter: *mut c_void) -> [Entity; MAX_ELEMENTS];
+    pub fn toxoid_query_entity_list(iter: *mut c_void) -> &'static [Entity];
+    pub fn toxoid_iter_count(iter: *mut c_void) -> i32;
 }
 
 pub struct Query {
@@ -68,6 +64,12 @@ impl Query {
         self
     }
 
+    pub fn count(&self) -> i32 {
+        unsafe {
+            toxoid_iter_count(self.iter)
+        }
+    }
+
     pub fn next(&self) -> bool {
         unsafe {
             toxoid_query_next(self.iter)
@@ -79,17 +81,16 @@ impl Query {
             toxoid_query_field(self.iter, 0, 1, 0)
         }
     }
-
-    pub fn entities(&self) -> *mut *mut c_void {
+    
+    pub fn entities(&self) -> &[Entity] {
         unsafe {
-            // toxoid_iter_count(self.iter);
-            // toxoid_query_entity(self.iter, count, i);
-            toxoid_query_entity_list(self.iter);
+            toxoid_query_entity_list(self.iter)
         }
-        std::ptr::null_mut()
     }
 }
 
+#[repr(C)]
+#[derive(Copy, Clone)]
 pub struct Entity {
     id: ecs_id_t
 }
@@ -196,16 +197,18 @@ pub unsafe extern "C" fn app_main() {
     player_3.add(vel_id);
     player_3.add_tag(tag);
 
-    print_i32(player.id);
-    print_i32(player_2.id);
-    print_i32(player_3.id);
+    // print_i32(player.id);
+    // print_i32(player_2.id);
+    // print_i32(player_3.id);
 
     let mut query = Query::new(&mut [pos_id, vel_id]);
     let query = query.iter();
     while query.next() {
-        let field = query.field();
-        print_i32(*(field as *const i32));
-        query.entities();
+        let _field = query.field();
+        let entities = query.entities();
+        for entity in entities.iter() {
+            print_i32(entity.get_id());
+        }
     }
 }
 
