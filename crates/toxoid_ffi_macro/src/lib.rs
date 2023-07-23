@@ -78,14 +78,14 @@ pub fn components_derive(input: TokenStream) -> TokenStream {
                     pub fn #set_name(&mut self, value: #ty) {
                         self.#name = value;
                         match () {
-                            _ if std::any::TypeId::of::<#ty>() == std::any::TypeId::of::<u32>() => {
+                            _ if core::any::TypeId::of::<#ty>() == core::any::TypeId::of::<u32>() => {
                                 print_string("Setting a u32 value");
                                 unsafe {
                                     toxoid_component_set_member_u32(core::ptr::null_mut(), 0, value as u32);
                                 }
                                 ()
                             }
-                            _ if std::any::TypeId::of::<#ty>() == std::any::TypeId::of::<f32>() => {
+                            _ if core::any::TypeId::of::<#ty>() == core::any::TypeId::of::<f32>() => {
                                 print_string("Setting a f32 value");
                                 ()
                             }

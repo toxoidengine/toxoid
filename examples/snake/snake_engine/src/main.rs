@@ -4,6 +4,8 @@ pub const MAX_ELEMENTS: usize = 100;
 
 extern "C" {
     pub fn app_main();
+    pub fn malloc(size: usize) -> *mut c_void;
+    pub fn free(p: *mut c_void);
 }
 
 #[no_mangle]
@@ -181,3 +183,32 @@ pub unsafe fn toxoid_query_entity_list(iter: *mut flecs_core::ecs_iter_t, ) -> &
     entities_slice
 }
 
+
+
+use std::alloc::{GlobalAlloc, Layout};
+
+use libc::size_t;
+
+struct HostAllocator;
+
+unsafe impl GlobalAlloc for HostAllocator {
+    unsafe fn alloc(&self, layout: Layout) -> *mut u8 {
+        malloc(layout.size()) as *mut u8
+    }
+
+    unsafe fn dealloc(&self, ptr: *mut u8, _layout: Layout) {
+        free(ptr as *mut c_void)
+    }
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn host_alloc(size: usize) -> *mut u8 {
+    let allocator = HostAllocator;
+    allocator.alloc(Layout::from_size_align(size, std::mem::align_of::<usize>()).unwrap())
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn host_dealloc(ptr: *mut u8, size: usize) {
+    let allocator = HostAllocator;
+    allocator.dealloc(ptr, Layout::from_size_align(size, std::mem::align_of::<usize>()).unwrap())
+}
