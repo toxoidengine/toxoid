@@ -33,8 +33,6 @@ extern "C" {
     pub fn toxoid_query_next(iter: *mut c_void) -> bool;
     pub fn toxoid_query_count(iter: *mut c_void) -> i32;
     pub fn toxoid_query_field(iter: *mut c_void, term_index: i32, count: u32, index: u32) -> *const c_void;
-    // pub fn toxoid_query_entity_list(iter: *mut c_void) -> *mut u64;
-    // pub fn toxoid_query_entity_list(iter: *mut c_void) -> [Entity; MAX_ELEMENTS];
     pub fn toxoid_query_entity_list(iter: *mut c_void) -> &'static [Entity];
     pub fn toxoid_iter_count(iter: *mut c_void) -> i32;
 }
@@ -81,7 +79,7 @@ impl Query {
             toxoid_query_field(self.iter, 0, 1, 0)
         }
     }
-    
+
     pub fn entities(&self) -> &[Entity] {
         unsafe {
             toxoid_query_entity_list(self.iter)
@@ -197,10 +195,6 @@ pub unsafe extern "C" fn app_main() {
     player_3.add(vel_id);
     player_3.add_tag(tag);
 
-    // print_i32(player.id);
-    // print_i32(player_2.id);
-    // print_i32(player_3.id);
-
     let mut query = Query::new(&mut [pos_id, vel_id]);
     let query = query.iter();
     while query.next() {
@@ -238,11 +232,6 @@ pub fn register_component(name: &str, member_names: &[&str], member_types: &[u8]
             c_member_names[i] = s.as_ptr() as *const c_char;
             c_member_names_len[i] = s.len() as u8;
         }
-
-        // let mut c_member_types: [u8; MAX_ELEMENTS] = [0; MAX_ELEMENTS];
-        // for (i, &t) in member_types.iter().enumerate() {
-        //     c_member_types[i] = t;
-        // }
 
         // TODO: Since this is Rust, it can probably just be the u8 value
         // instead of a pointer to the value.
