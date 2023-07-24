@@ -2,15 +2,16 @@
 #![allow(improper_ctypes)]
 extern crate toxoid_ffi_macro;
 
-use toxoid_ffi_macro::Components;
+use toxoid_ffi_macro::Component;
+use toxoid_ffi::*;
 
-#[derive(Components)]
+#[derive(Component)]
 pub struct Position {
     x: u32,
     y: u32,
 }
 
-#[derive(Components)]
+#[derive(Component)]
 pub struct Velocity {
     dx: f32,
     dy: f32,

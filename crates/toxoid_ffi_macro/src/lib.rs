@@ -5,7 +5,6 @@ use core::ffi::c_void;
 use proc_macro::TokenStream;
 use quote::quote;
 use syn::{parse_macro_input, Data, DeriveInput, Fields, Ident, Type};
-use toxoid_ffi_utils::HashMap;
 
 #[repr(u8)]
 enum FieldType {
@@ -31,16 +30,10 @@ extern "C" {
     pub fn toxoid_component_set_member_u32(component_ptr: *mut c_void, offset: u32, value: u32);
 }
 
-// fn print_string(v: &str) {
-//     unsafe {
-//         toxoid_print_string(v.as_bytes().as_ptr() as *const i8, v.len());
-//     }
-// }
-
 #[proc_macro_derive(Component)]
 pub fn component_derive(input: TokenStream) -> TokenStream {
     // Parse the input tokens into a syntax tree.
-    let input = parse_macro_input!(input as DeriveInput);
+    let mut input = parse_macro_input!(input as DeriveInput);
 
     // Used to store tokens for each struct field.
     let mut getter_tokens = Vec::new();
@@ -54,14 +47,14 @@ pub fn component_derive(input: TokenStream) -> TokenStream {
     let mut field_defaults = Vec::new();
 
     // Check if our struct has named fields.
-    if let Data::Struct(data) = input.data {
+    if let Data::Struct(ref mut data) = input.data {
         // Check if our struct has named fields.
-        if let Fields::Named(fields) = data.fields {
+        if let Fields::Named(ref mut fields) = data.fields {
             // Iterate over each field in the struct.
-            for field in fields.named {
+            for field in fields.named.iter() {
                 // Get the name and type of each field.
-                let name = field.ident.unwrap();
-                let ty = field.ty;
+                let name = field.ident.clone().unwrap();
+                let ty = field.ty.clone();
 
                 // Getter and setter names.
                 let get_name = Ident::new(&format!("get_{}", name), name.span());
@@ -82,6 +75,7 @@ pub fn component_derive(input: TokenStream) -> TokenStream {
                             _ if core::any::TypeId::of::<#ty>() == core::any::TypeId::of::<u32>() => {
                                 print_string("Setting a u32 value");
                                 unsafe {
+                                    // let cache = crate::COMPONENT_ID_CACHE.as_mut().unwrap_unchecked();
                                     toxoid_component_set_member_u32(core::ptr::null_mut(), 0, value as u32);
                                 }
                                 ()
@@ -106,6 +100,17 @@ pub fn component_derive(input: TokenStream) -> TokenStream {
                 // Assume that all types implement Default and use it for field initialization.
                 let default_value = quote! { #ty::default() };
                 field_defaults.push((name, default_value));
+            }
+
+            // Create a new field
+            let new_fields: syn::FieldsNamed = syn::parse2(quote! {
+                {
+                    pub ptr: *const ()
+                }
+            }).unwrap();
+            
+            for new_field in new_fields.named {
+                fields.named.push(new_field);
             }
         }
     }
