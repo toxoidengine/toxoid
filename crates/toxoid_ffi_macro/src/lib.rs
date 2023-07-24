@@ -30,6 +30,7 @@ extern "C" {
     pub fn toxoid_component_set_member_u32(component_ptr: *mut c_void, offset: u32, value: u32);
 }
 
+
 #[proc_macro_derive(Component)]
 pub fn component_derive(input: TokenStream) -> TokenStream {
     // Parse the input tokens into a syntax tree.
@@ -101,17 +102,6 @@ pub fn component_derive(input: TokenStream) -> TokenStream {
                 let default_value = quote! { #ty::default() };
                 field_defaults.push((name, default_value));
             }
-
-            // Create a new field
-            let new_fields: syn::FieldsNamed = syn::parse2(quote! {
-                {
-                    pub ptr: *const ()
-                }
-            }).unwrap();
-            
-            for new_field in new_fields.named {
-                fields.named.push(new_field);
-            }
         }
     }
 
@@ -133,7 +123,7 @@ pub fn component_derive(input: TokenStream) -> TokenStream {
     // Create the register component tokens.
     let struct_name_str = struct_name.to_string();
     let register_component_tokens = quote! {
-        register_component(
+        register_component_ecs(
             #struct_name_str,
             &[#(#field_names),*],
             &[#(#field_types),*],
@@ -152,8 +142,19 @@ pub fn component_derive(input: TokenStream) -> TokenStream {
         #default_impl
         impl #struct_name {
             #(#getter_tokens)*
-            #(#setter_tokens)*
+            #(#setter_tokens)* 
+        }
+
+        // Here we add the IsComponent implementation.
+        impl IsComponent for #struct_name {
+            // Add implementation details here.
             #register_impl
+            fn set_ptr(&mut self, ptr: *mut c_void) {
+                self.ptr = ptr;
+            }
+            fn get_ptr(&self) -> *mut c_void {
+                self.ptr
+            }
         }
     };
 
