@@ -7,4 +7,3 @@ edition = "2021"
 
 [dependencies]
 toxoid_ffi_macro = { path = "../toxoid_ffi_macro" }
-toxoid_ffi_utils = { path = "../toxoid_ffi_utils" }

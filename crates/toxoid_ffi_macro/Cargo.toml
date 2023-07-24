@@ -11,4 +11,3 @@ proc-macro = true
 [dependencies]
 syn = "1.0"
 quote = "1.0"
-toxoid_ffi_utils = { path = "../toxoid_ffi_utils" }

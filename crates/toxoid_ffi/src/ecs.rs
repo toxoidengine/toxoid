@@ -1,7 +1,6 @@
-use toxoid_ffi_macro::Components;
+use toxoid_ffi_macro::Component;
 use core::ffi::c_void;
-use crate::bindings::*;
-use toxoid_ffi_utils::*;
+use crate::*;
 
 #[repr(u8)]
 pub enum Type {
@@ -112,7 +111,7 @@ impl Entity {
             print_string(value);
 
             let component = T::default();
-            component.ptr = toxoid_entity_get_component(self.id as u32, T::register() as u32);
+            // component.ptr = toxoid_entity_get_component(self.id as u32, T::register() as u32);
             component
         }
     }
