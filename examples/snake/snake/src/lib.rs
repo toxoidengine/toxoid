@@ -1,9 +1,10 @@
 #![allow(non_camel_case_types)]
 #![allow(improper_ctypes)]
 extern crate toxoid_ffi_macro;
-
 use toxoid_ffi_macro::Component;
 use toxoid_ffi::*;
+pub mod ecs;
+pub use ecs::*;
 
 #[derive(Component)]
 pub struct Position {
@@ -52,7 +53,7 @@ pub unsafe extern "C" fn app_main() {
     print_string("Y:");
     print_i32(position.y as i32);
 
-    // Register the component.
+    // // Register the component.
     let pos_id = Position::register();
     let vel_id = Velocity::register();
 
@@ -91,7 +92,3 @@ pub unsafe extern "C" fn app_main() {
         }
     }
 }
-
-
-
-

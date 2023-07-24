@@ -21,6 +21,12 @@ pub enum Type {
     F32Array,
 }
 
+pub trait IsComponent {
+    fn register() -> i32;
+    fn set_ptr(&mut self, ptr: *mut c_void);
+    fn get_ptr(&self) -> *mut c_void;
+}
+
 pub struct Query {
     query: *mut c_void,
     iter: *mut c_void,
@@ -102,7 +108,7 @@ impl Entity {
         self.id
     }
 
-    pub fn get_component<T: Default + 'static>(&self) -> T {
+    pub fn get_component<T: Default + IsComponent + 'static>(&self) -> T {
         unsafe {
             let test = core::any::TypeId::of::<T>();
             let mut map = HashMap::new();
@@ -110,8 +116,10 @@ impl Entity {
             let value = map.get(&test).unwrap();
             print_string(value);
 
-            let component = T::default();
-            // component.ptr = toxoid_entity_get_component(self.id as u32, T::register() as u32);
+            let mut component = T::default();
+            // let ptr = toxoid_entity_get_component(self.id as u32, T::register() as u32);
+            let ptr = toxoid_entity_get_component(self.id as u32, 0 as u32);
+            component.set_ptr(ptr);
             component
         }
     }
