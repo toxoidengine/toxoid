@@ -210,3 +210,10 @@ pub unsafe extern "C" fn host_dealloc(ptr: *mut u8, size: usize) {
     let allocator = HostAllocator;
     allocator.dealloc(ptr, Layout::from_size_align(size, std::mem::align_of::<usize>()).unwrap())
 }
+
+#[no_mangle]
+pub fn toxoid_entity_get_component(entity: u32, component: u32) -> *mut c_void {
+    unsafe {
+        flecs_core::flecs_entity_get_component(entity, component)
+    }
+}

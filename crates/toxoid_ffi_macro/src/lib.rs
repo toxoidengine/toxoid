@@ -5,6 +5,7 @@ use core::ffi::c_void;
 use proc_macro::TokenStream;
 use quote::quote;
 use syn::{parse_macro_input, Data, DeriveInput, Fields, Ident, Type};
+use toxoid_ffi_utils::HashMap;
 
 #[repr(u8)]
 enum FieldType {
@@ -36,8 +37,8 @@ extern "C" {
 //     }
 // }
 
-#[proc_macro_derive(Components)]
-pub fn components_derive(input: TokenStream) -> TokenStream {
+#[proc_macro_derive(Component)]
+pub fn component_derive(input: TokenStream) -> TokenStream {
     // Parse the input tokens into a syntax tree.
     let input = parse_macro_input!(input as DeriveInput);
 
