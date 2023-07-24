@@ -392,6 +392,7 @@ dependencies = [
 name = "snake"
 version = "0.1.0"
 dependencies = [
+ "toxoid_ffi",
  "toxoid_ffi_macro",
 ]
 
@@ -460,12 +461,25 @@ name = "toxoid"
 version = "0.1.0"
 
 [[package]]
+name = "toxoid_ffi"
+version = "0.1.0"
+dependencies = [
+ "toxoid_ffi_macro",
+ "toxoid_ffi_utils",
+]
+
+[[package]]
 name = "toxoid_ffi_macro"
 version = "0.1.0"
 dependencies = [
  "quote",
  "syn",
+ "toxoid_ffi_utils",
 ]
+
+[[package]]
+name = "toxoid_ffi_utils"
+version = "0.1.0"
 
 [[package]]
 name = "toxoid_sdl"

@@ -10,4 +10,5 @@ name = "snake"
 crate-type = ["cdylib"]
 
 [dependencies]
+toxoid_ffi = { path="../../../crates/toxoid_ffi" }
 toxoid_ffi_macro = { path="../../../crates/toxoid_ffi_macro" }
