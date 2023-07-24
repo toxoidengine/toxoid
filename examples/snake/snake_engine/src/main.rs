@@ -187,8 +187,6 @@ pub unsafe fn toxoid_query_entity_list(iter: *mut flecs_core::ecs_iter_t, ) -> &
 
 use std::alloc::{GlobalAlloc, Layout};
 
-use libc::size_t;
-
 struct HostAllocator;
 
 unsafe impl GlobalAlloc for HostAllocator {
