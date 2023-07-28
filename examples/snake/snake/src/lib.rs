@@ -10,7 +10,7 @@ pub use ecs::*;
 // #[derive(Component)]
 // pub struct Position 
 //     x: u32,
-//     y: u32,
+//     y: u32, 
 // }
  
 //     dy: f32,
