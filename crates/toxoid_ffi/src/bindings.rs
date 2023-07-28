@@ -33,4 +33,6 @@ extern "C" {
     pub fn toxoid_query_field(iter: *mut c_void, term_index: i32, count: u32, index: u32) -> *const c_void;
     pub fn toxoid_query_entity_list(iter: *mut c_void) -> &'static [Entity];
     pub fn toxoid_iter_count(iter: *mut c_void) -> i32;
+    pub fn toxoid_component_cache_insert(type_id: core::any::TypeId, component_id: i32);
+    pub fn toxoid_component_cache_get(type_id: core::any::TypeId) -> i32;
 }

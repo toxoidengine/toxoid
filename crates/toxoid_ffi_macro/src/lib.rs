@@ -1,10 +1,8 @@
 extern crate proc_macro;
-
 use core::ffi::c_void;
-
 use proc_macro::TokenStream;
 use quote::quote;
-use syn::{parse_macro_input, Data, DeriveInput, Fields, Ident, Type};
+use syn::{FieldsNamed, Ident, parse::{Parse, ParseStream, Parser}, spanned::Spanned, punctuated::Punctuated, token::Comma, Type};
 
 #[repr(u8)]
 enum FieldType {
@@ -25,141 +23,129 @@ enum FieldType {
     F32Array,
 }
 
+// The input to the macro will be a list of field names and types.
+struct ComponentStruct {
+    name: Ident,
+    fields: FieldsNamed,
+}
+
+// Implement the parsing functionality.
+impl Parse for ComponentStruct {
+    fn parse(input: ParseStream) -> syn::Result<Self> {
+        let name = input.parse()?;
+        let fields = input.parse()?;
+        Ok(ComponentStruct { name, fields })
+    }
+}
+
 extern "C" {
     pub fn toxoid_print_string(v: *const i8, v_len: usize);
     pub fn toxoid_component_set_member_u32(component_ptr: *mut c_void, offset: u32, value: u32);
 }
 
-
-#[proc_macro_derive(Component)]
-pub fn component_derive(input: TokenStream) -> TokenStream {
-    // Parse the input tokens into a syntax tree.
-    let mut input = parse_macro_input!(input as DeriveInput);
-
-    // Used to store tokens for each struct field.
-    let mut getter_tokens = Vec::new();
-    let mut setter_tokens = Vec::new();
-
-    // Used to store the name and type of each struct field.
-    let mut field_names = Vec::new();
-    let mut field_types = Vec::new();
-
-    // Used to store the name and default value of each struct field.
-    let mut field_defaults = Vec::new();
-
-    // Check if our struct has named fields.
-    if let Data::Struct(ref mut data) = input.data {
-        // Check if our struct has named fields.
-        if let Fields::Named(ref mut fields) = data.fields {
-            // Iterate over each field in the struct.
-            for field in fields.named.iter() {
-                // Get the name and type of each field.
-                let name = field.ident.clone().unwrap();
-                let ty = field.ty.clone();
-
-                // Getter and setter names.
-                let get_name = Ident::new(&format!("get_{}", name), name.span());
-                let set_name = Ident::new(&format!("set_{}", name), name.span());
-
-                // Getter token.
-                let getter_token = quote! {
-                    pub fn #get_name(&self) -> &#ty {
-                        &self.#name
-                    }
-                };
-
-                // Setter token with type check.
-                let setter_token = quote! {
-                    pub fn #set_name(&mut self, value: #ty) {
-                        self.#name = value;
-                        match () {
-                            _ if core::any::TypeId::of::<#ty>() == core::any::TypeId::of::<u32>() => {
-                                print_string("Setting a u32 value");
-                                unsafe {
-                                    // let cache = crate::COMPONENT_ID_CACHE.as_mut().unwrap_unchecked();
-                                    toxoid_component_set_member_u32(core::ptr::null_mut(), 0, value as u32);
-                                }
-                                ()
-                            }
-                            _ if core::any::TypeId::of::<#ty>() == core::any::TypeId::of::<f32>() => {
-                                print_string("Setting a f32 value");
-                                ()
-                            }
-                            _ => ()
-                        }
-                    }
-                };
-
-                // Store the tokens for each field.
-                getter_tokens.push(getter_token);
-                setter_tokens.push(setter_token);
-
-                // Store the name and type of each field.
-                field_names.push(name.to_string());
-                field_types.push(get_type_code(&ty));
-
-                // Assume that all types implement Default and use it for field initialization.
-                let default_value = quote! { #ty::default() };
-                field_defaults.push((name, default_value));
+#[proc_macro]
+pub fn component(input: TokenStream) -> TokenStream {
+    let components = Punctuated::<ComponentStruct, Comma>::parse_terminated.parse(input).unwrap();
+    let expanded = components.into_iter().map(|component| {
+        let ComponentStruct { name, fields } = component;
+        let fields: Vec<_> = fields.named.iter().collect();
+    
+        let field_names = fields.iter().map(|f| &f.ident);
+        let field_types = fields.iter().map(|f| &f.ty);
+    
+        let getters_and_setters = field_names.clone().zip(field_types.clone()).map(|(field_name, field_type)| {
+            let getter_name = Ident::new(&format!("get_{}", field_name.as_ref().unwrap()), field_name.span());
+            let setter_name = Ident::new(&format!("set_{}", field_name.as_ref().unwrap()), field_name.span());
+            quote! {
+                pub fn #getter_name(&self) -> &#field_type {
+                    &self.#field_name
+                }
+    
+                pub fn #setter_name(&mut self, value: #field_type) {
+                    self.#field_name = value;
+                    // Your toxoid_component_set_member_u32 logic can be here
+                    // Depending on your requirements
+                }
             }
-        }
-    }
+        });
+    
+        let struct_fields = field_names.clone().zip(field_types.clone()).map(|(field_name, field_type)| {
+            quote! {
+                #field_name: #field_type,
+            }
+        });
+    
+        let default_body = field_names.clone().zip(field_types.clone()).map(|(field_name, field_type)| {
+            quote! {
+                #field_name: #field_type::default(),
+            }
+        });
+    
+        let default_impl = quote! {
+            impl Default for #name {
+                fn default() -> Self {
+                    Self {
+                        ptr: ::std::ptr::null_mut(),
+                        #(#default_body)*
+                    }
+                }
+            }
+        };
 
-    // Get the name of the struct.
-    let struct_name = &input.ident;
+        // Create the register component tokens.
+        let struct_name_str = name.to_string();
+        let field_names_str = field_names.clone().map(|f| f.clone().unwrap().to_string());
+        let field_types_code = field_types.clone().map(|f| get_type_code(f));
+        let register_component_tokens = quote! {
+            register_component_ecs(
+                core::any::TypeId::of::<#name>(),
+                #struct_name_str,
+                &[#(#field_names_str),*],
+                &[#(#field_types_code),*],
+            )
+        };
+        // Create the register implementation.
+        let register_fn = quote! {
+            fn register() -> i32 {
+                #register_component_tokens
+                //0
+            }
+        };
+    
+        quote! {
+            pub struct #name {
+                ptr: *mut core::ffi::c_void,
+                #(#struct_fields)*
+            }
+    
+            #default_impl
+    
+            impl #name {
+                #(#getters_and_setters)*
+                // pub fn set_ptr(&mut self, ptr: *mut ::std::os::raw::c_void) {
+                //     self.ptr = ptr;
+                // }
+                // pub fn get_ptr(&self) -> *mut ::std::os::raw::c_void {
+                //     self.ptr
+                // }
+            }
 
-    // Create the default implementation.
-    let default_body = field_defaults.iter().map(|(name, default)| quote! { #name: #default });
-    let default_impl = quote! {
-        impl Default for #struct_name {
-            fn default() -> Self {
-                Self {
-                    #(#default_body),*
+            impl IsComponent for #name {
+                // Add implementation details here.
+                #register_fn
+                fn set_ptr(&mut self, ptr: *mut core::ffi::c_void) {
+                    self.ptr = ptr;
+                }
+                fn get_ptr(&self) -> *mut core::ffi::c_void {
+                    self.ptr
                 }
             }
         }
-    };
-
-    // Create the register component tokens.
-    let struct_name_str = struct_name.to_string();
-    let register_component_tokens = quote! {
-        register_component_ecs(
-            #struct_name_str,
-            &[#(#field_names),*],
-            &[#(#field_types),*],
-        )
-    };
-
-    // Create the register implementation.
-    let register_impl = quote! {
-        pub fn register() -> i32 {
-            #register_component_tokens
-        }
-    };
-
-    // Create the final token stream.
-    let expanded = quote! {
-        #default_impl
-        impl #struct_name {
-            #(#getter_tokens)*
-            #(#setter_tokens)* 
-        }
-
-        // Here we add the IsComponent implementation.
-        impl IsComponent for #struct_name {
-            // Add implementation details here.
-            #register_impl
-            fn set_ptr(&mut self, ptr: *mut c_void) {
-                self.ptr = ptr;
-            }
-            fn get_ptr(&self) -> *mut c_void {
-                self.ptr
-            }
-        }
-    };
-
-    // Hand the output tokens back to the compiler.
-    TokenStream::from(expanded)
+    }).collect::<Vec<_>>();
+    
+    TokenStream::from(quote! {
+        #(#expanded)*
+    })
 }
 
 fn get_type_code(ty: &Type) -> u8 {

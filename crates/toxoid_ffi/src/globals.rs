@@ -2,7 +2,7 @@
 extern crate alloc;
 
 use core::alloc::{GlobalAlloc, Layout};
-use crate::HashMap;
+// use crate::HashMap;
 
 extern "C" {
     fn host_alloc(size: usize) -> *mut u8;
@@ -26,6 +26,3 @@ pub static ALLOCATOR: GuestAllocator = GuestAllocator;
 
 // Global constants
 pub const MAX_ELEMENTS: usize = 100;
-
-// Global variables
-pub static mut COMPONENT_ID_CACHE: Option<HashMap<core::any::TypeId, i32>> = None;
