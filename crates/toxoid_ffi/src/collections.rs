@@ -85,6 +85,10 @@ impl<T> Vec<T> {
         }
         self.len = len;
     }
+
+    pub fn as_slice(&self) -> &[T] {
+        unsafe { core::slice::from_raw_parts(self.ptr.as_ptr(), self.len) }
+    }
 }
 
 pub struct Iter<T> {
@@ -107,37 +111,89 @@ impl<T> Iterator for Iter<T> {
     }
 }
 
-#[derive(Clone)]
-struct KeyValuePair<K, V> {
-    key: K,
-    value: V,
-}
+// #[derive(Clone)]
+// struct KeyValuePair<K, V> {
+//     key: K,
+//     value: V,
+// }
 
-pub struct HashMap<K: PartialEq + Clone, V: Clone> {
-    elements: Vec<KeyValuePair<K, V>>,
-}
+// pub struct HashMap<K: PartialEq + Clone, V: Clone> {
+//     elements: Vec<KeyValuePair<K, V>>,
+// }
 
-impl<K: PartialEq + Clone, V: Clone> HashMap<K, V> {
-    pub fn new() -> Self {
-        HashMap { elements: Vec::new() }
-    }
+// impl<K: PartialEq + Clone, V: Clone> HashMap<K, V> {
+//     pub fn new() -> Self {
+//         HashMap { elements: Vec::new() }
+//     }
 
-    pub fn insert(&mut self, key: K, value: V) {
-        // remove any existing value for this key
-        self.elements.retain(|kvp| kvp.key != key);
+//     pub fn insert(&mut self, key: K, value: V) {
+//         // remove any existing value for this key
+//         self.elements.retain(|kvp| kvp.key != key);
 
-        // insert the new key-value pair
-        self.elements.push(KeyValuePair { key, value });
-    }
+//         // insert the new key-value pair
+//         self.elements.push(KeyValuePair { key, value });
+//     }
 
-    pub fn get(&self, key: &K) -> Option<&V> {
-        self.elements.iter().filter_map(|kvp| {
-            let kvp_ref = unsafe { &*kvp };
-            if kvp_ref.key == *key {
-                Some(&kvp_ref.value)
-            } else {
-                None
-            }
-        }).next()
-    }
-}
+//     pub fn get(&self, key: &K) -> Option<&V> {
+//         self.elements.iter().filter_map(|kvp| {
+//             let kvp_ref = unsafe { &*kvp };
+//             if kvp_ref.key == *key {
+//                 Some(&kvp_ref.value)
+//             } else {
+//                 None
+//             }
+//         }).next()
+//     }
+// }
+
+// pub struct Str {
+//     buffer: Vec<u8>,
+// }
+
+// impl Str {
+//     pub fn new() -> Self {
+//         Self {
+//             buffer: Vec::new(),
+//         }
+//     }
+
+//     pub fn from(s: &str) -> Self {
+//         let mut buffer = Vec::new();
+//         for &b in s.as_bytes() {
+//             buffer.push(b);
+//         }
+//         Self {
+//             buffer,
+//         }
+//     }
+
+//     pub fn as_str(&self) -> &str {
+//         unsafe { core::str::from_utf8_unchecked(self.buffer.as_slice()) }
+//     }
+
+//     pub fn push(&mut self, c: char) {
+//         for &b in c.encode_utf8(&mut [0; 4]).as_bytes() {
+//             self.buffer.push(b);
+//         }
+//     }
+// }
+
+// impl core::fmt::Debug for Str {
+//     fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+//         write!(f, "{}", self.as_str())
+//     }
+// }
+
+// impl PartialEq for Str {
+//     fn eq(&self, other: &Self) -> bool {
+//         self.buffer == other.buffer
+//     }
+// }
+
+// impl Eq for Str {}
+
+// impl core::hash::Hash for Str {
+//     fn hash<H: core::hash::Hasher>(&self, state: &mut H) {
+//         self.buffer.hash(state);
+//     }
+// }

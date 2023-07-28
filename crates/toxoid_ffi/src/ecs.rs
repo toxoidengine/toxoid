@@ -1,4 +1,4 @@
-use toxoid_ffi_macro::Component;
+// use toxoid_ffi_macro::Component;
 use core::ffi::c_void;
 use crate::*;
 
@@ -110,11 +110,11 @@ impl Entity {
 
     pub fn get_component<T: Default + IsComponent + 'static>(&self) -> T {
         unsafe {
-            let test = core::any::TypeId::of::<T>();
-            let mut map = HashMap::new();
-            map.insert(test, "Hello TYPEID!");
-            let value = map.get(&test).unwrap();
-            print_string(value);
+            // let test = core::any::TypeId::of::<T>();
+            // let mut map = HashMap::new();
+            // map.insert(test, "Hello TYPEID!");
+            // let value = map.get(&test).unwrap();
+            // print_string(value);
 
             let mut component = T::default();
             // let ptr = toxoid_entity_get_component(self.id as u32, T::register() as u32);

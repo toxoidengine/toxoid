@@ -1,4 +1,5 @@
 use core::ffi::{c_char, c_void};
+use std::collections::HashMap;
 
 pub const MAX_ELEMENTS: usize = 100;
 
@@ -8,8 +9,11 @@ extern "C" {
     pub fn free(p: *mut c_void);
 }
 
+pub static mut COMPONENT_ID_CACHE: Option<HashMap<core::any::TypeId, i32>> = None;
+
 #[no_mangle]
 pub unsafe extern "C" fn app_init() {
+    COMPONENT_ID_CACHE = Some(HashMap::new());
     app_main();
     // Initialize SDL2
     toxoid_sdl::create_sdl_loop();
@@ -217,3 +221,17 @@ pub fn toxoid_entity_get_component(entity: u32, component: u32) -> *mut c_void {
         flecs_core::flecs_entity_get_component(entity, component)
     }
 }
+
+#[no_mangle]
+pub unsafe extern "C" fn toxoid_component_cache_insert(type_id: core::any::TypeId, component_id: i32) {
+    let cache = crate::COMPONENT_ID_CACHE.as_mut().unwrap_unchecked();
+    cache.insert(type_id, component_id);
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn toxoid_component_cache_get(type_id: core::any::TypeId) -> i32 {
+    let cache = crate::COMPONENT_ID_CACHE.as_mut().unwrap_unchecked();
+    *cache.get(&type_id).unwrap_or(&0)
+}
+
+
