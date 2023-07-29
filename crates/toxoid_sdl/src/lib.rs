@@ -1,10 +1,10 @@
-extern crate sdl2; 
+extern crate sdl2;
 
-use sdl2::Sdl;
-use sdl2::render::WindowCanvas;
-use sdl2::pixels::Color;
 use sdl2::event::Event;
 use sdl2::keyboard::Keycode;
+use sdl2::pixels::Color;
+use sdl2::render::WindowCanvas;
+use sdl2::Sdl;
 
 struct GameState {
     i: u8,
@@ -12,9 +12,7 @@ struct GameState {
 
 impl GameState {
     fn new() -> Self {
-        Self {
-            i: 0,
-        }
+        Self { i: 0 }
     }
 }
 
@@ -24,7 +22,11 @@ struct GameLoopArg<'a> {
     state: &'a mut GameState,
 }
 
-fn main_loop(sdl_context: &Sdl, canvas: &mut WindowCanvas, state: &mut GameState) -> Result<(), String> {
+fn main_loop(
+    sdl_context: &Sdl,
+    canvas: &mut WindowCanvas,
+    state: &mut GameState,
+) -> Result<(), String> {
     let mut event_pump = sdl_context.event_pump().unwrap();
 
     state.i = (state.i + 1) % 255;
@@ -33,7 +35,10 @@ fn main_loop(sdl_context: &Sdl, canvas: &mut WindowCanvas, state: &mut GameState
 
     for event in event_pump.poll_iter() {
         match event {
-            Event::KeyDown { keycode: Some(keycode), .. } => {
+            Event::KeyDown {
+                keycode: Some(keycode),
+                ..
+            } => {
                 if keycode == Keycode::Left {
                     println!("Left");
                 }
@@ -46,7 +51,7 @@ fn main_loop(sdl_context: &Sdl, canvas: &mut WindowCanvas, state: &mut GameState
                 if keycode == Keycode::Down {
                     println!("Down");
                 }
-            },
+            }
             _ => {}
         }
     }
@@ -55,8 +60,13 @@ fn main_loop(sdl_context: &Sdl, canvas: &mut WindowCanvas, state: &mut GameState
     Ok(())
 }
 
-extern {
-    pub fn emscripten_set_main_loop_arg(f: unsafe extern "C" fn(*mut std::ffi::c_void), arg: *mut std::ffi::c_void, fps: i32, sim_infinite_loop:i32);
+extern "C" {
+    pub fn emscripten_set_main_loop_arg(
+        f: unsafe extern "C" fn(*mut std::ffi::c_void),
+        arg: *mut std::ffi::c_void,
+        fps: i32,
+        sim_infinite_loop: i32,
+    );
     pub fn emscripten_cancel_main_loop();
 }
 
@@ -72,14 +82,12 @@ pub fn create_sdl_loop() {
 
     let sdl_context = Box::new(sdl2::init().unwrap());
     let video_subsystem = sdl_context.video().unwrap();
-    let window = video_subsystem.window("Toxoid Engine", 800, 600)
+    let window = video_subsystem
+        .window("Toxoid Engine", 800, 600)
         .position_centered()
         .build()
         .unwrap();
-    let mut canvas = Box::new(window.into_canvas()
-        .software()
-        .build()
-        .unwrap());
+    let mut canvas = Box::new(window.into_canvas().software().build().unwrap());
     let mut state = Box::new(GameState::new());
 
     let mut arg = Box::new(GameLoopArg {
@@ -89,7 +97,12 @@ pub fn create_sdl_loop() {
     });
 
     unsafe {
-        emscripten_set_main_loop_arg(packaged_main_loop, &mut *arg as *mut _ as *mut std::ffi::c_void, -1, 0);
+        emscripten_set_main_loop_arg(
+            packaged_main_loop,
+            &mut *arg as *mut _ as *mut std::ffi::c_void,
+            -1,
+            0,
+        );
     }
     std::mem::forget(arg);
     std::mem::forget(sdl_context);

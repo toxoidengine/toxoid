@@ -2,17 +2,17 @@
 #![allow(improper_ctypes)]
 extern crate toxoid_ffi_macro;
 // use toxoid_ffi_macro::Component;
-use toxoid_ffi_macro::component;
 use toxoid_ffi::*;
+use toxoid_ffi_macro::component;
 pub mod ecs;
 pub use ecs::*;
 
 // #[derive(Component)]
-// pub struct Position 
+// pub struct Position
 //     x: u32,
-//     y: u32, 
+//     y: u32,
 // }
- 
+
 //     dy: f32,
 // }
 

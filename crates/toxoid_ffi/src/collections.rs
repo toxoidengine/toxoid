@@ -1,7 +1,7 @@
+use crate::globals::*;
+use core::alloc::{GlobalAlloc, Layout};
 use core::mem;
 use core::ptr::NonNull;
-use core::alloc::{GlobalAlloc, Layout};
-use crate::globals::*;
 
 pub struct Vec<T> {
     ptr: NonNull<T>,
@@ -45,16 +45,18 @@ impl<T> Vec<T> {
         let new_size = new_cap * mem::size_of::<T>();
         let new_layout = Layout::from_size_align(new_size, mem::align_of::<T>()).unwrap();
         let new_ptr = unsafe { ALLOCATOR.alloc(new_layout) as *mut T };
-    
+
         if !self.ptr.as_ptr().is_null() {
             unsafe {
                 // Copy old data to new space and deallocate old space.
                 new_ptr.copy_from_nonoverlapping(self.ptr.as_ptr(), self.len);
-                let old_layout = Layout::from_size_align(self.cap * mem::size_of::<T>(), mem::align_of::<T>()).unwrap();
+                let old_layout =
+                    Layout::from_size_align(self.cap * mem::size_of::<T>(), mem::align_of::<T>())
+                        .unwrap();
                 ALLOCATOR.dealloc(self.ptr.as_ptr() as *mut u8, old_layout);
             }
         }
-    
+
         self.ptr = unsafe { NonNull::new_unchecked(new_ptr) };
         self.cap = new_cap;
     }
@@ -76,7 +78,11 @@ impl<T> Vec<T> {
                 len -= 1;
                 if i != len {
                     unsafe {
-                        core::ptr::copy(self.ptr.as_ptr().add(i + 1), self.ptr.as_ptr().add(i), len - i);
+                        core::ptr::copy(
+                            self.ptr.as_ptr().add(i + 1),
+                            self.ptr.as_ptr().add(i),
+                            len - i,
+                        );
                     }
                 }
             } else {
