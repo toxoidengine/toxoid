@@ -83,7 +83,7 @@ pub unsafe extern "C" fn toxoid_register_component(
     let component_name_slice =
         std::slice::from_raw_parts(component_name as *mut u8, component_name_len as usize);
     let component_name = std::str::from_utf8_unchecked(component_name_slice);
-    println!("Component Name: {}", component_name);
+    // println!("Component Name: {}", component_name);
 
     // Convert back to C string with specific length
     let component_name =
@@ -96,7 +96,7 @@ pub unsafe extern "C" fn toxoid_register_component(
         let member_slice =
             std::slice::from_raw_parts(member_name_ptr as *mut u8, member_name_length as usize);
         let member_name = std::str::from_utf8_unchecked(member_slice);
-        println!("Member Name #{}: {}", i, member_name);
+        // println!("Member Name #{}: {}", i, member_name);
     }
 
     flecs_core::flecs_component_create(
@@ -106,15 +106,6 @@ pub unsafe extern "C" fn toxoid_register_component(
         member_types,
         member_types_count,
     ) as i32
-}
-
-#[no_mangle]
-pub unsafe extern "C" fn toxoid_component_set_member_u32(
-    _component_ptr: *mut c_void,
-    offset: u32,
-    value: u32,
-) {
-    println!("Setting member at offset {} to {}", offset, value);
 }
 
 #[no_mangle]
@@ -245,4 +236,22 @@ pub unsafe extern "C" fn toxoid_component_cache_insert(
 pub unsafe extern "C" fn toxoid_component_cache_get(type_id: core::any::TypeId) -> i32 {
     let cache = crate::COMPONENT_ID_CACHE.as_mut().unwrap_unchecked();
     *cache.get(&type_id).unwrap_or(&0)
+}
+
+
+#[no_mangle]
+pub unsafe extern "C" fn toxoid_component_set_member_u32(
+    component_ptr: *mut c_void,
+    offset: u32,
+    value: u32,
+) {
+    flecs_core::flecs_component_set_member_u32(component_ptr, offset, value);
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn toxoid_component_get_member_u32(
+    component_ptr: *mut c_void,
+    offset: u32
+) -> u32 {
+    flecs_core::flecs_component_get_member_u32(component_ptr, offset)
 }

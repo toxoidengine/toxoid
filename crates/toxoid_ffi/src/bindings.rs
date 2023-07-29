@@ -21,7 +21,6 @@ extern "C" {
         member_types: *const *const u8,
         member_types_count: u32,
     ) -> ecs_entity_t;
-    pub fn toxoid_component_set_member_u32(component_ptr: *mut c_void, offset: u32, value: u32);
     pub fn toxoid_entity_create() -> ecs_entity_t;
     pub fn toxoid_entity_add_component(entity: u32, component: u32) -> *mut c_void;
     pub fn toxoid_entity_add_tag(entity: u32, tag: u32);
@@ -40,4 +39,6 @@ extern "C" {
     pub fn toxoid_iter_count(iter: *mut c_void) -> i32;
     pub fn toxoid_component_cache_insert(type_id: core::any::TypeId, component_id: i32);
     pub fn toxoid_component_cache_get(type_id: core::any::TypeId) -> i32;
+    pub fn toxoid_component_set_member_u32(component_ptr: *mut c_void, offset: u32, value: u32);
+    pub fn toxoid_component_get_member_u32(component_ptr: *mut c_void, offset: u32) -> u32;
 }
