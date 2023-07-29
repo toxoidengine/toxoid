@@ -32,40 +32,18 @@ pub unsafe extern "C" fn app_main() {
     let vel = Velocity::default();
     let pos = Position::default();
 
-    Position::register();
+    let pos_id = Position::register();
+
+    // Create a new entity.
+    let mut player = Entity::new();
+    // Add the component to the entity.
+    player.add(pos_id);
+    let pos_component = player.get_component::<Position>();
+    print_i32(pos_component.ptr as i32);
 
     let type_id = core::any::TypeId::of::<Position>();
     let pos_id = toxoid_component_cache_get(type_id);
     print_i32(pos_id);
-
-    // let mut map = HashMap::new();
-    // map.insert(1, "one");
-    // print_string(map.get(&1).unwrap());
-    // let mut map = HashMap::new();
-    // map.insert("Hello", "Hello TYPEID!");
-    // map.insert(test, "Hello TYPEID!");
-    // let value = map.get(&test).unwrap();
-    // print_string(value);
-
-    // let cache = crate::COMPONENT_ID_CACHE.as_mut().unwrap_unchecked();
-        // cache.insert(type_id, component_id);
-    
-    // let ptr = ALLOCATOR.alloc(Layout::from_size_align(1, 1).unwrap());
-    // ALLOCATOR.dealloc(ptr, Layout::from_size_align(1, 1).unwrap());
-
-    // let mut vec = Vec::new();
-
-    // for i in 1..10 {
-    //     vec.push(i);
-    // }
-
-    // for item in vec.iter() {
-    //     print_string("HELLO ITEMS!");
-    // }
-
-    // let mut map = HashMap::new();
-    // map.insert(1, "one");
-    // print_string(map.get(&1).unwrap());
 
     // // Create a new tag.
     // let tag = register_tag("LocalPlayer");
