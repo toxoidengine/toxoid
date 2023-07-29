@@ -1,6 +1,6 @@
 // use toxoid_ffi_macro::Component;
-use core::ffi::c_void;
 use crate::*;
+use core::ffi::c_void;
 
 #[repr(u8)]
 pub enum Type {
@@ -42,52 +42,41 @@ impl Query {
                 _indexes: [0; MAX_ELEMENTS],
             }
         }
-        
     }
 
     pub fn iter(&mut self) -> &mut Query {
-        self.iter = unsafe { 
-            toxoid_query_iter(self.query)
-        };
+        self.iter = unsafe { toxoid_query_iter(self.query) };
         self
     }
 
     pub fn count(&self) -> i32 {
-        unsafe {
-            toxoid_iter_count(self.iter)
-        }
+        unsafe { toxoid_iter_count(self.iter) }
     }
 
     pub fn next(&self) -> bool {
-        unsafe {
-            toxoid_query_next(self.iter)
-        }
+        unsafe { toxoid_query_next(self.iter) }
     }
 
     pub fn field(&self) -> *const c_void {
-        unsafe {
-            toxoid_query_field(self.iter, 0, 1, 0)
-        }
+        unsafe { toxoid_query_field(self.iter, 0, 1, 0) }
     }
 
     pub fn entities(&self) -> &[Entity] {
-        unsafe {
-            toxoid_query_entity_list(self.iter)
-        }
+        unsafe { toxoid_query_entity_list(self.iter) }
     }
 }
 
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct Entity {
-    id: ecs_id_t
+    id: ecs_id_t,
 }
 
 impl Entity {
     pub fn new() -> Self {
         unsafe {
             Entity {
-                id: toxoid_entity_create()
+                id: toxoid_entity_create(),
             }
         }
     }
@@ -120,14 +109,12 @@ impl Entity {
 }
 
 pub fn register_tag(name: &str) -> ecs_entity_t {
-    unsafe {
-        toxoid_register_tag(name.as_bytes().as_ptr() as *const i8, name.len())
-    }
+    unsafe { toxoid_register_tag(name.as_bytes().as_ptr() as *const i8, name.len()) }
 }
 
 pub fn register_component(name: &str, member_names: &[&str], member_types: &[u8]) -> ecs_entity_t {
     unsafe {
-        let mut c_member_names: [*const c_char; MAX_ELEMENTS] = [core::ptr::null(); MAX_ELEMENTS]; 
+        let mut c_member_names: [*const c_char; MAX_ELEMENTS] = [core::ptr::null(); MAX_ELEMENTS];
         let mut c_member_names_len: [u8; MAX_ELEMENTS] = [0; MAX_ELEMENTS];
         for (i, &s) in member_names.iter().enumerate() {
             c_member_names[i] = s.as_ptr() as *const c_char;
@@ -148,7 +135,7 @@ pub fn register_component(name: &str, member_names: &[&str], member_types: &[u8]
             member_names.len() as u32,
             c_member_names_len.as_ptr(),
             c_member_types.as_ptr(),
-            c_member_types.len() as u32
+            c_member_types.len() as u32,
         )
     }
 }
