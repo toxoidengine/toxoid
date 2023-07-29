@@ -21,29 +21,31 @@ component! {
         x: u32,
         y: u32,
     },
-    Velocity {
-        dx: f32,
-        dy: f32,
-    }
+    // Velocity {
+    //     dx: f32,
+    //     dy: f32,
+    // }
 }
 
 #[no_mangle]
 pub unsafe extern "C" fn app_main() {
-    let vel = Velocity::default();
-    let pos = Position::default();
-
     let pos_id = Position::register();
 
     // Create a new entity.
     let mut player = Entity::new();
     // Add the component to the entity.
     player.add(pos_id);
-    let pos_component = player.get_component::<Position>();
-    print_i32(pos_component.ptr as i32);
+    
+    let mut pos_component = player.get_component::<Position>();
+    print_i32(pos_component.get_x() as i32);
+    pos_component.set_x(420);
+    print_i32(pos_component.get_x() as i32);
+    print_i32(pos_component.get_y() as i32);
+    pos_component.set_y(777);
+    print_i32(pos_component.get_y() as i32);
 
-    let type_id = core::any::TypeId::of::<Position>();
-    let pos_id = toxoid_component_cache_get(type_id);
-    print_i32(pos_id);
+    // let type_id = core::any::TypeId::of::<Position>();
+    // let pos_id = toxoid_component_cache_get(type_id);
 
     // // Create a new tag.
     // let tag = register_tag("LocalPlayer");
