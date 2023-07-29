@@ -97,12 +97,13 @@ pub fn component(input: TokenStream) -> TokenStream {
         let field_names_str = field_names.clone().map(|f| f.clone().unwrap().to_string());
         let field_types_code = field_types.clone().map(|f| get_type_code(f));
         let register_component_tokens = quote! {
-            register_component_ecs(
-                core::any::TypeId::of::<#name>(),
+            let component_id = register_component_ecs(
                 #struct_name_str,
                 &[#(#field_names_str),*],
                 &[#(#field_types_code),*],
-            )
+            );
+            cache_component_ecs(core::any::TypeId::of::<#name>(), component_id);
+            component_id
         };
         // Create the register implementation.
         let register_fn = quote! {

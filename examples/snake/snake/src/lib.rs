@@ -34,12 +34,9 @@ pub unsafe extern "C" fn app_main() {
 
     Position::register();
 
-
     let type_id = core::any::TypeId::of::<Position>();
-    toxoid_component_cache_insert(type_id, 420);
-    let final_id = toxoid_component_cache_get(type_id);
-    print_i32(final_id);
-
+    let pos_id = toxoid_component_cache_get(type_id);
+    print_i32(pos_id);
 
     // let mut map = HashMap::new();
     // map.insert(1, "one");
