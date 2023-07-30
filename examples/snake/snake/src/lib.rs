@@ -1,20 +1,10 @@
 #![allow(non_camel_case_types)]
 #![allow(improper_ctypes)]
 extern crate toxoid_ffi_macro;
-// use toxoid_ffi_macro::Component;
 use toxoid_ffi::*;
 use toxoid_ffi_macro::component;
 pub mod ecs;
 pub use ecs::*;
-
-// #[derive(Component)]
-// pub struct Position
-//     x: u32,
-//     y: u32,
-// }
-
-//     dy: f32,
-// }
 
 component! {
     Position {
@@ -35,70 +25,32 @@ pub unsafe extern "C" fn app_main() {
     let mut player = Entity::new();
     // Add the component to the entity.
     player.add(pos_id);
+
+    // Create a new entity.
+    let mut player_2 = Entity::new();
+    // Add the component to the entity.
+    player_2.add(pos_id);
     
     let mut pos_component = player.get_component::<Position>();
     print_i32(pos_component.get_x() as i32);
     pos_component.set_x(420);
-    print_i32(pos_component.get_x() as i32);
-    print_i32(pos_component.get_y() as i32);
-    pos_component.set_y(777);
-    print_i32(pos_component.get_y() as i32);
 
-    // let type_id = core::any::TypeId::of::<Position>();
-    // let pos_id = toxoid_component_cache_get(type_id);
+    let mut pos_component_2 = player_2.get_component::<Position>();
+    print_i32(pos_component_2.get_x() as i32);
+    pos_component_2.set_x(777);
 
-    // // Create a new tag.
-    // let tag = register_tag("LocalPlayer");
-    // // Print the name of the tag.
-    // toxoid_entity_get_name(tag);
-
-    // // Create a new component.
-    // let mut position = Position { x: 0, y: 0 };
-    // // Set the values of the component.
-    // position.set_x(77);
-    // position.set_y(99);
-    // // Print the values of the component.
-    // print_string("X:");
-    // print_i32(position.x as i32);
-    // print_string("Y:");
-    // print_i32(position.y as i32);
-
-    // // // Register the component.
-    // let pos_id = Position::register();
-    // let vel_id = Velocity::register();
-
-    // // Print the name of the component.
-    // toxoid_entity_get_name(pos_id);
-    // toxoid_entity_get_name(vel_id);
-
-    // // Create a new entity.
-    // let mut player = Entity::new();
-    // // Add the component to the entity.
-    // player.add(pos_id);
-    // player.add(vel_id);
-    // player.add_tag(tag);
-
-    // let mut player_2 = Entity::new();
-    // // Add the component to the entity.
-    // player_2.add(pos_id);
-    // player_2.add(vel_id);
-    // player_2.add_tag(tag);
-
-    // let mut player_3 = Entity::new();
-    // // Add the component to the entity.
-    // player_3.add(pos_id);
-    // player_3.add(vel_id);
-    // player_3.add_tag(tag);
-
-    // let mut query = Query::new(&mut [pos_id, vel_id]);
-    // let query = query.iter();
-    // while query.next() {
-    //     let _field = query.field();
-    //     let entities = query.entities();
-    //     for entity in entities.iter() {
-    //         print_i32(entity.get_id());
-
-    //         let pos = entity.get_component::<Position>();
-    //     }
-    // }
+    let mut query = Query::new(&mut [pos_id]);
+    let query = query.iter();
+    while query.next() {
+        let entities = query.entities();
+        for entity in entities.iter() {
+            let pos = entity.get_component::<Position>();
+            print_i32(entity.get_id());
+            print_i32(pos.get_x() as i32);
+        }
+        
+        // let field = query.field::<Position>();
+        // print_string("Field length:");
+        // print_i32(field.as_slice().len() as i32);
+    }
 }
