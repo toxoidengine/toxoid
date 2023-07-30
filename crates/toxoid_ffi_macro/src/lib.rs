@@ -92,7 +92,6 @@ pub fn component(input: TokenStream) -> TokenStream {
                             pub fn #getter_name(&self) -> #field_type {
                                 match () {
                                     _ if core::any::TypeId::of::<#field_type>() == core::any::TypeId::of::<u32>() => {
-                                        print_string("Getting a u32 value");
                                         unsafe {
                                             toxoid_component_get_member_u32(self.ptr, #field_offset)
                                         }
@@ -105,11 +104,10 @@ pub fn component(input: TokenStream) -> TokenStream {
                                 self.#field_name = value;
                                 match () {
                                     _ if core::any::TypeId::of::<#field_type>() == core::any::TypeId::of::<u32>() => {
-                                        print_string("Setting a u32 value");
                                         unsafe {
                                             toxoid_component_set_member_u32(self.ptr, #field_offset, value as u32);
                                         }
-                                    },
+                                    }, 
                                     _ => ()
                                 }
                             }

@@ -30,7 +30,7 @@ pub trait IsComponent {
 pub struct Query {
     query: *mut c_void,
     iter: *mut c_void,
-    _indexes: [ecs_id_t; MAX_ELEMENTS],
+    indexes: [ecs_id_t; MAX_ELEMENTS],
 }
 
 impl Query {
@@ -39,7 +39,7 @@ impl Query {
             Query {
                 query: toxoid_query_create(ids.as_mut_ptr() as *mut i32, ids.len() as i32),
                 iter: core::ptr::null_mut(),
-                _indexes: [0; MAX_ELEMENTS],
+                indexes: [0; MAX_ELEMENTS],
             }
         }
     }
@@ -57,8 +57,21 @@ impl Query {
         unsafe { toxoid_query_next(self.iter) }
     }
 
-    pub fn field(&self) -> *const c_void {
-        unsafe { toxoid_query_field(self.iter, 0, 1, 0) }
+    pub fn field<T: Default + IsComponent + 'static>(&self) -> Vec<T> {
+        unsafe {
+            let count = toxoid_iter_count(self.iter);
+            let component_id = toxoid_component_cache_get(core::any::TypeId::of::<T>());
+            let term_index = *self.indexes.iter().find(|&&x| x == component_id).unwrap();
+
+            let mut components = Vec::<T>::new();
+            for i in 0..count {
+                let mut component = T::default();
+                let ptr = toxoid_query_field(self.iter, term_index, count as u32, i as u32);
+                component.set_ptr(ptr as *mut c_void);
+                components.push(component);
+            }
+            components
+        }   
     }
 
     pub fn entities(&self) -> &[Entity] {
