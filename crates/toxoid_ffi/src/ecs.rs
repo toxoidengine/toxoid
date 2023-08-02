@@ -58,24 +58,11 @@ impl Query {
         unsafe { toxoid_query_next(self.iter) }
     }
 
-    // pub fn field<T: Default + IsComponent + 'static>(&self) -> i32 {
-    //     unsafe {
-    //         let count = toxoid_iter_count(self.iter);
-    //         let component_id = toxoid_component_cache_get(core::any::TypeId::of::<T>());
-    //         let term_index = self.indexes.iter().find(|&&x| x == component_id).unwrap();
-            
-    //         let mut components = Vec::<T>::new();
-    //         for i in 0..count {
-    //             let mut component = T::default();
-    //             let ptr = toxoid_query_field(self.iter, 0, count as u32, i as u32);
-    //             component.set_ptr(ptr as *mut c_void);
-    //             core::mem::forget(self);
-    //             components.push(component);
-    //         }
-    //         components.leak();
-    //         0
-    //     }   
-    // }
+    pub fn entities(&self) -> &[Entity] {
+        unsafe { toxoid_query_entity_list(self.iter) }
+    }
+
+    // TODO: Solve alignment issue passing vector slices back and forth
     pub fn field<T: Default + IsComponent + 'static>(&self) -> (*mut *mut c_void, i32) {
         unsafe {
             let count = toxoid_iter_count(self.iter);
@@ -94,16 +81,12 @@ impl Query {
                     break;
                 }
             
+                // let ptr = toxoid_query_field(self.iter, term_index, count as u32, i as u32);
                 let ptr = toxoid_query_field(self.iter, 1, count as u32, i as u32);
-                print_string("Pointer value from field:");
-                print_i32(ptr as i32);
                 
                 // Use ptr::write to write T::default() to the allocated memory.
                 component_ptr.write(T::default());
                 (*component_ptr).set_ptr(ptr as *mut c_void);  // Assuming T has a set_ptr method
-
-                print_string("X value from original");
-                print_i32(toxoid_component_get_member_u32(ptr as *mut c_void, 0) as i32);
                
                 // Push the component to the vector in the host environment.
                 toxoid_vec_push(vec_ptr, component_ptr as *mut _ as *mut c_void);
@@ -111,20 +94,13 @@ impl Query {
 
             let (field_ptr, count) = toxoid_vec_as_slice(vec_ptr);
 
-            
             let field = core::slice::from_raw_parts(*field_ptr as *mut T, count as usize);
-            print_string("Field pointer:");
-            print_i32(field.as_ptr() as i32);
             for i in 0..count {
                 print_i32(field[i as usize].get_ptr() as i32);
             }
 
             toxoid_vec_as_slice(vec_ptr)
         }
-    }
-
-    pub fn entities(&self) -> &[Entity] {
-        unsafe { toxoid_query_entity_list(self.iter) }
     }
 }
 
