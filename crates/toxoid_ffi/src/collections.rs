@@ -95,6 +95,20 @@ impl<T> Vec<T> {
     pub fn as_slice(&self) -> &[T] {
         unsafe { core::slice::from_raw_parts(self.ptr.as_ptr(), self.len) }
     }
+
+    pub fn leak(self) -> &'static mut [T] {
+        let slice = unsafe { core::slice::from_raw_parts_mut(self.ptr.as_ptr(), self.len) };
+        // Prevent destructor from running.
+        core::mem::forget(self);
+        slice
+    }
+
+    pub fn into_raw(self) -> *mut T {
+        let raw_ptr = self.ptr.as_ptr();
+        // Prevent destructor from running.
+        core::mem::forget(self);
+        raw_ptr
+    }
 }
 
 pub struct Iter<T> {

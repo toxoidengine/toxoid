@@ -10,6 +10,11 @@ pub type c_char = i8;
 extern "C" {
     pub fn toxoid_print_i32(v: i32);
     pub fn toxoid_print_string(v: *const i8, v_len: usize);
+    pub fn toxoid_create_vec() -> *mut c_void;
+    pub fn toxoid_vec_push(ptr: *mut c_void, value: *mut c_void);
+    pub fn toxoid_vec_drop(ptr: *mut c_void);
+    pub fn toxoid_vec_as_slice(ptr: *mut c_void) -> (*mut *mut c_void, i32);
+    pub fn toxoid_free_slice(ptr: *mut c_void, len: usize);
     pub fn toxoid_entity_get_name(id: i32);
     pub fn toxoid_register_tag(name: *const i8, name_len: usize) -> ecs_entity_t;
     pub fn toxoid_register_component(
