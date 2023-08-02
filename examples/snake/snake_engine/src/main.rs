@@ -235,7 +235,6 @@ pub unsafe extern "C" fn toxoid_component_cache_get(type_id: core::any::TypeId) 
     *cache.get(&type_id).unwrap_or(&0)
 }
 
-
 #[no_mangle]
 pub unsafe extern "C" fn toxoid_component_set_member_u32(
     component_ptr: *mut c_void,
@@ -270,22 +269,8 @@ pub unsafe extern "C" fn toxoid_vec_drop(ptr: *mut c_void) {
     // Dropping the box, and hence the Vec.
 }
 
-// #[no_mangle]
-// pub unsafe extern "C" fn toxoid_vec_as_slice(ptr: *mut c_void) -> *mut c_void {
-//     let vec: &mut Vec<*mut c_void> = &mut *(ptr as *mut Vec<*mut c_void>);
-//     let slice = vec.as_slice();
-//     let boxed_slice = Box::into_raw(Box::new(slice));
-
-//     boxed_slice as *mut c_void
-// }
-
 #[no_mangle]
 pub unsafe extern "C" fn toxoid_vec_as_slice(ptr: *mut c_void) -> (*const *mut c_void, i32) {
     let vec: &mut Vec<*mut c_void> = &mut *(ptr as *mut Vec<*mut c_void>);
     (vec.as_ptr(), vec.len() as i32)
 }
-
-// #[no_mangle]
-// pub unsafe extern "C" fn toxoid_free_slice(ptr: *mut c_void, len: usize) {
-//     let _reconstructed_box = Box::from_raw(ptr as *mut [*mut c_void; len]);
-// }
