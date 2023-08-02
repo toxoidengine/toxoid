@@ -167,6 +167,7 @@ pub fn component(input: TokenStream) -> TokenStream {
             };
 
             quote! {
+                #[repr(C)]
                 pub struct #name {
                     ptr: *mut core::ffi::c_void,
                     #(#struct_fields)*

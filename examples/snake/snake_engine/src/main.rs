@@ -204,18 +204,15 @@ unsafe impl GlobalAlloc for HostAllocator {
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn host_alloc(size: usize) -> *mut u8 {
+pub unsafe extern "C" fn host_alloc(layout: Layout) -> *mut u8 {
     let allocator = HostAllocator;
-    allocator.alloc(Layout::from_size_align(size, std::mem::align_of::<usize>()).unwrap())
+    allocator.alloc(layout)
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn host_dealloc(ptr: *mut u8, size: usize) {
+pub unsafe extern "C" fn host_dealloc(ptr: *mut u8, layout: Layout) {
     let allocator = HostAllocator;
-    allocator.dealloc(
-        ptr,
-        Layout::from_size_align(size, std::mem::align_of::<usize>()).unwrap(),
-    )
+    allocator.dealloc(ptr, layout)
 }
 
 #[no_mangle]
@@ -255,3 +252,40 @@ pub unsafe extern "C" fn toxoid_component_get_member_u32(
 ) -> u32 {
     flecs_core::flecs_component_get_member_u32(component_ptr, offset)
 }
+
+#[no_mangle]
+pub unsafe extern "C" fn toxoid_create_vec() -> *mut c_void {
+    Box::into_raw(Box::new(Vec::<*mut c_void>::new())) as *mut c_void
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn toxoid_vec_push(ptr: *mut c_void, value: *mut c_void) {
+    let vec: &mut Vec<*mut c_void> = &mut *(ptr as *mut Vec<*mut c_void>);
+    vec.push(value);
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn toxoid_vec_drop(ptr: *mut c_void) {
+    let _box: Box<Vec<*mut c_void>> = Box::from_raw(ptr as *mut Vec<*mut c_void>);
+    // Dropping the box, and hence the Vec.
+}
+
+// #[no_mangle]
+// pub unsafe extern "C" fn toxoid_vec_as_slice(ptr: *mut c_void) -> *mut c_void {
+//     let vec: &mut Vec<*mut c_void> = &mut *(ptr as *mut Vec<*mut c_void>);
+//     let slice = vec.as_slice();
+//     let boxed_slice = Box::into_raw(Box::new(slice));
+
+//     boxed_slice as *mut c_void
+// }
+
+#[no_mangle]
+pub unsafe extern "C" fn toxoid_vec_as_slice(ptr: *mut c_void) -> (*const *mut c_void, i32) {
+    let vec: &mut Vec<*mut c_void> = &mut *(ptr as *mut Vec<*mut c_void>);
+    (vec.as_ptr(), vec.len() as i32)
+}
+
+// #[no_mangle]
+// pub unsafe extern "C" fn toxoid_free_slice(ptr: *mut c_void, len: usize) {
+//     let _reconstructed_box = Box::from_raw(ptr as *mut [*mut c_void; len]);
+// }

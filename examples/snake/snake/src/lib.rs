@@ -39,6 +39,9 @@ pub unsafe extern "C" fn app_main() {
     print_i32(pos_component_2.get_x() as i32);
     pos_component_2.set_x(777);
 
+    print_string("Original Pointer value:");
+    print_i32(pos_component.ptr as i32);
+
     let mut query = Query::new(&mut [pos_id]);
     let query = query.iter();
     while query.next() {
@@ -49,8 +52,22 @@ pub unsafe extern "C" fn app_main() {
             print_i32(pos.get_x() as i32);
         }
         
-        // let field = query.field::<Position>();
-        // print_string("Field length:");
-        // print_i32(field.as_slice().len() as i32);
+        let (field_ptr, count) = query.field::<Position>();
+        let field = core::slice::from_raw_parts(*field_ptr as *mut Position, count as usize);
+        for i in 0..count {
+            print_string("Field iterator pointer value:");
+            print_i32(field[i as usize].ptr as i32);
+            print_string("X value:");
+            print_i32(field[i as usize].get_x() as i32);
+        }
+
+        // Iterate over field
+        // print_i32(field[0 as usize].get_x() as i32);
+
+        // let mut components = Vec::<i32>::new();
+        // for i in 0..30 {
+        //     components.push(i);
+        //     print_i32(components.as_slice()[i as usize]);
+        // }
     }
 }
