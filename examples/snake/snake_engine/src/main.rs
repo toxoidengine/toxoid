@@ -89,7 +89,7 @@ pub unsafe extern "C" fn toxoid_register_component(
     let component_name =
         std::ffi::CString::new(component_name).expect("Failed to convert to CString");
 
-    // Iterate over the member names
+    // Iterate over the member names 
     for i in 0..member_names_count {
         let member_name_ptr = *member_names.add(i as usize);
         let member_name_length = *member_names_len.add(i as usize);
@@ -175,18 +175,15 @@ pub unsafe fn toxoid_query_entity_list(iter: *mut flecs_core::ecs_iter_t) -> &'s
     let count = toxoid_iter_count(iter) as usize;
     let ptr = flecs_core::flecs_query_entity_list(iter) as *mut u64;
     let slice: &[u64] = core::slice::from_raw_parts(ptr, count);
-
     // Create a Vec<Entity> from the slice of entity IDs
     // grabbed raw from the flecs API
     let mut entities_vec: Vec<Entity> = Vec::with_capacity(count);
     for &id in slice.iter() {
         entities_vec.push(Entity { id: id as i32 });
     }
-
     // Here, Box::leak(entities_vec.into_boxed_slice()) creates a leak, intentionally not freeing the memory.
     // This is generally a bad practice, but sometimes it can be useful when interfacing with C or for certain kinds of low-level programming.
-    let entities_slice: &'static [Entity] = Box::leak(entities_vec.into_boxed_slice());
-    entities_slice
+    Box::leak(entities_vec.into_boxed_slice()) as &'static [Entity]
 }
 
 use std::alloc::{GlobalAlloc, Layout};
@@ -273,4 +270,21 @@ pub unsafe extern "C" fn toxoid_vec_drop(ptr: *mut c_void) {
 pub unsafe extern "C" fn toxoid_vec_as_slice(ptr: *mut c_void) -> (*const *mut c_void, i32) {
     let vec: &mut Vec<*mut c_void> = &mut *(ptr as *mut Vec<*mut c_void>);
     (vec.as_ptr(), vec.len() as i32)
+}
+
+#[no_mangle]
+pub unsafe fn toxoid_query_field_size(
+    iter: *mut flecs_core::ecs_iter_t,
+    term_index: i32
+) -> usize {
+    flecs_core::flecs_query_field_size(iter, term_index)
+}
+
+#[no_mangle]
+pub unsafe fn toxoid_query_field_list(
+    iter: *mut flecs_core::ecs_iter_t,
+    term_index: i32,
+    count: u32,
+) -> &'static mut [*const c_void] {
+    flecs_core::flecs_query_field_list(iter, term_index, count)
 }
