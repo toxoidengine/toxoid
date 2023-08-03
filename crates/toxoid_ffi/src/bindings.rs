@@ -46,4 +46,13 @@ extern "C" {
     pub fn toxoid_component_cache_get(type_id: core::any::TypeId) -> i32;
     pub fn toxoid_component_set_member_u32(component_ptr: *mut c_void, offset: u32, value: u32);
     pub fn toxoid_component_get_member_u32(component_ptr: *mut c_void, offset: u32) -> u32;
+    pub fn toxoid_query_field_size(
+        iter: *mut c_void,
+        term_index: i32
+    ) -> usize;
+    pub fn toxoid_query_field_list(
+        iter: *mut c_void,
+        term_index: i32,
+        count: u32,
+    ) -> &'static mut [*const c_void];
 }

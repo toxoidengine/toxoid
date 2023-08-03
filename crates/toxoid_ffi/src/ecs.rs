@@ -63,43 +63,31 @@ impl Query {
     }
 
     // TODO: Solve alignment issue passing vector slices back and forth
-    pub fn field<T: Default + IsComponent + 'static>(&self) -> (*mut *mut c_void, i32) {
+    pub fn field<T: Default + IsComponent + 'static>(&self) -> &'static [T] {
         unsafe {
             let count = toxoid_iter_count(self.iter);
-            let component_id = toxoid_component_cache_get(core::any::TypeId::of::<T>());
+            // let component_id = toxoid_component_cache_get(core::any::TypeId::of::<T>());
             // + 1 because of 1-based indexing for term index
             // let term_index = self.indexes.iter().find(|&&x| x == component_id).unwrap() + 1;
-    
-            // Create a new vector in the host environment.
-            let vec_ptr = toxoid_create_vec();
-    
-            for i in 0..count {
-                let layout = Layout::new::<T>();
-                let component_ptr = ALLOCATOR.alloc(layout) as *mut T;
-                if component_ptr.is_null() {
-                    // Handle allocation error, e.g., by returning or breaking the loop
-                    break;
-                }
             
-                // let ptr = toxoid_query_field(self.iter, term_index, count as u32, i as u32);
-                let ptr = toxoid_query_field(self.iter, 1, count as u32, i as u32);
-                
-                // Use ptr::write to write T::default() to the allocated memory.
-                component_ptr.write(T::default());
-                (*component_ptr).set_ptr(ptr as *mut c_void);  // Assuming T has a set_ptr method
-               
-                // Push the component to the vector in the host environment.
-                toxoid_vec_push(vec_ptr, component_ptr as *mut _ as *mut c_void);
-            }
+            let field_size = toxoid_query_field_size(self.iter, 1);
+            let field_slice = toxoid_query_field_list(self.iter, 1, count as u32);
 
-            let (field_ptr, count) = toxoid_vec_as_slice(vec_ptr);
-
-            let field = core::slice::from_raw_parts(*field_ptr as *mut T, count as usize);
-            for i in 0..count {
-                print_i32(field[i as usize].get_ptr() as i32);
-            }
-
-            toxoid_vec_as_slice(vec_ptr)
+            // let layout = Layout::array::<T>(count).unwrap();
+            let layout = Layout::new::<T>();
+            let ptr = ALLOCATOR.alloc(layout) as *mut T;
+            field_slice
+                .iter()
+                .enumerate()
+                .for_each(|(i, &component_ptr)| { 
+                    let mut component = T::default();
+                    component.set_ptr(component_ptr as *mut c_void);
+                    ptr.add(i).write(component);
+                });
+            let component_ptrs_slice = core::slice::from_raw_parts(ptr, count as usize);
+            
+            core::mem::forget(component_ptrs_slice);
+            component_ptrs_slice
         }
     }
 }
