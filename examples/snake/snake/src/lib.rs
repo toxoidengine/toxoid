@@ -39,7 +39,7 @@ pub unsafe extern "C" fn app_main() {
 
     let mut pos_component_2 = player_2.get_component::<Position>();
     pos_component_2.set_x(777);
-    pos_component_2.set_y(999);
+    pos_component_2.set_x(999);
 
     let mut query = Query::new(&mut [pos_id]);
     let query = query.iter();

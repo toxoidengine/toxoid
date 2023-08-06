@@ -7,6 +7,7 @@ edition = "2021"
 crate-type = ["lib"]
 
 [dependencies]
+lazy_static = "1.4.0"
 sdl2 = { version="0.35.2", default-features = false, features = ["unsafe_textures", "image"] }
 
 [build-dependencies]
