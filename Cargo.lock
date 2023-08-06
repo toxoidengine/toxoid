@@ -401,6 +401,8 @@ name = "snake_engine"
 version = "0.1.0"
 dependencies = [
  "flecs_core",
+ "toxoid_ffi",
+ "toxoid_ffi_macro",
  "toxoid_sdl",
 ]
 
@@ -482,6 +484,7 @@ dependencies = [
  "cmake",
  "curl",
  "gl_generator",
+ "lazy_static",
  "sdl2",
 ]
 
