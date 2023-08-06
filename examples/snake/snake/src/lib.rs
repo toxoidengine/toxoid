@@ -5,8 +5,8 @@ use std::alloc::GlobalAlloc;
 
 use toxoid_ffi::*;
 use toxoid_ffi_macro::component;
-pub mod ecs;
-pub use ecs::*;
+pub mod local_ecs;
+pub use local_ecs::*;
 
 component! {
     Position {
