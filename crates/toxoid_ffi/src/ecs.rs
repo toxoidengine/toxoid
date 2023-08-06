@@ -79,36 +79,40 @@ impl Query {
         unsafe { toxoid_query_entity_list(self.iter) }
     }
 
-    // TODO: Solve alignment issue passing vector slices back and forth
     pub fn field<T: Default + IsComponent + 'static>(&self) -> &'static [T] {
         unsafe {
             let count = toxoid_iter_count(self.iter);
             // let component_id = toxoid_component_cache_get(core::any::TypeId::of::<T>());
+            // Get index of component type in query
             let type_id = TypeId::of::<T>();
             let mut term_index = 0;
-            // + 1 because of 1-based indexing for term index
             self.indexes.iter().enumerate().for_each(|(i, &x)| {
                 if x == type_id {
+                    // + 1 because of 1-based indexing for term index
                     term_index = i + 1;
                 }
             });
 
-            let field_size = toxoid_query_field_size(self.iter, term_index as i32);
+            // Get slice of pointers to components
             let field_slice = toxoid_query_field_list(self.iter, term_index as i32, count as u32);
 
+            // Call allocator to create a slice of component structs
             let layout = Layout::new::<T>();
-            let components_ptrs_ptr = ALLOCATOR.alloc(layout) as *mut T;
+            let components_ptr = ALLOCATOR.alloc(layout) as *mut T;
             field_slice
                 .iter()
                 .enumerate()
                 .for_each(|(i, &component_ptr)| { 
                     let mut component = T::default();
                     component.set_ptr(component_ptr as *mut c_void);
-                    components_ptrs_ptr.add(i).write(component);
+                    components_ptr.add(i).write(component);
                 });
-            let component_ptrs = core::slice::from_raw_parts(components_ptrs_ptr, count as usize);
-            core::mem::forget(component_ptrs);
-            component_ptrs
+            // Convert from pointer to slice
+            let components = core::slice::from_raw_parts(components_ptr, count as usize);
+            // Make sure slice is not freed at the end of this function
+            core::mem::forget(components);
+            // Return slice of components
+            components
         }
     }
 }
