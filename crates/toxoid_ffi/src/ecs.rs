@@ -69,7 +69,7 @@ impl Query {
             // let component_id = toxoid_component_cache_get(core::any::TypeId::of::<T>());
             // + 1 because of 1-based indexing for term index
             // let term_index = self.indexes.iter().find(|&&x| x == component_id).unwrap() + 1;
-            
+
             let field_size = toxoid_query_field_size(self.iter, 1);
             let field_slice = toxoid_query_field_list(self.iter, 1, count as u32);
 
@@ -85,7 +85,6 @@ impl Query {
                     ptr.add(i).write(component);
                 });
             let component_ptrs_slice = core::slice::from_raw_parts(ptr, count as usize);
-            
             core::mem::forget(component_ptrs_slice);
             component_ptrs_slice
         }

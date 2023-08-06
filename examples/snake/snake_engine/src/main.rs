@@ -2,6 +2,8 @@
 
 use core::ffi::{c_char, c_void};
 use std::collections::HashMap;
+use toxoid_ffi::*;
+use toxoid_ffi_macro::component;
 
 pub const MAX_ELEMENTS: usize = 100;
 
@@ -13,10 +15,69 @@ extern "C" {
 
 pub static mut COMPONENT_ID_CACHE: Option<HashMap<core::any::TypeId, i32>> = None;
 
+component!{
+    TestComponent {
+        x: u32,
+        y: u32,
+    }
+}
+
+pub fn cache_component_ecs(type_id: core::any::TypeId, component_id: i32) {
+    unsafe {
+        toxoid_component_cache_insert(type_id, component_id);
+    }
+}
+
+// Have to define at top level as a workaround to maintain context in toxoid_ffi_macro
+pub fn register_component_ecs(
+    name: &str,
+    member_names: &[&str],
+    member_types: &[u8],
+) -> ecs_entity_t {
+    unsafe {
+        let mut c_member_names: [*const c_char; 100] = [core::ptr::null(); 100];
+        let mut c_member_names_len: [u8; 100] = [0; 100];
+        for (i, &s) in member_names.iter().enumerate() {
+            c_member_names[i] = s.as_ptr() as *const c_char;
+            c_member_names_len[i] = s.len() as u8;
+        }
+
+        let mut c_member_types: [*const u8; 100] = [core::ptr::null(); 100];
+        for (i, &t) in member_types.iter().enumerate() {
+            c_member_types[i] = &t as *const u8;
+        }
+
+        toxoid_register_component(
+            name.as_bytes().as_ptr() as *const c_char,
+            name.len() as u8,
+            c_member_names.as_ptr(),
+            member_names.len() as u32,
+            c_member_names_len.as_ptr(),
+            c_member_types.as_ptr(),
+            c_member_types.len() as u32,
+        )
+    }
+}
+
+
 #[no_mangle]
 pub unsafe extern "C" fn app_init() {
     COMPONENT_ID_CACHE = Some(HashMap::new());
     app_main();
+
+    let pos_id = TestComponent::register();
+
+     // Create a new entity.
+     let mut player = Entity::new();
+     // Add the component to the entity.
+     player.add(pos_id);
+
+     let mut pos_component = player.get_component::<TestComponent>();
+     pos_component.set_x(420);
+     pos_component.set_y(421);
+
+     println!("Player: {:?}", pos_component.get_x());
+
     // Initialize SDL2
     toxoid_sdl::create_sdl_loop();
 }
@@ -109,9 +170,18 @@ pub unsafe extern "C" fn toxoid_register_component(
 }
 
 #[no_mangle]
-pub unsafe fn toxoid_entity_create() -> flecs_core::ecs_entity_t {
-    flecs_core::flecs_entity_create()
+pub unsafe fn toxoid_entity_create() -> i32 {
+    flecs_core::flecs_entity_create() as i32
 }
+
+// TODO: Change i32 to u64 for Rust functions
+// This is a limitation of JS where 
+// you can't pass u64 to JS functions
+// from emscripten
+// #[no_mangle]
+// pub unsafe fn toxoid_entity_create() -> flecs_core::ecs_entity_t {
+//     flecs_core::flecs_entity_create()
+// }
 
 #[no_mangle]
 pub unsafe fn toxoid_entity_add_component(entity: u32, component: u32) -> *mut c_void {
@@ -166,24 +236,24 @@ pub unsafe fn to_u64_slice(ptr: *mut u64, len: usize) -> &'static [u64] {
 
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
-pub struct Entity {
+pub struct EntityId {
     id: i32,
 }
 
 #[no_mangle]
-pub unsafe fn toxoid_query_entity_list(iter: *mut flecs_core::ecs_iter_t) -> &'static [Entity] {
+pub unsafe fn toxoid_query_entity_list(iter: *mut flecs_core::ecs_iter_t) -> &'static [EntityId] {
     let count = toxoid_iter_count(iter) as usize;
     let ptr = flecs_core::flecs_query_entity_list(iter) as *mut u64;
     let slice: &[u64] = core::slice::from_raw_parts(ptr, count);
     // Create a Vec<Entity> from the slice of entity IDs
     // grabbed raw from the flecs API
-    let mut entities_vec: Vec<Entity> = Vec::with_capacity(count);
+    let mut entities_vec: Vec<EntityId> = Vec::with_capacity(count);
     for &id in slice.iter() {
-        entities_vec.push(Entity { id: id as i32 });
+        entities_vec.push(EntityId { id: id as i32 });
     }
     // Here, Box::leak(entities_vec.into_boxed_slice()) creates a leak, intentionally not freeing the memory.
     // This is generally a bad practice, but sometimes it can be useful when interfacing with C or for certain kinds of low-level programming.
-    Box::leak(entities_vec.into_boxed_slice()) as &'static [Entity]
+    Box::leak(entities_vec.into_boxed_slice()) as &'static [EntityId]
 }
 
 use std::alloc::{GlobalAlloc, Layout};
