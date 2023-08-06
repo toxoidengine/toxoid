@@ -26,12 +26,12 @@ pub unsafe extern "C" fn app_main() {
     // Create a new entity.
     let mut player = Entity::new();
     // Add the component to the entity.
-    player.add(pos_id);
+    player.add::<Position>();
 
     // Create a new entity.
     let mut player_2 = Entity::new();
     // Add the component to the entity.
-    player_2.add(pos_id);
+    player_2.add::<Position>();
     
     let mut pos_component = player.get_component::<Position>();
     pos_component.set_x(420);
@@ -41,7 +41,8 @@ pub unsafe extern "C" fn app_main() {
     pos_component_2.set_x(777);
     pos_component_2.set_x(999);
 
-    let mut query = Query::new(&mut [pos_id]);
+    // let mut query = Query::new(&mut [pos_id]);
+    let mut query = Query::new::<Position>(&mut [pos_id]);
     let query = query.iter();
     while query.next() {
         let entities = query.entities();

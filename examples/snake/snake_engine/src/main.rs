@@ -20,18 +20,20 @@ component! {
 
 #[no_mangle]
 pub unsafe extern "C" fn app_init() {
-    let pos_id = TestComponent::register();
+    TestComponent::register();
 
     // Create a new entity.
     let mut player = Entity::new();
     // Add the component to the entity.
-    player.add(pos_id);
+    player.add::<TestComponent>();
 
     let mut pos_component = player.get_component::<TestComponent>();
     pos_component.set_x(95);
     pos_component.set_y(421);
 
     println!("Player X: {:?}", pos_component.get_x());
+
+    app_main();
 
     // Initialize SDL2
     toxoid_sdl::create_sdl_loop();
