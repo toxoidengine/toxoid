@@ -2,6 +2,7 @@
 use crate::*;
 use core::ffi::c_void;
 use core::alloc::{GlobalAlloc, Layout};
+use std::any::TypeId;
 
 #[repr(u8)]
 pub enum Type {
@@ -31,19 +32,35 @@ pub trait IsComponent {
 pub struct Query {
     query: *mut c_void,
     iter: *mut c_void,
-    indexes: [ecs_id_t; MAX_ELEMENTS],
+    indexes: &'static [TypeId],
 }
 
 impl Query {
-    pub fn new(ids: &mut [ecs_id_t]) -> Self {
+    pub fn new<T: Default + IsComponent + 'static>(ids: &mut [ecs_id_t]) -> Self {
         unsafe {
+            let layout = Layout::new::<T>();
+            let indexes_ptr = ALLOCATOR.alloc(layout) as *mut TypeId;
+            indexes_ptr.add(0).write(TypeId::of::<T>());
+            let indexes = core::slice::from_raw_parts(indexes_ptr, 1 as usize);
+            core::mem::forget(indexes);
+
             Query {
                 query: toxoid_query_create(ids.as_mut_ptr() as *mut i32, ids.len() as i32),
                 iter: core::ptr::null_mut(),
-                indexes: [0; MAX_ELEMENTS],
+                indexes,
             }
         }
     }
+
+    // pub fn new_slice(ids: &mut [ecs_id_t]) -> Self {
+    //     unsafe {
+    //         Query {
+    //             query: toxoid_query_create(ids.as_mut_ptr() as *mut i32, ids.len() as i32),
+    //             iter: core::ptr::null_mut(),
+    //             indexes: [0; MAX_ELEMENTS],
+    //         }
+    //     }
+    // }
 
     pub fn iter(&mut self) -> &mut Query {
         self.iter = unsafe { toxoid_query_iter(self.query) };
@@ -67,26 +84,31 @@ impl Query {
         unsafe {
             let count = toxoid_iter_count(self.iter);
             // let component_id = toxoid_component_cache_get(core::any::TypeId::of::<T>());
+            let type_id = TypeId::of::<T>();
+            let mut term_index = 0;
             // + 1 because of 1-based indexing for term index
-            // let term_index = self.indexes.iter().find(|&&x| x == component_id).unwrap() + 1;
+            self.indexes.iter().enumerate().for_each(|(i, &x)| {
+                if x == type_id {
+                    term_index = i + 1;
+                }
+            });
 
-            let field_size = toxoid_query_field_size(self.iter, 1);
-            let field_slice = toxoid_query_field_list(self.iter, 1, count as u32);
+            let field_size = toxoid_query_field_size(self.iter, term_index as i32);
+            let field_slice = toxoid_query_field_list(self.iter, term_index as i32, count as u32);
 
-            // let layout = Layout::array::<T>(count).unwrap();
             let layout = Layout::new::<T>();
-            let ptr = ALLOCATOR.alloc(layout) as *mut T;
+            let components_ptrs_ptr = ALLOCATOR.alloc(layout) as *mut T;
             field_slice
                 .iter()
                 .enumerate()
                 .for_each(|(i, &component_ptr)| { 
                     let mut component = T::default();
                     component.set_ptr(component_ptr as *mut c_void);
-                    ptr.add(i).write(component);
+                    components_ptrs_ptr.add(i).write(component);
                 });
-            let component_ptrs_slice = core::slice::from_raw_parts(ptr, count as usize);
-            core::mem::forget(component_ptrs_slice);
-            component_ptrs_slice
+            let component_ptrs = core::slice::from_raw_parts(components_ptrs_ptr, count as usize);
+            core::mem::forget(component_ptrs);
+            component_ptrs
         }
     }
 }
@@ -106,7 +128,14 @@ impl Entity {
         }
     }
 
-    pub fn add(&mut self, component: ecs_id_t) {
+    pub fn add<T: IsComponent + 'static>(&mut self) {
+        unsafe {
+            let component_id = toxoid_component_cache_get(core::any::TypeId::of::<T>());
+            toxoid_entity_add_component(self.id as u32, component_id as u32);
+        }
+    }
+
+    pub fn add_id(&mut self, component: ecs_id_t) {
         unsafe {
             toxoid_entity_add_component(self.id as u32, component as u32);
         }
