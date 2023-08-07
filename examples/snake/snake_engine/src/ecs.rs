@@ -197,23 +197,6 @@ pub unsafe extern "C" fn toxoid_component_cache_get(type_id: core::any::TypeId) 
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn toxoid_component_set_member_u32(
-    component_ptr: *mut c_void,
-    offset: u32,
-    value: u32,
-) {
-    flecs_core::flecs_component_set_member_u32(component_ptr, offset, value);
-}
-
-#[no_mangle]
-pub unsafe extern "C" fn toxoid_component_get_member_u32(
-    component_ptr: *mut c_void,
-    offset: u32
-) -> u32 {
-    flecs_core::flecs_component_get_member_u32(component_ptr, offset)
-}
-
-#[no_mangle]
 pub unsafe extern "C" fn toxoid_create_vec() -> *mut c_void {
     Box::into_raw(Box::new(Vec::<*mut c_void>::new())) as *mut c_void
 }
@@ -251,4 +234,242 @@ pub unsafe fn toxoid_query_field_list(
     count: u32,
 ) -> &'static mut [*const c_void] {
     flecs_core::flecs_query_field_list(iter, term_index, count)
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn toxoid_component_get_member_u8(
+    component_ptr: *mut c_void,
+    offset: u32
+) -> u8 {
+    flecs_core::flecs_component_get_member_u8(component_ptr, offset)
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn toxoid_component_get_member_u16(
+    component_ptr: *mut c_void,
+    offset: u32
+) -> u16 {
+    flecs_core::flecs_component_get_member_u16(component_ptr, offset)
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn toxoid_component_get_member_u32(
+    component_ptr: *mut c_void,
+    offset: u32
+) -> u32 {
+    flecs_core::flecs_component_get_member_u32(component_ptr, offset)
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn toxoid_component_get_member_u64(
+    component_ptr: *mut c_void,
+    offset: u32
+) -> u64 {
+    flecs_core::flecs_component_get_member_u64(component_ptr, offset)
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn toxoid_component_get_member_i8(
+    component_ptr: *mut c_void,
+    offset: u32
+) -> i8 {
+    flecs_core::flecs_component_get_member_i8(component_ptr, offset)
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn toxoid_component_get_member_i16(
+    component_ptr: *mut c_void,
+    offset: u32
+) -> i16 {
+    flecs_core::flecs_component_get_member_i16(component_ptr, offset)
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn toxoid_component_get_member_i32(
+    component_ptr: *mut c_void,
+    offset: u32
+) -> i32 {
+    flecs_core::flecs_component_get_member_i32(component_ptr, offset)
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn toxoid_component_get_member_i64(
+    component_ptr: *mut c_void,
+    offset: u32
+) -> i64 {
+    flecs_core::flecs_component_get_member_i64(component_ptr, offset)
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn toxoid_component_get_member_f32(
+    component_ptr: *mut c_void,
+    offset: u32
+) -> f32 {
+    flecs_core::flecs_component_get_member_f32(component_ptr, offset)
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn toxoid_component_get_member_f64(
+    component_ptr: *mut c_void,
+    offset: u32
+) -> f64 {
+    flecs_core::flecs_component_get_member_f64(component_ptr, offset)
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn toxoid_component_get_member_bool(
+    component_ptr: *mut c_void,
+    offset: u32
+) -> bool {
+    flecs_core::flecs_component_get_member_bool(component_ptr, offset)
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn toxoid_component_get_member_string(
+    component_ptr: *mut c_void,
+    offset: u32
+) -> *mut i8 {
+    flecs_core::flecs_component_get_member_string(component_ptr, offset)
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn toxoid_component_get_member_u32array(
+    component_ptr: *mut c_void,
+    offset: u32
+) -> *mut u32 {
+    flecs_core::flecs_component_get_member_u32array(component_ptr, offset)
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn toxoid_component_get_member_f32array(
+    component_ptr: *mut c_void,
+    offset: u32
+) -> *mut f32 {
+    flecs_core::flecs_component_get_member_f32array(component_ptr, offset)
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn toxoid_component_set_member_u8(
+    component_ptr: *mut c_void,
+    offset: u32,
+    value: u8,
+) {
+    flecs_core::flecs_component_set_member_u8(component_ptr, offset, value);
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn toxoid_component_set_member_u16(
+    component_ptr: *mut c_void,
+    offset: u32,
+    value: u16,
+) {
+    flecs_core::flecs_component_set_member_u16(component_ptr, offset, value);
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn toxoid_component_set_member_u32(
+    component_ptr: *mut c_void,
+    offset: u32,
+    value: u32,
+) {
+    flecs_core::flecs_component_set_member_u32(component_ptr, offset, value);
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn toxoid_component_set_member_u64(
+    component_ptr: *mut c_void,
+    offset: u32,
+    value: u64,
+) {
+    flecs_core::flecs_component_set_member_u64(component_ptr, offset, value);
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn toxoid_component_set_member_i8(
+    component_ptr: *mut c_void,
+    offset: u32,
+    value: i8,
+) {
+    flecs_core::flecs_component_set_member_i8(component_ptr, offset, value);
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn toxoid_component_set_member_i16(
+    component_ptr: *mut c_void,
+    offset: u32,
+    value: i16,
+) {
+    flecs_core::flecs_component_set_member_i16(component_ptr, offset, value);
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn toxoid_component_set_member_i32(
+    component_ptr: *mut c_void,
+    offset: u32,
+    value: i32,
+) {
+    flecs_core::flecs_component_set_member_i32(component_ptr, offset, value);
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn toxoid_component_set_member_i64(
+    component_ptr: *mut c_void,
+    offset: u32,
+    value: i64,
+) {
+    flecs_core::flecs_component_set_member_i64(component_ptr, offset, value);
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn toxoid_component_set_member_f32(
+    component_ptr: *mut c_void,
+    offset: u32,
+    value: f32,
+) {
+    flecs_core::flecs_component_set_member_f32(component_ptr, offset, value);
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn toxoid_component_set_member_f64(
+    component_ptr: *mut c_void,
+    offset: u32,
+    value: f64,
+) {
+    flecs_core::flecs_component_set_member_f64(component_ptr, offset, value);
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn toxoid_component_set_member_bool(
+    component_ptr: *mut c_void,
+    offset: u32,
+    value: bool,
+) {
+    flecs_core::flecs_component_set_member_bool(component_ptr, offset, value);
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn toxoid_component_set_member_string(
+    component_ptr: *mut c_void,
+    offset: u32,
+    value: *mut c_char,
+) {
+    flecs_core::flecs_component_set_member_string(component_ptr, offset, value);
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn toxoid_component_set_member_u32array(
+    component_ptr: *mut c_void,
+    offset: u32,
+    value: *mut u32,
+) {
+    flecs_core::flecs_component_set_member_u32array(component_ptr, offset, value);
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn toxoid_component_set_member_f32array(
+    component_ptr: *mut c_void,
+    offset: u32,
+    value: *mut f32,
+) {
+    flecs_core::flecs_component_set_member_f32array(component_ptr, offset, value);
 }

@@ -41,11 +41,6 @@ extern "C" {
         index: u32,
     ) -> *const c_void;
     pub fn toxoid_query_entity_list(iter: *mut c_void) -> &'static [Entity];
-    pub fn toxoid_iter_count(iter: *mut c_void) -> i32;
-    pub fn toxoid_component_cache_insert(type_id: core::any::TypeId, component_id: i32);
-    pub fn toxoid_component_cache_get(type_id: core::any::TypeId) -> i32;
-    pub fn toxoid_component_set_member_u32(component_ptr: *mut c_void, offset: u32, value: u32);
-    pub fn toxoid_component_get_member_u32(component_ptr: *mut c_void, offset: u32) -> u32;
     pub fn toxoid_query_field_size(
         iter: *mut c_void,
         term_index: i32
@@ -55,4 +50,38 @@ extern "C" {
         term_index: i32,
         count: u32,
     ) -> &'static mut [*const c_void];
+    pub fn toxoid_iter_count(iter: *mut c_void) -> i32;
+    pub fn toxoid_component_cache_insert(type_id: core::any::TypeId, component_id: i32);
+    pub fn toxoid_component_cache_get(type_id: core::any::TypeId) -> i32;
+    pub fn toxoid_component_get_member_u8(component_ptr: *mut c_void, offset: u32) -> u8;
+    pub fn toxoid_component_get_member_u16(component_ptr: *mut c_void, offset: u32) -> u8;
+    pub fn toxoid_component_get_member_u32(component_ptr: *mut c_void, offset: u32) -> u32;
+    pub fn toxoid_component_get_member_u64(component_ptr: *mut c_void, offset: u32) -> u64;
+    pub fn toxoid_component_get_member_i8(component_ptr: *mut c_void, offset: u8) -> i8;
+    pub fn toxoid_component_get_member_i16(component_ptr: *mut c_void, offset: u8) -> i16;
+    pub fn toxoid_component_get_member_i32(component_ptr: *mut c_void, offset: u32) -> i32;
+    pub fn toxoid_component_get_member_i64(component_ptr: *mut c_void, offset: u32) -> i64;
+    pub fn toxoid_component_get_member_f32(component_ptr: *mut c_void, offset: u32) -> f32;
+    pub fn toxoid_component_get_member_f64(component_ptr: *mut c_void, offset: u32) -> f64;
+    pub fn toxoid_component_get_member_string(
+        component_ptr: *mut c_void,
+        offset: u32,
+        len: u32,
+    ) -> *const c_char;
+    pub fn toxoid_component_set_member_u8(component_ptr: *mut c_void, offset: u32, value: u8);
+    pub fn toxoid_component_set_member_u16(component_ptr: *mut c_void, offset: u32, value: u16);
+    pub fn toxoid_component_set_member_u32(component_ptr: *mut c_void, offset: u32, value: u32);
+    pub fn toxoid_component_set_member_u64(component_ptr: *mut c_void, offset: u32, value: u64);
+    pub fn toxoid_component_set_member_i8(component_ptr: *mut c_void, offset: u32, value: i8);
+    pub fn toxoid_component_set_member_i16(component_ptr: *mut c_void, offset: u32, value: i16);
+    pub fn toxoid_component_set_member_i32(component_ptr: *mut c_void, offset: u32, value: i32);
+    pub fn toxoid_component_set_member_i64(component_ptr: *mut c_void, offset: u32, value: i64);
+    pub fn toxoid_component_set_member_f32(component_ptr: *mut c_void, offset: u32, value: f32);
+    pub fn toxoid_component_set_member_f64(component_ptr: *mut c_void, offset: u32, value: f64);
+    pub fn toxoid_component_set_member_string(
+        component_ptr: *mut c_void,
+        offset: u32,
+        len: u32,
+        value: *const c_char,
+    );   
 }
