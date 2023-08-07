@@ -88,130 +88,352 @@ pub fn component(input: TokenStream) -> TokenStream {
                             &format!("set_{}", field_name.as_ref().unwrap()),
                             field_name.span(),
                         );
-                        quote! {
-                            pub fn #getter_name(&self) -> #field_type {
-                                match () {
-                                    _ if core::any::TypeId::of::<#field_type>() == core::any::TypeId::of::<u8>() => {
+
+                        let field_type_str = format!("{}", quote!(#field_type));
+                        match () {
+                            // Compare field_type against string type such as "u8"
+                            _ if field_type_str == "u8" => {
+                                quote! {
+                                    pub fn #getter_name(&self) -> #field_type {
                                         unsafe {
                                             toxoid_component_get_member_u8(self.ptr, #field_offset)
                                         }
-                                    },
-                                    _ if core::any::TypeId::of::<#field_type>() == core::any::TypeId::of::<u16>() => {
+                                    }
+                                    pub fn #setter_name(&mut self, value: u8) {
+                                        unsafe {
+                                            toxoid_component_set_member_u8(self.ptr, #field_offset, value);
+                                        }
+                                    }
+                                }
+                            },
+                            _ if field_type_str == "u16" => {
+                                quote! {
+                                    pub fn #getter_name(&self) -> #field_type {
                                         unsafe {
                                             toxoid_component_get_member_u16(self.ptr, #field_offset)
                                         }
-                                    },
-                                    _ if core::any::TypeId::of::<#field_type>() == core::any::TypeId::of::<u32>() => {
+                                    }
+                                    pub fn #setter_name(&mut self, value: u16) {
+                                        unsafe {
+                                            toxoid_component_set_member_u16(self.ptr, #field_offset, value);
+                                        }
+                                    }
+                                }
+                            },
+                            _ if field_type_str == "u32" => {
+                                quote! {
+                                    pub fn #getter_name(&self) -> #field_type {
                                         unsafe {
                                             toxoid_component_get_member_u32(self.ptr, #field_offset)
                                         }
-                                    },
-                                    _ if core::any::TypeId::of::<#field_type>() == core::any::TypeId::of::<u64>() => {
+                                    }
+                                    pub fn #setter_name(&mut self, value: u32) {
+                                        unsafe {
+                                            toxoid_component_set_member_u32(self.ptr, #field_offset, value);
+                                        }
+                                    }
+                                }
+                            },
+                            _ if field_type_str == "u64" => {
+                                quote! {
+                                    pub fn #getter_name(&self) -> #field_type {
                                         unsafe {
                                             toxoid_component_get_member_u64(self.ptr, #field_offset)
                                         }
-                                    },
-                                    _ if core::any::TypeId::of::<#field_type>() == core::any::TypeId::of::<i8>() => {
+                                    }
+                                    pub fn #setter_name(&mut self, value: u64) {
                                         unsafe {
-                                            toxoid_component_get_member_i8(self.ptr, #field_offset)
+                                            toxoid_component_set_member_u64(self.ptr, #field_offset, value);
                                         }
-                                    },
-                                    _ if core::any::TypeId::of::<#field_type>() == core::any::TypeId::of::<i16>() => {
+                                    }
+                                }
+                            },
+                            _ if field_type_str == "i8" => {
+                                quote! {
+                                    pub fn #getter_name(&self) -> #field_type {
+                                        unsafe {
+                                            toxoid_component_get_member_i8(self.ptr, #field_offset);
+                                        }
+                                    }
+                                    pub fn #setter_name(&mut self, value: i8) {
+                                        unsafe {
+                                            toxoid_component_set_member_i8(self.ptr, #field_offset, value);
+                                        }
+                                    }
+                                }
+                            },
+                            _ if field_type_str == "i16" => {
+                                quote! {
+                                    pub fn #getter_name(&self) -> #field_type {
                                         unsafe {
                                             toxoid_component_get_member_i16(self.ptr, #field_offset)
                                         }
-                                    },
-                                    _ if core::any::TypeId::of::<#field_type>() == core::any::TypeId::of::<i32>() => {
+                                    }
+                                    pub fn #setter_name(&mut self, value: i16) {
+                                        unsafe {
+                                            toxoid_component_set_member_i16(self.ptr, #field_offset, value);
+                                        }
+                                    }
+                                }
+                            },
+                            _ if field_type_str == "i32" => {
+                                quote! {
+                                    pub fn #getter_name(&self) -> #field_type {
                                         unsafe {
                                             toxoid_component_get_member_i32(self.ptr, #field_offset)
                                         }
-                                    },
-                                    _ if core::any::TypeId::of::<#field_type>() == core::any::TypeId::of::<i64>() => {
+                                    }
+                                    pub fn #setter_name(&mut self, value: i32) {
+                                        unsafe {
+                                            toxoid_component_set_member_i32(self.ptr, #field_offset, value);
+                                        }
+                                    }
+                                }
+                            },
+                            _ if field_type_str == "i64" => {
+                                quote! {
+                                    pub fn #getter_name(&self) -> #field_type {
                                         unsafe {
                                             toxoid_component_get_member_i64(self.ptr, #field_offset)
                                         }
-                                    },
-                                    _ if core::any::TypeId::of::<#field_type>() == core::any::TypeId::of::<f32>() => {
+                                    }
+                                    pub fn #setter_name(&mut self, value: i64) {
+                                        unsafe {
+                                            toxoid_component_set_member_i64(self.ptr, #field_offset, value);
+                                        }
+                                    }
+                                }
+                            },
+                            _ if field_type_str == "f32" => {
+                                quote! {
+                                    pub fn #getter_name(&self) -> #field_type {
                                         unsafe {
                                             toxoid_component_get_member_f32(self.ptr, #field_offset)
                                         }
-                                    },
-                                    _ if core::any::TypeId::of::<#field_type>() == core::any::TypeId::of::<f64>() => {
+                                    }
+                                    pub fn #setter_name(&mut self, value: f32) {
+                                        unsafe {
+                                            toxoid_component_set_member_f32(self.ptr, #field_offset, value);
+                                        }
+                                    }
+                                }
+                            },
+                            _ if field_type_str == "f64" => {
+                                quote! {
+                                    pub fn #getter_name(&self) -> #field_type {
                                         unsafe {
                                             toxoid_component_get_member_f64(self.ptr, #field_offset)
                                         }
-                                    },
-                                    _ if core::any::TypeId::of::<#field_type>() == core::any::TypeId::of::<bool>() => {
+                                    }
+                                    pub fn #setter_name(&mut self, value: f64) {
+                                        unsafe {
+                                            toxoid_component_set_member_f64(self.ptr, #field_offset, value);
+                                        }
+                                    }
+                                }
+                            },
+                            _ if field_type_str == "bool" => {
+                                quote! {
+                                    pub fn #getter_name(&self) -> #field_type {
                                         unsafe {
                                             toxoid_component_get_member_bool(self.ptr, #field_offset)
                                         }
-                                    },
-                                    _ => self.#field_name
+                                    }
+                                    pub fn #setter_name(&mut self, value: bool) {
+                                        unsafe {
+                                            toxoid_component_set_member_bool(self.ptr, #field_offset, value);
+                                        }
+                                    }
                                 }
-                            }
-
-                            pub fn #setter_name(&mut self, value: #field_type) {
-                                self.#field_name = value;
-                                match () {
-                                    _ if core::any::TypeId::of::<#field_type>() == core::any::TypeId::of::<u8>() => {
+                            },
+                            _ if field_type_str == "*mut c_char" => {
+                                quote! {
+                                    pub fn #getter_name(&self) -> #field_type {
                                         unsafe {
-                                            toxoid_component_set_member_u8(self.ptr, #field_offset, value as u8);
+                                            toxoid_component_get_member_string(self.ptr, #field_offset)
                                         }
-                                    },
-                                    _ if core::any::TypeId::of::<#field_type>() == core::any::TypeId::of::<u16>() => {
+                                    }
+                                    pub fn #setter_name(&mut self, value: *mut c_char) {
                                         unsafe {
-                                            toxoid_component_set_member_u16(self.ptr, #field_offset, value as u16);
+                                            toxoid_component_set_member_string(self.ptr, #field_offset, value);
                                         }
-                                    },
-                                    _ if core::any::TypeId::of::<#field_type>() == core::any::TypeId::of::<u32>() => {
+                                    }
+                                }
+                            },
+                            _ if field_type_str == "*mut u32" => {
+                                quote! {
+                                    pub fn #getter_name(&self) -> #field_type {
                                         unsafe {
-                                            toxoid_component_set_member_u32(self.ptr, #field_offset, value as u32);
+                                            toxoid_component_get_member_u32array(self.ptr, #field_offset)
                                         }
-                                    },
-                                    _ if core::any::TypeId::of::<#field_type>() == core::any::TypeId::of::<u64>() => {
+                                    }
+                                    pub fn #setter_name(&mut self, value: *mut u32) {
                                         unsafe {
-                                            toxoid_component_set_member_u64(self.ptr, #field_offset, value as u64);
+                                            toxoid_component_set_member_u32array(self.ptr, #field_offset, value);
                                         }
-                                    },
-                                    _ if core::any::TypeId::of::<#field_type>() == core::any::TypeId::of::<i8>() => {
+                                    }
+                                }
+                            },
+                            _ if field_type_str == "*mut f32" => {
+                                quote! {
+                                    pub fn #getter_name(&self) -> #field_type {
                                         unsafe {
-                                            toxoid_component_set_member_i8(self.ptr, #field_offset, value as i8);
+                                            toxoid_component_get_member_f32array(self.ptr, #field_offset)
                                         }
-                                    },
-                                    _ if core::any::TypeId::of::<#field_type>() == core::any::TypeId::of::<i16>() => {
+                                    }
+                                    pub fn #setter_name(&mut self, value: *mut f32) {
                                         unsafe {
-                                            toxoid_component_set_member_i16(self.ptr, #field_offset, value as i16);
+                                            toxoid_component_set_member_f32array(self.ptr, #field_offset, value);
                                         }
-                                    },
-                                    _ if core::any::TypeId::of::<#field_type>() == core::any::TypeId::of::<i32>() => {
+                                    }
+                                }
+                            },
+                            _ => {
+                                quote! {
+                                    pub fn #getter_name(&self) -> #field_type {
                                         unsafe {
-                                            toxoid_component_set_member_i32(self.ptr, #field_offset, value as i32);
+                                            toxoid_component_get_member_u8(self.ptr, #field_offset)
                                         }
-                                    },
-                                    _ if core::any::TypeId::of::<#field_type>() == core::any::TypeId::of::<i64>() => {
+                                    }
+                                    pub fn #setter_name(&mut self, value: u8) {
                                         unsafe {
-                                            toxoid_component_set_member_i64(self.ptr, #field_offset, value as i64);
+                                            toxoid_component_set_member_string(self.ptr, #field_offset, value);
                                         }
-                                    },
-                                    _ if core::any::TypeId::of::<#field_type>() == core::any::TypeId::of::<f32>() => {
-                                        unsafe {
-                                            toxoid_component_set_member_f32(self.ptr, #field_offset, value as f32);
-                                        }
-                                    },
-                                    _ if core::any::TypeId::of::<#field_type>() == core::any::TypeId::of::<f64>() => {
-                                        unsafe {
-                                            toxoid_component_set_member_f64(self.ptr, #field_offset, value as f64);
-                                        }
-                                    },
-                                    _ if core::any::TypeId::of::<#field_type>() == core::any::TypeId::of::<bool>() => {
-                                        unsafe {
-                                            toxoid_component_set_member_bool(self.ptr, #field_offset, value as bool);
-                                        }
-                                    },
-                                    _ => ()
+                                    }
                                 }
                             }
                         }
+
+                        // quote! {
+                        //     pub fn #getter_name(&self) -> #field_type {
+                        //         match () {
+                        //             _ if core::any::TypeId::of::<#field_type>() == core::any::TypeId::of::<u8>() => {
+                        //                 unsafe {
+                        //                     toxoid_component_get_member_u8(self.ptr, #field_offset)
+                        //                 }
+                        //             },
+                        //             _ if core::any::TypeId::of::<#field_type>() == core::any::TypeId::of::<u16>() => {
+                        //                 unsafe {
+                        //                     toxoid_component_get_member_u16(self.ptr, #field_offset)
+                        //                 }
+                        //             },
+                        //             _ if core::any::TypeId::of::<#field_type>() == core::any::TypeId::of::<u32>() => {
+                        //                 unsafe {
+                        //                     toxoid_component_get_member_u32(self.ptr, #field_offset)
+                        //                 }
+                        //             },
+                        //             _ if core::any::TypeId::of::<#field_type>() == core::any::TypeId::of::<u64>() => {
+                        //                 unsafe {
+                        //                     toxoid_component_get_member_u64(self.ptr, #field_offset)
+                        //                 }
+                        //             },
+                        //             _ if core::any::TypeId::of::<#field_type>() == core::any::TypeId::of::<i8>() => {
+                        //                 unsafe {
+                        //                     toxoid_component_get_member_i8(self.ptr, #field_offset)
+                        //                 }
+                        //             },
+                        //             _ if core::any::TypeId::of::<#field_type>() == core::any::TypeId::of::<i16>() => {
+                        //                 unsafe {
+                        //                     toxoid_component_get_member_i16(self.ptr, #field_offset)
+                        //                 }
+                        //             },
+                        //             _ if core::any::TypeId::of::<#field_type>() == core::any::TypeId::of::<i32>() => {
+                        //                 unsafe {
+                        //                     toxoid_component_get_member_i32(self.ptr, #field_offset)
+                        //                 }
+                        //             },
+                        //             _ if core::any::TypeId::of::<#field_type>() == core::any::TypeId::of::<i64>() => {
+                        //                 unsafe {
+                        //                     toxoid_component_get_member_i64(self.ptr, #field_offset)
+                        //                 }
+                        //             },
+                        //             _ if core::any::TypeId::of::<#field_type>() == core::any::TypeId::of::<f32>() => {
+                        //                 unsafe {
+                        //                     toxoid_component_get_member_f32(self.ptr, #field_offset)
+                        //                 }
+                        //             },
+                        //             _ if core::any::TypeId::of::<#field_type>() == core::any::TypeId::of::<f64>() => {
+                        //                 unsafe {
+                        //                     toxoid_component_get_member_f64(self.ptr, #field_offset)
+                        //                 }
+                        //             },
+                        //             _ if core::any::TypeId::of::<#field_type>() == core::any::TypeId::of::<bool>() => {
+                        //                 unsafe {
+                        //                     toxoid_component_get_member_bool(self.ptr, #field_offset)
+                        //                 }
+                        //             },
+                        //             _ => self.#field_name
+                        //         }
+                        //     }
+
+                        //     pub fn #setter_name(&mut self, value: #field_type) {
+                        //         self.#field_name = value;
+                        //         match () {
+                        //             _ if core::any::TypeId::of::<#field_type>() == core::any::TypeId::of::<u8>() => {
+                        //                 unsafe {
+                        //                     toxoid_component_set_member_u8(self.ptr, #field_offset, value as u8);
+                        //                 }
+                        //             },
+                        //             _ if core::any::TypeId::of::<#field_type>() == core::any::TypeId::of::<u16>() => {
+                        //                 unsafe {
+                        //                     toxoid_component_set_member_u16(self.ptr, #field_offset, value as u16);
+                        //                 }
+                        //             },
+                        //             _ if core::any::TypeId::of::<#field_type>() == core::any::TypeId::of::<u32>() => {
+                        //                 unsafe {
+                        //                     toxoid_component_set_member_u32(self.ptr, #field_offset, value as u32);
+                        //                 }
+                        //             },
+                        //             _ if core::any::TypeId::of::<#field_type>() == core::any::TypeId::of::<u64>() => {
+                        //                 unsafe {
+                        //                     toxoid_component_set_member_u64(self.ptr, #field_offset, value as u64);
+                        //                 }
+                        //             },
+                        //             _ if core::any::TypeId::of::<#field_type>() == core::any::TypeId::of::<i8>() => {
+                        //                 unsafe {
+                        //                     toxoid_component_set_member_i8(self.ptr, #field_offset, value as i8);
+                        //                 }
+                        //             },
+                        //             _ if core::any::TypeId::of::<#field_type>() == core::any::TypeId::of::<i16>() => {
+                        //                 unsafe {
+                        //                     toxoid_component_set_member_i16(self.ptr, #field_offset, value as i16);
+                        //                 }
+                        //             },
+                        //             _ if core::any::TypeId::of::<#field_type>() == core::any::TypeId::of::<i32>() => {
+                        //                 unsafe {
+                        //                     toxoid_component_set_member_i32(self.ptr, #field_offset, value as i32);
+                        //                 }
+                        //             },
+                        //             _ if core::any::TypeId::of::<#field_type>() == core::any::TypeId::of::<i64>() => {
+                        //                 unsafe {
+                        //                     toxoid_component_set_member_i64(self.ptr, #field_offset, value as i64);
+                        //                 }
+                        //             },
+                        //             _ if core::any::TypeId::of::<#field_type>() == core::any::TypeId::of::<f32>() => {
+                        //                 unsafe {
+                        //                     toxoid_component_set_member_f32(self.ptr, #field_offset, value as f32);
+                        //                 }
+                        //             },
+                        //             _ if core::any::TypeId::of::<#field_type>() == core::any::TypeId::of::<f64>() => {
+                        //                 unsafe {
+                        //                     toxoid_component_set_member_f64(self.ptr, #field_offset, value as f64);
+                        //                 }
+                        //             },
+                        //             _ if core::any::TypeId::of::<#field_type>() == core::any::TypeId::of::<bool>() => {
+                        //                 unsafe {
+                        //                     toxoid_component_set_member_bool(self.ptr, #field_offset, value as bool);
+                        //                 }
+                        //             },
+                        //             _ if core::any::TypeId::of::<#field_type>() == core::any::TypeId::of::<*mut c_char>() => {
+                        //                 unsafe {
+                        //                     toxoid_component_set_member_string(self.ptr, #field_offset, value as *mut c_char);
+                        //                 }
+                        //             },
+                        //             _ => ()
+                        //         }
+                        //     }
+                        // }
+
                     });
 
             let struct_fields =
