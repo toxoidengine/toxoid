@@ -67,7 +67,7 @@ extern "C" {
         component_ptr: *mut c_void,
         offset: u32,
         len: u32,
-    ) -> *const c_char;
+    ) -> *mut c_char;
     pub fn toxoid_component_set_member_u8(component_ptr: *mut c_void, offset: u32, value: u8);
     pub fn toxoid_component_set_member_u16(component_ptr: *mut c_void, offset: u32, value: u16);
     pub fn toxoid_component_set_member_u32(component_ptr: *mut c_void, offset: u32, value: u32);
@@ -82,6 +82,6 @@ extern "C" {
         component_ptr: *mut c_void,
         offset: u32,
         len: u32,
-        value: *const c_char,
+        value: *mut c_char,
     );   
 }
