@@ -52,16 +52,6 @@ impl Query {
         }
     }
 
-    // pub fn new_slice(ids: &mut [ecs_id_t]) -> Self {
-    //     unsafe {
-    //         Query {
-    //             query: toxoid_query_create(ids.as_mut_ptr() as *mut i32, ids.len() as i32),
-    //             iter: core::ptr::null_mut(),
-    //             indexes: [0; MAX_ELEMENTS],
-    //         }
-    //     }
-    // }
-
     pub fn iter(&mut self) -> &mut Query {
         self.iter = unsafe { toxoid_query_iter(self.query) };
         self
@@ -92,10 +82,8 @@ impl Query {
                     term_index = i + 1;
                 }
             });
-
             // Get slice of pointers to components
             let field_slice = toxoid_query_field_list(self.iter, term_index as i32, count as u32);
-
             // Call allocator to create a slice of component structs
             let layout = Layout::new::<T>();
             let components_ptr = ALLOCATOR.alloc(layout) as *mut T;
