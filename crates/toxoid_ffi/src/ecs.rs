@@ -2,7 +2,7 @@
 use crate::*;
 use core::ffi::c_void;
 use core::alloc::{GlobalAlloc, Layout};
-use std::any::TypeId;
+use core::any::TypeId;
 
 #[repr(u8)]
 pub enum Type {
@@ -23,6 +23,11 @@ pub enum Type {
     F32Array,
 }
 
+pub trait ComponentTuple {
+    fn get_type_ids() -> &'static [TypeId];
+    // other shared methods
+}
+
 pub trait IsComponent {
     fn register() -> i32;
     fn set_ptr(&mut self, ptr: *mut c_void);
@@ -36,19 +41,41 @@ pub struct Query {
 }
 
 impl Query {
-    pub fn new<T: Default + IsComponent + 'static>(ids: &mut [ecs_id_t]) -> Self {
-        unsafe {
-            let layout = Layout::new::<T>();
-            let indexes_ptr = ALLOCATOR.alloc(layout) as *mut TypeId;
-            indexes_ptr.add(0).write(TypeId::of::<T>());
-            let indexes = core::slice::from_raw_parts(indexes_ptr, 1 as usize);
-            core::mem::forget(indexes);
+    // pub fn new<T: ComponentTuple + 'static>() -> Self {
+    //     unsafe {
+    //         let type_ids = T::get_type_ids();
+            
+    //         let ids = type_ids.iter()
+    //             .map(|type_id| toxoid_component_cache_get(*type_id) )
+    //             .collect::<Vec<ecs_id_t>>();
+    //         let ids = ids.as_slice();
+    //         core::mem::forget(ids);
+        
+    //         let layout = Layout::new::<TypeId>();
+    //         let indexes_ptr = ALLOCATOR.alloc(layout) as *mut TypeId;
+    //         indexes_ptr.add(0).write(TypeId::of::<T>());
+    //         let indexes = core::slice::from_raw_parts(indexes_ptr, 1 as usize);
+    //         core::mem::forget(indexes);
 
-            Query {
-                query: toxoid_query_create(ids.as_mut_ptr() as *mut i32, ids.len() as i32),
-                iter: core::ptr::null_mut(),
-                indexes,
-            }
+    //         Query {
+    //             query: toxoid_query_create(ids.as_ptr() as *mut i32, ids.len() as i32),
+    //             iter: core::ptr::null_mut(),  
+    //             indexes
+    //         }
+    //     }
+    // }
+
+    pub fn new<T: ComponentTuple + 'static>() {
+        unsafe {
+            let type_ids = T::get_type_ids();
+            let ids = type_ids
+                .iter()
+                .map(|type_id| {
+                    let id = toxoid_component_cache_get(*type_id);
+                    print_string("Component ID:");
+                    print_i32(id);
+                    id
+                });
         }
     }
 
@@ -104,6 +131,22 @@ impl Query {
         }
     }
 }
+
+// pub struct System {
+//     query: Query
+// }
+
+// pub trait SystemTrait {
+//     fn update(&mut self);
+// }
+
+// impl System {
+//     pub fn new<T: Default + IsComponent + 'static>(ids: &mut [ecs_id_t]) -> Self {
+//         System {
+//             query: Query::new::<T>(ids)
+//         }
+//     }
+// }
 
 #[repr(C)]
 #[derive(Copy, Clone)]
@@ -185,3 +228,47 @@ pub fn register_component(name: &str, member_names: &[&str], member_types: &[u8]
         )
     }
 }
+
+macro_rules! impl_component_tuple {
+    ($($name:ident)+) => {
+        impl<$($name: Default + IsComponent + 'static),+> ComponentTuple for ($($name,)+) {
+            fn get_type_ids() -> &'static [TypeId] {
+                unsafe {
+                    let layout = Layout::new::<*mut TypeId>();
+                    let type_ids_ptr = ALLOCATOR.alloc(layout) as *mut TypeId;
+                    let mut i = 0;
+                    $(
+                        type_ids_ptr.add(i).write(TypeId::of::<$name>());
+                        i += 1;
+                    )+
+                    let type_ids = core::slice::from_raw_parts(type_ids_ptr, i as usize);
+                    core::mem::forget(type_ids);
+                    type_ids
+                }
+            }
+        }
+    }
+}
+
+impl_component_tuple! { Component1 }
+impl_component_tuple! { Component1 Component2 }
+impl_component_tuple! { Component1 Component2 Component3 }
+impl_component_tuple! { Component1 Component2 Component3 Component4 }
+impl_component_tuple! { Component1 Component2 Component3 Component4 Component5 }
+impl_component_tuple! { Component1 Component2 Component3 Component4 Component5 Component6 }
+impl_component_tuple! { Component1 Component2 Component3 Component4 Component5 Component6 Component7 }
+impl_component_tuple! { Component1 Component2 Component3 Component4 Component5 Component6 Component7 Component8 }
+impl_component_tuple! { Component1 Component2 Component3 Component4 Component5 Component6 Component7 Component8 Component9 }
+impl_component_tuple! { Component1 Component2 Component3 Component4 Component5 Component6 Component7 Component8 Component9 Component10 }
+impl_component_tuple! { Component1 Component2 Component3 Component4 Component5 Component6 Component7 Component8 Component9 Component10 Component11 }
+impl_component_tuple! { Component1 Component2 Component3 Component4 Component5 Component6 Component7 Component8 Component9 Component10 Component11 Component12 }
+impl_component_tuple! { Component1 Component2 Component3 Component4 Component5 Component6 Component7 Component8 Component9 Component10 Component11 Component12 Component13 }
+impl_component_tuple! { Component1 Component2 Component3 Component4 Component5 Component6 Component7 Component8 Component9 Component10 Component11 Component12 Component13 Component14 }
+impl_component_tuple! { Component1 Component2 Component3 Component4 Component5 Component6 Component7 Component8 Component9 Component10 Component11 Component12 Component13 Component14 Component15 }
+impl_component_tuple! { Component1 Component2 Component3 Component4 Component5 Component6 Component7 Component8 Component9 Component10 Component11 Component12 Component13 Component14 Component15 Component16 }
+impl_component_tuple! { Component1 Component2 Component3 Component4 Component5 Component6 Component7 Component8 Component9 Component10 Component11 Component12 Component13 Component14 Component15 Component16 Component17 }
+impl_component_tuple! { Component1 Component2 Component3 Component4 Component5 Component6 Component7 Component8 Component9 Component10 Component11 Component12 Component13 Component14 Component15 Component16 Component17 Component18 }
+impl_component_tuple! { Component1 Component2 Component3 Component4 Component5 Component6 Component7 Component8 Component9 Component10 Component11 Component12 Component13 Component14 Component15 Component16 Component17 Component18 Component19 }
+impl_component_tuple! { Component1 Component2 Component3 Component4 Component5 Component6 Component7 Component8 Component9 Component10 Component11 Component12 Component13 Component14 Component15 Component16 Component17 Component18 Component19 Component20 }
+
+
