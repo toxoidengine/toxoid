@@ -25,7 +25,6 @@ pub enum Type {
 
 pub trait ComponentTuple {
     fn get_type_ids() -> &'static [TypeId];
-    // other shared methods
 }
 
 pub trait IsComponent {
@@ -41,41 +40,24 @@ pub struct Query {
 }
 
 impl Query {
-    // pub fn new<T: ComponentTuple + 'static>() -> Self {
-    //     unsafe {
-    //         let type_ids = T::get_type_ids();
-            
-    //         let ids = type_ids.iter()
-    //             .map(|type_id| toxoid_component_cache_get(*type_id) )
-    //             .collect::<Vec<ecs_id_t>>();
-    //         let ids = ids.as_slice();
-    //         core::mem::forget(ids);
-        
-    //         let layout = Layout::new::<TypeId>();
-    //         let indexes_ptr = ALLOCATOR.alloc(layout) as *mut TypeId;
-    //         indexes_ptr.add(0).write(TypeId::of::<T>());
-    //         let indexes = core::slice::from_raw_parts(indexes_ptr, 1 as usize);
-    //         core::mem::forget(indexes);
-
-    //         Query {
-    //             query: toxoid_query_create(ids.as_ptr() as *mut i32, ids.len() as i32),
-    //             iter: core::ptr::null_mut(),  
-    //             indexes
-    //         }
-    //     }
-    // }
-
-    pub fn new<T: ComponentTuple + 'static>() {
+    pub fn new<T: ComponentTuple + 'static>() -> Self {
         unsafe {
             let type_ids = T::get_type_ids();
-            let ids = type_ids
+            let layout = Layout::new::<*mut i32>();
+            let ids_ptr = ALLOCATOR.alloc(layout) as *mut i32;
+            type_ids
                 .iter()
-                .map(|type_id| {
+                .enumerate()
+                .for_each(|(i, type_id)| {
                     let id = toxoid_component_cache_get(*type_id);
-                    print_string("Component ID:");
-                    print_i32(id);
-                    id
+                    ids_ptr.add(i).write(id);
                 });
+
+            Query {
+                query: toxoid_query_create(ids_ptr, type_ids.len() as i32),
+                iter: core::ptr::null_mut(),  
+                indexes: type_ids
+            }
         }
     }
 
@@ -130,6 +112,28 @@ impl Query {
             components
         }
     }
+
+    pub fn each_mut<T: ComponentTuple>(&mut self, mut _func: impl FnMut(T)) {
+        // Ensure we start from the beginning
+        self.iter();
+        while self.next() {
+            let _type_ids = T::get_type_ids();
+            // let components: T = T::get_type_ids()
+            //     .iter()
+            //     .map(|&id| {
+            //         unsafe {
+            //             let comp_ptr = toxoid_query_field_list(self.iter, id as i32, 1);
+            //             let mut comp = <id's type>::default();
+            //             comp.set_ptr(*comp_ptr as *mut c_void);
+            //             comp
+            //         }
+            //     })
+            
+            // for i in 0...10 {
+            //     func(components);
+            // }
+        }
+    }
 }
 
 // pub struct System {
@@ -141,9 +145,9 @@ impl Query {
 // }
 
 // impl System {
-//     pub fn new<T: Default + IsComponent + 'static>(ids: &mut [ecs_id_t]) -> Self {
+//     pub fn new<T: ComponentTuple + 'static>() -> Self {
 //         System {
-//             query: Query::new::<T>(ids)
+//             query: Query::new::<T>()
 //         }
 //     }
 // }
