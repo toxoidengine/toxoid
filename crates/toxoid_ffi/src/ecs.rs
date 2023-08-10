@@ -94,6 +94,8 @@ impl Query {
             // Get slice of pointers to components
             let field_slice = toxoid_query_field_list(self.iter, term_index as i32, count as u32);
             // Call allocator to create a slice of component structs
+            // TODO, look into making this Layout::array::<T>(count as usize).unwrap();
+            // Without Emscripten crashing
             let layout = Layout::new::<T>();
             let components_ptr = ALLOCATOR.alloc(layout) as *mut T;
             field_slice
@@ -136,21 +138,29 @@ impl Query {
     }
 }
 
-// pub struct System {
-//     query: Query
-// }
+pub struct System {
+    pub query: Query,
+    pub update_fn: fn(&mut Self)
+}
 
-// pub trait SystemTrait {
-//     fn update(&mut self);
-// }
+pub trait SystemTrait {
+    fn update(&mut self);
+}
 
-// impl System {
-//     pub fn new<T: ComponentTuple + 'static>() -> Self {
-//         System {
-//             query: Query::new::<T>()
-//         }
-//     }
-// }
+impl System {
+    pub fn new<T: ComponentTuple + 'static>(update_fn: fn(&mut Self)) -> Self {
+        // |self_f| {
+        //     self_f.query.iter();
+        //     while self_f.query.next() {
+                
+        //     }
+        // }
+        System {
+            query: Query::new::<T>(),
+            update_fn
+        }
+    }
+}
 
 #[repr(C)]
 #[derive(Copy, Clone)]
