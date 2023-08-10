@@ -43,7 +43,7 @@ impl Query {
     pub fn new<T: ComponentTuple + 'static>() -> Self {
         unsafe {
             let type_ids = T::get_type_ids();
-            let layout = Layout::new::<*mut i32>();
+            let layout = Layout::array::<i32>(type_ids.len()).unwrap();
             let ids_ptr = ALLOCATOR.alloc(layout) as *mut i32;
             type_ids
                 .iter()
@@ -233,19 +233,27 @@ pub fn register_component(name: &str, member_names: &[&str], member_types: &[u8]
     }
 }
 
+
+macro_rules! count_args {
+    ($($args:ident),*) => { <[()]>::len(&[$(count_args!(@substitute $args)),*]) };
+    (@substitute $_t:tt) => { () };
+}
+
 macro_rules! impl_component_tuple {
     ($($name:ident)+) => {
         impl<$($name: Default + IsComponent + 'static),+> ComponentTuple for ($($name,)+) {
+            #[allow(unused_assignments)]
             fn get_type_ids() -> &'static [TypeId] {
                 unsafe {
-                    let layout = Layout::new::<*mut TypeId>();
+                    let count = count_args!($($name),+);
+                    let layout = Layout::array::<TypeId>(count).unwrap();
                     let type_ids_ptr = ALLOCATOR.alloc(layout) as *mut TypeId;
                     let mut i = 0;
                     $(
                         type_ids_ptr.add(i).write(TypeId::of::<$name>());
                         i += 1;
                     )+
-                    let type_ids = core::slice::from_raw_parts(type_ids_ptr, i as usize);
+                    let type_ids = core::slice::from_raw_parts(type_ids_ptr, count as usize);
                     core::mem::forget(type_ids);
                     type_ids
                 }
