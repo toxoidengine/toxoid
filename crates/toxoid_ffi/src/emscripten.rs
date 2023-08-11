@@ -8,9 +8,63 @@ extern "C" {
     pub fn emscripten_cancel_main_loop();
 }
 
-unsafe extern "C" fn packaged_main_loop(parg: *mut std::ffi::c_void) {
-    // let arg = &mut *(parg as *mut GameLoopArg);
-    // if let Err(_) = main_loop(&*arg.sdl_context, &mut *arg.canvas, &mut *arg.state) {
-    //    //  emscripten_cancel_main_loop();
-    // }
+unsafe extern "C" fn packaged_main_loop(_parg: *mut std::ffi::c_void) {
+    if let Err(_) = main_loop() {
+       emscripten_cancel_main_loop();
+    }
+}
+
+fn main_loop() -> Result<(), String> {
+    println!("Hello world from loop!");
+    use toxoid_sdl::event::Event;
+    use toxoid_sdl::keyboard::Keycode;
+    use toxoid_sdl::pixels::Color;
+
+    toxoid_sdl::SDL_CONTEXT.with(|ctx| {
+        let mut event_pump = ctx.borrow_mut().event_pump().unwrap();
+        toxoid_sdl::CANVAS.with(|canvas_ref| {
+            let mut canvas = canvas_ref.borrow_mut();
+
+            canvas.set_draw_color(Color::RGB(64, 64, 80));
+            canvas.clear();
+
+            for event in event_pump.poll_iter() {
+                match event {
+                    Event::KeyDown {
+                        keycode: Some(keycode),
+                        ..
+                    } => {
+                        if keycode == Keycode::Left {
+                            println!("Left");
+                        }
+                        if keycode == Keycode::Right {
+                            println!("Right");
+                        }
+                        if keycode == Keycode::Up {
+                            println!("Up");
+                        }
+                        if keycode == Keycode::Down {
+                            println!("Down");
+                        }
+                    }
+                    _ => {}
+                }
+            }
+
+            canvas.present();
+        })
+    });
+
+    Ok(())
+}
+
+pub fn start_loop() {
+    unsafe {
+        emscripten_set_main_loop_arg(
+            packaged_main_loop,
+            std::ptr::null_mut(),
+            -1,
+            0,
+        );
+    }
 }
