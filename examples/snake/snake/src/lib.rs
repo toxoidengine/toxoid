@@ -1,9 +1,9 @@
 #![allow(non_camel_case_types)]
 #![allow(improper_ctypes)]
-extern crate toxoid_ffi_macro;
+extern crate toxoid_api_macro;
 
-use toxoid_ffi::*;
-use toxoid_ffi_macro::component;
+use toxoid_api::*;
+use toxoid_api_macro::component;
 pub mod local_ecs;
 pub use local_ecs::*;
 

@@ -2,7 +2,7 @@ use core::ffi::{c_char, c_void};
 use std::collections::HashMap;
 
 pub static mut COMPONENT_ID_CACHE: Option<HashMap<core::any::TypeId, i32>> = None;
-pub static mut SYSTEMS: Option<Vec<toxoid_ffi::System>> = None;
+pub static mut SYSTEMS: Option<Vec<toxoid_api::System>> = None;
 
 pub fn init() {
     unsafe {
@@ -478,7 +478,7 @@ pub unsafe extern "C" fn toxoid_component_set_member_f32array(
 
 #[no_mangle]
 pub unsafe extern "C" fn toxoid_component_add_system(
-    system: toxoid_ffi::System
+    system: toxoid_api::System
 ) {
     if let Some(systems) = &mut SYSTEMS {
         systems.push(system);

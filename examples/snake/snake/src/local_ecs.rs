@@ -1,7 +1,7 @@
 use core::any::TypeId;
-use toxoid_ffi::*;
+use toxoid_api::*;
 
-// Have to define at top level as a workaround to maintain context in toxoid_ffi_macro
+// Have to define at top level as a workaround to maintain context in toxoid_api_macro
 pub fn register_component_ecs(
     name: &str,
     member_names: &[&str],

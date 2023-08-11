@@ -4,8 +4,8 @@ mod ecs;
 mod local_ecs;
 
 use local_ecs::*;
-use toxoid_ffi::*;
-use toxoid_ffi_macro::component;
+use toxoid_api::*;
+use toxoid_api_macro::component;
 
 extern "C" {
     pub fn app_main();

@@ -1,4 +1,4 @@
-// use toxoid_ffi_macro::Component;
+// use toxoid_api_macro::Component;
 use crate::*;
 use core::ffi::c_void;
 use core::alloc::{GlobalAlloc, Layout};
