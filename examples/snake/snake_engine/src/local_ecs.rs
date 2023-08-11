@@ -1,6 +1,7 @@
 use core::any::TypeId;
-use toxoid_api::*;
 
+type ecs_entity_t = i32;
+type c_char = i8;
 // Have to define at top level as a workaround to maintain context in toxoid_api_macro
 pub fn register_component_ecs(
     name: &str,
@@ -20,7 +21,7 @@ pub fn register_component_ecs(
             c_member_types[i] = &t as *const u8;
         }
 
-        toxoid_register_component(
+        toxoid_ffi::ecs::toxoid_register_component(
             name.as_bytes().as_ptr() as *const c_char,
             name.len() as u8,
             c_member_names.as_ptr(),
@@ -34,6 +35,6 @@ pub fn register_component_ecs(
 
 pub fn cache_component_ecs(type_id: TypeId, component_id: i32) {
     unsafe {
-        toxoid_component_cache_insert(type_id, component_id);
+        toxoid_ffi::ecs::toxoid_component_cache_insert(type_id, component_id);
     }
 }

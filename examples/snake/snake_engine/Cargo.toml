@@ -6,7 +6,4 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-flecs_core = { path="../../../libs/flecs-polyglot/rust/flecs_core" }
-toxoid_sdl = { path="../../../crates/toxoid_sdl" }
-toxoid_api = { path="../../../crates/toxoid_api" }
-toxoid_api_macro = { path="../../../crates/toxoid_api_macro" }
+toxoid_ffi = { path="../../../crates/toxoid_ffi" }

@@ -400,10 +400,7 @@ dependencies = [
 name = "snake_engine"
 version = "0.1.0"
 dependencies = [
- "flecs_core",
- "toxoid_api",
- "toxoid_api_macro",
- "toxoid_sdl",
+ "toxoid_ffi",
 ]
 
 [[package]]
@@ -475,6 +472,16 @@ version = "0.1.0"
 dependencies = [
  "quote",
  "syn",
+]
+
+[[package]]
+name = "toxoid_ffi"
+version = "0.1.0"
+dependencies = [
+ "flecs_core",
+ "toxoid_api",
+ "toxoid_api_macro",
+ "toxoid_sdl",
 ]
 
 [[package]]
