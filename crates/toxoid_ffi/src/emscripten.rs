@@ -1,3 +1,5 @@
+use crate::SYSTEMS;
+
 extern "C" {
     pub fn emscripten_set_main_loop_arg(
         f: unsafe extern "C" fn(*mut std::ffi::c_void),
@@ -15,7 +17,6 @@ unsafe extern "C" fn packaged_main_loop(_parg: *mut std::ffi::c_void) {
 }
 
 fn main_loop() -> Result<(), String> {
-    println!("Hello world from loop!");
     use toxoid_sdl::event::Event;
     use toxoid_sdl::keyboard::Keycode;
     use toxoid_sdl::pixels::Color;
@@ -54,6 +55,16 @@ fn main_loop() -> Result<(), String> {
             canvas.present();
         })
     });
+    
+    SYSTEMS.with(|systems| {
+        let mut systems = systems.borrow_mut();
+        for system in systems.iter_mut() {
+            let system = &mut *system;
+            let query = &mut system.query;
+            (system.update_fn)(query);
+        }
+    });
+    
 
     Ok(())
 }

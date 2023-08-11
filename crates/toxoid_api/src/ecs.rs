@@ -140,7 +140,7 @@ impl Query {
 
 pub struct System {
     pub query: Query,
-    pub update_fn: fn(&mut Self)
+    pub update_fn: fn(&mut Query)
 }
 
 pub trait SystemTrait {
@@ -148,7 +148,7 @@ pub trait SystemTrait {
 }
 
 impl System {
-    pub fn new<T: ComponentTuple + 'static>(update_fn: fn(&mut Self)) -> Self {
+    pub fn new<T: ComponentTuple + 'static>(update_fn: fn(&mut Query)) -> Self {
         // |self_f| {
         //     self_f.query.iter();
         //     while self_f.query.next() {

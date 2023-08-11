@@ -1,13 +1,20 @@
 use core::ffi::{c_char, c_void};
-use std::collections::HashMap;
+use std::{collections::HashMap, cell::RefCell};
 
 pub static mut COMPONENT_ID_CACHE: Option<HashMap<core::any::TypeId, i32>> = None;
-pub static mut SYSTEMS: Option<Vec<toxoid_api::System>> = None;
+// pub static mut SYSTEMS: Option<Vec<toxoid_api::System>> = None;
+
+thread_local! {
+    pub static SYSTEMS: RefCell<Vec<toxoid_api::System>> = {
+        let systems = Vec::new();
+        RefCell::new(systems)
+    };
+}
 
 pub fn init() {
     unsafe {
         COMPONENT_ID_CACHE = Some(HashMap::new());
-        SYSTEMS = Some(Vec::new());
+        // SYSTEMS = Some(Vec::new());
     }
 }
 
@@ -477,10 +484,10 @@ pub unsafe extern "C" fn toxoid_component_set_member_f32array(
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn toxoid_component_add_system(
+pub unsafe extern "C" fn toxoid_add_system(
     system: toxoid_api::System
 ) {
-    if let Some(systems) = &mut SYSTEMS {
-        systems.push(system);
-    }
+    SYSTEMS.with(|systems| {
+        systems.borrow_mut().push(system);
+    });
 }
