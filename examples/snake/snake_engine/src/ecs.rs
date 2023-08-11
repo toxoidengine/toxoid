@@ -2,10 +2,12 @@ use core::ffi::{c_char, c_void};
 use std::collections::HashMap;
 
 pub static mut COMPONENT_ID_CACHE: Option<HashMap<core::any::TypeId, i32>> = None;
+pub static mut SYSTEMS: Option<Vec<toxoid_ffi::System>> = None;
 
 pub fn init() {
     unsafe {
         COMPONENT_ID_CACHE = Some(HashMap::new());
+        SYSTEMS = Some(Vec::new());
     }
 }
 
@@ -472,4 +474,13 @@ pub unsafe extern "C" fn toxoid_component_set_member_f32array(
     value: *mut f32,
 ) {
     flecs_core::flecs_component_set_member_f32array(component_ptr, offset, value);
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn toxoid_component_add_system(
+    system: toxoid_ffi::System
+) {
+    if let Some(systems) = &mut SYSTEMS {
+        systems.push(system);
+    }
 }
