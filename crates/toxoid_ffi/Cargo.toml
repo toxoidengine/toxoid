@@ -1,0 +1,12 @@
+[package]
+name = "toxoid_ffi"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+flecs_core = { path="../../libs/flecs-polyglot/rust/flecs_core" }
+toxoid_sdl = { path="../toxoid_sdl" }
+toxoid_api = { path="../toxoid_api" }
+toxoid_api_macro = { path="../toxoid_api_macro" }

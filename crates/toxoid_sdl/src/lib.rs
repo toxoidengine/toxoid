@@ -60,54 +60,39 @@ fn main_loop(
     Ok(())
 }
 
-extern "C" {
-    pub fn emscripten_set_main_loop_arg(
-        f: unsafe extern "C" fn(*mut std::ffi::c_void),
-        arg: *mut std::ffi::c_void,
-        fps: i32,
-        sim_infinite_loop: i32,
-    );
-    pub fn emscripten_cancel_main_loop();
-}
 
-unsafe extern "C" fn packaged_main_loop(parg: *mut std::ffi::c_void) {
-    let arg = &mut *(parg as *mut GameLoopArg);
-    if let Err(_) = main_loop(&*arg.sdl_context, &mut *arg.canvas, &mut *arg.state) {
-        emscripten_cancel_main_loop();
-    }
-}
 
 pub fn create_sdl_loop() {
-    println!("Hello SDL!");
+    // println!("Hello SDL!");
 
-    let sdl_context = Box::new(sdl2::init().unwrap());
-    let video_subsystem = sdl_context.video().unwrap();
-    let window = video_subsystem
-        .window("Toxoid Engine", 800, 600)
-        .position_centered()
-        .build()
-        .unwrap();
-    let mut canvas = Box::new(window.into_canvas().software().build().unwrap());
-    let mut state = Box::new(GameState::new());
+    // let sdl_context = Box::new(sdl2::init().unwrap());
+    // let video_subsystem = sdl_context.video().unwrap();
+    // let window = video_subsystem
+    //     .window("Toxoid Engine", 800, 600)
+    //     .position_centered()
+    //     .build()
+    //     .unwrap();
+    // let mut canvas = Box::new(window.into_canvas().software().build().unwrap());
+    // let mut state = Box::new(GameState::new());
 
-    let mut arg = Box::new(GameLoopArg {
-        sdl_context: &*sdl_context,
-        canvas: &mut *canvas,
-        state: &mut *state,
-    });
+    // let mut arg = Box::new(GameLoopArg {
+    //     sdl_context: &*sdl_context,
+    //     canvas: &mut *canvas,
+    //     state: &mut *state,
+    // });
 
-    unsafe {
-        emscripten_set_main_loop_arg(
-            packaged_main_loop,
-            &mut *arg as *mut _ as *mut std::ffi::c_void,
-            -1,
-            0,
-        );
-    }
-    std::mem::forget(arg);
-    std::mem::forget(sdl_context);
-    std::mem::forget(canvas);
-    std::mem::forget(state);
+    // unsafe {
+    //     emscripten_set_main_loop_arg(
+    //         packaged_main_loop,
+    //         &mut *arg as *mut _ as *mut std::ffi::c_void,
+    //         -1,
+    //         0,
+    //     );
+    // }
+    // std::mem::forget(arg);
+    // std::mem::forget(sdl_context);
+    // std::mem::forget(canvas);
+    // std::mem::forget(state);
 }
 
 // #[cfg(target_os = "emscripten")]

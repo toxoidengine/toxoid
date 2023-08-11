@@ -7,8 +7,10 @@ build = "build.rs"
 [workspace]
 members = [
     	# Crates
-		"crates/toxoid_sdl",
+		"crates/toxoid_api",
 		"crates/toxoid_api_macro",
+		"crates/toxoid_ffi",
+		"crates/toxoid_sdl",
 		
 		# Examples
 		"examples/snake/snake",
