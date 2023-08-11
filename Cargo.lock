@@ -392,8 +392,8 @@ dependencies = [
 name = "snake"
 version = "0.1.0"
 dependencies = [
- "toxoid_ffi",
- "toxoid_ffi_macro",
+ "toxoid_api",
+ "toxoid_api_macro",
 ]
 
 [[package]]
@@ -401,8 +401,8 @@ name = "snake_engine"
 version = "0.1.0"
 dependencies = [
  "flecs_core",
- "toxoid_ffi",
- "toxoid_ffi_macro",
+ "toxoid_api",
+ "toxoid_api_macro",
  "toxoid_sdl",
 ]
 
@@ -463,14 +463,14 @@ name = "toxoid"
 version = "0.1.0"
 
 [[package]]
-name = "toxoid_ffi"
+name = "toxoid_api"
 version = "0.1.0"
 dependencies = [
- "toxoid_ffi_macro",
+ "toxoid_api_macro",
 ]
 
 [[package]]
-name = "toxoid_ffi_macro"
+name = "toxoid_api_macro"
 version = "0.1.0"
 dependencies = [
  "quote",

@@ -1,5 +1,5 @@
 [package]
-name = "toxoid_ffi_macro"
+name = "toxoid_api_macro"
 version = "0.1.0"
 edition = "2021"
 

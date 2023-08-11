@@ -8,7 +8,7 @@ build = "build.rs"
 members = [
     	# Crates
 		"crates/toxoid_sdl",
-		"crates/toxoid_ffi_macro",
+		"crates/toxoid_api_macro",
 		
 		# Examples
 		"examples/snake/snake",
