@@ -2,6 +2,7 @@ use core::any::TypeId;
 
 type ecs_entity_t = i32;
 type c_char = i8;
+
 // Have to define at top level as a workaround to maintain context in toxoid_api_macro
 pub fn register_component_ecs(
     name: &str,

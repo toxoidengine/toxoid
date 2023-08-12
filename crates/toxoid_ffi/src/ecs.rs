@@ -1,20 +1,50 @@
 use core::ffi::{c_char, c_void};
-use std::{collections::HashMap, cell::RefCell};
-
-pub static mut COMPONENT_ID_CACHE: Option<HashMap<core::any::TypeId, i32>> = None;
-// pub static mut SYSTEMS: Option<Vec<toxoid_api::System>> = None;
+use std::{collections::HashMap, cell::RefCell, any::TypeId};
 
 thread_local! {
     pub static SYSTEMS: RefCell<Vec<toxoid_api::System>> = {
         let systems = Vec::new();
         RefCell::new(systems)
     };
+    pub static COMPONENT_ID_CACHE: RefCell<HashMap<core::any::TypeId, i32>> = {
+        let cache = HashMap::new();
+        RefCell::new(cache)
+    };
 }
 
-pub fn init() {
+pub fn cache_component_ecs(type_id: TypeId, component_id: i32) {
     unsafe {
-        COMPONENT_ID_CACHE = Some(HashMap::new());
-        // SYSTEMS = Some(Vec::new());
+        toxoid_component_cache_insert(type_id, component_id);
+    }
+}
+
+pub fn register_component_ecs(
+    name: &str,
+    member_names: &[&str],
+    member_types: &[u8],
+) -> toxoid_api::ecs_entity_t {
+    unsafe {
+        let mut c_member_names: [*const c_char; 100] = [core::ptr::null(); 100];
+        let mut c_member_names_len: [u8; 100] = [0; 100];
+        for (i, &s) in member_names.iter().enumerate() {
+            c_member_names[i] = s.as_ptr() as *const c_char;
+            c_member_names_len[i] = s.len() as u8;
+        }
+
+        let mut c_member_types: [*const u8; 100] = [core::ptr::null(); 100];
+        for (i, &t) in member_types.iter().enumerate() {
+            c_member_types[i] = &t as *const u8;
+        }
+
+        toxoid_register_component(
+            name.as_bytes().as_ptr() as *const c_char,
+            name.len() as u8,
+            c_member_names.as_ptr(),
+            member_names.len() as u32,
+            c_member_names_len.as_ptr(),
+            c_member_types.as_ptr(),
+            c_member_types.len() as u32,
+        )
     }
 }
 
@@ -195,14 +225,18 @@ pub unsafe extern "C" fn toxoid_component_cache_insert(
     type_id: core::any::TypeId,
     component_id: i32,
 ) {
-    let cache = COMPONENT_ID_CACHE.as_mut().unwrap_unchecked();
-    cache.insert(type_id, component_id);
+    COMPONENT_ID_CACHE.with(|c| {
+        let mut cache = c.borrow_mut();
+        cache.insert(type_id, component_id);
+    });
 }
 
 #[no_mangle]
 pub unsafe extern "C" fn toxoid_component_cache_get(type_id: core::any::TypeId) -> i32 {
-    let cache = COMPONENT_ID_CACHE.as_mut().unwrap_unchecked();
-    *cache.get(&type_id).unwrap_or(&0)
+    COMPONENT_ID_CACHE.with(|c| {
+        let mut cache = c.borrow_mut();
+        *cache.get(&type_id).unwrap_or(&0)
+    })
 }
 
 #[no_mangle]
