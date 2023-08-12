@@ -1,4 +1,5 @@
 #![allow(non_camel_case_types)]
+#![allow(improper_ctypes)]
 
 use crate::ecs::*;
 use core::ffi::c_void;

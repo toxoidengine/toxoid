@@ -3,41 +3,11 @@
 extern crate toxoid_api_macro;
 
 use toxoid_api::*;
-use toxoid_api_macro::component;
+// use toxoid_api_macro::component;
 pub mod local_ecs;
 pub use local_ecs::*;
 
-// component! {
-//     Position {
-//         x: u32,
-//         y: u32,
-//     },
-//     Velocity {
-//         dx: f32,
-//         dy: f32,
-//     },
-//     KeyboardInput {
-//         up: bool,
-//         down: bool,
-//         left: bool,
-//         right: bool,
-//     },
-//     Rect {
-//         x: u32,
-//         y: u32,
-//         w: u32,
-//         h: u32,
-//     },
-//     Color {
-//         r: u8,
-//         g: u8,
-//         b: u8,
-//     },
-//     Renderable {
-//     }
-// }
-
-pub fn update_fn(query: &mut Query) {
+pub fn update_fn(_query: &mut Query) {
     print_string("Hello from snake loop!");
     // let query = query.iter();
     // while query.next() {

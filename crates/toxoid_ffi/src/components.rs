@@ -1,5 +1,5 @@
 use toxoid_api_macro::component;
-use toxoid_api::{IsComponent, Entity};
+use toxoid_api::{IsComponent};
 use crate::ecs::*;
 
 component! {

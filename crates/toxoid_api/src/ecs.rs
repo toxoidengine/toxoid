@@ -33,6 +33,7 @@ pub trait IsComponent {
     fn get_ptr(&self) -> *mut c_void;
 }
 
+#[repr(C)]
 pub struct Query {
     query: *mut c_void,
     iter: *mut c_void,
@@ -138,6 +139,7 @@ impl Query {
     }
 }
 
+#[repr(C)]
 pub struct System {
     pub query: Query,
     pub update_fn: fn(&mut Query)

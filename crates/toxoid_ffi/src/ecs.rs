@@ -1,3 +1,6 @@
+#![allow(improper_ctypes)]
+#![allow(improper_ctypes_definitions)]
+
 use core::ffi::{c_char, c_void};
 use std::{collections::HashMap, cell::RefCell, any::TypeId};
 
@@ -111,11 +114,10 @@ pub unsafe extern "C" fn toxoid_register_component(
 
     // Iterate over the member names 
     for i in 0..member_names_count {
-        let member_name_ptr = *member_names.add(i as usize);
-        let member_name_length = *member_names_len.add(i as usize);
-        let member_slice =
-            std::slice::from_raw_parts(member_name_ptr as *mut u8, member_name_length as usize);
-        let member_name = std::str::from_utf8_unchecked(member_slice);
+        let _member_name_ptr = *member_names.add(i as usize);
+        let _member_name_length = *member_names_len.add(i as usize);
+        // let member_slice = std::slice::from_raw_parts(member_name_ptr as *mut u8, member_name_length as usize);
+        // let member_name = std::str::from_utf8_unchecked(member_slice);
         // println!("Member Name #{}: {}", i, member_name);
     }
 
@@ -234,7 +236,7 @@ pub unsafe extern "C" fn toxoid_component_cache_insert(
 #[no_mangle]
 pub unsafe extern "C" fn toxoid_component_cache_get(type_id: core::any::TypeId) -> i32 {
     COMPONENT_ID_CACHE.with(|c| {
-        let mut cache = c.borrow_mut();
+        let cache = c.borrow_mut();
         *cache.get(&type_id).unwrap_or(&0)
     })
 }

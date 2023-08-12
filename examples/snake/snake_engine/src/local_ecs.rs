@@ -1,9 +1,13 @@
-use core::any::TypeId;
+#![allow(non_camel_case_types)]
 
+use core::any::TypeId;
+use core::ffi::c_char;
+
+#[allow(dead_code)]
 type ecs_entity_t = i32;
-type c_char = i8;
 
 // Have to define at top level as a workaround to maintain context in toxoid_api_macro
+#[allow(dead_code)]
 pub fn register_component_ecs(
     name: &str,
     member_names: &[&str],
@@ -34,6 +38,7 @@ pub fn register_component_ecs(
     }
 }
 
+#[allow(dead_code)]
 pub fn cache_component_ecs(type_id: TypeId, component_id: i32) {
     unsafe {
         toxoid_ffi::ecs::toxoid_component_cache_insert(type_id, component_id);

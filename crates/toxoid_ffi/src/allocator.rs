@@ -1,3 +1,6 @@
+#![allow(improper_ctypes)]
+#![allow(improper_ctypes_definitions)]
+
 use std::alloc::{GlobalAlloc, Layout};
 use core::ffi::c_void;
 

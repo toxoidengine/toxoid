@@ -1,4 +1,4 @@
-extern crate sdl2;
+pub extern crate sdl2;
 
 pub use sdl2::*;
 use sdl2::Sdl;
