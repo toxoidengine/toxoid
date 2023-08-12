@@ -22,7 +22,6 @@ pub fn input_system_fn(query: &mut Query) {
 
                             if keycode == Keycode::Left {
                                 keyboard_input.set_left(true);
-                                println!("LEFT");
                             }
                             if keycode == Keycode::Right {
                                 keyboard_input.set_right(true);
