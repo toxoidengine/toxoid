@@ -1,6 +1,7 @@
 pub mod allocator;
 pub mod ecs;
 pub mod components;
+pub mod entities;
 pub mod systems;
 pub mod emscripten;
 pub mod update_loop;
@@ -18,6 +19,8 @@ pub fn init() {
     flecs_core::init();
     // Initialize default components.
     components::init();
+    // Initialize default entities.
+    entities::init();
     // Initialize default engine systems. Such as rendering, input, etc.
     systems::init();
 }
