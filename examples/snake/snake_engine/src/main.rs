@@ -1,6 +1,8 @@
 #![allow(improper_ctypes_definitions)]
 mod local_ecs;
 mod entities;
+mod systems;
+
 extern "C" {
     // Main function of the dynamically linked library / Toxoid App.
     pub fn app_main();
@@ -12,6 +14,9 @@ fn main() {
 
     // Initialize all engine default entities. Such as rendering, input, etc.
     entities::init();
+
+    // Initialize all engine default engine systems. Such as rendering, input, etc.
+    systems::init();
 }
 
 #[no_mangle]

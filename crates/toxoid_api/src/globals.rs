@@ -1,3 +1,4 @@
+#![allow(improper_ctypes)]
 // Allocator
 extern crate alloc;
 
