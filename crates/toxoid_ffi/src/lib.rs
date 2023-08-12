@@ -13,13 +13,12 @@ pub use components::*;
 pub use toxoid_api;
 pub use flecs_core;
 
-// Initialize Flecs ECS and Toxoid ECS initializers.
-pub fn ecs_init() {
+pub fn init() {
+    // Initialize FLECS ECS.
     flecs_core::init();
+    // Initialize default components.
     components::init();
-}
-
-pub fn systems_init() {
+    // Initialize default engine systems. Such as rendering, input, etc.
     systems::init();
 }
 

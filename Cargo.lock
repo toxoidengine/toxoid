@@ -107,6 +107,7 @@ name = "flecs_core"
 version = "0.1.0"
 dependencies = [
  "cc",
+ "lazy_static",
 ]
 
 [[package]]
