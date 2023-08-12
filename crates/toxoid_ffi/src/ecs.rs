@@ -26,6 +26,7 @@ pub fn register_component_ecs(
     member_names: &[&str],
     member_types: &[u8],
 ) -> toxoid_api::ecs_entity_t {
+    println!("Register Component ECS from toxoid_ffi/src/ecs.rs");
     unsafe {
         let mut c_member_names: [*const c_char; 100] = [core::ptr::null(); 100];
         let mut c_member_names_len: [u8; 100] = [0; 100];
@@ -121,13 +122,16 @@ pub unsafe extern "C" fn toxoid_register_component(
         // println!("Member Name #{}: {}", i, member_name);
     }
 
-    flecs_core::flecs_component_create(
+    let id = flecs_core::flecs_component_create(
         component_name.as_ptr(),
         member_names,
         member_names_count,
         member_types,
         member_types_count,
-    ) as i32
+    ) as i32;
+
+    println!("COMPONENT ID: {}", id);
+    id
 }
 
 #[no_mangle]
