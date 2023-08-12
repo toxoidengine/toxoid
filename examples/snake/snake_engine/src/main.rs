@@ -9,11 +9,14 @@ extern "C" {
 }
 
 fn main() {
-    // Initialize Flecs ECS and Toxoid ECS initializers.
-    toxoid_ffi::init();
+    // Initialize Flecs ECS and Toxoid ECS initializers + default components.
+    toxoid_ffi::ecs_init();
 
-    // Initialize all engine default entities. Such as rendering, input, etc.
+    // // Initialize all engine default entities. Such as rendering, input, etc.
     entities::init();
+
+    // Initialize default engine systems. Such as rendering, input, etc.
+    toxoid_ffi::systems_init();
 
     // Initialize all engine default engine systems. Such as rendering, input, etc.
     systems::init();

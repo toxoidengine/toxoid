@@ -353,7 +353,6 @@ pub fn component(input: TokenStream) -> TokenStream {
             let register_fn = quote! {
                 fn register() -> i32 {
                     #register_component_tokens
-                    //0
                 }
             };
 

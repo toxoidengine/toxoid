@@ -29,7 +29,8 @@ component! {
         b: u8,
     },
     Renderable {
-        renderable: bool
+        x: u32,
+        y: u32,
     }
 }
 
