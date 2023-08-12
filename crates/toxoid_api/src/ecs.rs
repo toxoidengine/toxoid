@@ -211,6 +211,41 @@ impl Entity {
             component
         }
     }
+
+    pub fn child_of(&mut self, parent: ecs_entity_t) {
+        unsafe {
+            toxoid_entity_child_of(self.id as u32, parent as u32);
+        }
+    }
+
+    pub fn add_child(&mut self, child: ecs_entity_t) {
+        unsafe {
+            toxoid_entity_child_of(child as u32, self.id as u32);
+        }
+    }
+    
+    pub fn children(&self) -> &[Entity] {
+        unsafe {
+            let iter = toxoid_entity_children(self.id as u32);
+            toxoid_term_next(iter);
+
+            let count = toxoid_iter_count(iter);
+            let children = toxoid_child_entities(iter);
+            let children_slice = core::slice::from_raw_parts(children, count as usize);
+
+            let layout = Layout::array::<Entity>(count as usize).unwrap();
+            let entities_ptr = ALLOCATOR.alloc(layout) as *mut Entity;
+            children_slice
+                .iter()
+                .enumerate()
+                .for_each(|(i, &entity_ptr)| { 
+                    entities_ptr.add(i).write(Entity { id: entity_ptr as i32 });
+                });
+            let entities = core::slice::from_raw_parts(entities_ptr, count as usize);
+            core::mem::forget(entities);
+            entities
+        }
+    }
 }
 
 pub fn register_tag(name: &str) -> ecs_entity_t {

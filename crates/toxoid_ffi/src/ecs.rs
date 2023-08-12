@@ -4,6 +4,8 @@
 use core::ffi::{c_char, c_void};
 use std::{collections::HashMap, cell::RefCell, any::TypeId};
 
+use flecs_core::ecs_iter_t;
+
 thread_local! {
     pub static SYSTEMS: RefCell<Vec<toxoid_api::System>> = {
         let systems = Vec::new();
@@ -154,6 +156,27 @@ pub unsafe fn toxoid_entity_add_component(entity: u32, component: u32) -> *mut c
 #[no_mangle]
 pub unsafe fn toxoid_entity_add_tag(entity: u32, tag: u32) {
     flecs_core::flecs_entity_add_tag(entity, tag)
+}
+
+
+#[no_mangle]
+pub unsafe fn toxoid_entity_child_of(parent: u32, child: u32) {
+    flecs_core::flecs_entity_child_of(parent, child)
+}
+
+#[no_mangle]
+pub unsafe fn toxoid_entity_children(parent: u32) -> *mut ecs_iter_t {
+    flecs_core::flecs_entity_children(parent)
+}
+
+#[no_mangle]
+pub unsafe fn toxoid_child_entities(iter: *mut ecs_iter_t) -> *mut u64 {
+    flecs_core::flecs_child_entities(iter)
+}
+
+#[no_mangle]
+pub unsafe fn toxoid_term_next(iter: *mut flecs_core::ecs_iter_t) {
+    flecs_core::flecs_term_next(iter)
 }
 
 #[no_mangle]
