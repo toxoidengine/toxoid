@@ -31,6 +31,10 @@ extern "C" {
     pub fn toxoid_entity_add_component(entity: u32, component: u32) -> *mut c_void;
     pub fn toxoid_entity_add_tag(entity: u32, tag: u32);
     pub fn toxoid_entity_get_component(entity: u32, component: u32) -> *mut c_void;
+    pub fn toxoid_entity_child_of(entity: u32, parent: u32);
+    pub fn toxoid_entity_children(parent: u32) -> *mut c_void;
+    pub fn toxoid_child_entities(iter: *mut c_void) -> *mut u64;
+    pub fn toxoid_term_next(iter: *mut c_void);
     pub fn toxoid_query_create(ids: *mut i32, components_count: i32) -> *mut c_void;
     pub fn toxoid_query_iter(query: *mut c_void) -> *mut c_void;
     pub fn toxoid_query_next(iter: *mut c_void) -> bool;
