@@ -200,7 +200,7 @@ impl Entity {
         self.id
     }
 
-    pub fn get_component<T: Default + IsComponent + 'static>(&self) -> T {
+    pub fn get<T: Default + IsComponent + 'static>(&self) -> T {
         unsafe {
             let mut component = T::default();
             let component_id = toxoid_component_cache_get(core::any::TypeId::of::<T>());
