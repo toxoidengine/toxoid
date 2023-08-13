@@ -2,6 +2,7 @@ use toxoid_sdl::audio::{AudioCVT, AudioCallback, AudioSpecDesired, AudioSpecWAV}
 use std::borrow::Cow;
 use std::path::{Path, PathBuf};
 
+#[allow(dead_code)]
 struct Sound {
     data: Vec<u8>,
     volume: f32,
@@ -11,7 +12,7 @@ struct Sound {
 impl AudioCallback for Sound {
     type Channel = u8;
 
-    fn callback(&mut self, out: &mut [u8]) {
+    fn callback(&mut self, _out: &mut [u8]) {
         // ... [no changes here] ...
     }
 }
@@ -54,7 +55,6 @@ pub fn init() {
         
         // Start playback
         device.resume();
-
         // core::mem::forget(device);
     });
 }

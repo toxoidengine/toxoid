@@ -78,7 +78,6 @@ pub fn render_rect_system_fn(query: &mut Query) {
                     canvas.fill_rect(rect).unwrap();
                 }); 
             }
-        
     }
 }
 
@@ -86,7 +85,7 @@ pub fn init() {
     use toxoid_api::System;
 
     use crate::ecs::toxoid_add_system;
-    use crate::components::{KeyboardInput, Position, Rect, Renderable};
+    use crate::components::{KeyboardInput, Position};
     let input_system = System::new::<(KeyboardInput,)>(input_system_fn);
     unsafe {
         toxoid_add_system(input_system);
