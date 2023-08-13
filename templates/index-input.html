@@ -1,0 +1,37 @@
+<html>
+    <head>
+    </head>
+    <body>
+        <button id="startButton">Start</button>
+        <canvas id="canvas"></canvas>
+        <script type="module">
+            // Import base game engine
+            import snake_engine_wasm from './snake_engine.js'
+            document
+                .getElementById("startButton")
+                .addEventListener("click", async () => {
+                    // Initialize base game engine 
+                    const snake_engine = await snake_engine_wasm({
+                        canvas: document.getElementById("canvas")
+                    })
+                    
+                    window['snake_engine'] = snake_engine
+
+                    // Get main app WASM module to dynamically link
+                    const res = await fetch('snake.wasm')
+                    const bytes = await res.arrayBuffer()
+
+                    // Dynamically link WASM module
+                    snake_engine.FS.writeFile('snake.wasm', new Uint8Array(bytes))
+                    await snake_engine.loadDynamicLibrary('snake.wasm', {
+                        global: true, 
+                        nodelete: true, 
+                        loadAsync: true
+                    })
+
+                    // Initialize main app module
+                    snake_engine._app_init()
+            });
+        </script>
+    </body>
+</html>

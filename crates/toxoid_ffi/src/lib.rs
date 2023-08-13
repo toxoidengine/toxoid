@@ -2,9 +2,10 @@ pub mod allocator;
 pub mod ecs;
 pub mod components;
 pub mod entities;
-pub mod systems;
 pub mod emscripten;
 pub mod update_loop;
+pub mod systems;
+pub mod audio;
 
 pub use allocator::*;
 pub use ecs::*;
@@ -23,6 +24,8 @@ pub fn init() {
     entities::init();
     // Initialize default engine systems. Such as rendering, input, etc.
     systems::init();
+    // Audio test
+    // audio::init();
 }
 
 // Start update loop / game loop / render loop.
