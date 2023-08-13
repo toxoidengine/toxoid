@@ -2,6 +2,13 @@ use toxoid_api_macro::component;
 use toxoid_api::{IsComponent};
 use crate::ecs::*;
 
+pub enum DirectionEnum {
+    Up = 0,
+    Down = 1,
+    Left = 2,
+    Right = 3,
+}
+
 component! {
     Position {
         x: u32,
@@ -31,10 +38,7 @@ component! {
         y: u32,
     },
     Direction {
-        up: bool,
-        down: bool,
-        left: bool,
-        right: bool,
+        direction: u8
     }
 }
 

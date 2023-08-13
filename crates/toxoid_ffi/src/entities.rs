@@ -1,5 +1,6 @@
+use crate::DirectionEnum;
 use crate::toxoid_api::Entity;
-use crate::components::{KeyboardInput, Position, Rect, Renderable};
+use crate::components::{KeyboardInput, Position, Rect, Renderable, Direction};
 
 pub fn init() {
     // Keyboard Input
@@ -8,10 +9,14 @@ pub fn init() {
 
     let mut player_entity = Entity::new();
     player_entity.add::<Position>();
+    player_entity.add::<Direction>();
 
     let mut pos = player_entity.get::<Position>();
     pos.set_x(350);
     pos.set_y(50);
+
+    let mut dir = player_entity.get::<Direction>();
+    dir.set_direction(DirectionEnum::Down as u8);
     
     let mut render_target = Entity::new();
     render_target.add::<Rect>();
@@ -21,11 +26,4 @@ pub fn init() {
     let mut rect = render_target.get::<Rect>();
     rect.set_width(25);
     rect.set_height(25);
-    
-    player_entity
-        .children()
-        .iter()
-        .for_each(|child| {
-            println!("Children: {}", child.get_id());
-        });
 }
