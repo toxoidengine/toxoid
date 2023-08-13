@@ -24,6 +24,3 @@ unsafe impl GlobalAlloc for GuestAllocator {
 
 #[global_allocator]
 pub static ALLOCATOR: GuestAllocator = GuestAllocator;
-
-// Global constants
-pub const MAX_ELEMENTS: usize = 100;
