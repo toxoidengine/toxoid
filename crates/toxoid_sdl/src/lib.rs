@@ -15,6 +15,10 @@ thread_local! {
         let video = SDL_CONTEXT.with(|sdl| sdl.borrow().video().unwrap());
         RefCell::new(video)
     };
+    pub static AUDIO_SUBSYSTEM: RefCell<sdl2::AudioSubsystem> = {
+        let audio = SDL_CONTEXT.with(|sdl| sdl.borrow().audio().unwrap());
+        RefCell::new(audio)
+    };
     pub static CANVAS: RefCell<WindowCanvas> = {
         let video = VIDEO_SUBSYSTEM.with(|video| video.borrow().clone());
         let window = video

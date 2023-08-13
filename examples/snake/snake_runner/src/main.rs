@@ -99,6 +99,7 @@ fn build_packages() -> Result<(), Box<dyn std::error::Error>> {
                     "-sUSE_SDL=2",
                     "-sUSE_SDL_IMAGE=2",
                     "-sMIN_WEBGL_VERSION=2",
+                    "--preload-file assets",
                     ];
                 command.env("EMCC_CFLAGS", flags.join(" "));
             } else {
