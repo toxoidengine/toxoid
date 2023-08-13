@@ -10,3 +10,4 @@ flecs_core = { path="../../libs/flecs-polyglot/rust/flecs_core" }
 toxoid_sdl = { path="../toxoid_sdl" }
 toxoid_api = { path="../toxoid_api" }
 toxoid_api_macro = { path="../toxoid_api_macro" }
+rand = "0.8.5"
