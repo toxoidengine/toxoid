@@ -10,7 +10,7 @@ pub fn init() {
     player_entity.add::<Position>();
 
     let mut pos = player_entity.get::<Position>();
-    pos.set_x(50);
+    pos.set_x(350);
     pos.set_y(50);
     
     let mut render_target = Entity::new();
@@ -19,8 +19,8 @@ pub fn init() {
     render_target.child_of(player_entity);
 
     let mut rect = render_target.get::<Rect>();
-    rect.set_width(50);
-    rect.set_height(50);
+    rect.set_width(25);
+    rect.set_height(25);
     
     player_entity
         .children()

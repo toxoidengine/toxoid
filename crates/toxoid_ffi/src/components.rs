@@ -29,6 +29,12 @@ component! {
     Renderable {
         x: u32,
         y: u32,
+    },
+    Direction {
+        up: bool,
+        down: bool,
+        left: bool,
+        right: bool,
     }
 }
 
@@ -39,4 +45,5 @@ pub fn init() {
     Rect::register();
     Color::register();
     Renderable::register();
+    Direction::register();
 }

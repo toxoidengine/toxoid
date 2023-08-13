@@ -10,7 +10,7 @@ extern "C" {
 fn main() {
     // Initialize Toxoid ECS initializers + default components + default sy stems.
     toxoid_ffi::init();
-    
+     
     // TODO: Move to dynamically linked lib
     systems::init();
 }
