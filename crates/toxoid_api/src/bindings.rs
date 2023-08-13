@@ -92,4 +92,5 @@ extern "C" {
         len: u32,
         value: *mut c_char,
     );   
+    pub fn toxoid_progress(delta_time: f32) -> bool;
 }
