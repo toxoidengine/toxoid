@@ -18,10 +18,8 @@ component! {
         right: bool,
     },
     Rect {
-        x: u32,
-        y: u32,
-        w: u32,
-        h: u32,
+        width: u32,
+        height: u32,
     },
     Color {
         r: u8,

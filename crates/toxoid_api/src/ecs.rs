@@ -212,15 +212,15 @@ impl Entity {
         }
     }
 
-    pub fn child_of(&mut self, parent: ecs_entity_t) {
+    pub fn child_of(&mut self, parent: Entity) {
         unsafe {
-            toxoid_entity_child_of(self.id as u32, parent as u32);
+            toxoid_entity_child_of(self.id as u32, parent.get_id() as u32);
         }
     }
 
-    pub fn add_child(&mut self, child: ecs_entity_t) {
+    pub fn add_child(&mut self, child: Entity) {
         unsafe {
-            toxoid_entity_child_of(child as u32, self.id as u32);
+            toxoid_entity_child_of(child.get_id() as u32, self.id as u32);
         }
     }
     

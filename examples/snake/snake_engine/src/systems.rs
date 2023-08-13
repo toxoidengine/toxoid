@@ -1,4 +1,4 @@
-use toxoid_ffi::{toxoid_add_system, toxoid_api::{print_string, Query, System}, KeyboardInput};
+use toxoid_ffi::{toxoid_add_system, toxoid_api::{print_string, Query, System}, KeyboardInput, Position};
 
 pub fn movement_system_fn(query: &mut Query) {
     let query_iter = query.iter();
@@ -7,20 +7,29 @@ pub fn movement_system_fn(query: &mut Query) {
         let entity = entities.get(0);
         if entity.is_some() {
             let keyboard_input = entity.unwrap().get::<KeyboardInput>();
-            if keyboard_input.get_left() {
-                print_string("Left");
-            }
-            if keyboard_input.get_right() {
-                print_string("Right");
-            }
-            if keyboard_input.get_up() {
-                print_string("Up");
-            }
-            if keyboard_input.get_down() {
-                print_string("Down");
+
+            let mut player_query = Query::new::<(Position,)>();
+            let player_query_iter = player_query.iter();
+            while player_query_iter.next() {
+                let player_entities = player_query_iter.entities();
+                let player_entity = player_entities.get(0);
+                if player_entity.is_some() {
+                    let mut player_pos = player_entity.unwrap().get::<Position>();
+                    if keyboard_input.get_left() {
+                        player_pos.set_x(player_pos.get_x() - 3);
+                    }
+                    if keyboard_input.get_right() {
+                        player_pos.set_x(player_pos.get_x() + 3);
+                    }
+                    if keyboard_input.get_up() {
+                        player_pos.set_y(player_pos.get_y() - 3);
+                    }
+                    if keyboard_input.get_down() {
+                        player_pos.set_y(player_pos.get_y() + 3);
+                    }
+                }
             }
         }
-        
     }
 } 
 

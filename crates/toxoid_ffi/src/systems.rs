@@ -1,9 +1,8 @@
 use toxoid_api::{Query, System};
-use toxoid_sdl::event::Event;
-use toxoid_sdl::keyboard::Keycode;
-use crate::{toxoid_add_system, KeyboardInput};
 
 pub fn input_system_fn(query: &mut Query) {
+    use toxoid_sdl::event::Event;
+    use toxoid_sdl::keyboard::Keycode;
     toxoid_sdl::SDL_CONTEXT.with(|ctx| {
         let query_iter = query.iter();
         while query_iter.next() {
@@ -58,16 +57,38 @@ pub fn input_system_fn(query: &mut Query) {
     });
 }
 
-// toxoid_sdl::CANVAS.with(|canvas_ref| {
-//     let mut canvas = canvas_ref.borrow_mut();
-//     canvas.set_draw_color(Color::RGB(64, 64, 80));
-//     canvas.clear();
-//     canvas.present();
-// }); 
+pub fn render_rect_system_fn(query: &mut Query) {
+    use toxoid_sdl::pixels::Color;
+
+    let query_iter = query.iter();
+    while query_iter.next() {
+        let entities = query_iter.entities();
+        let entity = entities.get(0);
+            if entity.is_some() {
+                let player = entity.unwrap().get::<crate::Position>();
+                // Draw Rect
+                toxoid_sdl::CANVAS.with(|canvas_ref| {
+                    let mut canvas = canvas_ref.borrow_mut();
+                    // Set the rectangle color to red (255, 0, 0) and fill the rectangle
+                    canvas.set_draw_color(Color::RGB(255, 0, 0));
+                    let rect = toxoid_sdl::rect::Rect::new(player.get_x() as i32, player.get_y() as i32, 50, 50);
+                    canvas.fill_rect(rect).unwrap();
+                }); 
+            }
+        
+    }
+}
 
 pub fn init() {
+    use crate::ecs::toxoid_add_system;
+    use crate::components::{KeyboardInput, Position, Rect, Renderable};
     let input_system = System::new::<(KeyboardInput,)>(input_system_fn);
     unsafe {
         toxoid_add_system(input_system);
+    }
+    
+    let render_rect_system = System::new::<(Position,)>(render_rect_system_fn);
+    unsafe {
+        toxoid_add_system(render_rect_system);
     }
 }

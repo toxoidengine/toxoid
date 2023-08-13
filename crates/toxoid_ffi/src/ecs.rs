@@ -552,3 +552,8 @@ pub unsafe extern "C" fn toxoid_add_system(
         systems.borrow_mut().push(system);
     });
 }
+
+#[no_mangle]
+pub unsafe fn toxoid_progress(delta_time: f32) -> bool {
+    flecs_core::flecs_progress(delta_time)
+}
