@@ -59,25 +59,24 @@ pub fn input_system_fn(query: &mut Query) {
 }
 
 pub fn render_rect_system_fn(query: &mut Query) {
-    use toxoid_sdl::pixels::Color;
+    use crate::components::{Rect, Renderable, Color, Position};
     let query_iter = query.iter();
     while query_iter.next() {
         let entities = query_iter.entities();
-        let entity = entities.get(0);
-            if entity.is_some() {
-                let player = entity.unwrap().get::<crate::Position>();
+        entities
+            .iter()
+            .for_each(|entity| {
+                let rect = entity.get::<Rect>();
+                let pos = entity.get::<Position>();
+                let color = entity.get::<Color>();
                 // Draw Rect
                 toxoid_sdl::CANVAS.with(|canvas_ref| {
                     let mut canvas = canvas_ref.borrow_mut();
-                    // Set the rectangle color to red (255, 0, 0) and fill the rectangle
-                    canvas.set_draw_color(Color::RGB(255, 0, 0));
-                    let rect = toxoid_sdl::rect::Rect::new(player.get_x() as i32, player.get_y() as i32, 50, 50);
-                    canvas.fill_rect(rect).unwrap();
-
-                    let rect = toxoid_sdl::rect::Rect::new(player.get_x() as i32, player.get_y() as i32, 50, 50);
+                    canvas.set_draw_color(toxoid_sdl::pixels::Color::RGB(color.get_r(), color.get_g(), color.get_b()));
+                    let rect = toxoid_sdl::rect::Rect::new(pos.get_x() as i32, pos.get_y() as i32, rect.get_width(), rect.get_height());
                     canvas.fill_rect(rect).unwrap();
                 }); 
-            }
+            });
     }
 }
 
@@ -85,13 +84,13 @@ pub fn init() {
     use toxoid_api::System;
 
     use crate::ecs::toxoid_add_system;
-    use crate::components::{KeyboardInput, Position};
+    use crate::components::{KeyboardInput, Rect, Renderable, Color, Position};
     let input_system = System::new::<(KeyboardInput,)>(input_system_fn);
     unsafe {
         toxoid_add_system(input_system);
     }
     
-    let render_rect_system = System::new::<(Position,)>(render_rect_system_fn);
+    let render_rect_system = System::new::<(Rect, Renderable, Color, Position)>(render_rect_system_fn);
     unsafe {
         toxoid_add_system(render_rect_system);
     }
