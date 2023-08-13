@@ -3,8 +3,10 @@
 
 use core::ffi::{c_char, c_void};
 use std::{collections::HashMap, cell::RefCell, any::TypeId};
+use core::alloc::{GlobalAlloc, Layout};
 
 use flecs_core::ecs_iter_t;
+use toxoid_api::ALLOCATOR;
 
 thread_local! {
     pub static SYSTEMS: RefCell<Vec<toxoid_api::System>> = {
@@ -31,26 +33,35 @@ pub fn register_component_ecs(
     // TODO: Figure out why removing this causes a potential race condition
     println!("Registered Component: {}", name);
     unsafe {
-        let mut c_member_names: [*const c_char; 100] = [core::ptr::null(); 100];
-        let mut c_member_names_len: [u8; 100] = [0; 100];
-        for (i, &s) in member_names.iter().enumerate() {
-            c_member_names[i] = s.as_ptr() as *const c_char;
-            c_member_names_len[i] = s.len() as u8;
-        }
+        let member_names_layout = Layout::array::<*mut c_char>(member_names.len() as usize).unwrap();
+        let member_names_ptr = ALLOCATOR.alloc(member_names_layout) as *mut *mut c_char;
+        let member_names_len_layout = Layout::array::<u8>(member_names.len() as usize).unwrap();
+        let member_names_len_ptr = ALLOCATOR.alloc(member_names_len_layout) as *mut u8;
+        member_names
+            .iter()
+            .enumerate()
+            .for_each(|(i, &member_name)| {
+                member_names_ptr.add(i).write(member_name.as_ptr() as *mut i8);
+                member_names_len_ptr.add(i).write(member_name.len() as u8);
+            });
 
-        let mut c_member_types: [*const u8; 100] = [core::ptr::null(); 100];
-        for (i, &t) in member_types.iter().enumerate() {
-            c_member_types[i] = &t as *const u8;
-        }
+        let member_types_layout = Layout::array::<u8>(member_types.len() as usize).unwrap();
+        let member_types_ptr = ALLOCATOR.alloc(member_types_layout) as *mut u8;
+        member_types
+            .iter()
+            .enumerate()
+            .for_each(|(i, &member_type)| {
+                member_types_ptr.add(i).write(member_type);
+            });
 
         toxoid_register_component(
             name.as_bytes().as_ptr() as *const c_char,
             name.len() as u8,
-            c_member_names.as_ptr(),
+            member_names_ptr as *const *const c_char,
             member_names.len() as u32,
-            c_member_names_len.as_ptr(),
-            c_member_types.as_ptr(),
-            c_member_types.len() as u32,
+            member_names_len_ptr,
+            member_types_ptr,
+            member_types.len() as u32,
         )
     }
 }
@@ -102,7 +113,7 @@ pub unsafe extern "C" fn toxoid_register_component(
     member_names: *const *const c_char,
     member_names_count: u32,
     member_names_len: *const u8,
-    member_types: *const *const u8,
+    member_types: *const u8,
     member_types_count: u32,
 ) -> i32 {
     // Convert the C String to a Rust string using a specific length
@@ -110,24 +121,30 @@ pub unsafe extern "C" fn toxoid_register_component(
     let component_name_slice =
         std::slice::from_raw_parts(component_name as *mut u8, component_name_len as usize);
     let component_name = std::str::from_utf8_unchecked(component_name_slice);
-    // println!("Component Name: {}", component_name);
-
     // Convert back to C string with specific length
     let component_name =
         std::ffi::CString::new(component_name).expect("Failed to convert to CString");
 
-    // Iterate over the member names 
-    for i in 0..member_names_count {
-        let _member_name_ptr = *member_names.add(i as usize);
-        let _member_name_length = *member_names_len.add(i as usize);
-        // let member_slice = std::slice::from_raw_parts(member_name_ptr as *mut u8, member_name_length as usize);
-        // let member_name = std::str::from_utf8_unchecked(member_slice);
-        // println!("Member Name #{}: {}", i, member_name);
-    }
+    // Convert the C String to a Rust string using a specific length
+    // for all member names
+    let member_names_slice = std::slice::from_raw_parts(member_names as *mut *mut c_char, member_names_count as usize);
+    let member_names_len_slice = std::slice::from_raw_parts(member_names_len as *mut u8, member_names_count as usize);
+    let member_names = member_names_slice
+        .iter()
+        .enumerate()
+        .map(|(i, member_name_ptr)| {
+            // Convert the C String to a Rust string using a specific length
+            let member_name_slice = std::slice::from_raw_parts(*member_name_ptr as *mut u8, member_names_len_slice[i] as usize);
+            let member_name_str = std::str::from_utf8_unchecked(member_name_slice);
+            // Convert back to C string with specific length and collect CStrings to avoid dropping
+            std::ffi::CString::new(member_name_str).expect("Failed to convert to CString")
+        })
+        .collect::<Vec<std::ffi::CString>>();
+    let member_names_pointers: Vec<_> = member_names.iter().map(|c_string| c_string.as_ptr()).collect();
 
     flecs_core::flecs_component_create(
         component_name.as_ptr(),
-        member_names,
+        member_names_pointers.as_ptr(),
         member_names_count,
         member_types,
         member_types_count,

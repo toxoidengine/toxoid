@@ -24,7 +24,7 @@ extern "C" {
         member_names: *const *const c_char,
         member_names_count: u32,
         member_names_len: *const u8,
-        member_types: *const *const u8,
+        member_types: *const u8,
         member_types_count: u32,
     ) -> ecs_entity_t;
     pub fn toxoid_entity_create() -> ecs_entity_t;
