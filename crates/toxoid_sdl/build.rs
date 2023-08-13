@@ -9,9 +9,9 @@ use std::io::Write;
 use std::path::Path;
 use std::process::Command;
 
-const SDL2_FILENAME: &'static str = "SDL2-devel-2.24.2-VC.zip";
-const SDL2_URL: &'static str = "https://www.libsdl.org/release/SDL2-devel-2.24.2-VC.zip";
-const SDL2_PATH: &'static str = "SDL2-devel-2.24.2-VC";
+const SDL2_FILENAME: &'static str = "SDL2-devel-2.28.2-VC.zip";
+const SDL2_URL: &'static str = "https://www.libsdl.org/release/SDL2-devel-2.28.2-VC.zip";
+const SDL2_PATH: &'static str = "SDL2-devel-2.28.2-VC";
 
 fn main() {
     // Tell cargo to invalidate the built crate whenever the sources change
