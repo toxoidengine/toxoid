@@ -36,9 +36,9 @@ pub trait IsComponent {
 #[repr(C)]
 pub struct Query {
     query: *mut c_void,
+    indexes: &'static [TypeId],
     // For self reference and deallocating the iterator on drop
     iter: *mut c_void,
-    indexes: &'static [TypeId],
     // For deallocating all entities returned from query.entities() on drop
     entities: &'static mut [Entity],
 }
@@ -69,8 +69,8 @@ impl Query {
 
             Query {
                 query: toxoid_query_create(ids_ptr, type_ids.len() as i32),
-                iter: core::ptr::null_mut(),  
                 indexes: type_ids,
+                iter: core::ptr::null_mut(),  
                 entities: &mut [],
             }
         }
