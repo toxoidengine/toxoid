@@ -89,7 +89,7 @@ pub fn movement_system_fn(query: &mut Query) {
         let query_iter = query.iter();
         while query_iter.next() {
             let entities = query_iter.entities();
-            let player_entity = entities.get(0);
+            let player_entity = entities.get_mut(0);
             if player_entity.is_some() {
                 let player_entity = player_entity.unwrap();
                 let mut player_pos = player_entity.get::<Position>();
