@@ -43,13 +43,11 @@ component! {
 }
 
 pub fn init() {
-    let id = Position::register();
-    toxoid_entity_get_name(id);
+    Position::register();
     Velocity::register();
     KeyboardInput::register();
     Rect::register();
     Color::register();
     Renderable::register();
-    let id = Direction::register();
-    toxoid_entity_get_name(id);
+    Direction::register();
 }

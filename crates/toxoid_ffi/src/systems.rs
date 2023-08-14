@@ -1,8 +1,10 @@
-use toxoid_api::Query;
+use core::alloc::GlobalAlloc;
+use toxoid_api::{Query, ALLOCATOR, Entity, IsComponent};
 
 pub fn input_system_fn(query: &mut Query) {
     use toxoid_sdl::event::Event;
     use toxoid_sdl::keyboard::Keycode;
+    use crate::components::KeyboardInput;
     toxoid_sdl::SDL_CONTEXT.with(|ctx| {
         let query_iter = query.iter();
         while query_iter.next() {
@@ -10,7 +12,7 @@ pub fn input_system_fn(query: &mut Query) {
             let entity = entities.get(0);
             if entity.is_some() {
                 // TODO: Make this ECS Singleton later
-                let mut keyboard_input = entity.unwrap().get::<crate::KeyboardInput>();
+                let mut keyboard_input = entity.unwrap().get::<KeyboardInput>();
                 let sdl_context = ctx.borrow_mut();
                 let mut event_pump = sdl_context.event_pump().unwrap();
                 for event in event_pump.poll_iter() {
@@ -59,7 +61,7 @@ pub fn input_system_fn(query: &mut Query) {
 }
 
 pub fn render_rect_system_fn(query: &mut Query) {
-    use crate::components::{Rect, Renderable, Color, Position};
+    use crate::components::{Rect, Color, Position};
     let query_iter = query.iter();
     while query_iter.next() {
         let entities = query_iter.entities();
@@ -82,16 +84,13 @@ pub fn render_rect_system_fn(query: &mut Query) {
 
 pub fn init() {
     use toxoid_api::System;
-
     use crate::ecs::toxoid_add_system;
     use crate::components::{KeyboardInput, Rect, Renderable, Color, Position};
-    let input_system = System::new::<(KeyboardInput,)>(input_system_fn);
-    unsafe {
-        toxoid_add_system(input_system);
-    }
     
+    let input_system = System::new::<(KeyboardInput,)>(input_system_fn);
     let render_rect_system = System::new::<(Rect, Renderable, Color, Position)>(render_rect_system_fn);
     unsafe {
+        toxoid_add_system(input_system);
         toxoid_add_system(render_rect_system);
     }
 }

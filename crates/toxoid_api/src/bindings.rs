@@ -45,7 +45,7 @@ extern "C" {
         count: u32,
         index: u32,
     ) -> *const c_void;
-    pub fn toxoid_query_entity_list(iter: *mut c_void) -> &'static [Entity];
+    pub fn toxoid_query_entity_list(iter: *mut c_void) -> &'static mut [Entity];
     pub fn toxoid_query_field_size(
         iter: *mut c_void,
         term_index: i32

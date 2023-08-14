@@ -36,8 +36,21 @@ pub trait IsComponent {
 #[repr(C)]
 pub struct Query {
     query: *mut c_void,
+    // For self reference and deallocating the iterator on drop
     iter: *mut c_void,
     indexes: &'static [TypeId],
+    // For deallocating all entities returned from query.entities() on drop
+    entities: &'static mut [Entity],
+}
+
+impl Drop for Query {
+    fn drop(&mut self) {
+        unsafe {
+            ALLOCATOR.dealloc(self.iter as *mut u8, core::alloc::Layout::new::<c_void>()); 
+            ALLOCATOR.dealloc(self.entities.as_ptr() as *mut u8, core::alloc::Layout::array::<Entity>(self.entities.len()).unwrap()); 
+            // ALLOCATOR.dealloc(self.indexes.as_ptr() as *mut u8, core::alloc::Layout::array::<Entity>(self.indexes.len()).unwrap()); 
+        }
+    }
 }
 
 impl Query {
@@ -57,7 +70,8 @@ impl Query {
             Query {
                 query: toxoid_query_create(ids_ptr, type_ids.len() as i32),
                 iter: core::ptr::null_mut(),  
-                indexes: type_ids
+                indexes: type_ids,
+                entities: &mut [],
             }
         }
     }
@@ -75,10 +89,12 @@ impl Query {
         unsafe { toxoid_query_next(self.iter) }
     }
 
-    pub fn entities(&self) -> &[Entity] {
-        unsafe { toxoid_query_entity_list(self.iter) }
+    pub fn entities(&mut self) -> &mut [Entity] {
+        self.entities = unsafe { toxoid_query_entity_list(self.iter) };
+        self.entities
     }
 
+    // TODO: FREE MEMORY
     pub fn field<T: Default + IsComponent + 'static>(&self) -> &'static [T] {
         unsafe {
             let count = toxoid_iter_count(self.iter);
@@ -137,6 +153,8 @@ impl Query {
             // }
         }
     }
+
+
 }
 
 #[repr(C)]
@@ -151,12 +169,6 @@ pub trait SystemTrait {
 
 impl System {
     pub fn new<T: ComponentTuple + 'static>(update_fn: fn(&mut Query)) -> Self {
-        // |self_f| {
-        //     self_f.query.iter();
-        //     while self_f.query.next() {
-                
-        //     }
-        // }
         System {
             query: Query::new::<T>(),
             update_fn
@@ -165,9 +177,21 @@ impl System {
 }
 
 #[repr(C)]
-#[derive(Copy, Clone)]
+#[derive(Clone)]
 pub struct Entity {
     id: ecs_id_t,
+    // For deallocating all children returend from entities.children() on drop
+    children: &'static [Entity],
+    // For deallocating all components grabbed from entity.get::<T>() on drop
+    // components: *mut Component
+}
+
+impl Drop for Entity {
+    fn drop(&mut self) {
+        // unsafe {
+        //     ALLOCATOR.dealloc(self.children.as_ptr() as *mut u8, Layout::array::<Entity>(self.children.len() as usize).unwrap());
+        // }
+    }
 }
 
 impl Entity {
@@ -175,6 +199,7 @@ impl Entity {
         unsafe {
             Entity {
                 id: toxoid_entity_create(),
+                children: &[]
             }
         }
     }
@@ -202,6 +227,7 @@ impl Entity {
         self.id
     }
 
+    // TODO: FREE MEMORY
     pub fn get<T: Default + IsComponent + 'static>(&self) -> T {
         unsafe {
             let mut component = T::default();
@@ -224,7 +250,7 @@ impl Entity {
         }
     }
     
-    pub fn children(&self) -> &[Entity] {
+    pub fn children(&mut self) -> &[Entity] {
         unsafe {
             let iter = toxoid_entity_children(self.id as u32);
             toxoid_term_next(iter);
@@ -238,11 +264,21 @@ impl Entity {
             children_slice
                 .iter()
                 .enumerate()
-                .for_each(|(i, &entity_ptr)| { 
-                    entities_ptr.add(i).write(Entity { id: entity_ptr as i32 });
+                .for_each(|(i, &entity_id)| { 
+                    entities_ptr.add(i).write(Entity { 
+                        id: entity_id as i32, 
+                        children: &[]
+                    });
                 });
+            
+            // Cleanup
+            ALLOCATOR.dealloc(iter as *mut u8, Layout::new::<c_void>());
+            
             let entities = core::slice::from_raw_parts(entities_ptr, count as usize);
+            // Make sure slice is not freed at the end of this function
             core::mem::forget(entities);
+            // Assign to self so we can drop it later
+            // self.children = entities;
             entities
         }
     }
