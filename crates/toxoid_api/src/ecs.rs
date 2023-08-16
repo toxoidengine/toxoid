@@ -177,11 +177,10 @@ impl System {
 }
 
 #[repr(C)]
-#[derive(Clone)]
 pub struct Entity {
     id: ecs_id_t,
     // For deallocating all children returend from entities.children() on drop
-    children: &'static [Entity],
+    children: &'static mut [Entity],
     // For deallocating all components grabbed from entity.get::<T>() on drop
     // components: *mut Component
 }
@@ -199,7 +198,7 @@ impl Entity {
         unsafe {
             Entity {
                 id: toxoid_entity_create(),
-                children: &[]
+                children: &mut []
             }
         }
     }
@@ -208,6 +207,13 @@ impl Entity {
         unsafe {
             let component_id = toxoid_component_cache_get(core::any::TypeId::of::<T>());
             toxoid_entity_add_component(self.id as u32, component_id as u32);
+        }
+    }
+
+    pub fn remove<T: IsComponent + 'static>(&mut self) {
+        unsafe {
+            let component_id = toxoid_component_cache_get(core::any::TypeId::of::<T>());
+            toxoid_entity_remove_component(self.id as u32, component_id as u32);
         }
     }
 
@@ -250,36 +256,54 @@ impl Entity {
         }
     }
     
-    pub fn children(&mut self) -> &mut [Entity] {
+    // pub fn children(&mut self) -> &mut [Entity] {
+    //     unsafe {
+    //         let iter = toxoid_entity_children(self.id as u32);
+    //         // toxoid_term_next(iter);
+    //         let count = toxoid_iter_count(iter);
+    //         let children = toxoid_child_entities(iter);
+    //         let children_slice = core::slice::from_raw_parts(children, count as usize);
+
+    //         let layout = Layout::array::<Entity>(count as usize).unwrap();
+    //         let entities_ptr = ALLOCATOR.alloc(layout) as *mut Entity;
+    //         children_slice
+    //             .iter()
+    //             .enumerate()
+    //             .for_each(|(i, &entity_id)| { 
+    //                 entities_ptr.add(i).write(Entity { 
+    //                     id: entity_id as i32, 
+    //                     children: &mut []
+    //                 });
+    //             });
+            
+    //         // Cleanup
+    //         ALLOCATOR.dealloc(iter as *mut u8, Layout::new::<c_void>());
+            
+    //         let entities = core::slice::from_raw_parts_mut(entities_ptr, count as usize);
+    //         // Make sure slice is not freed at the end of this function
+    //         core::mem::forget(entities_ptr);
+    //         // Assign to self so we can drop it later
+    //         // self.children = entities;
+    //         entities
+    //     }
+    // }
+
+    pub fn children(&mut self, mut cb: impl FnMut(Entity)) {
         unsafe {
-            let iter = toxoid_entity_children(self.id as u32);
-            toxoid_term_next(iter);
-
-            let count = toxoid_iter_count(iter);
-            let children = toxoid_child_entities(iter);
-            let children_slice = core::slice::from_raw_parts(children, count as usize);
-
-            let layout = Layout::array::<Entity>(count as usize).unwrap();
-            let entities_ptr = ALLOCATOR.alloc(layout) as *mut Entity;
-            children_slice
+            let filter = toxoid_filter_children_init(self.get_id() as u32);
+            let it = toxoid_filter_iter(filter);
+            while toxoid_filter_next(it) {
+                let entities = toxoid_iter_entities(it);
+                entities
                 .iter()
-                .enumerate()
-                .for_each(|(i, &entity_id)| { 
-                    entities_ptr.add(i).write(Entity { 
-                        id: entity_id as i32, 
-                        children: &[]
-                    });
+                .for_each(|entity_id| {
+					let e = Entity { 
+                        id: *entity_id as i32, 
+                        children: &mut []
+                    };
+					cb(e);
                 });
-            
-            // Cleanup
-            ALLOCATOR.dealloc(iter as *mut u8, Layout::new::<c_void>());
-            
-            let entities = core::slice::from_raw_parts_mut(entities_ptr, count as usize);
-            // Make sure slice is not freed at the end of this function
-            core::mem::forget(entities_ptr);
-            // Assign to self so we can drop it later
-            // self.children = entities;
-            entities
+			}
         }
     }
 }

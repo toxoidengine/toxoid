@@ -84,7 +84,7 @@ pub fn input_system_fn(query: &mut Query) {
 
 // For a 60 FPS rate, 6 frames is approximately 100ms
 // For a 60 FPS rate, 30 frames is approximately 500ms
-const FRAMES_PER_MOVE: u32 = 30;  
+const FRAMES_PER_MOVE: u32 = 15;  
 thread_local! {
     static FRAMES_SINCE_LAST_MOVE: std::cell::Cell<u32> = std::cell::Cell::new(0);
 }
@@ -99,38 +99,32 @@ pub fn movement_system_fn(query: &mut Query) {
         let query_iter = query.iter();
         while query_iter.next() {
             let entities = query_iter.entities();
-            let player_entity = entities.get_mut(0);
-            if player_entity.is_some() {
-                let player_entity = player_entity.unwrap();
-                let mut player_pos = player_entity.get::<Position>();
-                let player_dir = player_entity.get::<Direction>();
-                let children = player_entity.children();
-                if player_dir.get_direction() == DirectionEnum::Up as u8 {
-                    player_pos.set_y(player_pos.get_y() - 50);
-                    children.iter().for_each(|child| {
-                        let mut child_pos = child.get::<Position>();
-                        child_pos.set_y(child_pos.get_y() - 50);
+            entities
+                .iter_mut()
+                .for_each(|player_entity| {
+                    // println!("Player Entity {}", player_entity.get_id());
+                    let mut player_pos = player_entity.get::<Position>();
+                    let player_dir = player_entity.get::<Direction>();
+                    player_entity.children(|child| {
+                        if player_dir.get_direction() == DirectionEnum::Up as u8 {
+                            player_pos.set_y(player_pos.get_y() - 50);
+                            let mut child_pos = child.get::<Position>();
+                            child_pos.set_y(child_pos.get_y() - 50);
+                        } else if player_dir.get_direction() == DirectionEnum::Down as u8 {
+                            player_pos.set_y(player_pos.get_y() + 50);
+                            let mut child_pos = child.get::<Position>();
+                            child_pos.set_y(child_pos.get_y() + 50);
+                        } else if player_dir.get_direction() == DirectionEnum::Left as u8 {
+                            player_pos.set_x(player_pos.get_x() - 50);
+                            let mut child_pos = child.get::<Position>();
+                            child_pos.set_x(child_pos.get_x() - 50);
+                        } else if player_dir.get_direction() == DirectionEnum::Right as u8 {
+                            player_pos.set_x(player_pos.get_x() + 50);
+                            let mut child_pos = child.get::<Position>();
+                            child_pos.set_x(child_pos.get_x() + 50);
+                        }
                     });
-                } else if player_dir.get_direction() == DirectionEnum::Down as u8 {
-                    player_pos.set_y(player_pos.get_y() + 50);
-                    children.iter().for_each(|child| {
-                        let mut child_pos = child.get::<Position>();
-                        child_pos.set_y(child_pos.get_y() + 50);
-                    });
-                } else if player_dir.get_direction() == DirectionEnum::Left as u8 {
-                    player_pos.set_x(player_pos.get_x() - 50);
-                    children.iter().for_each(|child| {
-                        let mut child_pos = child.get::<Position>();
-                        child_pos.set_x(child_pos.get_x() - 50);
-                    });
-                } else if player_dir.get_direction() == DirectionEnum::Right as u8 {
-                    player_pos.set_x(player_pos.get_x() + 50);
-                    children.iter().for_each(|child| {
-                        let mut child_pos = child.get::<Position>();
-                        child_pos.set_x(child_pos.get_x() + 50);
-                    });
-                }
-            }
+                });
         }
 
         // Reset the counter after moving.
@@ -140,7 +134,7 @@ pub fn movement_system_fn(query: &mut Query) {
 
 // TODO: Possibly replace after we implement flecs filters
 thread_local! {
-    static FOOD_QUERY: RefCell<Query> = RefCell::new(Query::new::<(Position, Food)>());
+    static FOOD_QUERY: RefCell<Query> = RefCell::new(Query::new::<(Position, Food)>());  
 }
 
 fn aabb(a: Position, a2: Rect, b: Position, b2: Rect) -> bool {
@@ -158,9 +152,7 @@ pub fn eat_system_fn(query: &mut Query) {
                 .iter_mut()
                 .for_each(|player_entity| {
                     player_entity
-                        .children()
-                        .iter()
-                        .for_each(|player_child| {
+                        .children(|player_child| {
                             FOOD_QUERY.with(|food_query_cell| {
                                 let mut food_query = food_query_cell.borrow_mut();
                                 let food_query_iter = food_query.iter();
@@ -169,17 +161,51 @@ pub fn eat_system_fn(query: &mut Query) {
                                         .entities()
                                         .iter_mut()
                                         .for_each(|food_entity| {
-                                            let food_child = food_entity.children().get_mut(0);
-                                            if food_child.is_some() {
-                                                let food_child = food_child.unwrap();
-                                                let food_pos = food_child.get::<Position>();
-                                                let food_rect = food_child.get::<Rect>();
-                                                let player_child_pos = player_child.get::<Position>();
-                                                let player_child_rect = player_child.get::<Rect>();
-                                                if aabb(player_child_pos, player_child_rect, food_pos, food_rect) {
-                                                    println!("COLLIDED!");
-                                                }
-                                            }
+                                            food_entity.children(|food_child| {
+                                                    let mut food_pos = food_child.get::<Position>();
+                                                    let food_rect = food_child.get::<Rect>();
+                                                    let player_child_pos = player_child.get::<Position>();
+                                                    let player_child_rect = player_child.get::<Rect>();
+                                                    if aabb(player_child_pos, player_child_rect, food_pos, food_rect) {
+                                                        let (x, y) = toxoid_ffi::gen_rng_grid_pos();
+                                                        food_pos.set_x(x as u32);
+                                                        food_pos.set_y(y as u32);
+                                                        {
+                                                            use toxoid_ffi::toxoid_api::*;
+                                                            use toxoid_ffi::*;
+
+                                                            // Parent entity
+                                                            // let mut player_entity = Entity::new();
+                                                            // player_entity.add::<Position>();
+                                                            // player_entity.add::<Direction>();
+                                                            // player_entity.add::<Player>();
+                                                            // let mut pos = player_entity.get::<Position>();
+                                                            // println!("Player Child Pos: {}, {}", player_child_pos.get_x(), player_child_pos.get_y());
+                                                            // pos.set_x(player_child_pos.get_x() - player_child_rect.get_width());
+                                                            // pos.set_y(player_child_pos.get_y() - player_child_rect.get_height());
+                                                            // let mut dir = player_entity.get::<Direction>();
+                                                            // dir.set_direction(DirectionEnum::Down as u8);
+                                                            
+                                                            // // Child Entity
+                                                            // let mut render_target = Entity::new();
+                                                            // render_target.add::<Rect>();
+                                                            // render_target.add::<Renderable>();
+                                                            // render_target.add::<Color>();
+                                                            // render_target.add::<Position>();
+                                                            // render_target.child_of(player_entity);
+                                                            // let mut rect = render_target.get::<Rect>();
+                                                            // rect.set_width(50);
+                                                            // rect.set_height(50);
+                                                            // let mut color = render_target.get::<Color>();
+                                                            // color.set_r(255);
+                                                            // color.set_g(0);
+                                                            // color.set_b(0);
+                                                            // let mut render_pos = render_target.get::<Position>();
+                                                            // render_pos.set_x(pos.get_x());
+                                                            // render_pos.set_y(pos.get_y());
+                                                        }                                                    
+                                                    }
+                                            });
                                         });
                                 }
                             });

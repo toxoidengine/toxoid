@@ -40,12 +40,14 @@ component! {
     Direction {
         direction: u8
     },
+    // TODO: Make these all tags with no fields and create tag!{} proc macro
+    // Also move to snake_engine
     Player {
-        player: bool
+        head: bool
     },
     Food {
         food: bool
-    }
+    },
 }
 
 pub fn init() {

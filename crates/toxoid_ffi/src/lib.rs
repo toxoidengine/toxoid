@@ -6,12 +6,14 @@ pub mod emscripten;
 pub mod update_loop;
 pub mod systems;
 pub mod audio;
+pub mod utils;
 
 pub use allocator::*;
 pub use ecs::*;
 pub use emscripten::*;
 pub use update_loop::*;
 pub use components::*;
+pub use utils::*;
 pub use toxoid_api;
 pub use flecs_core;
 
