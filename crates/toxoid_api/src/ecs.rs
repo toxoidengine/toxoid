@@ -250,7 +250,7 @@ impl Entity {
         }
     }
     
-    pub fn children(&mut self) -> &[Entity] {
+    pub fn children(&mut self) -> &mut [Entity] {
         unsafe {
             let iter = toxoid_entity_children(self.id as u32);
             toxoid_term_next(iter);
@@ -274,9 +274,9 @@ impl Entity {
             // Cleanup
             ALLOCATOR.dealloc(iter as *mut u8, Layout::new::<c_void>());
             
-            let entities = core::slice::from_raw_parts(entities_ptr, count as usize);
+            let entities = core::slice::from_raw_parts_mut(entities_ptr, count as usize);
             // Make sure slice is not freed at the end of this function
-            core::mem::forget(entities);
+            core::mem::forget(entities_ptr);
             // Assign to self so we can drop it later
             // self.children = entities;
             entities

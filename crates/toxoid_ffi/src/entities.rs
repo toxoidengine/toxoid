@@ -1,6 +1,6 @@
 use crate::DirectionEnum;
 use crate::toxoid_api::Entity;
-use crate::components::{KeyboardInput, Position, Rect, Renderable, Direction, Color};
+use crate::components::{KeyboardInput, Position, Rect, Renderable, Direction, Color, Player, Food};
 
 pub fn init() {
     // Keyboard Input Entity
@@ -17,6 +17,7 @@ pub fn init() {
         let mut player_entity = Entity::new();
         player_entity.add::<Position>();
         player_entity.add::<Direction>();
+        player_entity.add::<Player>();
         let mut pos = player_entity.get::<Position>();
         pos.set_x(350);
         pos.set_y(50);
@@ -52,6 +53,7 @@ pub fn init() {
 
         let mut food_entity = Entity::new();
         food_entity.add::<Position>();
+        food_entity.add::<Food>();
 
         let mut pos = food_entity.get::<Position>();
         pos.set_x(random_x);
@@ -73,5 +75,16 @@ pub fn init() {
         let mut render_pos = render_target.get::<Position>();
         render_pos.set_x(random_x);
         render_pos.set_y(random_y);
+    }
+
+    {
+        let mut player_entity = Entity::new();
+        player_entity.add::<Position>();
+        player_entity.add::<Direction>();
+        let mut pos = player_entity.get::<Position>();
+        pos.set_x(350);
+        pos.set_y(50);
+        let mut dir = player_entity.get::<Direction>();
+        dir.set_direction(DirectionEnum::Down as u8);
     }
 }
