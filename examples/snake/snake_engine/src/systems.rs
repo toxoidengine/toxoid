@@ -1,3 +1,5 @@
+use core::cell::RefCell;
+
 use toxoid_ffi::{toxoid_add_system, toxoid_api::{Query, System}, KeyboardInput, Position, Direction, DirectionEnum};
 
 // Basic Movement
@@ -34,40 +36,47 @@ use toxoid_ffi::{toxoid_add_system, toxoid_api::{Query, System}, KeyboardInput, 
 //     }
 // } 
 
+// TODO: Possibly replace after we implement flecs filters
+thread_local! {
+    static PLAYER_QUERY: RefCell<Query> = RefCell::new(Query::new::<(Position, Direction)>());
+}
+
 pub fn input_system_fn(query: &mut Query) {
     let query_iter = query.iter();
     while query_iter.next() {
-    let entities = query_iter.entities();
-    let entity = entities.get(0);
-    if entity.is_some() {
-        let keyboard_input = entity.unwrap().get::<KeyboardInput>();
-        let mut player_query = Query::new::<(Position, Direction)>();
-        let player_query_iter = player_query.iter();
-        while player_query_iter.next() {
-            let player_entities = player_query_iter.entities();
-            let player_entity = player_entities.get(0);
-                let mut player_dir = player_entity.unwrap().get::<Direction>();
-                if keyboard_input.get_up() {
-                    if player_dir.get_direction() == DirectionEnum::Left as u8 || player_dir.get_direction() == DirectionEnum::Right as u8 {
-                        player_dir.set_direction(DirectionEnum::Up as u8);
+        let entities = query_iter.entities();
+        let entity = entities.get(0);
+        if entity.is_some() {
+            let keyboard_input = entity.unwrap().get::<KeyboardInput>();
+            PLAYER_QUERY.with(|player_query_cell| {
+                let mut player_query = player_query_cell.borrow_mut();
+                let player_query_iter = player_query.iter();
+                while player_query_iter.next() {
+                    let player_entities = player_query_iter.entities();
+                    let player_entity = player_entities.get(0);
+                    let mut player_dir = player_entity.unwrap().get::<Direction>();
+                    if keyboard_input.get_up() {
+                        if player_dir.get_direction() == DirectionEnum::Left as u8 || player_dir.get_direction() == DirectionEnum::Right as u8 {
+                            player_dir.set_direction(DirectionEnum::Up as u8);
+                        }
+                    }
+                    if keyboard_input.get_down() {
+                        if player_dir.get_direction() == DirectionEnum::Left as u8 || player_dir.get_direction() == DirectionEnum::Right as u8 {
+                            player_dir.set_direction(DirectionEnum::Down as u8);
+                        }
+                    }
+                    if keyboard_input.get_left() {
+                        if player_dir.get_direction() == DirectionEnum::Up as u8 || player_dir.get_direction() == DirectionEnum::Down as u8 {
+                            player_dir.set_direction(DirectionEnum::Left as u8);
+                        }
+                    }
+                    if keyboard_input.get_right() {
+                        if player_dir.get_direction() == DirectionEnum::Up as u8 || player_dir.get_direction() == DirectionEnum::Down as u8 {
+                            player_dir.set_direction(DirectionEnum::Right as u8);
+                        }
                     }
                 }
-                if keyboard_input.get_down() {
-                    if player_dir.get_direction() == DirectionEnum::Left as u8 || player_dir.get_direction() == DirectionEnum::Right as u8 {
-                        player_dir.set_direction(DirectionEnum::Down as u8);
-                    }
-                }
-                if keyboard_input.get_left() {
-                    if player_dir.get_direction() == DirectionEnum::Up as u8 || player_dir.get_direction() == DirectionEnum::Down as u8 {
-                        player_dir.set_direction(DirectionEnum::Left as u8);
-                    }
-                }
-                if keyboard_input.get_right() {
-                    if player_dir.get_direction() == DirectionEnum::Up as u8 || player_dir.get_direction() == DirectionEnum::Down as u8 {
-                        player_dir.set_direction(DirectionEnum::Right as u8);
-                    }
-                }
-            }
+            });
         }
     }
 }
