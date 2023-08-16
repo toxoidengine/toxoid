@@ -39,6 +39,12 @@ component! {
     },
     Direction {
         direction: u8
+    },
+    Player {
+        player: bool
+    },
+    Food {
+        food: bool
     }
 }
 
@@ -50,4 +56,6 @@ pub fn init() {
     Color::register();
     Renderable::register();
     Direction::register();
+    Player::register();
+    Food::register();
 }

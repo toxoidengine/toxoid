@@ -357,6 +357,7 @@ pub fn component(input: TokenStream) -> TokenStream {
             };
 
             quote! {
+                #[derive(Debug, Clone, Copy, PartialEq)]
                 #[repr(C)]
                 pub struct #name {
                     ptr: *mut core::ffi::c_void,
