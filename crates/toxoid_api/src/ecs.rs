@@ -295,14 +295,14 @@ impl Entity {
             while toxoid_filter_next(it) {
                 let entities = toxoid_iter_entities(it);
                 entities
-                .iter()
-                .for_each(|entity_id| {
-					let e = Entity { 
-                        id: *entity_id as i32, 
-                        children: &mut []
-                    };
-					cb(e);
-                });
+                    .iter()
+                    .for_each(|entity_id| {
+                        let e = Entity { 
+                            id: *entity_id as i32, 
+                            children: &mut []
+                        };
+                        cb(e);
+                    });
 			}
         }
     }

@@ -243,9 +243,9 @@ pub unsafe fn to_u64_slice(ptr: *mut u64, len: usize) -> &'static [u64] {
 }
 
 #[repr(C)]
-#[derive(Copy, Clone, Debug)]
 pub struct EntityId {
     id: i32,
+    children: &'static mut [EntityId]
 }
 
 #[no_mangle]
@@ -253,11 +253,12 @@ pub unsafe fn toxoid_query_entity_list(iter: *mut flecs_core::ecs_iter_t) -> &'s
     let count = toxoid_iter_count(iter) as usize;
     let ptr = flecs_core::flecs_query_entity_list(iter) as *mut u64;
     let slice: &[u64] = core::slice::from_raw_parts(ptr, count);
+
     // Create a Vec<Entity> from the slice of entity IDs
     // grabbed raw from the flecs API
     let mut entities_vec: Vec<EntityId> = Vec::with_capacity(count);
     for &id in slice.iter() {
-        entities_vec.push(EntityId { id: id as i32 });
+        entities_vec.push(EntityId { id: id as i32, children: &mut [] });
     }
     // Here, Box::leak(entities_vec.into_boxed_slice()) creates a leak, intentionally not freeing the memory.
     // This is generally a bad practice, but sometimes it can be useful when interfacing with C or for certain kinds of low-level programming.

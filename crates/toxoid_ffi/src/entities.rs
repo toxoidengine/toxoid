@@ -39,8 +39,8 @@ pub fn init() {
         color.set_g(0);
         color.set_b(0);
         let mut render_pos = render_target.get::<Position>();
-        render_pos.set_x(350);
-        render_pos.set_y(50);
+        render_pos.set_x(pos.get_x());
+        render_pos.set_y(pos.get_y());
     }
 
     // Food Entity
@@ -75,16 +75,5 @@ pub fn init() {
         let mut render_pos = render_target.get::<Position>();
         render_pos.set_x(random_x);
         render_pos.set_y(random_y);
-    }
-
-    {
-        let mut player_entity = Entity::new();
-        player_entity.add::<Position>();
-        player_entity.add::<Direction>();
-        let mut pos = player_entity.get::<Position>();
-        pos.set_x(350);
-        pos.set_y(50);
-        let mut dir = player_entity.get::<Direction>();
-        dir.set_direction(DirectionEnum::Down as u8);
     }
 }
