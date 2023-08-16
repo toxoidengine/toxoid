@@ -7,3 +7,6 @@ edition = "2021"
 
 [dependencies]
 toxoid_ffi = { path="../../../crates/toxoid_ffi" }
+
+[profile.release]
+debug = true

@@ -12,3 +12,6 @@ crate-type = ["cdylib"]
 [dependencies]
 toxoid_api = { path="../../../crates/toxoid_api" }
 toxoid_api_macro = { path="../../../crates/toxoid_api_macro" }
+
+[profile.release]
+debug = true

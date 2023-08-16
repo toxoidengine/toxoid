@@ -87,7 +87,10 @@ fn build_packages() -> Result<(), Box<dyn std::error::Error>> {
             if package.contains("engine") {
                 // If Emscripten target engine, set Emscripten environment variables for main module
                 let flags = [
+                    // Dev / Debug
+                    "-g",
                     "-O0", 
+                    // Nessecary for all profiles
                     "-sMAIN_MODULE=2", 
                     "-sFORCE_FILESYSTEM=1",
                     "-sERROR_ON_UNDEFINED_SYMBOLS=0", 
@@ -102,6 +105,7 @@ fn build_packages() -> Result<(), Box<dyn std::error::Error>> {
                     // "--preload-file assets",
                     ];
                 command.env("EMCC_CFLAGS", flags.join(" "));
+                // command.env("EMCC_DEBUG", "1");
             } else {
                 // If emscripten target library, set Emscripten environment variables for library / side module
                 // That will be dynamically linked at runtime
