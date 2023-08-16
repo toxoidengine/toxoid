@@ -34,7 +34,7 @@ extern "C" {
     pub fn toxoid_entity_child_of(entity: u32, parent: u32);
     pub fn toxoid_entity_children(parent: u32) -> *mut c_void;
     pub fn toxoid_child_entities(iter: *mut c_void) -> *mut u64;
-    pub fn toxoid_term_next(iter: *mut c_void);
+    pub fn toxoid_term_next(iter: *mut c_void) -> bool;
     pub fn toxoid_query_create(ids: *mut i32, components_count: i32) -> *mut c_void;
     pub fn toxoid_query_iter(query: *mut c_void) -> *mut c_void;
     pub fn toxoid_query_next(iter: *mut c_void) -> bool;
@@ -93,4 +93,10 @@ extern "C" {
         value: *mut c_char,
     );   
     pub fn toxoid_progress(delta_time: f32) -> bool;
+    pub fn toxoid_filter_children_init(parent: u32) -> *mut c_void;
+    pub fn toxoid_filter_iter(filter: *mut c_void) -> *mut c_void;
+    pub fn toxoid_filter_next(iter: *mut c_void) -> bool;
+    pub fn toxoid_iter_entities(iter: *mut c_void) -> &'static [u64];
+    pub fn toxoid_delete_entity(entity: u32);
+    pub fn toxoid_entity_remove_component(entity: u32, component: u32);
 }

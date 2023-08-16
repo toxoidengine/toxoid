@@ -192,7 +192,7 @@ pub unsafe fn toxoid_child_entities(iter: *mut ecs_iter_t) -> *mut u64 {
 }
 
 #[no_mangle]
-pub unsafe fn toxoid_term_next(iter: *mut flecs_core::ecs_iter_t) {
+pub unsafe fn toxoid_term_next(iter: *mut flecs_core::ecs_iter_t) -> bool {
     flecs_core::flecs_term_next(iter)
 }
 
@@ -218,6 +218,11 @@ pub unsafe fn toxoid_query_next(iter: *mut flecs_core::ecs_iter_t) -> bool {
 
 #[no_mangle]
 pub unsafe fn toxoid_iter_count(iter: *mut flecs_core::ecs_iter_t) -> i32 {
+    flecs_core::flecs_iter_count(iter)
+}
+
+#[no_mangle]
+pub unsafe fn toxoid_iter_entity_id(iter: *mut flecs_core::ecs_iter_t) -> i32 {
     flecs_core::flecs_iter_count(iter)
 }
 
@@ -573,4 +578,47 @@ pub unsafe extern "C" fn toxoid_add_system(
 #[no_mangle]
 pub unsafe fn toxoid_progress(delta_time: f32) -> bool {
     flecs_core::flecs_progress(delta_time)
+}
+
+#[no_mangle]
+pub unsafe fn toxoid_filter_children_init(
+    parent: u32
+) -> *mut flecs_core::ecs_filter_t {
+    flecs_core::flecs_filter_children_init(parent.into())
+}
+
+#[no_mangle]
+pub unsafe fn toxoid_filter_iter(
+    filter: *mut flecs_core::ecs_filter_t
+) -> *mut flecs_core::ecs_iter_t {
+    flecs_core::flecs_filter_iter(filter)
+}
+
+#[no_mangle]
+pub unsafe fn toxoid_iter_entities(
+    iter: *mut flecs_core::ecs_iter_t
+) -> &'static [u64] {
+    flecs_core::flecs_iter_entities(iter)
+}
+
+#[no_mangle]
+pub unsafe fn toxoid_delete_entity(
+    entity: u32
+) {
+    flecs_core::flecs_delete_entity(entity)
+}
+
+#[no_mangle]
+pub unsafe fn toxoid_entity_remove_component(
+    entity: u32,
+    component: u32
+) {
+    flecs_core::flecs_entity_remove_component(entity, component)
+}
+
+#[no_mangle]
+pub unsafe fn toxoid_filter_next(
+    iter: *mut flecs_core::ecs_iter_t
+) -> bool {
+    flecs_core::flecs_filter_next(iter)
 }
