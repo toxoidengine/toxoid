@@ -38,7 +38,7 @@ use toxoid_ffi::{toxoid_add_system, toxoid_api::{Query, System}, KeyboardInput, 
 
 // TODO: Possibly replace after we implement flecs filters
 thread_local! {
-    static PLAYER_QUERY: RefCell<Query> = RefCell::new(Query::new::<(Position, Direction)>());
+    static PLAYER_QUERY: RefCell<Query> = RefCell::new(Query::new::<(Position, Direction, Player)>());
 }
 
 // Create AABB function in Rust
@@ -46,6 +46,7 @@ pub fn input_system_fn(query: &mut Query) {
     let query_iter = query.iter();
     while query_iter.next() {
         let entities = query_iter.entities();
+        // TODO: Make this a FLECS singleton
         let entity = entities.get(0);
         if entity.is_some() {
             let keyboard_input = entity.unwrap().get::<KeyboardInput>();
@@ -54,28 +55,31 @@ pub fn input_system_fn(query: &mut Query) {
                 let player_query_iter = player_query.iter();
                 while player_query_iter.next() {
                     let player_entities = player_query_iter.entities();
-                    let player_entity = player_entities.get(0);
-                    let mut player_dir = player_entity.unwrap().get::<Direction>();
-                    if keyboard_input.get_up() {
-                        if player_dir.get_direction() == DirectionEnum::Left as u8 || player_dir.get_direction() == DirectionEnum::Right as u8 {
-                            player_dir.set_direction(DirectionEnum::Up as u8);
-                        }
-                    }
-                    if keyboard_input.get_down() {
-                        if player_dir.get_direction() == DirectionEnum::Left as u8 || player_dir.get_direction() == DirectionEnum::Right as u8 {
-                            player_dir.set_direction(DirectionEnum::Down as u8);
-                        }
-                    }
-                    if keyboard_input.get_left() {
-                        if player_dir.get_direction() == DirectionEnum::Up as u8 || player_dir.get_direction() == DirectionEnum::Down as u8 {
-                            player_dir.set_direction(DirectionEnum::Left as u8);
-                        }
-                    }
-                    if keyboard_input.get_right() {
-                        if player_dir.get_direction() == DirectionEnum::Up as u8 || player_dir.get_direction() == DirectionEnum::Down as u8 {
-                            player_dir.set_direction(DirectionEnum::Right as u8);
-                        }
-                    }
+                    player_entities
+                        .iter()
+                        .for_each(|player_entity| {
+                            let mut player_dir = player_entity.get::<Direction>();
+                            if keyboard_input.get_up() {
+                                if player_dir.get_direction() == DirectionEnum::Left as u8 || player_dir.get_direction() == DirectionEnum::Right as u8 {
+                                    player_dir.set_direction(DirectionEnum::Up as u8);
+                                }
+                            }
+                            if keyboard_input.get_down() {
+                                if player_dir.get_direction() == DirectionEnum::Left as u8 || player_dir.get_direction() == DirectionEnum::Right as u8 {
+                                    player_dir.set_direction(DirectionEnum::Down as u8);
+                                }
+                            }
+                            if keyboard_input.get_left() {
+                                if player_dir.get_direction() == DirectionEnum::Up as u8 || player_dir.get_direction() == DirectionEnum::Down as u8 {
+                                    player_dir.set_direction(DirectionEnum::Left as u8);
+                                }
+                            }
+                            if keyboard_input.get_right() {
+                                if player_dir.get_direction() == DirectionEnum::Up as u8 || player_dir.get_direction() == DirectionEnum::Down as u8 {
+                                    player_dir.set_direction(DirectionEnum::Right as u8);
+                                }
+                            }
+                        });
                 }
             });
         }
@@ -102,7 +106,6 @@ pub fn movement_system_fn(query: &mut Query) {
             entities
                 .iter_mut()
                 .for_each(|player_entity| {
-                    // println!("Player Entity {}", player_entity.get_id());
                     let mut player_pos = player_entity.get::<Position>();
                     let player_dir = player_entity.get::<Direction>();
                     player_entity.children(|child| {
@@ -175,35 +178,35 @@ pub fn eat_system_fn(query: &mut Query) {
                                                             use toxoid_ffi::*;
 
                                                             // Parent entity
-                                                            // let mut player_entity = Entity::new();
-                                                            // player_entity.add::<Position>();
-                                                            // player_entity.add::<Direction>();
-                                                            // player_entity.add::<Player>();
-                                                            // let mut pos = player_entity.get::<Position>();
-                                                            // println!("Player Child Pos: {}, {}", player_child_pos.get_x(), player_child_pos.get_y());
-                                                            // pos.set_x(player_child_pos.get_x() - player_child_rect.get_width());
-                                                            // pos.set_y(player_child_pos.get_y() - player_child_rect.get_height());
-                                                            // let mut dir = player_entity.get::<Direction>();
-                                                            // dir.set_direction(DirectionEnum::Down as u8);
+                                                            let mut player_entity = Entity::new();
+                                                            player_entity.add::<Position>();
+                                                            player_entity.add::<Direction>();
+                                                            player_entity.add::<Player>();
+                                                            let mut pos = player_entity.get::<Position>();
+                                                            println!("Player Child Pos: {}, {}", player_child_pos.get_x(), player_child_pos.get_y());
+                                                            pos.set_x(player_child_pos.get_x() - player_child_rect.get_width());
+                                                            pos.set_y(player_child_pos.get_y() - player_child_rect.get_height());
+                                                            let mut dir = player_entity.get::<Direction>();
+                                                            dir.set_direction(DirectionEnum::Down as u8);
                                                             
-                                                            // // Child Entity
-                                                            // let mut render_target = Entity::new();
-                                                            // render_target.add::<Rect>();
-                                                            // render_target.add::<Renderable>();
-                                                            // render_target.add::<Color>();
-                                                            // render_target.add::<Position>();
-                                                            // render_target.child_of(player_entity);
-                                                            // let mut rect = render_target.get::<Rect>();
-                                                            // rect.set_width(50);
-                                                            // rect.set_height(50);
-                                                            // let mut color = render_target.get::<Color>();
-                                                            // color.set_r(255);
-                                                            // color.set_g(0);
-                                                            // color.set_b(0);
-                                                            // let mut render_pos = render_target.get::<Position>();
-                                                            // render_pos.set_x(pos.get_x());
-                                                            // render_pos.set_y(pos.get_y());
-                                                        }                                                    
+                                                            // Child Entity
+                                                            let mut render_target = Entity::new();
+                                                            render_target.add::<Rect>();
+                                                            render_target.add::<Renderable>();
+                                                            render_target.add::<Color>();
+                                                            render_target.add::<Position>();
+                                                            render_target.child_of(player_entity);
+                                                            let mut rect = render_target.get::<Rect>();
+                                                            rect.set_width(50);
+                                                            rect.set_height(50);
+                                                            let mut color = render_target.get::<Color>();
+                                                            color.set_r(255);
+                                                            color.set_g(0);
+                                                            color.set_b(0);
+                                                            let mut render_pos = render_target.get::<Position>();
+                                                            render_pos.set_x(pos.get_x());
+                                                            render_pos.set_y(pos.get_y());
+                                                        }
                                                     }
                                             });
                                         });
