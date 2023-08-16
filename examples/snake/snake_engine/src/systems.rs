@@ -157,7 +157,6 @@ pub fn eat_system_fn(query: &mut Query) {
             entities
                 .iter_mut()
                 .for_each(|player_entity| {
-                    let player_pos = player_entity.get::<Position>();
                     player_entity
                         .children()
                         .iter()
