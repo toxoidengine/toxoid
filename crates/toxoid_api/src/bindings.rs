@@ -99,4 +99,5 @@ extern "C" {
     pub fn toxoid_iter_entities(iter: *mut c_void) -> &'static [u64];
     pub fn toxoid_delete_entity(entity: u32);
     pub fn toxoid_entity_remove_component(entity: u32, component: u32);
+    pub fn toxoid_is_valid(entity: u32) -> bool;
 }
