@@ -1,6 +1,8 @@
 use core::cell::RefCell;
 
 use toxoid_ffi::{toxoid_add_system, toxoid_api::{Query, System}, KeyboardInput, Position, Direction, DirectionEnum, Player, Food, Rect};
+use toxoid_ffi::toxoid_api::*;
+use toxoid_ffi::*;
 
 // Basic Movement
 // pub fn movement_system_fn(query: &mut Query) {
@@ -105,28 +107,70 @@ pub fn movement_system_fn(query: &mut Query) {
             let entities = query_iter.entities();
             entities
                 .iter_mut()
-                .for_each(|player_entity| {
+                .enumerate()
+                .for_each(|(i, player_entity)| {
                     let mut player_pos = player_entity.get::<Position>();
-                    let player_dir = player_entity.get::<Direction>();
-                    player_entity.children(|child| {
-                        if player_dir.get_direction() == DirectionEnum::Up as u8 {
-                            player_pos.set_y(player_pos.get_y() - 50);
-                            let mut child_pos = child.get::<Position>();
-                            child_pos.set_y(child_pos.get_y() - 50);
-                        } else if player_dir.get_direction() == DirectionEnum::Down as u8 {
-                            player_pos.set_y(player_pos.get_y() + 50);
-                            let mut child_pos = child.get::<Position>();
-                            child_pos.set_y(child_pos.get_y() + 50);
-                        } else if player_dir.get_direction() == DirectionEnum::Left as u8 {
-                            player_pos.set_x(player_pos.get_x() - 50);
-                            let mut child_pos = child.get::<Position>();
-                            child_pos.set_x(child_pos.get_x() - 50);
-                        } else if player_dir.get_direction() == DirectionEnum::Right as u8 {
-                            player_pos.set_x(player_pos.get_x() + 50);
-                            let mut child_pos = child.get::<Position>();
-                            child_pos.set_x(child_pos.get_x() + 50);
-                        }
-                    });
+                    let mut player_dir = player_entity.get::<Direction>();
+                    let player = player_entity.get::<Player>();
+                    if player.get_head() {
+                        player_entity.children(|child| {
+                            if player_dir.get_direction() == DirectionEnum::Up as u8 {
+                                player_pos.set_y(player_pos.get_y() - 50);
+                                let mut child_pos = child.get::<Position>();
+                                child_pos.set_y(child_pos.get_y() - 50);
+                            } else if player_dir.get_direction() == DirectionEnum::Down as u8 {
+                                player_pos.set_y(player_pos.get_y() + 50);
+                                let mut child_pos = child.get::<Position>();
+                                child_pos.set_y(child_pos.get_y() + 50);
+                            } else if player_dir.get_direction() == DirectionEnum::Left as u8 {
+                                player_pos.set_x(player_pos.get_x() - 50);
+                                let mut child_pos = child.get::<Position>();
+                                child_pos.set_x(child_pos.get_x() - 50);
+                            } else if player_dir.get_direction() == DirectionEnum::Right as u8 {
+                                player_pos.set_x(player_pos.get_x() + 50);
+                                let mut child_pos = child.get::<Position>();
+                                child_pos.set_x(child_pos.get_x() + 50);
+                            }
+                        });
+                    } else {
+                        player_entity.children(|child| {
+                            let mut render_pos = child.get::<Position>();
+                            PLAYER_QUERY.with(|player_query_cell| {
+                                let mut player_query = player_query_cell.borrow_mut();
+                                let player_query_iter = player_query.iter();
+                                while player_query_iter.next() {
+                                    let player_entities = player_query_iter.entities();
+                                    let player_tail_front = player_entities.get_mut(i - 1).unwrap();
+                                    let mut player_tail_front_pos = player_tail_front.get::<Position>();
+                                    let mut player_tail_front_dir = player_tail_front.get::<Direction>();
+                                    let direction = player_tail_front_dir.get_direction();
+                                    player_tail_front.children(|player_tail_child| {
+                                        let player_tail_child_pos = player_tail_child.get::<Position>();
+                                        let player_tail_child_rect = player_tail_child.get::<Rect>();
+                                        if direction == DirectionEnum::Up as u8 {
+                                            player_pos.set_x(player_tail_child_pos.get_x());
+                                            player_pos.set_y(player_tail_child_pos.get_y() + player_tail_child_rect.get_height());
+                                            player_dir.set_direction(DirectionEnum::Up as u8);
+                                        } else if direction == DirectionEnum::Down as u8 {
+                                            player_pos.set_x(player_tail_child_pos.get_x());
+                                            player_pos.set_y(player_tail_child_pos.get_y() - player_tail_child_rect.get_height());
+                                            player_dir.set_direction(DirectionEnum::Down as u8);
+                                        } else if direction == DirectionEnum::Left as u8 {
+                                            player_pos.set_x(player_tail_child_pos.get_x() - player_tail_child_rect.get_width());
+                                            player_pos.set_y(player_tail_child_pos.get_y());
+                                        } else if direction == DirectionEnum::Right as u8 {
+                                            player_pos.set_x(player_tail_child_pos.get_x() + player_tail_child_rect.get_width());
+                                            player_pos.set_y(player_tail_child_pos.get_y());
+                                        }
+                                        render_pos.set_x(player_pos.get_x());
+                                        render_pos.set_y(player_pos.get_y());
+                                    });
+                                }
+                            });
+                        });
+                       
+                    }
+                    
                 });
         }
 
@@ -153,6 +197,10 @@ pub fn eat_system_fn(query: &mut Query) {
             let entities = query_iter.entities();
             entities
                 .iter_mut()
+                .filter(|player_entity| {
+                    let player = player_entity.get::<Player>();
+                    player.get_head()
+                })
                 .for_each(|player_entity| {
                     player_entity
                         .children(|player_child| {
@@ -174,21 +222,18 @@ pub fn eat_system_fn(query: &mut Query) {
                                                         food_pos.set_x(x as u32);
                                                         food_pos.set_y(y as u32);
                                                         {
-                                                            use toxoid_ffi::toxoid_api::*;
-                                                            use toxoid_ffi::*;
-
                                                             // Parent entity
                                                             let mut player_entity = Entity::new();
                                                             player_entity.add::<Position>();
                                                             player_entity.add::<Direction>();
                                                             player_entity.add::<Player>();
                                                             let mut pos = player_entity.get::<Position>();
-                                                            println!("Player Child Pos: {}, {}", player_child_pos.get_x(), player_child_pos.get_y());
-                                                            pos.set_x(player_child_pos.get_x() - player_child_rect.get_width());
-                                                            pos.set_y(player_child_pos.get_y() - player_child_rect.get_height());
                                                             let mut dir = player_entity.get::<Direction>();
-                                                            dir.set_direction(DirectionEnum::Down as u8);
-                                                            
+
+                                                            let mut player = player_entity.get::<Player>();
+                                                            player.set_head(false);
+                                                            player.set_spawned(false);
+
                                                             // Child Entity
                                                             let mut render_target = Entity::new();
                                                             render_target.add::<Rect>();
@@ -204,8 +249,39 @@ pub fn eat_system_fn(query: &mut Query) {
                                                             color.set_g(0);
                                                             color.set_b(0);
                                                             let mut render_pos = render_target.get::<Position>();
-                                                            render_pos.set_x(pos.get_x());
-                                                            render_pos.set_y(pos.get_y());
+
+                                                            PLAYER_QUERY.with(|player_query_cell| {
+                                                                let mut player_query = player_query_cell.borrow_mut();
+                                                                let player_query_iter = player_query.iter();
+                                                                while player_query_iter.next() {
+                                                                    let player_entities = player_query_iter.entities();
+                                                                    let player_tail_end = player_entities.get_mut(player_entities.len() - 2).unwrap();
+                                                                    let mut player_tail_end_pos = player_tail_end.get::<Position>();
+                                                                    let mut player_tail_end_dir = player_tail_end.get::<Direction>();
+                                                                    let direction = player_tail_end_dir.get_direction();
+                                                                    player_tail_end.children(|player_tail_child| {
+                                                                        let player_tail_child_pos = player_tail_child.get::<Position>();
+                                                                        let player_tail_child_rect = player_tail_child.get::<Rect>();
+                                                                        if direction == DirectionEnum::Up as u8 {
+                                                                            pos.set_x(player_tail_child_pos.get_x());
+                                                                            pos.set_y(player_tail_child_pos.get_y() + player_tail_child_rect.get_height());
+                                                                            dir.set_direction(DirectionEnum::Up as u8);
+                                                                        } else if direction == DirectionEnum::Down as u8 {
+                                                                            pos.set_x(player_tail_child_pos.get_x());
+                                                                            pos.set_y(player_tail_child_pos.get_y() - player_tail_child_rect.get_height());
+                                                                            dir.set_direction(DirectionEnum::Down as u8);
+                                                                        } else if direction == DirectionEnum::Left as u8 {
+                                                                            pos.set_x(player_tail_child_pos.get_x() - player_tail_child_rect.get_width());
+                                                                            pos.set_y(player_tail_child_pos.get_y());
+                                                                        } else if direction == DirectionEnum::Right as u8 {
+                                                                            pos.set_x(player_tail_child_pos.get_x() + player_tail_child_rect.get_width());
+                                                                            pos.set_y(player_tail_child_pos.get_y());
+                                                                        }
+                                                                        render_pos.set_x(pos.get_x());
+                                                                        render_pos.set_y(pos.get_y());
+                                                                    });
+                                                                }
+                                                            });
                                                         }
                                                     }
                                             });
@@ -225,6 +301,6 @@ pub fn init() {
     unsafe {
         toxoid_add_system(input_system);
         toxoid_add_system(movement_system);
-        toxoid_add_system(eat_system)
+        toxoid_add_system(eat_system);
     }
 }
