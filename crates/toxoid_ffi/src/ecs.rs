@@ -623,3 +623,10 @@ pub unsafe fn toxoid_filter_next(
 ) -> bool {
     flecs_core::flecs_filter_next(iter)
 }
+
+#[no_mangle]
+pub unsafe fn toxoid_is_valid(
+    entity: u32
+) -> bool {
+    flecs_core::flecs_is_valid(entity)
+}
