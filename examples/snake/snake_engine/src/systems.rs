@@ -107,8 +107,6 @@ pub fn create_player_block(x: u32, y: u32, head: bool, direction: u8) {
     dir.set_direction(direction);
     let mut player = player_entity.get::<Player>();
     player.set_head(head);
-    player.set_grow(false);
-
     
     // Child Entity
     let mut render_target = Entity::new();
@@ -140,7 +138,6 @@ pub fn movement_system_fn(query: &mut Query) {
         let query_iter = query.iter();
         while query_iter.next() {
             let entities = query_iter.entities();
-            let mut skip_delete = false;
             entities
                 .iter_mut()
                 .enumerate()
@@ -149,7 +146,6 @@ pub fn movement_system_fn(query: &mut Query) {
                     let mut player_dir = player_entity.get::<Direction>();
                     let mut player = player_entity.get::<Player>();
                     let direction = player_dir.get_direction();
-                    let grow = player.get_grow();
                     if player.get_head() {
                         player.set_head(false);
                         if player_dir.get_direction() == DirectionEnum::Down as u8 {
@@ -161,12 +157,6 @@ pub fn movement_system_fn(query: &mut Query) {
                         } else if player_dir.get_direction() == DirectionEnum::Right as u8 {
                             create_player_block(player_pos.get_x() + 50, player_pos.get_y(), true, direction);
                         }
-
-                        if grow {
-                            println!("SKIP DELETE!");
-                            skip_delete = true;
-                        }
-                        
                         // player_entity.children(|child| {
                         //     if player_dir.get_direction() == DirectionEnum::Down as u8 {
                         //         create_player_block(player_pos.get_x(), player_pos.get_y() + 50, true);
@@ -179,7 +169,8 @@ pub fn movement_system_fn(query: &mut Query) {
                         //     }
                         // });
                     } else {
-                        if !skip_delete {
+                        player_entity.add::<Despawn>();
+                        // if !skip_delete {
                             // println!("i, len = {}, {}", i, len);
                             // if i == len - 1 {
                             //     println!("Does this ever happen?");
@@ -192,7 +183,7 @@ pub fn movement_system_fn(query: &mut Query) {
                             // if i == len - 1 {
                             //     delete_entity_mut(player_entity);
                             // }
-                        }
+                        // }
                         // player_entity.children(|child| {
                         //     let mut render_pos = child.get::<Position>();
                         //     PLAYER_QUERY.with(|player_query_cell| {
@@ -238,6 +229,26 @@ pub fn movement_system_fn(query: &mut Query) {
     });
 } 
 
+fn despawn_system_fn(query: &mut Query) {
+    let query_iter = query.iter();
+    while query_iter.next() {
+        let entities = query_iter.entities();
+        entities
+            .iter_mut()
+            .for_each(|entity| {
+                println!("Hello?");
+                // delete_entity_mut(entity);
+                // let mut despawn = entity.get::<Despawn>();
+                // if despawn.get_despawn() {
+                //     entity.children(|child| {
+                //         child.remove::<Rect>();
+                //     });
+                //     entity.remove::<Despawn>();
+                // }
+            });
+    }
+}
+
 // TODO: Possibly replace after we implement flecs filters
 thread_local! {
     static FOOD_QUERY: RefCell<Query> = RefCell::new(Query::new::<(Position, Food)>());  
@@ -278,7 +289,16 @@ pub fn eat_system_fn(query: &mut Query) {
                                                     let player_child_pos = player_child.get::<Position>();
                                                     let player_child_rect = player_child.get::<Rect>();
                                                     if aabb(player_child_pos, player_child_rect, food_pos, food_rect) {
-                                                        player.set_grow(true);
+                                                        PLAYER_QUERY.with(|player_query_cell| {
+                                                            let mut player_query = player_query_cell.borrow_mut();
+                                                            let player_query_iter = player_query.iter();
+                                                            while player_query_iter.next() {
+                                                                let player_entities = player_query_iter.entities();
+                                                                let player_tail_end = player_entities.get_mut(player_entities.len() - 1).unwrap();
+                                                                // player_tail_end.remove::<Despawn>();
+                                                            }
+                                                        });
+                                                        // player_entity.add::<Despawn>();
                                                         // let (x, y) = toxoid_ffi::gen_rng_grid_pos();
                                                         // food_pos.set_x(x as u32);
                                                         // food_pos.set_y(y as u32);
@@ -358,9 +378,11 @@ pub fn init() {
     let input_system = System::new::<(KeyboardInput,)>(input_system_fn);
     let movement_system = System::new::<(Position, Direction, Player)>(movement_system_fn);
     let eat_system = System::new::<(Position, Direction)>(eat_system_fn);
+    let despawn_system = System::new::<(Despawn,)>(despawn_system_fn);
     unsafe {
         toxoid_add_system(input_system);
         toxoid_add_system(movement_system);
         toxoid_add_system(eat_system);
+        toxoid_add_system(despawn_system);
     }
 }
