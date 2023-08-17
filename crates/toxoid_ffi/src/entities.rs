@@ -23,6 +23,9 @@ pub fn init() {
         pos.set_y(50);
         let mut dir = player_entity.get::<Direction>();
         dir.set_direction(DirectionEnum::Down as u8);
+        let mut player = player_entity.get::<Player>();
+        player.set_head(true);
+
         
         // Child Entity
         let mut render_target = Entity::new();
