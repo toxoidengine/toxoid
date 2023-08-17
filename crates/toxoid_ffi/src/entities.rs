@@ -14,7 +14,6 @@ pub fn create_player_block(x: u32, y: u32, head: bool) {
     dir.set_direction(DirectionEnum::Down as u8);
     let mut player = player_entity.get::<Player>();
     player.set_head(head);
-    player.set_grow(false);
 
     
     // Child Entity
