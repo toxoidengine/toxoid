@@ -43,7 +43,8 @@ component! {
     // TODO: Make these all tags with no fields and create tag!{} proc macro
     // Also move to snake_engine
     Player {
-        head: bool
+        head: bool,
+        grow: bool
     },
     Food {
         food: bool
