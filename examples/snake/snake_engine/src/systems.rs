@@ -232,7 +232,6 @@ pub fn eat_system_fn(query: &mut Query) {
 
                                                             let mut player = player_entity.get::<Player>();
                                                             player.set_head(false);
-                                                            player.set_spawned(false);
 
                                                             // Child Entity
                                                             let mut render_target = Entity::new();
@@ -245,8 +244,8 @@ pub fn eat_system_fn(query: &mut Query) {
                                                             rect.set_width(50);
                                                             rect.set_height(50);
                                                             let mut color = render_target.get::<Color>();
-                                                            color.set_r(255);
-                                                            color.set_g(0);
+                                                            color.set_r(0);
+                                                            color.set_g(200);
                                                             color.set_b(0);
                                                             let mut render_pos = render_target.get::<Position>();
 

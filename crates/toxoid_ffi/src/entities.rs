@@ -38,8 +38,8 @@ pub fn init() {
         rect.set_width(50);
         rect.set_height(50);
         let mut color = render_target.get::<Color>();
-        color.set_r(255);
-        color.set_g(0);
+        color.set_r(0);
+        color.set_g(200);
         color.set_b(0);
         let mut render_pos = render_target.get::<Position>();
         render_pos.set_x(pos.get_x());
@@ -73,8 +73,8 @@ pub fn init() {
         rect.set_height(50);
         let mut color = render_target.get::<Color>();
         color.set_r(255);
-        color.set_g(255);
-        color.set_b(255);
+        color.set_g(0);
+        color.set_b(0);
         let mut render_pos = render_target.get::<Position>();
         render_pos.set_x(random_x);
         render_pos.set_y(random_y);

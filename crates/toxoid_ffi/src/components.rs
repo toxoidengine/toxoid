@@ -43,12 +43,21 @@ component! {
     // TODO: Make these all tags with no fields and create tag!{} proc macro
     // Also move to snake_engine
     Player {
-        head: bool,
-        spawned: bool
+        head: bool
     },
     Food {
         food: bool
     },
+    PreviousPosition {
+        x: u32,
+        y: u32
+    },
+    // Head {
+    //     head: bool
+    // },
+    // Spawned {
+    //     spawned: bool
+    // },  
 }
 
 pub fn init() {
