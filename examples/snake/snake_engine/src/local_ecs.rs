@@ -6,10 +6,8 @@ use core::alloc::Layout;
 use core::alloc::GlobalAlloc;
 
 use toxoid_ffi::toxoid_api::ALLOCATOR;
+use toxoid_ffi::toxoid_api::ecs_entity_t;
 use toxoid_ffi::toxoid_api::toxoid_register_component; 
-
-#[allow(dead_code)]
-type ecs_entity_t = i32;
 
 // Have to define at top level as a workaround to maintain context in toxoid_api_macro
 #[allow(dead_code)]
@@ -53,7 +51,7 @@ pub fn register_component_ecs(
 }
 
 #[allow(dead_code)]
-pub fn cache_component_ecs(type_id: TypeId, component_id: i32) {
+pub fn cache_component_ecs(type_id: TypeId, component_id: ecs_entity_t) {
     unsafe {
         toxoid_ffi::ecs::toxoid_component_cache_insert(type_id, component_id);
     }

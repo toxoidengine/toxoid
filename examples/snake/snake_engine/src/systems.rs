@@ -114,7 +114,7 @@ pub fn create_player_block(x: u32, y: u32, head: bool, direction: u8) {
     render_target.add::<Renderable>();
     render_target.add::<Color>();
     render_target.add::<Position>();
-    render_target.child_of(player_entity);
+    // render_target.child_of(player_entity);
     let mut rect = render_target.get::<Rect>();
     rect.set_width(50);
     rect.set_height(50);
@@ -157,19 +157,8 @@ pub fn movement_system_fn(query: &mut Query) {
                         } else if player_dir.get_direction() == DirectionEnum::Right as u8 {
                             create_player_block(player_pos.get_x() + 50, player_pos.get_y(), true, direction);
                         }
-                        // player_entity.children(|child| {
-                        //     if player_dir.get_direction() == DirectionEnum::Down as u8 {
-                        //         create_player_block(player_pos.get_x(), player_pos.get_y() + 50, true);
-                        //     } else if player_dir.get_direction() == DirectionEnum::Up as u8 {
-                        //         create_player_block(player_pos.get_x(), player_pos.get_y() - 50, true);
-                        //     } else if player_dir.get_direction() == DirectionEnum::Left as u8 {
-                        //         create_player_block(player_pos.get_x() - 50, player_pos.get_y(), true);
-                        //     } else if player_dir.get_direction() == DirectionEnum::Right as u8 {
-                        //         create_player_block(player_pos.get_x() + 50, player_pos.get_y(), true);
-                        //     }
-                        // });
                     } else {
-                        player_entity.add::<Despawn>();
+                        // player_entity.add::<Despawn>();
                         // if !skip_delete {
                             // println!("i, len = {}, {}", i, len);
                             // if i == len - 1 {
@@ -236,7 +225,6 @@ fn despawn_system_fn(query: &mut Query) {
         entities
             .iter_mut()
             .for_each(|entity| {
-                println!("Hello?");
                 // delete_entity_mut(entity);
                 // let mut despawn = entity.get::<Despawn>();
                 // if despawn.get_despawn() {
@@ -378,11 +366,11 @@ pub fn init() {
     let input_system = System::new::<(KeyboardInput,)>(input_system_fn);
     let movement_system = System::new::<(Position, Direction, Player)>(movement_system_fn);
     let eat_system = System::new::<(Position, Direction)>(eat_system_fn);
-    let despawn_system = System::new::<(Despawn,)>(despawn_system_fn);
+    // let despawn_system = System::new::<(Despawn,)>(despawn_system_fn);
     unsafe {
         toxoid_add_system(input_system);
         toxoid_add_system(movement_system);
         toxoid_add_system(eat_system);
-        toxoid_add_system(despawn_system);
+        // toxoid_add_system(despawn_system);
     }
 }

@@ -43,7 +43,7 @@ pub fn register_component_ecs(
     }
 }
 
-pub fn cache_component_ecs(type_id: TypeId, component_id: i32) {
+pub fn cache_component_ecs(type_id: TypeId, component_id: ecs_entity_t) {
     unsafe {
         toxoid_component_cache_insert(type_id, component_id);
     }

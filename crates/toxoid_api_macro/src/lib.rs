@@ -351,7 +351,7 @@ pub fn component(input: TokenStream) -> TokenStream {
             };
             // Create the register implementation.
             let register_fn = quote! {
-                fn register() -> i32 {
+                fn register() -> u64 {
                     #register_component_tokens
                 }
             };
