@@ -4,7 +4,7 @@
 use crate::ecs::*;
 use core::ffi::c_void;
 
-pub type ecs_id_t = i32;
+pub type ecs_id_t = u64;
 pub type ecs_entity_t = ecs_id_t;
 pub type c_char = i8;
 
@@ -28,14 +28,14 @@ extern "C" {
         member_types_count: u32,
     ) -> ecs_entity_t;
     pub fn toxoid_entity_create() -> ecs_entity_t;
-    pub fn toxoid_entity_add_component(entity: u32, component: u32) -> *mut c_void;
-    pub fn toxoid_entity_add_tag(entity: u32, tag: u32);
-    pub fn toxoid_entity_get_component(entity: u32, component: u32) -> *mut c_void;
-    pub fn toxoid_entity_child_of(entity: u32, parent: u32);
-    pub fn toxoid_entity_children(parent: u32) -> *mut c_void;
-    pub fn toxoid_child_entities(iter: *mut c_void) -> *mut u64;
+    pub fn toxoid_entity_add_component(entity: ecs_entity_t, component: ecs_entity_t);
+    pub fn toxoid_entity_add_tag(entity: ecs_entity_t, tag: ecs_entity_t);
+    pub fn toxoid_entity_get_component(entity: ecs_entity_t, component: ecs_entity_t) -> *mut c_void;
+    pub fn toxoid_entity_child_of(entity: ecs_entity_t, parent: ecs_entity_t);
+    pub fn toxoid_entity_children(parent: ecs_entity_t) -> *mut c_void;
+    pub fn toxoid_child_entities(iter: *mut c_void) -> *mut ecs_entity_t;
     pub fn toxoid_term_next(iter: *mut c_void) -> bool;
-    pub fn toxoid_query_create(ids: *mut i32, components_count: i32) -> *mut c_void;
+    pub fn toxoid_query_create(ids: *mut ecs_entity_t, components_count: i32) -> *mut c_void;
     pub fn toxoid_query_iter(query: *mut c_void) -> *mut c_void;
     pub fn toxoid_query_next(iter: *mut c_void) -> bool;
     pub fn toxoid_query_count(iter: *mut c_void) -> i32;
@@ -56,8 +56,8 @@ extern "C" {
         count: u32,
     ) -> &'static mut [*const c_void];
     pub fn toxoid_iter_count(iter: *mut c_void) -> i32;
-    pub fn toxoid_component_cache_insert(type_id: core::any::TypeId, component_id: i32);
-    pub fn toxoid_component_cache_get(type_id: core::any::TypeId) -> i32;
+    pub fn toxoid_component_cache_insert(type_id: core::any::TypeId, component_id: ecs_entity_t);
+    pub fn toxoid_component_cache_get(type_id: core::any::TypeId) -> ecs_entity_t;
     pub fn toxoid_add_system(system: System);
     pub fn toxoid_component_get_member_u8(component_ptr: *mut c_void, offset: u32) -> u8;
     pub fn toxoid_component_get_member_u16(component_ptr: *mut c_void, offset: u32) -> u8;
@@ -93,11 +93,11 @@ extern "C" {
         value: *mut c_char,
     );   
     pub fn toxoid_progress(delta_time: f32) -> bool;
-    pub fn toxoid_filter_children_init(parent: u32) -> *mut c_void;
+    pub fn toxoid_filter_children_init(parent: ecs_entity_t) -> *mut c_void;
     pub fn toxoid_filter_iter(filter: *mut c_void) -> *mut c_void;
     pub fn toxoid_filter_next(iter: *mut c_void) -> bool;
     pub fn toxoid_iter_entities(iter: *mut c_void) -> &'static [u64];
-    pub fn toxoid_delete_entity(entity: u32);
-    pub fn toxoid_entity_remove_component(entity: u32, component: u32);
-    pub fn toxoid_is_valid(entity: u32) -> bool;
+    pub fn toxoid_delete_entity(entity: ecs_entity_t);
+    pub fn toxoid_entity_remove_component(entity: ecs_entity_t, component: ecs_entity_t);
+    pub fn toxoid_is_valid(entity: ecs_entity_t) -> bool;
 }

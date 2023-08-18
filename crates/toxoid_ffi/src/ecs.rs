@@ -6,20 +6,20 @@ use std::{collections::HashMap, cell::RefCell, any::TypeId};
 use core::alloc::{GlobalAlloc, Layout};
 
 use flecs_core::ecs_iter_t;
-use toxoid_api::ALLOCATOR;
+use toxoid_api::{ALLOCATOR, ecs_entity_t};
 
 thread_local! {
     pub static SYSTEMS: RefCell<Vec<toxoid_api::System>> = {
         let systems = Vec::new();
         RefCell::new(systems)
     };
-    pub static COMPONENT_ID_CACHE: RefCell<HashMap<core::any::TypeId, i32>> = {
+    pub static COMPONENT_ID_CACHE: RefCell<HashMap<core::any::TypeId, ecs_entity_t>> = {
         let cache = HashMap::new();
         RefCell::new(cache)
     };
 }
 
-pub fn cache_component_ecs(type_id: TypeId, component_id: i32) {
+pub fn cache_component_ecs(type_id: TypeId, component_id: toxoid_api::ecs_entity_t) {
     unsafe {
         toxoid_component_cache_insert(type_id, component_id);
     }
@@ -93,7 +93,7 @@ pub fn toxoid_entity_get_name(id: i32) {
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn toxoid_register_tag(name: *const i8, name_len: usize) -> i32 {
+pub unsafe extern "C" fn toxoid_register_tag(name: *const i8, name_len: usize) -> ecs_entity_t {
     // Convert the C String to a Rust string using a specific length
     // to deal with FFI memory issues
     let slice = std::slice::from_raw_parts(name as *mut u8, name_len);
@@ -103,7 +103,7 @@ pub unsafe extern "C" fn toxoid_register_tag(name: *const i8, name_len: usize) -
 
     // Convert back to C string with specific length
     let c_string = std::ffi::CString::new(rust_string).expect("Failed to convert to CString");
-    flecs_core::flecs_tag_create(c_string.as_ptr()) as i32
+    flecs_core::flecs_tag_create(c_string.as_ptr())
 }
 
 #[no_mangle]
@@ -115,7 +115,7 @@ pub unsafe extern "C" fn toxoid_register_component(
     member_names_len: *const u8,
     member_types: *const u8,
     member_types_count: u32,
-) -> i32 {
+) -> u64 {
     // Convert the C String to a Rust string using a specific length
     // to deal with FFI memory issues
     let component_name_slice =
@@ -148,12 +148,12 @@ pub unsafe extern "C" fn toxoid_register_component(
         member_names_count,
         member_types,
         member_types_count,
-    ) as i32
+    )
 }
 
 #[no_mangle]
-pub unsafe fn toxoid_entity_create() -> i32 {
-    flecs_core::flecs_entity_create() as i32
+pub unsafe fn toxoid_entity_create() -> u64 {
+    flecs_core::flecs_entity_create()
 }
 
 // TODO: Change i32 to u64 for Rust functions
@@ -166,23 +166,23 @@ pub unsafe fn toxoid_entity_create() -> i32 {
 // }
 
 #[no_mangle]
-pub unsafe fn toxoid_entity_add_component(entity: u32, component: u32) -> *mut c_void {
+pub unsafe fn toxoid_entity_add_component(entity: ecs_entity_t, component: ecs_entity_t){
     flecs_core::flecs_entity_add_component(entity, component)
 }
 
 #[no_mangle]
-pub unsafe fn toxoid_entity_add_tag(entity: u32, tag: u32) {
+pub unsafe fn toxoid_entity_add_tag(entity: ecs_entity_t, tag: ecs_entity_t) {
     flecs_core::flecs_entity_add_tag(entity, tag)
 }
 
 
 #[no_mangle]
-pub unsafe fn toxoid_entity_child_of(parent: u32, child: u32) {
+pub unsafe fn toxoid_entity_child_of(parent: ecs_entity_t, child: ecs_entity_t) {
     flecs_core::flecs_entity_child_of(parent, child)
 }
 
 #[no_mangle]
-pub unsafe fn toxoid_entity_children(parent: u32) -> *mut ecs_iter_t {
+pub unsafe fn toxoid_entity_children(parent: ecs_entity_t) -> *mut ecs_iter_t {
     flecs_core::flecs_entity_children(parent)
 }
 
@@ -198,7 +198,7 @@ pub unsafe fn toxoid_term_next(iter: *mut flecs_core::ecs_iter_t) -> bool {
 
 #[no_mangle]
 pub unsafe fn toxoid_query_create(
-    ids: *mut i32,
+    ids: *mut ecs_entity_t,
     components_count: i32,
 ) -> *mut flecs_core::ecs_query_t {
     flecs_core::flecs_query_create(ids, components_count)
@@ -244,21 +244,21 @@ pub unsafe fn to_u64_slice(ptr: *mut u64, len: usize) -> &'static [u64] {
 
 #[repr(C)]
 pub struct EntityId {
-    id: i32,
+    id: ecs_entity_t,
     children: &'static mut [EntityId]
 }
 
 #[no_mangle]
 pub unsafe fn toxoid_query_entity_list(iter: *mut flecs_core::ecs_iter_t) -> &'static [EntityId] {
     let count = toxoid_iter_count(iter) as usize;
-    let ptr = flecs_core::flecs_query_entity_list(iter) as *mut u64;
-    let slice: &[u64] = core::slice::from_raw_parts(ptr, count);
+    let ptr = flecs_core::flecs_query_entity_list(iter) as *mut ecs_entity_t;
+    let slice: &[ecs_entity_t] = core::slice::from_raw_parts(ptr, count);
 
     // Create a Vec<Entity> from the slice of entity IDs
     // grabbed raw from the flecs API
     let mut entities_vec: Vec<EntityId> = Vec::with_capacity(count);
     for &id in slice.iter() {
-        entities_vec.push(EntityId { id: id as i32, children: &mut [] });
+        entities_vec.push(EntityId { id, children: &mut [] });
     }
     // Here, Box::leak(entities_vec.into_boxed_slice()) creates a leak, intentionally not freeing the memory.
     // This is generally a bad practice, but sometimes it can be useful when interfacing with C or for certain kinds of low-level programming.
@@ -266,14 +266,14 @@ pub unsafe fn toxoid_query_entity_list(iter: *mut flecs_core::ecs_iter_t) -> &'s
 }
 
 #[no_mangle]
-pub unsafe fn toxoid_entity_get_component(entity: u32, component: u32) -> *mut c_void {
+pub unsafe fn toxoid_entity_get_component(entity: ecs_entity_t, component: ecs_entity_t) -> *mut c_void {
     flecs_core::flecs_entity_get_component(entity, component)
 }
 
 #[no_mangle]
 pub unsafe extern "C" fn toxoid_component_cache_insert(
     type_id: core::any::TypeId,
-    component_id: i32,
+    component_id: ecs_entity_t
 ) {
     COMPONENT_ID_CACHE.with(|c| {
         let mut cache = c.borrow_mut();
@@ -282,7 +282,7 @@ pub unsafe extern "C" fn toxoid_component_cache_insert(
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn toxoid_component_cache_get(type_id: core::any::TypeId) -> i32 {
+pub unsafe extern "C" fn toxoid_component_cache_get(type_id: core::any::TypeId) -> ecs_entity_t {
     COMPONENT_ID_CACHE.with(|c| {
         let cache = c.borrow_mut();
         *cache.get(&type_id).unwrap_or(&0)
@@ -583,7 +583,7 @@ pub unsafe fn toxoid_progress(delta_time: f32) -> bool {
 
 #[no_mangle]
 pub unsafe fn toxoid_filter_children_init(
-    parent: u32
+    parent: ecs_entity_t
 ) -> *mut flecs_core::ecs_filter_t {
     flecs_core::flecs_filter_children_init(parent.into())
 }
@@ -604,15 +604,15 @@ pub unsafe fn toxoid_iter_entities(
 
 #[no_mangle]
 pub unsafe fn toxoid_delete_entity(
-    entity: u32
+    entity: ecs_entity_t
 ) {
     flecs_core::flecs_delete_entity(entity)
 }
 
 #[no_mangle]
 pub unsafe fn toxoid_entity_remove_component(
-    entity: u32,
-    component: u32
+    entity: ecs_entity_t,
+    component: ecs_entity_t
 ) {
     flecs_core::flecs_entity_remove_component(entity, component)
 }
@@ -626,7 +626,7 @@ pub unsafe fn toxoid_filter_next(
 
 #[no_mangle]
 pub unsafe fn toxoid_is_valid(
-    entity: u32
+    entity: ecs_entity_t
 ) -> bool {
     flecs_core::flecs_is_valid(entity)
 }

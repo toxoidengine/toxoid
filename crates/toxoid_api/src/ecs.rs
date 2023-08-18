@@ -28,7 +28,7 @@ pub trait ComponentTuple {
 }
 
 pub trait IsComponent {
-    fn register() -> i32;
+    fn register() -> ecs_entity_t;
     fn set_ptr(&mut self, ptr: *mut c_void);
     fn get_ptr(&self) -> *mut c_void;
 }
@@ -58,7 +58,7 @@ impl Query {
         unsafe {
             let type_ids = T::get_type_ids();
             let layout = Layout::array::<i32>(type_ids.len()).unwrap();
-            let ids_ptr = ALLOCATOR.alloc(layout) as *mut i32;
+            let ids_ptr = ALLOCATOR.alloc(layout) as *mut ecs_entity_t;
             type_ids
                 .iter()
                 .enumerate()
@@ -206,26 +206,26 @@ impl Entity {
     pub fn add<T: IsComponent + 'static>(&mut self) {
         unsafe {
             let component_id = toxoid_component_cache_get(core::any::TypeId::of::<T>());
-            toxoid_entity_add_component(self.id as u32, component_id as u32);
+            toxoid_entity_add_component(self.id, component_id);
         }
     }
 
     pub fn remove<T: IsComponent + 'static>(&mut self) {
         unsafe {
             let component_id = toxoid_component_cache_get(core::any::TypeId::of::<T>());
-            toxoid_entity_remove_component(self.id as u32, component_id as u32);
+            toxoid_entity_remove_component(self.id, component_id);
         }
     }
 
     pub fn add_id(&mut self, component: ecs_id_t) {
         unsafe {
-            toxoid_entity_add_component(self.id as u32, component as u32);
+            toxoid_entity_add_component(self.id, component);
         }
     }
 
     pub fn add_tag(&mut self, tag: ecs_entity_t) {
         unsafe {
-            toxoid_entity_add_tag(self.id as u32, tag as u32);
+            toxoid_entity_add_tag(self.id, tag);
         }
     }
 
@@ -238,7 +238,7 @@ impl Entity {
         unsafe {
             let mut component = T::default();
             let component_id = toxoid_component_cache_get(core::any::TypeId::of::<T>());
-            let ptr = toxoid_entity_get_component(self.id as u32, component_id as u32);
+            let ptr = toxoid_entity_get_component(self.id, component_id);
             component.set_ptr(ptr);
             component
         }
@@ -246,13 +246,13 @@ impl Entity {
 
     pub fn child_of(&mut self, parent: Entity) {
         unsafe {
-            toxoid_entity_child_of(self.id as u32, parent.get_id() as u32);
+            toxoid_entity_child_of(self.id, parent.get_id());
         }
     }
 
     pub fn add_child(&mut self, child: Entity) {
         unsafe {
-            toxoid_entity_child_of(child.get_id() as u32, self.id as u32);
+            toxoid_entity_child_of(child.get_id(), self.id);
         }
     }
     
@@ -290,7 +290,7 @@ impl Entity {
 
     pub fn children(&mut self, mut cb: impl FnMut(Entity)) {
         unsafe {
-            let filter = toxoid_filter_children_init(self.get_id() as u32);
+            let filter = toxoid_filter_children_init(self.get_id());
             let it = toxoid_filter_iter(filter);
             while toxoid_filter_next(it) {
                 let entities = toxoid_iter_entities(it);
@@ -298,7 +298,7 @@ impl Entity {
                     .iter()
                     .for_each(|entity_id| {
                         let e = Entity { 
-                            id: *entity_id as i32, 
+                            id: *entity_id, 
                             children: &mut []
                         };
                         cb(e);
@@ -310,25 +310,25 @@ impl Entity {
 
 pub fn delete_entity(entity: Entity) {
     unsafe {
-        toxoid_delete_entity(entity.get_id() as u32);
+        toxoid_delete_entity(entity.get_id());
     }
 }
 
 pub fn delete_entity_mut(entity: &mut Entity) {
     unsafe {
-        toxoid_delete_entity(entity.get_id() as u32);
+        toxoid_delete_entity(entity.get_id());
     }
 }
 
 pub fn is_valid(entity: Entity) -> bool {
     unsafe {
-        toxoid_is_valid(entity.get_id() as u32)
+        toxoid_is_valid(entity.get_id())
     }
 }
 
 pub fn is_valid_mut(entity: &mut Entity) -> bool {
     unsafe {
-        toxoid_is_valid(entity.get_id() as u32)
+        toxoid_is_valid(entity.get_id())
     }
 }
 
