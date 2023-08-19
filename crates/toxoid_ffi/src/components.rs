@@ -40,11 +40,8 @@ component! {
     Direction {
         direction: u8
     },
-    // TODO: Make these all tags with no fields and create tag!{} proc macro
-    // Also move to snake_engine
     Player {
-        head: bool,
-        tail: bool
+        player: bool
     },
     Food {
         food: bool
@@ -57,29 +54,26 @@ component! {
     },
     TailLength {
         length: u32
-    }
-    // Order {
-    //     order: u32
-    // },
-    // Head {
-    //     head: bool
-    // },
-    // Spawned {
-    //     spawned: bool
-    // },  
+    },
+    Head {
+        previous_head: u64
+    },
 }
 
 pub fn init() {
+    //Generic Components
     Position::register();
     Velocity::register();
     KeyboardInput::register();
     Rect::register();
     Color::register();
     Renderable::register();
+    // Snake Specific
     Direction::register();
     Player::register();
     Food::register();
     Despawn::register();
     Spawn::register();
     TailLength::register();
+    Head::register();
 }
