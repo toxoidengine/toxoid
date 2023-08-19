@@ -630,3 +630,11 @@ pub unsafe fn toxoid_is_valid(
 ) -> bool {
     flecs_core::flecs_is_valid(entity)
 }
+
+#[no_mangle]
+pub unsafe fn toxoid_entity_has_component(
+    entity: ecs_entity_t,
+    component: ecs_entity_t
+) -> bool {
+    flecs_core::flecs_entity_has_component(entity, component)
+}

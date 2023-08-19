@@ -100,4 +100,8 @@ extern "C" {
     pub fn toxoid_delete_entity(entity: ecs_entity_t);
     pub fn toxoid_entity_remove_component(entity: ecs_entity_t, component: ecs_entity_t);
     pub fn toxoid_is_valid(entity: ecs_entity_t) -> bool;
+    pub fn toxoid_entity_has_component(
+        entity: ecs_entity_t,
+        component: ecs_entity_t
+    ) -> bool;
 }
