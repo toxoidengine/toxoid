@@ -43,14 +43,24 @@ component! {
     // TODO: Make these all tags with no fields and create tag!{} proc macro
     // Also move to snake_engine
     Player {
-        head: bool
+        head: bool,
+        tail: bool
     },
     Food {
         food: bool
     },
     Despawn {
         despawn: bool
+    },
+    Spawn {
+        spawn: bool
+    },
+    TailLength {
+        length: u32
     }
+    // Order {
+    //     order: u32
+    // },
     // Head {
     //     head: bool
     // },
@@ -69,4 +79,7 @@ pub fn init() {
     Direction::register();
     Player::register();
     Food::register();
+    Despawn::register();
+    Spawn::register();
+    TailLength::register();
 }

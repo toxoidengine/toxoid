@@ -2,7 +2,7 @@ use crate::DirectionEnum;
 use crate::toxoid_api::Entity;
 use crate::components::{KeyboardInput, Position, Rect, Renderable, Direction, Color, Player, Food};
 
-pub fn create_player_block(x: u32, y: u32, head: bool) {
+pub fn create_player_block(x: u32, y: u32, head: bool, tail: bool) {
     let mut player_entity = Entity::new();
     player_entity.add::<Position>();
     player_entity.add::<Direction>();
@@ -14,8 +14,8 @@ pub fn create_player_block(x: u32, y: u32, head: bool) {
     dir.set_direction(DirectionEnum::Down as u8);
     let mut player = player_entity.get::<Player>();
     player.set_head(head);
+    player.set_tail(tail);
 
-    
     // Child Entity
     let mut render_target = Entity::new();
     render_target.add::<Rect>();
@@ -50,9 +50,9 @@ pub fn init() {
         
     }
 
-    create_player_block(350, 150, true);
-    create_player_block(350, 100, false);
-    create_player_block(350, 50, false);
+    create_player_block(350, 150, true, false);
+    create_player_block(350, 100, false, false);
+    create_player_block(350, 50, false, true);
 
     // Food Entity
     // TODO: Move this out of lib
