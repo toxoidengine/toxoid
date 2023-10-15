@@ -1,3 +1,5 @@
+use std::path::PathBuf;
+
 // TODO: Make these programmatic / templated
 const PACKAGES: [&str; 2] = ["snake_engine", "snake"];
 const TARGET: &str = "wasm32-unknown-emscripten";
@@ -53,15 +55,21 @@ fn copy_files() -> Result<(), Box<dyn std::error::Error>> {
 
         for file_ext in file_exts {
             // Source path for projects that will be run
-            let source_path = format!("{}/{}/{}/{}{}", exe_path, TARGET, debug, package, file_ext);
+            let mut source_path = PathBuf::from(&exe_path);
+            source_path.push(TARGET);
+            source_path.push(debug);
+            source_path.push(format!("{}{}", package, file_ext));
+        
             // Output path for projects that will be run
             // and libraries that will be dynamically linked at runtime
-            let destination_path = format!("{}/dist/{}{}", package_path, package, file_ext);
-
-            // println!("Source Path: {}", source_path);
-            // println!("Destination Path: {}", destination_path);
-
-            match std::fs::copy(source_path, destination_path) {
+            let mut destination_path = PathBuf::from(&package_path);
+            destination_path.push("dist");
+            destination_path.push(format!("{}{}", package, file_ext));
+        
+            // println!("Source Path: {:?}", source_path);
+            // println!("Destination Path: {:?}", destination_path);
+        
+            match std::fs::copy(&source_path, &destination_path) {
                 Ok(_) => (),   // println!("File copied successfully."),
                 Err(_e) => (), // eprintln!("Failed to copy file: {}", e),
             }
