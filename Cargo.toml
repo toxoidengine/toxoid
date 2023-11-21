@@ -27,6 +27,7 @@ resolver = "2"
 
 [profile.dev]
 opt-level = 3
+debug = true
 
 [[bin]]
 name = "snake"

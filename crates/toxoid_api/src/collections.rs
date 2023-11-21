@@ -46,15 +46,13 @@ impl<T> Vec<T> {
         let new_layout = Layout::from_size_align(new_size, mem::align_of::<T>()).unwrap();
         let new_ptr = unsafe { ALLOCATOR.alloc(new_layout) as *mut T };
 
-        if !self.ptr.as_ptr().is_null() {
-            unsafe {
-                // Copy old data to new space and deallocate old space.
-                new_ptr.copy_from_nonoverlapping(self.ptr.as_ptr(), self.len);
-                let old_layout =
-                    Layout::from_size_align(self.cap * mem::size_of::<T>(), mem::align_of::<T>())
-                        .unwrap();
-                ALLOCATOR.dealloc(self.ptr.as_ptr() as *mut u8, old_layout);
-            }
+        unsafe {
+            // Copy old data to new space and deallocate old space.
+            new_ptr.copy_from_nonoverlapping(self.ptr.as_ptr(), self.len);
+            let old_layout =
+                Layout::from_size_align(self.cap * mem::size_of::<T>(), mem::align_of::<T>())
+                    .unwrap();
+            ALLOCATOR.dealloc(self.ptr.as_ptr() as *mut u8, old_layout);
         }
 
         self.ptr = unsafe { NonNull::new_unchecked(new_ptr) };

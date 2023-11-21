@@ -1,5 +1,4 @@
-use core::alloc::GlobalAlloc;
-use toxoid_api::{Query, ALLOCATOR, Entity, IsComponent};
+use toxoid_api::{Query};
 
 pub fn input_system_fn(query: &mut Query) {
     use toxoid_sdl::event::Event;

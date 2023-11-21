@@ -3,4 +3,7 @@
 
 # Examples
 How to run examples:
-`make example-snake`
+```
+rustup target add wasm32-unknown-emscripten
+make example-snake
+```

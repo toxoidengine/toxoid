@@ -125,8 +125,6 @@ impl Query {
                 });
             // Convert from pointer to slice
             let components = core::slice::from_raw_parts(components_ptr, count as usize);
-            // Make sure slice is not freed at the end of this function
-            core::mem::forget(components);
             // Return slice of components
             components
         }
@@ -315,8 +313,6 @@ impl Entity {
                     });
                 });
             let entities = core::slice::from_raw_parts_mut(entities_ptr, count as usize);
-            // Make sure slice is not freed at the end of this function
-            core::mem::forget(entities_ptr);
             // Assign to self so we can drop it later
             // self.children = entities;
             entities
@@ -430,7 +426,6 @@ macro_rules! impl_component_tuple {
                         i += 1;
                     )+
                     let type_ids = core::slice::from_raw_parts(type_ids_ptr, count as usize);
-                    core::mem::forget(type_ids);
                     type_ids
                 }
             }

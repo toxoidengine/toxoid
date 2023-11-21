@@ -1,9 +1,7 @@
 pub extern crate sdl2;
 
 pub use sdl2::*;
-use sdl2::Sdl;
 use sdl2::render::WindowCanvas;
-use sdl2::VideoSubsystem;
 use std::cell::RefCell;
 
 thread_local! {

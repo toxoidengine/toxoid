@@ -1,6 +1,6 @@
 use core::cell::RefCell;
 
-use toxoid_ffi::{toxoid_add_system, toxoid_api::{Query, System}, KeyboardInput, Position, Direction, DirectionEnum, Player, Food, Rect, toxoid_progress};
+use toxoid_ffi::{toxoid_add_system, toxoid_api::{Query, System}, KeyboardInput, Position, Direction, DirectionEnum, Player, Food, Rect};
 use toxoid_ffi::toxoid_api::*;
 use toxoid_ffi::*;
 
