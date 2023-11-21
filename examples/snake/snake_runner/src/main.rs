@@ -1,4 +1,4 @@
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 
 // TODO: Make these programmatic / templated
 const PACKAGES: [&str; 2] = ["snake_engine", "snake"];
@@ -32,10 +32,7 @@ fn copy_files() -> Result<(), Box<dyn std::error::Error>> {
         .to_str()
         .ok_or("Could not convert executable path parent to string")?;
     let debug = if DEBUG { "debug" } else { "release" };
-    // println!(
-    //     "\nPackage Path: {}, \nExecutable Path: {}, \nBuild Type: {}",
-    //     package_path, exe_path, debug
-    // );
+
     for package in PACKAGES {
         let file_exts = if TARGET.contains("emscripten") {
             if package.contains("engine") {
@@ -64,17 +61,25 @@ fn copy_files() -> Result<(), Box<dyn std::error::Error>> {
             // and libraries that will be dynamically linked at runtime
             let mut destination_path = PathBuf::from(&package_path);
             destination_path.push("dist");
+
+            // Create the dist directory if it does not exist
+            std::fs::create_dir_all(&destination_path)?;
+
             destination_path.push(format!("{}{}", package, file_ext));
         
-            // println!("Source Path: {:?}", source_path);
-            // println!("Destination Path: {:?}", destination_path);
-        
             match std::fs::copy(&source_path, &destination_path) {
-                Ok(_) => (),   // println!("File copied successfully."),
-                Err(_e) => (), // eprintln!("Failed to copy file: {}", e),
+                Ok(_) => (),
+                Err(_e) => (),
             }
         }
     }
+
+    // Copy the index file from the templates directory to the dist directory
+    let root_path = env!("WORKSPACE_DIR", "Failed to retrieve workspace root path");
+    let index_src = Path::new(&root_path).join("templates/index.html");
+    let index_dst = Path::new(&package_path).join("dist/index.html");
+    std::fs::copy(&index_src, &index_dst)?;
+    
     Ok(())
 }
 
