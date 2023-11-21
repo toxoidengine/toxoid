@@ -1,5 +1,5 @@
 use toxoid_api_macro::component;
-use toxoid_api::{IsComponent};
+use toxoid_api::IsComponent;
 use crate::ecs::*;
 
 pub enum DirectionEnum {

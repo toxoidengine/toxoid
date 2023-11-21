@@ -1,4 +1,4 @@
-use toxoid_api::{Query};
+use toxoid_api::Query;
 
 pub fn input_system_fn(query: &mut Query) {
     use toxoid_sdl::event::Event;
