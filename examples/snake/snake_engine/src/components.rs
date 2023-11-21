@@ -1,6 +1,6 @@
 use toxoid_api_macro::component;
-use toxoid_api::IsComponent;
-use crate::ecs::*;
+use toxoid_api::{IsComponent, Entity};
+use toxoid_ffi::ecs::*;
 
 pub enum DirectionEnum {
     Up = 0,
@@ -61,7 +61,7 @@ component! {
 }
 
 pub fn init() {
-    //Generic Components
+    // Generic Components
     Position::register();
     Velocity::register();
     KeyboardInput::register();
@@ -76,4 +76,15 @@ pub fn init() {
     Spawn::register();
     TailLength::register();
     Head::register();
+
+    // Create a new entity.
+    let mut player = Entity::new();
+    // Add the component to the entity.
+    player.add::<Position>();
+
+    let mut pos_component = player.get::<Position>();
+    pos_component.set_x(420);
+    pos_component.set_y(421);
+
+    println!("Player position: {}, {}", pos_component.get_x(), pos_component.get_y());
 }

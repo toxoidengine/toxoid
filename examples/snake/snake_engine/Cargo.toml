@@ -7,3 +7,5 @@ edition = "2021"
 
 [dependencies]
 toxoid_ffi = { path="../../../crates/toxoid_ffi" }
+toxoid_api = { path="../../../crates/toxoid_api" }
+toxoid_api_macro = { path="../../../crates/toxoid_api_macro" }

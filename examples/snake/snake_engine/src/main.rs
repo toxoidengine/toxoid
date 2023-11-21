@@ -1,6 +1,7 @@
 #![allow(improper_ctypes_definitions)]
 mod local_ecs;
-mod systems;
+// mod systems;
+mod components;
 
 extern "C" {
     // Main function of the dynamically linked library / Toxoid App.
@@ -12,7 +13,9 @@ fn main() {
     toxoid_ffi::init();
     
     // TODO: Move to dynamically linked lib
-    systems::init();
+    // systems::init();
+
+    components::init();
 }
 
 #[no_mangle]
