@@ -78,7 +78,7 @@ extern "C" {
     ) -> &'static mut [*const c_void];
     pub fn toxoid_iter_count(iter: *mut c_void) -> i32;
     pub fn toxoid_component_cache_insert(type_id: core::any::TypeId, component_id: ecs_entity_t);
-    pub fn toxoid_component_cache_get(type_id: core::any::TypeId) -> ecs_entity_t;
+    pub fn toxoid_component_cache_get(type_id: core::any::TypeId) -> SplitU64;
     pub fn toxoid_add_system(system: System);
     pub fn toxoid_component_get_member_u8(component_ptr: *mut c_void, offset: u32) -> u8;
     pub fn toxoid_component_get_member_u16(component_ptr: *mut c_void, offset: u32) -> u8;

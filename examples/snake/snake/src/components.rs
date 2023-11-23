@@ -78,14 +78,17 @@ pub fn init() {
     TailLength::register();
     Head::register();
 
+    print_string("Hello bruh!");
     // Create a new entity.
     let mut player = Entity::new();
+    print_string("Hello bruh 2!");
     // Add the component to the entity.
-    unsafe { (*player).add::<Position>() };
+    unsafe { 
+        (*player).add::<Position>() 
+    };
+    print_string("Hello bruh 3!");
 
     // let mut pos_component = player.get::<Position>();
     // pos_component.set_x(420);
     // pos_component.set_y(421);
-
-    // println!("Player position: {}, {}", pos_component.get_x(), pos_component.get_y());
 }
