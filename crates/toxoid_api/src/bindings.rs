@@ -41,7 +41,7 @@ extern "C" {
         member_types: *const u8,
         member_types_count: u32,
     ) -> ecs_entity_t;
-    pub fn toxoid_entity_create() -> ecs_entity_t;
+    pub fn toxoid_entity_create() -> SplitU64;
     pub fn toxoid_entity_add_component(entity: ecs_entity_t, component: ecs_entity_t);
     pub fn toxoid_entity_add_tag(entity: ecs_entity_t, tag: ecs_entity_t);
     pub fn toxoid_entity_get_component(entity: ecs_entity_t, component: ecs_entity_t) -> *mut c_void;

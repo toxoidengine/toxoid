@@ -194,11 +194,11 @@ impl Drop for Entity {
 
 impl Entity {
     pub fn new() -> Self {
-        unsafe {
-            Entity {
-                id: toxoid_entity_create(),
-                children: &mut []
-            }
+        let entity_split = unsafe { toxoid_entity_create() };
+        let entity = combine_u32(entity_split);
+        Entity {
+            id: entity,
+            children: &mut []
         }
     }
 

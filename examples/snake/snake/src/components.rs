@@ -81,8 +81,8 @@ pub fn init() {
     TailLength::register();
     Head::register();
 
-    // // Create a new entity.
-    // let mut player = Entity::new();
+    // Create a new entity.
+    let mut player = Entity::new();
     // // Add the component to the entity.
     // player.add::<Position>();
 

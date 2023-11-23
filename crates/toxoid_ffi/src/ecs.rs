@@ -7,6 +7,7 @@ use core::alloc::{GlobalAlloc, Layout};
 
 use flecs_core::ecs_iter_t;
 use toxoid_api::{ALLOCATOR, ecs_entity_t};
+use crate::utils::{SplitU64, split_u64};
 
 thread_local! {
     pub static SYSTEMS: RefCell<Vec<toxoid_api::System>> = {
@@ -57,19 +58,6 @@ pub unsafe extern "C" fn toxoid_register_tag(name: *const i8, name_len: usize) -
     // Convert back to C string with specific length
     let c_string = std::ffi::CString::new(rust_string).expect("Failed to convert to CString");
     flecs_core::flecs_tag_create(c_string.as_ptr())
-}
-
-#[repr(C)]
-pub struct SplitU64 {
-    high: u32,
-    low: u32,
-}
-
-pub fn split_u64(value: u64) -> SplitU64 {
-    SplitU64 {
-        high: (value >> 32) as u32,
-        low: (value & 0xFFFFFFFF) as u32,
-    }
 }
 
 // Have to define high level workaround to maintain context in toxoid_api_macro
@@ -160,18 +148,10 @@ pub unsafe extern "C" fn toxoid_register_component(
 }
 
 #[no_mangle]
-pub unsafe fn toxoid_entity_create() -> u64 {
-    flecs_core::flecs_entity_create()
+pub unsafe fn toxoid_entity_create() -> SplitU64 {
+    let entity = flecs_core::flecs_entity_create();
+    split_u64(entity)
 }
-
-// TODO: Change i32 to u64 for Rust functions
-// This is a limitation of JS where 
-// you can't pass u64 to JS functions
-// from emscripten
-// #[no_mangle]
-// pub unsafe fn toxoid_entity_create() -> flecs_core::ecs_entity_t {
-//     flecs_core::flecs_entity_create()
-// }
 
 #[no_mangle]
 pub unsafe fn toxoid_entity_add_component(entity: ecs_entity_t, component: ecs_entity_t){
