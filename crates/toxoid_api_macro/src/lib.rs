@@ -352,6 +352,7 @@ pub fn component(input: TokenStream) -> TokenStream {
                 cache_component_ecs(core::any::TypeId::of::<#name>(), component_id);
                 component_id
             };
+            
             // Create the register implementation.
             let register_fn = quote! {
                 fn register() -> u64 {
