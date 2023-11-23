@@ -1,6 +1,7 @@
 #![allow(improper_ctypes_definitions)]
 // mod systems;
 // mod components;
+pub use toxoid_ffi::*;
 
 extern "C" {
     // Main function of the dynamically linked library / Toxoid App.
@@ -24,4 +25,9 @@ pub unsafe extern "C" fn app_init() {
     
     // Start update loop / game loop / render loop.
     toxoid_ffi::start();
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn print_hello() {
+    println!("HELLO WORLD 123!")
 }

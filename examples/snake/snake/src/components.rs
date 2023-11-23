@@ -61,7 +61,7 @@ component! {
     },
 }
 
-pub fn init() {
+pub fn init() {    
     // Generic Components
     Position::register();
     Velocity::register();
@@ -81,7 +81,7 @@ pub fn init() {
     // Create a new entity.
     let mut player = Entity::new();
     // Add the component to the entity.
-    player.add::<Position>();
+    unsafe { (*player).add::<Position>() };
 
     // let mut pos_component = player.get::<Position>();
     // pos_component.set_x(420);
