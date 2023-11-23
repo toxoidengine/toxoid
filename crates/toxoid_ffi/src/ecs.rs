@@ -269,10 +269,11 @@ pub unsafe extern "C" fn toxoid_component_cache_insert(
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn toxoid_component_cache_get(type_id: core::any::TypeId) -> ecs_entity_t {
+pub unsafe extern "C" fn toxoid_component_cache_get(type_id: core::any::TypeId) -> SplitU64 {
     COMPONENT_ID_CACHE.with(|c| {
         let cache = c.borrow_mut();
-        *cache.get(&type_id).unwrap_or(&0)
+        let component_id = *cache.get(&type_id).unwrap_or(&0);
+        split_u64(component_id)
     })
 }
 
