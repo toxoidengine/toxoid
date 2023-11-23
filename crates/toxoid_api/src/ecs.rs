@@ -29,6 +29,8 @@ pub trait ComponentTuple {
 
 pub trait IsComponent {
     fn register() -> ecs_entity_t;
+    fn get_name() -> &'static str;
+    fn get_hash() -> u64;
     fn set_ptr(&mut self, ptr: *mut c_void);
     fn get_ptr(&self) -> *mut c_void;
 }
@@ -204,8 +206,13 @@ impl Entity {
 
     pub fn add<T: IsComponent + 'static>(&mut self) {
         unsafe {
-            let component_id = toxoid_component_cache_get(core::any::TypeId::of::<T>());
-            toxoid_entity_add_component(self.id, component_id);
+            let name = T::get_hash();
+            // print_string(name);
+            // let bytes = type_id_to_bytes::<T>(); 
+            // let hash = fnv1a_hash(&bytes);
+            // print_i32(hash as i32);
+            // let component_id = toxoid_component_cache_get(core::any::TypeId::of::<T>());
+            // toxoid_entity_add_component(self.id, component_id);
         }
     }
 
@@ -373,11 +380,13 @@ pub fn cache_component_ecs(type_id: TypeId, component_id: ecs_entity_t) {
     }
 }
 
+// Used to count the number of arguments passed to it.
 macro_rules! count_args {
     ($($args:ident),*) => { <[()]>::len(&[$(count_args!(@substitute $args)),*]) };
     (@substitute $_t:tt) => { () };
 }
 
+// Used to implement the ComponentTuple trait for tuples of different lengths, where each element of the tuple is a component.
 macro_rules! impl_component_tuple {
     ($($name:ident)+) => {
         impl<$($name: Default + IsComponent + 'static),+> ComponentTuple for ($($name,)+) {

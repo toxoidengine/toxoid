@@ -29,6 +29,17 @@ enum FieldType {
     // F32Array,
 }
 
+// Constants for FNV-1a hashing
+const FNV_PRIME: u64 = 1099511628211;
+const OFFSET_BASIS: u64 = 14695981039346656037;
+
+// Function to compute FNV-1a hash of a string
+fn fnv1a_hash_str(s: &str) -> u64 {
+    s.bytes().fold(OFFSET_BASIS, |hash, byte| {
+        (hash ^ (byte as u64)).wrapping_mul(FNV_PRIME)
+    })
+}
+
 // The input to the macro will be a list of field names and types.
 struct ComponentStruct {
     name: Ident,
@@ -360,6 +371,20 @@ pub fn component(input: TokenStream) -> TokenStream {
                 }
             };
 
+            let type_hash = fnv1a_hash_str(&struct_name_str);
+            let type_hash_fn = quote! {
+                fn get_hash() -> u64 {
+                    #type_hash
+                }
+            };
+
+            let type_name = struct_name_str.as_str();
+            let type_name_fn = quote! {
+                fn get_name() -> &'static str {
+                    #type_name
+                }
+            };
+
             quote! {
                 #[derive(Debug, Clone, Copy, PartialEq)]
                 #[repr(C)]
@@ -383,6 +408,8 @@ pub fn component(input: TokenStream) -> TokenStream {
                 impl IsComponent for #name {
                     // Add implementation details here.
                     #register_fn
+                    #type_hash_fn
+                    #type_name_fn
                     fn set_ptr(&mut self, ptr: *mut core::ffi::c_void) {
                         self.ptr = ptr;
                     }
