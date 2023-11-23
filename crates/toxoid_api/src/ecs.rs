@@ -195,19 +195,46 @@ impl Drop for Entity {
 }
 
 impl Entity {
-    pub fn new() -> Self {
+    pub fn new() -> *mut Entity {
         let entity_split = unsafe { toxoid_entity_create() };
         let entity = combine_u32(entity_split);
-        Entity {
-            id: entity,
-            children: &mut []
+        // The observed issue may be related to the memory management behaviors of Rust and Emscripten.
+        // In Rust, when the result of `Entity::new()` is assigned to a variable, Rust assumes ownership
+        // of the returned `Entity` object. Consequently, Rust will automatically deallocate this object
+        // once the variable goes out of scope. This automatic deallocation can lead to problems if
+        // `Entity::new()` returns a temporary object. In such cases, the temporary object is deallocated
+        // at the end of the statement, potentially leaving the variable holding a reference to deallocated
+        // memory.
+        //
+        // This situation can be problematic, especially when `print_string()` or similar functions are
+        // called afterwards. Since the Rust runtime might have already deallocated the `Entity` object's
+        // memory, any further operations on this memory could lead to undefined behavior.
+        //
+        // A potential solution to avoid this issue involves allocating the `Entity` object on the heap
+        // and returning a raw pointer to this heap-allocated object. By doing so, the `Entity` object
+        // remains persistent beyond the scope of the variable, as heap allocation does not get
+        // automatically deallocated when the owning variable goes out of scope. However, it is important
+        // to note that this approach introduces the responsibility of manually deallocating the `Entity`
+        // object once it is no longer needed, to prevent memory leaks.
+        let layout = Layout::new::<Entity>();
+        let ptr = unsafe { ALLOCATOR.alloc(layout) as *mut Entity };
+        if !ptr.is_null() {
+            unsafe {
+                ptr.write(Entity {
+                    id: entity,
+                    children: &mut []
+                });
+            }
         }
+        ptr
     }
 
     pub fn add<T: IsComponent + 'static>(&mut self) {
         unsafe {
-            let name = T::get_hash();
-            // print_string(name);
+            let hash = T::get_hash();
+            print_i32(hash as i32);
+            let name = T::get_name();
+            print_string(name);
             // let bytes = type_id_to_bytes::<T>(); 
             // let hash = fnv1a_hash(&bytes);
             // print_i32(hash as i32);
