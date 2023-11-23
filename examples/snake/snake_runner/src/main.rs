@@ -116,6 +116,8 @@ fn build_packages() -> Result<(), Box<dyn std::error::Error>> {
                     "-sUSE_SDL_IMAGE=2",
                     "-sMIN_WEBGL_VERSION=2",
                     // "-sEXCEPTION_CATCHING_ALLOWED",
+                    // "-sASSERTIONS",
+                    // "-sDISABLE_EXCEPTION_CATCHING=0"
                     // "--preload-file assets",
                     ];
                 command.env("EMCC_CFLAGS", flags.join(" "));

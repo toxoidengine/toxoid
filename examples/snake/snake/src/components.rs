@@ -3,9 +3,6 @@ use toxoid_api::IsComponent;
 use toxoid_api::bindings::*;
 use toxoid_api::*;
 
-// use toxoid_api::Entity;
-// use toxoid_api::ecs::*;
-
 pub enum DirectionEnum {
     Up = 0,
     Down = 1,
@@ -26,14 +23,14 @@ component! {
         up: bool,
         down: bool,
         left: bool,
-        right: bool,
+        right: bool, 
     },
     Rect {
         width: u32,
         height: u32,
     },
     Color {
-        r: u8,
+          r: u8,
         g: u8,
         b: u8,
     },
@@ -83,8 +80,8 @@ pub fn init() {
 
     // Create a new entity.
     let mut player = Entity::new();
-    // // Add the component to the entity.
-    // player.add::<Position>();
+    // Add the component to the entity.
+    player.add::<Position>();
 
     // let mut pos_component = player.get::<Position>();
     // pos_component.set_x(420);

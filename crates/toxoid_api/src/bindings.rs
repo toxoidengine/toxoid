@@ -9,8 +9,15 @@ pub type c_char = i8;
 
 #[repr(C)]
 pub struct SplitU64 {
-    high: u32,
-    low: u32,
+    pub high: u32,
+    pub low: u32,
+}
+
+pub fn split_u64(v: u64) -> SplitU64 {
+    SplitU64 {
+        high: (v >> 32) as u32,
+        low: v as u32,
+    }
 }
 
 pub fn combine_u32(split_u64: SplitU64) -> u64 {
