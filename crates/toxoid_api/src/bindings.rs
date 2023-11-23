@@ -1,12 +1,21 @@
 #![allow(non_camel_case_types)]
 #![allow(improper_ctypes)]
-
 use crate::ecs::*;
 use core::ffi::c_void;
 
 pub type ecs_id_t = u64;
 pub type ecs_entity_t = ecs_id_t;
 pub type c_char = i8;
+
+#[repr(C)]
+pub struct SplitU64 {
+    high: u32,
+    low: u32,
+}
+
+pub fn combine_u32(split_u64: SplitU64) -> u64 {
+    ((split_u64.high as u64) << 32) | (split_u64.low as u64)
+}
 
 extern "C" {
     pub fn toxoid_print_i32(v: i32);
@@ -18,6 +27,11 @@ extern "C" {
     pub fn toxoid_free_slice(ptr: *mut c_void, len: usize);
     pub fn toxoid_entity_get_name(id: i32);
     pub fn toxoid_register_tag(name: *const i8, name_len: usize) -> ecs_entity_t;
+    pub fn register_component_ecs(
+        name: &str,
+        member_names: &[&str],
+        member_types: &[u8],
+    ) -> SplitU64;
     pub fn toxoid_register_component(
         component_name: *const c_char,
         component_name_len: u8,

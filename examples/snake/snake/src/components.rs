@@ -1,6 +1,10 @@
 use toxoid_api_macro::component;
-use toxoid_api::{IsComponent, Entity};
-use toxoid_ffi::ecs::*;
+use toxoid_api::IsComponent;
+use toxoid_api::bindings::*;
+use toxoid_api::*;
+
+// use toxoid_api::Entity;
+// use toxoid_api::ecs::*;
 
 pub enum DirectionEnum {
     Up = 0,
@@ -77,14 +81,14 @@ pub fn init() {
     TailLength::register();
     Head::register();
 
-    // Create a new entity.
-    let mut player = Entity::new();
-    // Add the component to the entity.
-    player.add::<Position>();
+    // // Create a new entity.
+    // let mut player = Entity::new();
+    // // Add the component to the entity.
+    // player.add::<Position>();
 
-    let mut pos_component = player.get::<Position>();
-    pos_component.set_x(420);
-    pos_component.set_y(421);
+    // let mut pos_component = player.get::<Position>();
+    // pos_component.set_x(420);
+    // pos_component.set_y(421);
 
-    println!("Player position: {}, {}", pos_component.get_x(), pos_component.get_y());
+    // println!("Player position: {}, {}", pos_component.get_x(), pos_component.get_y());
 }
