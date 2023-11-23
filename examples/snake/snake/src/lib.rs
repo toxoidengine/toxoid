@@ -4,8 +4,9 @@ extern crate toxoid_api_macro;
 
 use toxoid_api::*;
 // use toxoid_api_macro::component;
-pub mod local_ecs;
-pub use local_ecs::*;
+// pub mod local_ecs;
+// pub use local_ecs::*;
+mod components;
 
 pub fn update_fn(_query: &mut Query) {
     print_string("Hello from snake loop!");
@@ -31,6 +32,7 @@ pub fn update_fn(_query: &mut Query) {
 
 #[no_mangle]
 pub unsafe extern "C" fn app_main() {
+    components::init();
     // Position::register();
     // Velocity::register();
 

@@ -19,53 +19,6 @@ thread_local! {
     };
 }
 
-pub fn cache_component_ecs(type_id: TypeId, component_id: toxoid_api::ecs_entity_t) {
-    unsafe {
-        toxoid_component_cache_insert(type_id, component_id);
-    }
-}
-
-pub fn register_component_ecs(
-    name: &str,
-    member_names: &[&str],
-    member_types: &[u8],
-) -> toxoid_api::ecs_entity_t {
-    // TODO: Figure out why removing this causes a potential race condition
-    println!("Registered Component: {}", name);
-    unsafe {
-        let member_names_layout = Layout::array::<*mut c_char>(member_names.len() as usize).unwrap();
-        let member_names_ptr = ALLOCATOR.alloc(member_names_layout) as *mut *mut c_char;
-        let member_names_len_layout = Layout::array::<u8>(member_names.len() as usize).unwrap();
-        let member_names_len_ptr = ALLOCATOR.alloc(member_names_len_layout) as *mut u8;
-        member_names
-            .iter()
-            .enumerate()
-            .for_each(|(i, &member_name)| {
-                member_names_ptr.add(i).write(member_name.as_ptr() as *mut i8);
-                member_names_len_ptr.add(i).write(member_name.len() as u8);
-            });
-
-        let member_types_layout = Layout::array::<u8>(member_types.len() as usize).unwrap();
-        let member_types_ptr = ALLOCATOR.alloc(member_types_layout) as *mut u8;
-        member_types
-            .iter()
-            .enumerate()
-            .for_each(|(i, &member_type)| {
-                member_types_ptr.add(i).write(member_type);
-            });
-
-        toxoid_register_component(
-            name.as_bytes().as_ptr() as *const c_char,
-            name.len() as u8,
-            member_names_ptr as *const *const c_char,
-            member_names.len() as u32,
-            member_names_len_ptr,
-            member_types_ptr,
-            member_types.len() as u32,
-        )
-    }
-}
-
 #[no_mangle]
 pub unsafe extern "C" fn toxoid_print_i32(v: i32) {
     println!("Printing from Toxoid Engine: {}", v);
@@ -104,6 +57,61 @@ pub unsafe extern "C" fn toxoid_register_tag(name: *const i8, name_len: usize) -
     // Convert back to C string with specific length
     let c_string = std::ffi::CString::new(rust_string).expect("Failed to convert to CString");
     flecs_core::flecs_tag_create(c_string.as_ptr())
+}
+
+#[repr(C)]
+pub struct SplitU64 {
+    high: u32,
+    low: u32,
+}
+
+pub fn split_u64(value: u64) -> SplitU64 {
+    SplitU64 {
+        high: (value >> 32) as u32,
+        low: (value & 0xFFFFFFFF) as u32,
+    }
+}
+
+// Have to define high level workaround to maintain context in toxoid_api_macro
+#[no_mangle]
+pub unsafe extern "C" fn register_component_ecs(
+    name: &str,
+    member_names: &[&str],
+    member_types: &[u8],
+) -> SplitU64 {
+    unsafe {
+        let member_names_layout = Layout::array::<*mut c_char>(member_names.len() as usize).unwrap();
+        let member_names_ptr = ALLOCATOR.alloc(member_names_layout) as *mut *mut c_char;
+        let member_names_len_layout = Layout::array::<u8>(member_names.len() as usize).unwrap();
+        let member_names_len_ptr = ALLOCATOR.alloc(member_names_len_layout) as *mut u8;
+        member_names
+            .iter()
+            .enumerate()
+            .for_each(|(i, &member_name)| {
+                member_names_ptr.add(i).write(member_name.as_ptr() as *mut i8);
+                member_names_len_ptr.add(i).write(member_name.len() as u8);
+            });
+
+        let member_types_layout = Layout::array::<u8>(member_types.len() as usize).unwrap();
+        let member_types_ptr = ALLOCATOR.alloc(member_types_layout) as *mut u8;
+        member_types
+            .iter()
+            .enumerate()
+            .for_each(|(i, &member_type)| {
+                member_types_ptr.add(i).write(member_type);
+            });
+
+        let entity = toxoid_register_component(
+            name.as_bytes().as_ptr() as *const c_char,
+            name.len() as u8,
+            member_names_ptr as *const *const c_char,
+            member_names.len() as u32,
+            member_names_len_ptr,
+            member_types_ptr,
+            member_types.len() as u32,
+        );
+        split_u64(entity)
+    }
 }
 
 #[no_mangle]
@@ -174,7 +182,6 @@ pub unsafe fn toxoid_entity_add_component(entity: ecs_entity_t, component: ecs_e
 pub unsafe fn toxoid_entity_add_tag(entity: ecs_entity_t, tag: ecs_entity_t) {
     flecs_core::flecs_entity_add_tag(entity, tag)
 }
-
 
 #[no_mangle]
 pub unsafe fn toxoid_entity_child_of(parent: ecs_entity_t, child: ecs_entity_t) {

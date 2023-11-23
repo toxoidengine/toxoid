@@ -509,8 +509,6 @@ dependencies = [
 name = "snake_engine"
 version = "0.1.0"
 dependencies = [
- "toxoid_api",
- "toxoid_api_macro",
  "toxoid_ffi",
 ]
 
