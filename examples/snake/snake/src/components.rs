@@ -79,17 +79,23 @@ pub fn init() {
     Head::register();
 
     // Create a new entity.
-    let mut player = Entity::new();
+    let player = Entity::new();
+
     
-    // Add the component to the entity.
     unsafe { 
+        // Add the component to the entity.
         (*player).add::<Position>();
+
+        // Get the component from the entity.
         let mut pos_component = (*player).get::<Position>();
         pos_component.set_x(420);
         pos_component.set_y(421);
 
+        // Get component data.
         let x = pos_component.get_x();
         let y = pos_component.get_y();
+        
+        // Print the component data.
         print_i32(x as i32);
         print_i32(y as i32);
     };
