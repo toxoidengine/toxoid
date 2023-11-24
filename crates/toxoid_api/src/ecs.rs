@@ -231,10 +231,6 @@ impl Entity {
 
     pub fn add<T: IsComponent + 'static>(&mut self) {
         unsafe {
-            // let hash = T::get_hash();
-            // print_i32(hash as i32);
-            // let name = T::get_name();
-            // print_string(name);
             let component_id_split = toxoid_component_cache_get(core::any::TypeId::of::<T>());
             let component_id = combine_u32(component_id_split);
             toxoid_entity_add_component(self.id, component_id);
@@ -264,16 +260,17 @@ impl Entity {
     //     self.id
     // }
 
-    // // TODO: FREE MEMORY
-    // pub fn get<T: Default + IsComponent + 'static>(&self) -> T {
-    //     unsafe {
-    //         let mut component = T::default();
-    //         let component_id = toxoid_component_cache_get(core::any::TypeId::of::<T>());
-    //         let ptr = toxoid_entity_get_component(self.id, component_id);
-    //         component.set_ptr(ptr);
-    //         component
-    //     }
-    // }
+    // TODO: FREE MEMORY
+    pub fn get<T: Default + IsComponent + 'static>(&self) -> T {
+        unsafe {
+            let mut component = T::default();
+            let component_id_split = toxoid_component_cache_get(core::any::TypeId::of::<T>());
+            let component_id = combine_u32(component_id_split);
+            let ptr = toxoid_entity_get_component(self.id, component_id);
+            component.set_ptr(ptr);
+            component
+        }
+    }
 
     // pub fn has<T: IsComponent + 'static>(&self) -> bool {
     //     unsafe {
