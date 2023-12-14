@@ -52,7 +52,7 @@ pub fn main_loop() -> Result<(), String> {
         for system in systems.iter_mut() {
             let system = &mut *system;
             let query = &mut system.query;
-            (system.update_fn)(query);
+            (system.update_fn)(*query);
         }
     });
 

@@ -49,32 +49,39 @@ impl Drop for Query {
     fn drop(&mut self) {
         unsafe {
             ALLOCATOR.dealloc(self.iter as *mut u8, core::alloc::Layout::new::<c_void>()); 
-            ALLOCATOR.dealloc(self.entities.as_ptr() as *mut u8, core::alloc::Layout::array::<Entity>(self.entities.len()).unwrap()); 
+            ALLOCATOR.dealloc(self.entities.as_ptr() as *mut u8,core::alloc::Layout::array::<Entity>(self.entities.len()).unwrap());
             // ALLOCATOR.dealloc(self.indexes.as_ptr() as *mut u8, core::alloc::Layout::array::<Entity>(self.indexes.len()).unwrap()); 
         }
     }
 }
 
 impl Query {
-    pub fn new<T: ComponentTuple + 'static>() -> Self {
+    pub fn new<T: ComponentTuple + 'static>() -> *mut Query  {
         unsafe {
             let type_ids = T::get_type_ids();
-            let layout = Layout::array::<i32>(type_ids.len()).unwrap();
+            let layout = Layout::array::<u64>(type_ids.len()).unwrap();
             let ids_ptr = ALLOCATOR.alloc(layout) as *mut ecs_entity_t;
             type_ids
                 .iter()
                 .enumerate()
                 .for_each(|(i, type_id)| {
-                    // let id = toxoid_component_cache_get(*type_id);
-                    // ids_ptr.add(i).write(id);
+                    let id = toxoid_component_cache_get(*type_id);
+                    let id = combine_u32(id);
+                    ids_ptr.add(i).write(id);
                 });
-
-            Query {
-                query: toxoid_query_create(ids_ptr, type_ids.len() as i32),
-                indexes: type_ids,
-                iter: core::ptr::null_mut(),  
-                entities: &mut [],
+            
+            // Dynamically linked no_std side module workaround
+            let layout = Layout::new::<Query>();
+            let ptr = ALLOCATOR.alloc(layout) as *mut Query ;
+            if !ptr.is_null() {
+                ptr.write(Query {
+                    query: toxoid_query_create(ids_ptr, type_ids.len() as i32),
+                    indexes: type_ids,
+                    iter: core::ptr::null_mut(),  
+                    entities: &mut [],
+                });
             }
+            ptr
         }
     }
 
@@ -132,35 +139,35 @@ impl Query {
         }
     }
 
-    pub fn each_mut<T: ComponentTuple>(&mut self, mut _func: impl FnMut(T)) {
-        // Ensure we start from the beginning
-        self.iter();
-        while self.next() {
-            let _type_ids = T::get_type_ids();
-            // let components: T = T::get_type_ids()
-            //     .iter()
-            //     .map(|&id| {
-            //         unsafe {
-            //             let comp_ptr = toxoid_query_field_list(self.iter, id as i32, 1);
-            //             let mut comp = <id's type>::default();
-            //             comp.set_ptr(*comp_ptr as *mut c_void);
-            //             comp
-            //         }
-            //     })
+    // pub fn each_mut<T: ComponentTuple>(&mut self, mut _func: impl FnMut(T)) {
+    //     // Ensure we start from the beginning
+    //     self.iter();
+    //     while self.next() {
+    //         let _type_ids = T::get_type_ids();
+    //         // let components: T = T::get_type_ids()
+    //         //     .iter()
+    //         //     .map(|&id| {
+    //         //         unsafe {
+    //         //             let comp_ptr = toxoid_query_field_list(self.iter, id as i32, 1);
+    //         //             let mut comp = <id's type>::default();
+    //         //             comp.set_ptr(*comp_ptr as *mut c_void);
+    //         //             comp
+    //         //         }
+    //         //     })
             
-            // for i in 0...10 {
-            //     func(components);
-            // }
-        }
-    }
+    //         // for i in 0...10 {
+    //         //     func(components);
+    //         // }
+    //     }
+    // }
 
 
 }
 
 #[repr(C)]
 pub struct System {
-    pub query: Query,
-    pub update_fn: fn(&mut Query)
+    pub query: *mut Query,
+    pub update_fn: fn(*mut Query)
 }
 
 pub trait SystemTrait {
@@ -168,7 +175,7 @@ pub trait SystemTrait {
 }
 
 impl System {
-    pub fn new<T: ComponentTuple + 'static>(update_fn: fn(&mut Query)) -> Self {
+    pub fn new<T: ComponentTuple + 'static>(update_fn: fn(*mut Query)) -> Self {
         System {
             query: Query::new::<T>(),
             update_fn
@@ -237,28 +244,29 @@ impl Entity {
         }
     }
 
-    // pub fn remove<T: IsComponent + 'static>(&mut self) {
-    //     unsafe {
-    //         let component_id = toxoid_component_cache_get(core::any::TypeId::of::<T>());
-    //         toxoid_entity_remove_component(self.id, component_id);
-    //     }
-    // }
+    pub fn remove<T: IsComponent + 'static>(&mut self) {
+        unsafe {
+            let component_id_split = toxoid_component_cache_get(core::any::TypeId::of::<T>());
+            let component_id = combine_u32(component_id_split);
+            toxoid_entity_remove_component(self.id, component_id);
+        }
+    }
 
-    // pub fn add_id(&mut self, component: ecs_id_t) {
-    //     unsafe {
-    //         toxoid_entity_add_component(self.id, component);
-    //     }
-    // }
+    pub fn add_id(&mut self, component: ecs_id_t) {
+        unsafe {
+            toxoid_entity_add_component(self.id, component);
+        }
+    }
 
-    // pub fn add_tag(&mut self, tag: ecs_entity_t) {
-    //     unsafe {
-    //         toxoid_entity_add_tag(self.id, tag);
-    //     }
-    // }
+    pub fn add_tag(&mut self, tag: ecs_entity_t) {
+        unsafe {
+            toxoid_entity_add_tag(self.id, tag);
+        }
+    }
 
-    // pub fn get_id(&self) -> ecs_entity_t {
-    //     self.id
-    // }
+    pub fn get_id(&self) -> ecs_entity_t {
+        self.id
+    }
 
     // TODO: FREE MEMORY
     pub fn get<T: Default + IsComponent + 'static>(&self) -> T {
@@ -272,24 +280,25 @@ impl Entity {
         }
     }
 
-    // pub fn has<T: IsComponent + 'static>(&self) -> bool {
-    //     unsafe {
-    //         let component_id = toxoid_component_cache_get(core::any::TypeId::of::<T>());
-    //         toxoid_entity_has_component(self.id, component_id)
-    //     }
-    // }
+    pub fn has<T: IsComponent + 'static>(&self) -> bool {
+        unsafe {
+            let component_id_split = toxoid_component_cache_get(core::any::TypeId::of::<T>());
+            let component_id = combine_u32(component_id_split);
+            toxoid_entity_has_component(self.id, component_id)
+        }
+    }
 
-    // pub fn child_of(&mut self, parent: Entity) {
-    //     unsafe {
-    //         toxoid_entity_child_of(self.id, parent.get_id());
-    //     }
-    // }
+    pub fn child_of(&mut self, parent: Entity) {
+        unsafe {
+            toxoid_entity_child_of(self.id, parent.get_id());
+        }
+    }
 
-    // pub fn parent_of(&mut self, child: Entity) {
-    //     unsafe {
-    //         toxoid_entity_child_of(child.get_id(), self.id);
-    //     }
-    // }
+    pub fn parent_of(&mut self, child: Entity) {
+        unsafe {
+            toxoid_entity_child_of(child.get_id(), self.id);
+        }
+    }
 
     // DEPRECATED
     // pub fn children(&mut self) -> &mut [Entity] {
@@ -324,49 +333,49 @@ impl Entity {
     //     }
     // }
 
-    // pub fn children(&mut self) -> &mut [Entity]  {
-    //     unsafe {
-    //         let filter = toxoid_filter_children_init(self.get_id());
-    //         let it = toxoid_filter_iter(filter);
-    //         toxoid_filter_next(it);
-    //         let entities = toxoid_iter_entities(it);
-    //         let count = toxoid_iter_count(it);
-    //         let layout = Layout::array::<Entity>(count as usize).unwrap();
-    //         let entities_ptr = ALLOCATOR.alloc(layout) as *mut Entity;
-    //         entities
-    //             .iter()
-    //             .enumerate()
-    //             .for_each(|(i, entity_id)| {
-    //                 entities_ptr.add(i).write(Entity { 
-    //                     id: *entity_id, 
-    //                     children: &mut []
-    //                 });
-    //             });
-    //         let entities = core::slice::from_raw_parts_mut(entities_ptr, count as usize);
-    //         // Assign to self so we can drop it later
-    //         // self.children = entities;
-    //         entities
-    //     }
-    // }
+    pub fn children(&mut self) -> &mut [Entity]  {
+        unsafe {
+            let filter = toxoid_filter_children_init(self.get_id());
+            let it = toxoid_filter_iter(filter);
+            toxoid_filter_next(it);
+            let entities = toxoid_iter_entities(it);
+            let count = toxoid_iter_count(it);
+            let layout = Layout::array::<Entity>(count as usize).unwrap();
+            let entities_ptr = ALLOCATOR.alloc(layout) as *mut Entity;
+            entities
+                .iter()
+                .enumerate()
+                .for_each(|(i, entity_id)| {
+                    entities_ptr.add(i).write(Entity { 
+                        id: *entity_id, 
+                        children: &mut []
+                    });
+                });
+            let entities = core::slice::from_raw_parts_mut(entities_ptr, count as usize);
+            // Assign to self so we can drop it later
+            // self.children = entities;
+            entities
+        }
+    }
 
-    // pub fn children_each(&mut self, mut cb: impl FnMut(Entity)) {
-    //     unsafe {
-    //         let filter = toxoid_filter_children_init(self.get_id());
-    //         let it = toxoid_filter_iter(filter);
-    //         while toxoid_filter_next(it) {
-    //             let entities = toxoid_iter_entities(it);
-    //             entities
-    //                 .iter()
-    //                 .for_each(|entity_id| {
-    //                     let e = Entity { 
-    //                         id: *entity_id, 
-    //                         children: &mut []
-    //                     };
-    //                     cb(e);
-    //                 });
-	// 		}
-    //     }
-    // }
+    pub fn children_each(&mut self, mut cb: impl FnMut(Entity)) {
+        unsafe {
+            let filter = toxoid_filter_children_init(self.get_id());
+            let it = toxoid_filter_iter(filter);
+            while toxoid_filter_next(it) {
+                let entities = toxoid_iter_entities(it);
+                entities
+                    .iter()
+                    .for_each(|entity_id| {
+                        let e = Entity { 
+                            id: *entity_id, 
+                            children: &mut []
+                        };
+                        cb(e);
+                    });
+			}
+        }
+    }
 }
 
 // pub fn delete_entity(entity: Entity) {
