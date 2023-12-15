@@ -48,6 +48,7 @@ pub struct Query {
 impl Drop for Query {
     fn drop(&mut self) {
         unsafe {
+            print_string("Dropped!!!");
             ALLOCATOR.dealloc(self.iter as *mut u8, core::alloc::Layout::new::<c_void>()); 
             ALLOCATOR.dealloc(self.entities.as_ptr() as *mut u8,core::alloc::Layout::array::<Entity>(self.entities.len()).unwrap());
             // ALLOCATOR.dealloc(self.indexes.as_ptr() as *mut u8, core::alloc::Layout::array::<Entity>(self.indexes.len()).unwrap()); 
@@ -185,24 +186,34 @@ impl System {
 
 #[repr(C)]
 #[derive(Debug)]
-pub struct Entity {
+pub struct EntityContainer {
     pub id: ecs_id_t,
     // For deallocating all children returend from entities.children() on drop
-    pub children: &'static mut [Entity],
+    pub children: &'static mut [EntityContainer],
     // For deallocating all components grabbed from entity.get::<T>() on drop
     // components: *mut Component
 }
 
-impl Drop for Entity {
-    fn drop(&mut self) {
-        // unsafe {
-        //     ALLOCATOR.dealloc(self.children.as_ptr() as *mut u8, Layout::array::<Entity>(self.children.len() as usize).unwrap());
-        // }
-    }
+#[repr(C)]
+#[derive(Debug)]
+pub struct Entity {
+    ptr: *mut EntityContainer
 }
 
+// TODO - Figure out why this causes undefined symbols
+// on method calls in Emscripten dynamically linked no_std side module
+// Aborted(Assertion failed: undefined symbol '__THREW__'. perhaps a side module was not linked in? if this global was expected to arrive from a system library, try to build the MAIN_MODULE with EMCC_FORCE_STDLIBS=1 in the environment)
+// impl Drop for Entity {
+//     fn drop(&mut self) {
+//         unsafe {
+//             ALLOCATOR.dealloc(self.children.as_ptr() as *mut u8, Layout::array::<Entity>(self.children.len() as usize).unwrap());
+//         }
+//     }
+// }
+
+
 impl Entity {
-    pub fn new() -> *mut Entity {
+    pub fn new() -> Entity {
         let entity_split = unsafe { toxoid_entity_create() };
         let entity = combine_u32(entity_split);
         // The observed issue may be related to the memory management behaviors of Rust and Emscripten.
@@ -223,24 +234,30 @@ impl Entity {
         // automatically deallocated when the owning variable goes out of scope. However, it is important
         // to note that this approach introduces the responsibility of manually deallocating the `Entity`
         // object once it is no longer needed, to prevent memory leaks.
-        let layout = Layout::new::<Entity>();
-        let ptr = unsafe { ALLOCATOR.alloc(layout) as *mut Entity };
+        let layout = Layout::new::<EntityContainer>();
+        let ptr = unsafe { ALLOCATOR.alloc(layout) as *mut EntityContainer };
         if !ptr.is_null() {
             unsafe {
-                ptr.write(Entity {
+                ptr.write(EntityContainer {
                     id: entity,
                     children: &mut []
                 });
             }
         }
-        ptr
+        Entity {
+            ptr
+        }
+    }
+
+    pub fn test(&mut self) {
+        print_string("Test");
     }
 
     pub fn add<T: IsComponent + 'static>(&mut self) {
         unsafe {
             let component_id_split = toxoid_component_cache_get(core::any::TypeId::of::<T>());
             let component_id = combine_u32(component_id_split);
-            toxoid_entity_add_component(self.id, component_id);
+            toxoid_entity_add_component((*self.ptr).id, component_id);
         }
     }
 
@@ -248,24 +265,27 @@ impl Entity {
         unsafe {
             let component_id_split = toxoid_component_cache_get(core::any::TypeId::of::<T>());
             let component_id = combine_u32(component_id_split);
-            toxoid_entity_remove_component(self.id, component_id);
+            toxoid_entity_remove_component((*self.ptr).id, component_id);
         }
     }
 
     pub fn add_id(&mut self, component: ecs_id_t) {
         unsafe {
-            toxoid_entity_add_component(self.id, component);
+            toxoid_entity_add_component((*self.ptr).id, component);
         }
     }
 
     pub fn add_tag(&mut self, tag: ecs_entity_t) {
         unsafe {
-            toxoid_entity_add_tag(self.id, tag);
+            toxoid_entity_add_tag((*self.ptr).id, tag);
         }
     }
 
     pub fn get_id(&self) -> ecs_entity_t {
-        self.id
+        unsafe {
+            (*self.ptr).id
+        }
+        
     }
 
     // TODO: FREE MEMORY
@@ -274,7 +294,7 @@ impl Entity {
             let mut component = T::default();
             let component_id_split = toxoid_component_cache_get(core::any::TypeId::of::<T>());
             let component_id = combine_u32(component_id_split);
-            let ptr = toxoid_entity_get_component(self.id, component_id);
+            let ptr = toxoid_entity_get_component((*self.ptr).id, component_id);
             component.set_ptr(ptr);
             component
         }
@@ -284,26 +304,26 @@ impl Entity {
         unsafe {
             let component_id_split = toxoid_component_cache_get(core::any::TypeId::of::<T>());
             let component_id = combine_u32(component_id_split);
-            toxoid_entity_has_component(self.id, component_id)
+            toxoid_entity_has_component((*self.ptr).id, component_id)
         }
     }
 
     pub fn child_of(&mut self, parent: Entity) {
         unsafe {
-            toxoid_entity_child_of(self.id, parent.get_id());
+            toxoid_entity_child_of((*self.ptr).id, parent.get_id());
         }
     }
 
     pub fn parent_of(&mut self, child: Entity) {
         unsafe {
-            toxoid_entity_child_of(child.get_id(), self.id);
+            toxoid_entity_child_of(child.get_id(), (*self.ptr).id);
         }
     }
 
     // DEPRECATED
     // pub fn children(&mut self) -> &mut [Entity] {
     //     unsafe {
-    //         let iter = toxoid_entity_children(self.id as u32);
+    //         let iter = toxoid_entity_children((*self.ptr).id as u32);
     //         // toxoid_term_next(iter);
     //         let count = toxoid_iter_count(iter);
     //         let children = toxoid_child_entities(iter);
@@ -333,20 +353,20 @@ impl Entity {
     //     }
     // }
 
-    pub fn children(&mut self) -> &mut [Entity]  {
+    pub fn children(&mut self) -> &mut [EntityContainer]  {
         unsafe {
             let filter = toxoid_filter_children_init(self.get_id());
             let it = toxoid_filter_iter(filter);
             toxoid_filter_next(it);
             let entities = toxoid_iter_entities(it);
             let count = toxoid_iter_count(it);
-            let layout = Layout::array::<Entity>(count as usize).unwrap();
-            let entities_ptr = ALLOCATOR.alloc(layout) as *mut Entity;
+            let layout = Layout::array::<EntityContainer>(count as usize).unwrap();
+            let entities_ptr = ALLOCATOR.alloc(layout) as *mut EntityContainer;
             entities
                 .iter()
                 .enumerate()
                 .for_each(|(i, entity_id)| {
-                    entities_ptr.add(i).write(Entity { 
+                    entities_ptr.add(i).write(EntityContainer { 
                         id: *entity_id, 
                         children: &mut []
                     });
@@ -358,7 +378,7 @@ impl Entity {
         }
     }
 
-    pub fn children_each(&mut self, mut cb: impl FnMut(Entity)) {
+    pub fn children_each(&mut self, mut cb: impl FnMut(EntityContainer)) {
         unsafe {
             let filter = toxoid_filter_children_init(self.get_id());
             let it = toxoid_filter_iter(filter);
@@ -367,7 +387,7 @@ impl Entity {
                 entities
                     .iter()
                     .for_each(|entity_id| {
-                        let e = Entity { 
+                        let e = EntityContainer { 
                             id: *entity_id, 
                             children: &mut []
                         };
@@ -376,6 +396,12 @@ impl Entity {
 			}
         }
     }
+
+    // fn drop(&mut self) {
+    //     unsafe {
+    //         ALLOCATOR.dealloc(self.children.as_ptr() as *mut u8, Layout::array::<Entity>(self.children.len() as usize).unwrap());
+    //     }
+    // }
 }
 
 // pub fn delete_entity(entity: Entity) {
