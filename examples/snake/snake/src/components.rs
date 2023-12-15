@@ -79,37 +79,50 @@ pub fn init() {
     Head::register();
 
     // Create a new entity.
-    let player = Entity::new();
+    let mut player = Entity::new();
 
-    unsafe { 
-        // Add the component to the entity.
-        (*player).add::<Position>();
+    player.add::<Position>();
 
-        // Get the component from the entity.
-        let mut pos_component = (*player).get::<Position>();
-        pos_component.set_x(420);
-        pos_component.set_y(421);
+    let mut pos_component = player.get::<Position>();
+    pos_component.set_x(420);
+    pos_component.set_y(421);
 
-        // Get component data.
-        let x = pos_component.get_x();
-        let y = pos_component.get_y();
-        let query = Query::new::<(Position,)>();
-        let query = (*query).iter();
-        while query.next() {
-            let pos = query.field::<Position>();
-            pos.iter().for_each(|pos| {
-                print_string("Position X Value:");
-                print_i32(pos.get_x() as i32);
-                print_string("Position Y Value:");
-                print_i32(pos.get_y() as i32);
-            });
-        //     ALLOCATOR.dealloc(pos.as_ptr() as *mut u8, core::alloc::Layout::new::<Position>());
-    }
+    let x = pos_component.get_x();
+    let y = pos_component.get_y();
+
+    // Print the component data.
+    print_i32(x as i32);
+    print_i32(y as i32);
+
+    // unsafe { 
+    //     // Add the component to the entity.
+    //     (*player).add::<Position>();
+
+    //     // Get the component from the entity.
+    //     let mut pos_component = (*player).get::<Position>();
+    //     pos_component.set_x(420);
+    //     pos_component.set_y(421);
+
+    //     // Get component data.
+    //     let x = pos_component.get_x();
+    //     let y = pos_component.get_y();
+    //     let query = Query::new::<(Position,)>();
+    //     let query = (*query).iter();
+    //     while query.next() {
+    //         let pos = query.field::<Position>();
+    //         pos.iter().for_each(|pos| {
+    //             print_string("Position X Value:");
+    //             print_i32(pos.get_x() as i32);
+    //             print_string("Position Y Value:");
+    //             print_i32(pos.get_y() as i32);
+    //         });
+    //     //     ALLOCATOR.dealloc(pos.as_ptr() as *mut u8, core::alloc::Layout::new::<Position>());
+    // }
         
-        // Print the component data.
-        print_i32(x as i32);
-        print_i32(y as i32);
+    //     // Print the component data.
+    //     print_i32(x as i32);
+    //     print_i32(y as i32);
 
-        print_string("HELLO WORLD 123!");
-    };
+    //     print_string("HELLO WORLD 123!");
+    // };
 }
