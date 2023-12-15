@@ -59,7 +59,7 @@ pub struct Query {
 // }
 
 impl Query {
-    pub fn new<T: ComponentTuple + 'static>() -> *mut Query  {
+    pub fn new<T: ComponentTuple + 'static>() -> Query  {
         unsafe {
             let type_ids = T::get_type_ids();
             let layout = Layout::array::<u64>(type_ids.len()).unwrap();
@@ -73,18 +73,12 @@ impl Query {
                     ids_ptr.add(i).write(id);
                 });
             
-            // Dynamically linked no_std side module workaround
-            let layout = Layout::new::<Query>();
-            let ptr = ALLOCATOR.alloc(layout) as *mut Query ;
-            if !ptr.is_null() {
-                ptr.write(Query {
-                    query: toxoid_query_create(ids_ptr, type_ids.len() as i32),
-                    indexes: type_ids,
-                    iter: core::ptr::null_mut(),  
-                    entities: &mut [],
-                });
+            Query {
+                query: toxoid_query_create(ids_ptr, type_ids.len() as i32),
+                indexes: type_ids,
+                iter: core::ptr::null_mut(),  
+                entities: &mut [],
             }
-            ptr
         }
     }
 
@@ -169,8 +163,8 @@ impl Query {
 
 #[repr(C)]
 pub struct System {
-    pub query: *mut Query,
-    pub update_fn: fn(*mut Query)
+    pub query: Query,
+    pub update_fn: fn(&mut Query)
 }
 
 pub trait SystemTrait {
@@ -178,7 +172,7 @@ pub trait SystemTrait {
 }
 
 impl System {
-    pub fn new<T: ComponentTuple + 'static>(update_fn: fn(*mut Query)) -> Self {
+    pub fn new<T: ComponentTuple + 'static>(update_fn: fn(&mut Query)) -> Self {
         System {
             query: Query::new::<T>(),
             update_fn
