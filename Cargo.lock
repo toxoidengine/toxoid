@@ -52,6 +52,9 @@ name = "cc"
 version = "1.0.79"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "50d30906286121d95be3d479533b458f87493b30a4b5f79a607db8f5d11aa91f"
+dependencies = [
+ "jobserver",
+]
 
 [[package]]
 name = "cfg-if"
@@ -224,6 +227,15 @@ name = "itoa"
 version = "1.0.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "453ad9f582a441959e5f0d088b02ce04cfe8d51a8eaf077f12ac6d3e94164ca6"
+
+[[package]]
+name = "jobserver"
+version = "0.1.27"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "8c37f63953c4c63420ed5fd3d6d398c719489b9f872b9fa683262f8edd363c7d"
+dependencies = [
+ "libc",
+]
 
 [[package]]
 name = "khronos_api"
@@ -509,6 +521,7 @@ dependencies = [
 name = "snake_engine"
 version = "0.1.0"
 dependencies = [
+ "sokol",
  "toxoid_ffi",
 ]
 
@@ -529,6 +542,14 @@ checksum = "64a4a911eed85daf18834cfaa86a79b7d266ff93ff5ba14005426219480ed662"
 dependencies = [
  "libc",
  "winapi",
+]
+
+[[package]]
+name = "sokol"
+version = "0.1.0"
+source = "git+https://github.com/floooh/sokol-rust.git#6f07be147486a952eeab613437f9488a19a96460"
+dependencies = [
+ "cc",
 ]
 
 [[package]]
@@ -647,6 +668,10 @@ dependencies = [
  "sdl2",
  "zip",
 ]
+
+[[package]]
+name = "toxoid_sokol"
+version = "0.1.0"
 
 [[package]]
 name = "unicode-ident"

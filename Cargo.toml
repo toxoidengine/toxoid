@@ -10,7 +10,7 @@ members = [
 		"crates/toxoid_api",
 		"crates/toxoid_api_macro",
 		"crates/toxoid_ffi",
-		"crates/toxoid_sdl",
+		"crates/toxoid_sokol",
 		
 		# Examples
 		"examples/snake/snake",
@@ -20,7 +20,8 @@ members = [
 
 # Workspace ignore
 exclude = [
-	"crates/toxoid_render"
+	"crates/toxoid_render",
+	"crates/toxoid_sdl"
 ]
 
 resolver = "2"
