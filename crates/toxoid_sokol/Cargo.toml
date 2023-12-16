@@ -2,3 +2,11 @@
 name = "toxoid_sokol"
 version = "0.1.0"
 edition = "2021"
+build = "build.rs"
+
+[dependencies]
+sokol = { version="*", git="https://github.com/floooh/sokol-rust.git" }
+
+[build-dependencies]
+bindgen = "0.69.1"
+cc = "1.0.83"
