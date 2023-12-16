@@ -7,5 +7,5 @@ edition = "2021"
 
 [dependencies]
 toxoid_ffi = { path="../../../crates/toxoid_ffi" }
+toxoid_sokol = { path="../../../crates/toxoid_sokol" }
 # toxoid_api = { path="../../../crates/toxoid_api" }
-sokol = { version="*", git="https://github.com/floooh/sokol-rust.git" }

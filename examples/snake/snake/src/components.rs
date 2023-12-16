@@ -15,7 +15,7 @@ component! {
         x: u32,
         y: u32,
     },
-    Velocity {
+    Velocity {  
         dx: f32,
         dy: f32,
     },

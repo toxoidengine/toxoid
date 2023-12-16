@@ -158,7 +158,13 @@ impl Query {
     //     }
     // }
 
-
+    pub fn drop(&self) {
+        unsafe {
+            ALLOCATOR.dealloc(self.iter as *mut u8, core::alloc::Layout::new::<c_void>()); 
+            ALLOCATOR.dealloc(self.entities.as_ptr() as *mut u8,core::alloc::Layout::array::<Entity>(self.entities.len()).unwrap());
+            ALLOCATOR.dealloc(self.indexes.as_ptr() as *mut u8, core::alloc::Layout::array::<Entity>(self.indexes.len()).unwrap()); 
+        }   
+    }
 }
 
 #[repr(C)]
@@ -366,11 +372,11 @@ impl Entity {
         }
     }
 
-    // fn drop(&mut self) {
-    //     unsafe {
-    //         ALLOCATOR.dealloc(self.children.as_ptr() as *mut u8, Layout::array::<Entity>(self.children.len() as usize).unwrap());
-    //     }
-    // }
+    pub fn drop(&mut self) {
+        unsafe {
+            ALLOCATOR.dealloc(self.children.as_ptr() as *mut u8, Layout::array::<Entity>(self.children.len() as usize).unwrap());
+        }
+    }
 }
 
 // pub fn delete_entity(entity: Entity) {
