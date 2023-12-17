@@ -19,6 +19,9 @@ struct State {
 
 static mut STATE: State = State { pass_action: sg::PassAction::new() };
 
+const RESOLUTION_WIDTH: u32 = 1280;
+const RESOLUTION_HEIGHT: u32 = 720;
+
 extern "C" fn init() {
     // Setup sokol app
     sg::setup(&sg::Desc {
@@ -38,40 +41,43 @@ extern "C" fn init() {
     }
 }
 
+/*
+Calculates the width and height of the image based on the aspect ratio of the window and the image. If the window's aspect ratio is greater than or equal to the image's aspect ratio, it sets the width to the window's width and calculates the height based on the image's aspect ratio. If the window's aspect ratio is less than the image's aspect ratio, it sets the height to the window's height and calculates the width based on the image's aspect ratio.
+*/
 extern "C" fn frame() {
     let state = unsafe { &mut STATE };
-    let (width, height) = (sapp::width(), sapp::height());
+    let (window_width, window_height) = (sapp::width(), sapp::height());
 
-    let ratio = (width as f32) / (height as f32);
-    println!("width: {}, height: {}", width, height);
+    // The object will scale based on the minimum scale factor, ensuring it always fits within the window without distortion.
+    let scale_factor = f32::min(window_width as f32 / RESOLUTION_WIDTH as f32, window_height as f32 / RESOLUTION_HEIGHT as f32);
+    let width = 50.0 * scale_factor;
+    let height = 50.0 * scale_factor;
+
+    let x = 0.0 * scale_factor; // Change this to the x position of your square
+    let y = 0.0 * scale_factor; // Change this to the y position of your square
+
     unsafe {
         // Begin recording draw commands for a frame buffer of size (width, height).
-        sgp_begin(width, height);
+        sgp_begin(window_width, window_height);
         // Set frame buffer drawing region to (0,0,width,height).
-        sgp_viewport(0, 0, width, height);
+        sgp_viewport(0, 0, window_width, window_height);
         // Set drawing coordinate space to (left=0, right=width, top=0, bottom=height).
-        sgp_project(0.0, width as f32, 0.0, height as f32);
+        sgp_project(0.0, window_width as f32, 0.0, window_height as f32);
         // Clear the frame buffer.
         sgp_set_color(0.1, 0.1, 0.5, 1.0);
         sgp_clear();
         // Draw an animated rectangle that rotates and changes its colors.
-        // let time = sapp::frame_count() as f32 * sapp::frame_duration() as f32;
-        // let r = time.sin() * 0.5 + 0.5;
-        // let g = time.cos() * 0.5 + 0.5;
-        // sgp_set_color(r, g, 0.3, 1.0);
-        // sgp_rotate_at(time, 0.0, 0.0);
-        // sgp_draw_filled_rect(-0.5, -0.5, 1.0, 1.0);
-        // render_2d::draw_filled_rect(
-        //     sgp_rect { x: 0.0, y: 0.0, w: 1.0, h: 1.0 }, 
-        //     sokol::gfx::Color { r: 1.0, g: 0.0, b: 0.0, a: 1.0 }
-        // );
         render_2d::draw_filled_rect(
-            sgp_rect { x: 0.0, y: 0.0, w: 50., h: 50. }, 
+            sgp_rect { x: x, y: y, w: width, h: height }, 
             sokol::gfx::Color { r: 0.0, g: 1.0, b: 0.0, a: 1.0 }
         );
+        render_2d::draw_filled_rect(
+            sgp_rect { x: 50.0 * scale_factor, y: 50.0 * scale_factor, w: width, h: height }, 
+            sokol::gfx::Color { r: 1.0, g: 0.0, b: 0.0, a: 1.0 }
+        );
     }
-     // Begin a render pass.
-    sg::begin_default_pass(&state.pass_action, width, height);
+    // Begin a render pass.
+    sg::begin_default_pass(&state.pass_action, window_width, window_height);
     unsafe { 
         // Dispatch all draw commands to Sokol GFX.
         sgp_flush(); 
@@ -93,15 +99,15 @@ pub fn sokol() {
     let window_title = b"Rectangle (Sokol GP)\0".as_ptr() as _;
     let canvas_id = std::ffi::CString::new("canvas").unwrap();
     unsafe {
-        emscripten_set_canvas_element_size(canvas_id.as_ptr(), 800, 600);
+        emscripten_set_canvas_element_size(canvas_id.as_ptr(), RESOLUTION_WIDTH.try_into().unwrap(), RESOLUTION_HEIGHT.try_into().unwrap());
     }
     sapp::run(&sapp::Desc {
         init_cb: Some(init),
         cleanup_cb: Some(cleanup),
         frame_cb: Some(frame),
         window_title,
-        width: 800,
-        height: 600,
+        width: RESOLUTION_WIDTH as i32,
+        height: RESOLUTION_HEIGHT as i32,
         sample_count: 4,
         icon: sapp::IconDesc {
             sokol_default: true,
