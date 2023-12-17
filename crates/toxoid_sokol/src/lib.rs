@@ -48,8 +48,8 @@ extern "C" fn frame() {
     let state = unsafe { &mut STATE };
     let (window_width, window_height) = (sapp::width(), sapp::height());
 
-    // The object will scale based on the minimum scale factor, ensuring it always fits within the window without distortion.
-    let scale_factor = f32::min(window_width as f32 / RESOLUTION_WIDTH as f32, window_height as f32 / RESOLUTION_HEIGHT as f32);
+    // The object will scale based on the window width, ensuring it always fits within the window without distortion.
+    let scale_factor = window_width as f32 / RESOLUTION_WIDTH as f32;
     let width = 50.0 * scale_factor;
     let height = 50.0 * scale_factor;
 
