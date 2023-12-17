@@ -1,13 +1,24 @@
 #![allow(non_upper_case_globals)]
 #![allow(dead_code)]
 #![allow(non_camel_case_types)]
+
+#[macro_use]
+extern crate lazy_static;
+
 mod bindings;
 mod render_2d;
 // include!(concat!(env!("OUT_DIR"), "/bindings.rs"));
-use sokol::{app as sapp, gfx as sg};
+use render_2d::SokolRenderer2D;
 use bindings::*;
+use sokol::{app as sapp, gfx as sg};
 use core::ffi::c_int;
 use core::ffi::c_char;
+use std::sync::Mutex;
+use toxoid_render::Renderer2D;
+
+lazy_static! {
+    pub static ref RENDERER: Mutex<SokolRenderer2D> = Mutex::new(SokolRenderer2D::new());
+}
 
 extern "C" {
     fn emscripten_set_canvas_element_size(id: *const c_char, width: c_int, height: c_int) -> c_int;
@@ -64,17 +75,22 @@ extern "C" fn frame() {
         // Set drawing coordinate space to (left=0, right=width, top=0, bottom=height).
         sgp_project(0.0, window_width as f32, 0.0, window_height as f32);
         // Clear the frame buffer.
-        sgp_set_color(0.1, 0.1, 0.5, 1.0);
+        sgp_set_color(0.1, 0.1, 0.1, 1.0);
         sgp_clear();
         // Draw an animated rectangle that rotates and changes its colors.
-        render_2d::draw_filled_rect(
-            sgp_rect { x: x, y: y, w: width, h: height }, 
-            sokol::gfx::Color { r: 0.0, g: 1.0, b: 0.0, a: 1.0 }
+        let renderer = &RENDERER.lock().unwrap();
+        renderer.draw_filled_rect(
+            toxoid_render::Rect { x: x as i32, y: y as i32, width: width as i32, height: height as i32 }, 
+            toxoid_render::Color { r: 0, g: 1, b: 0, a: 1 }
         );
-        render_2d::draw_filled_rect(
-            sgp_rect { x: 50.0 * scale_factor, y: 50.0 * scale_factor, w: width, h: height }, 
-            sokol::gfx::Color { r: 1.0, g: 0.0, b: 0.0, a: 1.0 }
-        );
+    //     renderer.draw_filled_rect(
+    //         sgp_rect { x: x, y: y, w: width, h: height }, 
+    //         sokol::gfx::Color { r: 0.0, g: 1.0, b: 0.0, a: 1.0 }
+    //     );
+    //     renderer.draw_filled_rect(
+    //         sgp_rect { x: 50.0 * scale_factor, y: 50.0 * scale_factor, w: width, h: height }, 
+    //         sokol::gfx::Color { r: 1.0, g: 0.0, b: 0.0, a: 1.0 }
+    //     );
     }
     // Begin a render pass.
     sg::begin_default_pass(&state.pass_action, window_width, window_height);

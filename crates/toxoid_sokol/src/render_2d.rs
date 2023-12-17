@@ -2,12 +2,58 @@ use sokol::gfx::Color;
 use sokol::{app as sapp, gfx as sg};
 use crate::bindings::*;
 
-pub struct RenderTarget {
-    width: u32,
-    height: u32,
-    // image: sg_image,
+pub struct SokolRenderer2D {}
+
+impl toxoid_render::Renderer2D for SokolRenderer2D {
+    fn new() -> Self {
+        Self {}
+    }
+
+    fn create_sprite(width: u32, height: u32) -> &'static toxoid_render::Sprite {
+        unimplemented!();
+    }
+
+    fn blit_sprite(&self, sprite: &toxoid_render::Sprite, sx: f32, sy: f32, sw: f32, sh: f32, dx: f32, dy: f32) {
+        unimplemented!();
+    }
+
+    fn resize_sprite(&self, sprite: &toxoid_render::Sprite, width: u32, height: u32) {
+        unimplemented!();
+    }
+
+    fn draw_sprite(&self, sprite: &toxoid_render::Sprite, x: i32, y: i32) {
+        unimplemented!();
+    }
+
+    fn draw_rect(&self, rect: toxoid_render::Rect, color: toxoid_render::Color) {
+        unimplemented!();
+    }
+
+    fn draw_filled_rect(&self, rect: toxoid_render::Rect, color: toxoid_render::Color) {
+        unsafe {
+            sgp_push_transform();
+            sgp_set_color(color.r as f32, color.g as f32, color.b as f32, color.a as f32);
+            sgp_translate(rect.x as f32, rect.y as f32);
+            sgp_draw_filled_rect(0., 0., rect.width as f32, rect.height as f32);
+            sgp_pop_transform();
+        }
+    }
+
+    fn draw_line(&self, ax: f32, ay: f32, bx: f32, by: f32) {
+        unimplemented!();
+    }
+
+    fn clear(&self, sprite: &toxoid_render::Sprite, x: i32, y: i32, width: i32, height: i32) {
+        unimplemented!();
+    }
+
+    fn clear_canvas(&self, x: i32, y: i32, width: i32, height: i32) {
+        unimplemented!();
+    }
 }
 
+
+/*
 // Creates a framebuffer
 pub fn create(width: u32, height: u32) -> RenderTarget {
     // let desc = sg_image_desc {
@@ -66,19 +112,9 @@ pub fn clear_canvas(x: i32, y: i32, width: i32, height: i32) {
         sgp_clear();
     }
 }
-
-pub fn draw_filled_rect(rect: sgp_rect, color: Color) {
-    unsafe {
-        sgp_push_transform();
-        sgp_set_color(color.r, color.g, color.b, color.a);
-        sgp_translate(rect.x, rect.y);
-        sgp_draw_filled_rect(0., 0., rect.w, rect.h);
-        sgp_pop_transform();
-    }
-}
-
 pub fn draw_line(ax: f32, ay: f32, bx: f32, by: f32) {
     unsafe {
         sgp_draw_line(ax, ay, bx, by);
     }
 }
+*/
