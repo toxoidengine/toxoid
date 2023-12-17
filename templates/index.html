@@ -1,8 +1,34 @@
 <html>
     <head>
+        <style>
+            /* body {
+                margin: 0;
+                background-color: #000
+            }
+
+            .game {
+                position: absolute;
+                top: 0;
+                left: 0;
+                margin: 0;
+                border: 0;
+                width: 100%;
+                height: 100%;
+                overflow: hidden;
+                display: block;
+                image-rendering: optimizeSpeed;
+                image-rendering: -moz-crisp-edges;
+                image-rendering: -o-crisp-edges;
+                image-rendering: -webkit-optimize-contrast;
+                image-rendering: optimize-contrast;
+                image-rendering: crisp-edges;
+                image-rendering: pixelated;
+                -ms-interpolation-mode: nearest-neighbor
+            } */
+        </style>
     </head>
     <body>
-        <canvas id="canvas"></canvas>
+        <canvas class="game" id="canvas"></canvas>
         <script type="module">
             // Import base game engine
             import snake_engine_wasm from './snake_engine.js'
