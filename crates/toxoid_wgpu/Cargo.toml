@@ -1,0 +1,4 @@
+[dependencies]
+wgpu = "0.16.1"
+glow = "0.12.2"
+bytemuck = "1.13.1"
