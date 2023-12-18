@@ -23,6 +23,7 @@ members = [
 exclude = [
 	"crates/toxoid_sdl",
 	"crates/toxoid_wgpu",
+	"libs/flecs-polyglot/rust/flecs_core"
 ]
 
 resolver = "2"
