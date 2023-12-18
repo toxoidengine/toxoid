@@ -2,23 +2,15 @@
 #![allow(dead_code)]
 #![allow(non_camel_case_types)]
 
-#[macro_use]
-extern crate lazy_static;
-
 mod bindings;
 mod render_2d;
 // include!(concat!(env!("OUT_DIR"), "/bindings.rs"));
 use render_2d::SokolRenderer2D;
+use toxoid_render::Renderer2D;
 use bindings::*;
 use sokol::{app as sapp, gfx as sg};
 use core::ffi::c_int;
 use core::ffi::c_char;
-use std::sync::Mutex;
-use toxoid_render::Renderer2D;
-
-lazy_static! {
-    pub static ref RENDERER: Mutex<SokolRenderer2D> = Mutex::new(SokolRenderer2D::new());
-}
 
 extern "C" {
     fn emscripten_set_canvas_element_size(id: *const c_char, width: c_int, height: c_int) -> c_int;
@@ -77,12 +69,13 @@ extern "C" fn frame() {
         // Clear the frame buffer.
         sgp_set_color(0.1, 0.1, 0.1, 1.0);
         sgp_clear();
-        // Draw an animated rectangle that rotates and changes its colors.
-        let renderer = &RENDERER.lock().unwrap();
-        renderer.draw_filled_rect(
+        
+        SokolRenderer2D::draw_filled_rect(
             toxoid_render::Rect { x: x as i32, y: y as i32, width: width as i32, height: height as i32 }, 
-            toxoid_render::Color { r: 0, g: 1, b: 0, a: 1 }
+            toxoid_render::Color { r: 0, g: 255, b: 0, a: 255 }
         );
+        let sprite = SokolRenderer2D::create_sprite("assets/texture.png");
+        SokolRenderer2D::draw_sprite(sprite, 0, 0);
     }
     // Begin a render pass.
     sg::begin_default_pass(&state.pass_action, window_width, window_height);

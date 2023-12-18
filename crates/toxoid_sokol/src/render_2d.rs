@@ -44,7 +44,7 @@ impl Renderer2D for SokolRenderer2D {
         })
     }
 
-    fn blit_sprite(&self, sprite: Box<dyn Sprite>, sx: f32, sy: f32, sw: f32, sh: f32, dx: f32, dy: f32) {
+    fn blit_sprite(sprite: Box<dyn Sprite>, sx: f32, sy: f32, sw: f32, sh: f32, dx: f32, dy: f32) {
         unsafe {
             let dest_rect = sgp_rect { x: dx, y: dy, w: sw, h: sh };
             let src_rect = sgp_rect { x: sx, y: sy, w: sw, h: sh };
@@ -54,11 +54,29 @@ impl Renderer2D for SokolRenderer2D {
         }
     }
 
-    fn resize_sprite(&self, sprite: Box<dyn Sprite>, width: u32, height: u32) {
-        unimplemented!();
+    fn resize_sprite(sprite: Box<dyn Sprite>, width: u32, height: u32) {
+        let sokol_sprite = sprite.as_any().downcast_ref::<SokolSprite>().unwrap();
+        let old_image = sokol_sprite.image;
+
+        // Create a new image with the desired dimensions
+        let new_image_desc = sg_image_desc {
+            width: width as i32,
+            height: height as i32,
+            // Copy other parameters from the old image
+            ..unsafe { sg_query_image_desc(old_image) }
+        };
+        let _new_image = unsafe { sg_make_image(&new_image_desc) };
+
+        // TODO: Copy old image data into the new image
+
+        // Replace the old image with the new one
+        // sokol_sprite.image = new_image;
+
+        // Destroy the old image
+        unsafe { sg_destroy_image(old_image) };
     }
 
-    fn draw_sprite(&self, sprite: Box<dyn Sprite>, x: i32, y: i32) {
+    fn draw_sprite(sprite: Box<dyn Sprite>, x: i32, y: i32) {
         unsafe {
             let dest_rect = sgp_rect { x: x as f32, y: y as f32, w: sprite.width() as f32, h: sprite.height() as f32 };
             let src_rect = sgp_rect { x: 0., y: 0., w: sprite.width() as f32, h: sprite.height() as f32 };
@@ -68,31 +86,40 @@ impl Renderer2D for SokolRenderer2D {
         }
     }
 
-    fn draw_rect(&self, rect: Rect, color: Color) {
+    fn draw_rect(rect: Rect, color: Color) {
         unsafe {
             sgp_set_color(color.r as f32 / 255., color.g as f32 / 255., color.b as f32 / 255., color.a as f32 / 255.);
             sgp_draw_filled_rect(rect.x as f32, rect.y as f32, rect.width as f32, rect.height as f32);
         }
     }
 
-    fn draw_filled_rect(&self, rect: Rect, color: Color) {
+    fn draw_filled_rect(rect: Rect, color: Color) {
         unsafe {
             sgp_set_color(color.r as f32 / 255., color.g as f32 / 255., color.b as f32 / 255., color.a as f32 / 255.);
             sgp_draw_filled_rect(rect.x as f32, rect.y as f32, rect.width as f32, rect.height as f32);
         }
     }
 
-    fn draw_line(&self, ax: f32, ay: f32, bx: f32, by: f32) {
+    fn draw_line(ax: f32, ay: f32, bx: f32, by: f32) {
         unsafe {
             sgp_draw_line(ax, ay, bx, by);
         }
     }
 
-    fn clear(&self, sprite: Box<dyn Sprite>, x: i32, y: i32, width: i32, height: i32) {
-        unimplemented!();
+    fn clear_sprite(_sprite: Box<dyn Sprite>, x: i32, y: i32, width: i32, height: i32) {
+        unsafe {
+            // Set a scissor rectangle to the desired area
+            sgp_scissor(x, y, width, height);
+
+            // Clear the scissor rectangle
+            sgp_clear();
+
+            // Reset the scissor rectangle to default
+            sgp_reset_scissor();
+        }
     }
 
-    fn clear_canvas(&self, x: i32, y: i32, width: i32, height: i32) {
+    fn clear_canvas(x: i32, y: i32, width: i32, height: i32) {
         unsafe {
             sgp_scissor(x, y, width, height);
             sgp_clear();
@@ -107,6 +134,7 @@ pub fn load_image(filename: &str) -> sg_image {
 
     let data = unsafe { stbi_load(filename.as_ptr() as *const i8, &mut width, &mut height, &mut channels, 4) };
     if data.is_null() {
+        eprintln!("Failed to load image: {}", filename);
         return sg_image { id: SG_INVALID_ID as u32 };
     }
 

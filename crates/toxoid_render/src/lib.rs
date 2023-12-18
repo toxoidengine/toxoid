@@ -27,21 +27,21 @@ pub trait Renderer2D {
     // Create sprite
     fn create_sprite(filename: &str) -> Box<dyn Sprite>;
     // Blit sprite (draw sprite on another base sprite)
-    fn blit_sprite(&self, sprite: Box<dyn Sprite>, sx: f32, sy: f32, sw: f32, sh: f32, dx: f32, dy: f32);
+    fn blit_sprite(sprite: Box<dyn Sprite>, sx: f32, sy: f32, sw: f32, sh: f32, dx: f32, dy: f32);
     // Resize sprite
-    fn resize_sprite(&self, sprite: Box<dyn Sprite>, width: u32, height: u32);
+    fn resize_sprite(sprite: Box<dyn Sprite>, width: u32, height: u32);
     // Render sprite
-    fn draw_sprite(&self, sprite: Box<dyn Sprite>, x: i32, y: i32);
+    fn draw_sprite(sprite: Box<dyn Sprite>, x: i32, y: i32);
     // Draw a rect which is just the outline
-    fn draw_rect(&self, rect: Rect, color: Color);
+    fn draw_rect(rect: Rect, color: Color);
     // Draw a filled rect
-    fn draw_filled_rect(&self, rect: Rect, color: Color);
+    fn draw_filled_rect(rect: Rect, color: Color);
     // Draw a line
-    fn draw_line(&self, ax: f32, ay: f32, bx: f32, by: f32);
+    fn draw_line(ax: f32, ay: f32, bx: f32, by: f32);
     // Clear sprite
-    fn clear(&self, sprite: Box<dyn Sprite>, x: i32, y: i32, width: i32, height: i32);
+    fn clear_sprite(sprite: Box<dyn Sprite>, x: i32, y: i32, width: i32, height: i32);
     // Clear entire canvas
-    fn clear_canvas(&self, x: i32, y: i32, width: i32, height: i32);
+    fn clear_canvas(x: i32, y: i32, width: i32, height: i32);
 }
 
 pub trait Renderer3D {}
