@@ -21,6 +21,7 @@ struct State {
 }
 
 static mut STATE: State = State { pass_action: sg::PassAction::new() };
+static mut SPRITE: Option<Box<dyn toxoid_render::Sprite>> = None;
 
 const RESOLUTION_WIDTH: u32 = 1280;
 const RESOLUTION_HEIGHT: u32 = 720;
@@ -41,6 +42,7 @@ extern "C" fn init() {
             pixel_format: 0,
         };
         sgp_setup(&mut desc);
+        SPRITE = Some(SokolRenderer2D::create_sprite("assets/character.png"));
     }
 }
 
@@ -59,6 +61,9 @@ extern "C" fn frame() {
     let x = 0.0 * scale_factor; // Change this to the x position of your square
     let y = 0.0 * scale_factor; // Change this to the y position of your square
 
+    let x_sprite = 100. * scale_factor; // Change this to the x position of your square
+    let y_sprite = 200. * scale_factor; // Change this to the y position of your square
+
     unsafe {
         // Begin recording draw commands for a frame buffer of size (width, height).
         sgp_begin(window_width, window_height);
@@ -74,8 +79,17 @@ extern "C" fn frame() {
             toxoid_render::Rect { x: x as i32, y: y as i32, width: width as i32, height: height as i32 }, 
             toxoid_render::Color { r: 0, g: 255, b: 0, a: 255 }
         );
-        let sprite = SokolRenderer2D::create_sprite("assets/character.png");
-        SokolRenderer2D::draw_sprite(sprite, 0, 0);
+        if let Some(sprite) = &mut SPRITE {
+            sgp_reset_color();
+            sgp_set_blend_mode(sgp_blend_mode_SGP_BLENDMODE_BLEND);
+            // sprite.set_width((sprite.width() as f32 * scale_factor) as u32);
+            // sprite.set_height((sprite.height() as f32 * scale_factor) as u32);
+            // println!("Sprite set: {} {}", (sprite.width() as f32 * scale_factor) as u32, (sprite.height() as f32 * scale_factor) as u32);
+            println!("Width: {}", sprite.width());
+            // sprite.set_width(27);
+            SokolRenderer2D::draw_sprite(sprite, x_sprite, y_sprite);
+            sgp_reset_blend_mode();
+        }
     }
     // Begin a render pass.
     sg::begin_default_pass(&state.pass_action, window_width, window_height);
