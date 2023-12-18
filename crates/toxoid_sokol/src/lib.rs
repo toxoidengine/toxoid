@@ -53,7 +53,7 @@ extern "C" fn init() {
 }
 
 /*
-Calculates the width and height of the image based on the aspect ratio of the window and the image. If the window's aspect ratio is greater than or equal to the image's aspect ratio, it sets the width to the window's width and calculates the height based on the image's aspect ratio. If the window's aspect ratio is less than the image's aspect ratio, it sets the height to the window's height and calculates the width based on the image's aspect ratio.
+    Calculates the width and height of the image based on the aspect ratio of the window and the image. If the window's aspect ratio is greater than or equal to the image's aspect ratio, it sets the width to the window's width and calculates the height based on the image's aspect ratio. If the window's aspect ratio is less than the image's aspect ratio, it sets the height to the window's height and calculates the width based on the image's aspect ratio.
 */
 extern "C" fn frame() {
     let state = unsafe { &mut STATE };
@@ -83,14 +83,6 @@ extern "C" fn frame() {
             toxoid_render::Rect { x: x as i32, y: y as i32, width: width as i32, height: height as i32 }, 
             toxoid_render::Color { r: 0, g: 1, b: 0, a: 1 }
         );
-    //     renderer.draw_filled_rect(
-    //         sgp_rect { x: x, y: y, w: width, h: height }, 
-    //         sokol::gfx::Color { r: 0.0, g: 1.0, b: 0.0, a: 1.0 }
-    //     );
-    //     renderer.draw_filled_rect(
-    //         sgp_rect { x: 50.0 * scale_factor, y: 50.0 * scale_factor, w: width, h: height }, 
-    //         sokol::gfx::Color { r: 1.0, g: 0.0, b: 0.0, a: 1.0 }
-    //     );
     }
     // Begin a render pass.
     sg::begin_default_pass(&state.pass_action, window_width, window_height);

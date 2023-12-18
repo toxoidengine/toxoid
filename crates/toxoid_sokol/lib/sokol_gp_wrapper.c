@@ -5,3 +5,4 @@
 #define SOKOL_IMPL
 #include "sokol_gfx.h"
 #include "sokol_gp.h"
+#include "stb_image.h"
