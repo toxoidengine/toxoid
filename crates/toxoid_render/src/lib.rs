@@ -1,3 +1,5 @@
+use std::any::Any;
+
 pub struct Rect {
     pub x: i32,
     pub y: i32,
@@ -12,37 +14,11 @@ pub struct Color {
     pub a: u8,
 }
 
-use std::any::Any;
-
-pub trait Image: Any {
-    // Define methods that all images should have
-    fn as_any(&self) -> &dyn Any;
-}
-
 pub trait Sprite: Any {
-    // other methods...
-    fn image(&self) -> &dyn Image;
+    // Define methods that all sprites should have
+    fn as_any(&self) -> &dyn Any;
     fn width(&self) -> u32;
     fn height(&self) -> u32;
-}
-
-pub struct MySprite {
-    pub width: u32,
-    pub height: u32,
-    pub image: Box<dyn Image + 'static>,
-}
-
-impl Sprite for MySprite {
-    // other methods...
-    fn image(&self) -> &dyn Image {
-        &*self.image
-    }
-    fn width(&self) -> u32 {
-        self.width
-    }
-    fn height(&self) -> u32 {
-        self.height
-    }
 }
 
 pub trait Renderer2D {

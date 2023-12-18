@@ -1,18 +1,28 @@
 use crate::bindings::*;
 use sokol::app as sapp;
 use sokol::gfx as sg;
-use toxoid_render::{Renderer2D, Sprite, Image, Rect, Color};
+use toxoid_render::{Renderer2D, Sprite, Rect, Color};
 use std::any::Any;
+use std::ptr;
+use std::os::raw::c_void;
 
 pub struct SokolRenderer2D {}
 
-pub struct SokolImage {
-    image: sg_image,
+pub struct SokolSprite {
+    pub width: u32,
+    pub height: u32,
+    pub image: sg_image,
 }
 
-impl Image for SokolImage {
+impl Sprite for SokolSprite {
     fn as_any(&self) -> &dyn Any {
         self
+    }
+    fn width(&self) -> u32 {
+        self.width
+    }
+    fn height(&self) -> u32 {
+        self.height
     }
 }
 
@@ -22,16 +32,6 @@ impl Renderer2D for SokolRenderer2D {
     }
 
     fn create_sprite(filename: &str) -> Box<dyn Sprite> {
-        // let image = load_image(filename);
-
-        // let desc = unsafe { sg_query_image_info(image) };
-        // let (width, height) = (desc.slot.width, desc.slot.height);
-
-        // Box::new(Sprite {
-        //     width,
-        //     height,
-        //     image: Box::new(SokolImage { image }),
-        // })
         unimplemented!();
     }
 
@@ -39,8 +39,8 @@ impl Renderer2D for SokolRenderer2D {
         unsafe {
             let dest_rect = sgp_rect { x: dx, y: dy, w: sw, h: sh };
             let src_rect = sgp_rect { x: sx, y: sy, w: sw, h: sh };
-            let sokol_image = sprite.image().as_any().downcast_ref::<SokolImage>().unwrap();
-            sgp_set_image(0, sokol_image.image);
+            let sokol_sprite = sprite.as_any().downcast_ref::<SokolSprite>().unwrap();
+            sgp_set_image(0, sokol_sprite.image);
             sgp_draw_textured_rect(0, dest_rect, src_rect);
         }
     }
@@ -53,8 +53,8 @@ impl Renderer2D for SokolRenderer2D {
         unsafe {
             let dest_rect = sgp_rect { x: x as f32, y: y as f32, w: sprite.width() as f32, h: sprite.height() as f32 };
             let src_rect = sgp_rect { x: 0., y: 0., w: sprite.width() as f32, h: sprite.height() as f32 };
-            let sokol_image = sprite.image().as_any().downcast_ref::<SokolImage>().unwrap();
-            sgp_set_image(0, sokol_image.image);
+            let sokol_sprite = sprite.as_any().downcast_ref::<SokolSprite>().unwrap();
+            sgp_set_image(0, sokol_sprite.image);
             sgp_draw_textured_rect(0, dest_rect, src_rect);
         }
     }
@@ -90,9 +90,6 @@ impl Renderer2D for SokolRenderer2D {
         }
     }
 }
-
-use std::ptr;
-use std::os::raw::c_void;
 
 pub fn load_image(filename: &str) -> sg_image {
     let img = sg_image { id: SG_INVALID_ID as u32 };
