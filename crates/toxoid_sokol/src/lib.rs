@@ -74,7 +74,7 @@ extern "C" fn frame() {
             toxoid_render::Rect { x: x as i32, y: y as i32, width: width as i32, height: height as i32 }, 
             toxoid_render::Color { r: 0, g: 255, b: 0, a: 255 }
         );
-        let sprite = SokolRenderer2D::create_sprite("assets/texture.png");
+        let sprite = SokolRenderer2D::create_sprite("assets/character.png");
         SokolRenderer2D::draw_sprite(sprite, 0, 0);
     }
     // Begin a render pass.

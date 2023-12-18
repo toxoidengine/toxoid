@@ -112,15 +112,17 @@ fn build_packages() -> Result<(), Box<dyn std::error::Error>> {
                     "-sUSE_ES6_IMPORT_META=1", 
                     "-sEXPORTED_RUNTIME_METHODS=[_free,_malloc,allocateUTF8,UTF8ToString,writeArrayToMemory,FS,loadDynamicLibrary]", 
                     "-sALLOW_MEMORY_GROWTH=1",
-                    "-sUSE_SDL=2",
-                    "-sUSE_SDL_IMAGE=2",
                     "-sMIN_WEBGL_VERSION=2",
+                    "-sFETCH=1",
+                     // "-sUSE_SDL=2",
+                    // "-sUSE_SDL_IMAGE=2",
                     // "-sEXCEPTION_CATCHING_ALLOWED",
                     // "-sASSERTIONS",
                     // "-sDISABLE_EXCEPTION_CATCHING=0"
                     // "--preload-file assets",
                     ];
                 command.env("EMCC_CFLAGS", flags.join(" "));
+                // command.env("EMCC_FORCE_STDLIBS", "1");
                 // command.env("EMCC_DEBUG", "1");
             } else {
                 // If emscripten target library, set Emscripten environment variables for library / side module
