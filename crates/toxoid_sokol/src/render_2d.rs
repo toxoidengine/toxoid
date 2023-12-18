@@ -32,7 +32,16 @@ impl Renderer2D for SokolRenderer2D {
     }
 
     fn create_sprite(filename: &str) -> Box<dyn Sprite> {
-        unimplemented!();
+        let image = load_image(filename);
+
+        let desc = unsafe { sg_query_image_desc(image) };
+        let (width, height) = (desc.width, desc.height);
+
+        Box::new(SokolSprite {
+            width: width as u32,
+            height: height as u32,
+            image,
+        })
     }
 
     fn blit_sprite(&self, sprite: Box<dyn Sprite>, sx: f32, sy: f32, sw: f32, sh: f32, dx: f32, dy: f32) {
@@ -92,14 +101,13 @@ impl Renderer2D for SokolRenderer2D {
 }
 
 pub fn load_image(filename: &str) -> sg_image {
-    let img = sg_image { id: SG_INVALID_ID as u32 };
     let mut width: i32 = 0;
     let mut height: i32 = 0;
     let mut channels: i32 = 0;
 
     let data = unsafe { stbi_load(filename.as_ptr() as *const i8, &mut width, &mut height, &mut channels, 4) };
     if data.is_null() {
-        return img;
+        return sg_image { id: SG_INVALID_ID as u32 };
     }
 
     let size = (width * height * 4) as usize;
