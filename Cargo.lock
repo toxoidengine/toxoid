@@ -889,7 +889,6 @@ version = "0.1.0"
 dependencies = [
  "bindgen",
  "cc",
- "lazy_static",
  "sokol",
  "toxoid_render",
 ]
