@@ -5,6 +5,7 @@ edition = "2021"
 build = "build.rs"
 
 [dependencies]
+image = "0.24.7"
 sokol = { version="*", git="https://github.com/floooh/sokol-rust.git" }
 toxoid_render = { version="*", path="../toxoid_render" }
 

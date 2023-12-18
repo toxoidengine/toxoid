@@ -15,8 +15,6 @@ fn main() {
     // let new_path = format!("{};{}", emsdk_path, current_path);
     // env::set_var("PATH", &new_path);
 
-    env::set_var("CC", "C:\\Users\\troye\\dev\\bin\\emsdk\\upstream\\emscripten\\emcc.bat");
-
     // let target = env::var("TARGET").unwrap();
     // if target.contains("emscripten") {}
 
