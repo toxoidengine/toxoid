@@ -2,6 +2,7 @@ use crate::bindings::*;
 use sokol::app as sapp;
 use sokol::gfx as sg;
 use toxoid_render::{Renderer2D, Sprite, Image, Rect, Color};
+use std::any::Any;
 
 pub struct SokolRenderer2D {}
 
@@ -9,46 +10,50 @@ pub struct SokolImage {
     image: sg_image,
 }
 
-impl Image for SokolImage {}
+impl Image for SokolImage {
+    fn as_any(&self) -> &dyn Any {
+        self
+    }
+}
 
 impl Renderer2D for SokolRenderer2D {
     fn new() -> Self {
         Self {}
     }
 
-    fn create_sprite(&self, filename: &str) -> Box<Sprite> {
-        let image = load_image(filename);
+    fn create_sprite(filename: &str) -> Box<dyn Sprite> {
+        // let image = load_image(filename);
 
-        let desc = unsafe { sg_query_image_info(image) };
-        let (width, height) = (desc.width as u32, desc.height as u32);
+        // let desc = unsafe { sg_query_image_info(image) };
+        // let (width, height) = (desc.slot.width, desc.slot.height);
 
-        Box::new(Sprite {
-            width,
-            height,
-            image: Box::new(SokolImage { image }) as Box<dyn Image>,
-        })
+        // Box::new(Sprite {
+        //     width,
+        //     height,
+        //     image: Box::new(SokolImage { image }),
+        // })
+        unimplemented!();
     }
 
-    fn blit_sprite(&self, sprite: Box<Sprite>, sx: f32, sy: f32, sw: f32, sh: f32, dx: f32, dy: f32) {
-        let dest_rect = sgp_rect { x: dx, y: dy, w: sw, h: sh };
-        let src_rect = sgp_rect { x: sx, y: sy, w: sw, h: sh };
-        let sokol_image = sprite.image.downcast_ref::<SokolImage>().unwrap();
+    fn blit_sprite(&self, sprite: Box<dyn Sprite>, sx: f32, sy: f32, sw: f32, sh: f32, dx: f32, dy: f32) {
         unsafe {
+            let dest_rect = sgp_rect { x: dx, y: dy, w: sw, h: sh };
+            let src_rect = sgp_rect { x: sx, y: sy, w: sw, h: sh };
+            let sokol_image = sprite.image().as_any().downcast_ref::<SokolImage>().unwrap();
             sgp_set_image(0, sokol_image.image);
             sgp_draw_textured_rect(0, dest_rect, src_rect);
         }
     }
 
-    fn resize_sprite(&self, sprite: Box<Sprite>, width: u32, height: u32) {
-        // Resizing an image in sokol_gfx is not straightforward, you might need to recreate the image
+    fn resize_sprite(&self, sprite: Box<dyn Sprite>, width: u32, height: u32) {
         unimplemented!();
     }
 
-    fn draw_sprite(&self, sprite: Box<Sprite>, x: i32, y: i32) {
-        let dest_rect = sgp_rect { x: x as f32, y: y as f32, w: sprite.width as f32, h: sprite.height as f32 };
-        let src_rect = sgp_rect { x: 0., y: 0., w: sprite.width as f32, h: sprite.height as f32 };
-        let sokol_image = sprite.image.downcast_ref::<SokolImage>().unwrap();
+    fn draw_sprite(&self, sprite: Box<dyn Sprite>, x: i32, y: i32) {
         unsafe {
+            let dest_rect = sgp_rect { x: x as f32, y: y as f32, w: sprite.width() as f32, h: sprite.height() as f32 };
+            let src_rect = sgp_rect { x: 0., y: 0., w: sprite.width() as f32, h: sprite.height() as f32 };
+            let sokol_image = sprite.image().as_any().downcast_ref::<SokolImage>().unwrap();
             sgp_set_image(0, sokol_image.image);
             sgp_draw_textured_rect(0, dest_rect, src_rect);
         }
@@ -74,8 +79,7 @@ impl Renderer2D for SokolRenderer2D {
         }
     }
 
-    fn clear(&self, sprite: Box<Sprite>, x: i32, y: i32, width: i32, height: i32) {
-        // Clearing a specific region of an image in sokol_gfx is not straightforward, you might need to redraw the image
+    fn clear(&self, sprite: Box<dyn Sprite>, x: i32, y: i32, width: i32, height: i32) {
         unimplemented!();
     }
 
