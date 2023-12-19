@@ -85,10 +85,10 @@ impl Renderer2D for SokolRenderer2D {
     fn draw_sprite(sprite: &Box<dyn Sprite>, x: f32, y: f32, scale_factor: f32) {
         unsafe {
             let dest_rect = sgp_rect { 
-                x: x * scale_factor, 
-                y: y * scale_factor, 
-                w: sprite.width() as f32 * scale_factor, 
-                h: sprite.height() as f32 * scale_factor 
+                x: (x * scale_factor).round(), 
+                y: (y * scale_factor).round(), 
+                w: (sprite.width() as f32 * scale_factor).round(), 
+                h: (sprite.height() as f32 * scale_factor).round()
             };
             let src_rect = sgp_rect { 
                 x: 0., 
@@ -143,8 +143,9 @@ impl Renderer2D for SokolRenderer2D {
     }
 }
 
-use core::ffi::{c_char, c_int, c_ulong};
-use std::ffi::{CStr, CString};
+use core::ffi::{c_char, c_int};
+use std::ffi::CString;
+
 pub const EMSCRIPTEN_FETCH_LOAD_TO_MEMORY: u32 = 1;
 pub const EMSCRIPTEN_FETCH_STREAM_DATA: u32 = 2;
 pub const EMSCRIPTEN_FETCH_PERSIST_FILE: u32 = 4;
@@ -153,6 +154,7 @@ pub const EMSCRIPTEN_FETCH_REPLACE: u32 = 16;
 pub const EMSCRIPTEN_FETCH_NO_DOWNLOAD: u32 = 32;
 pub const EMSCRIPTEN_FETCH_SYNCHRONOUS: u32 = 64;
 pub const EMSCRIPTEN_FETCH_WAITABLE: u32 = 128;
+
 pub type EM_BOOL = c_int;
 
 #[cfg(target_os = "emscripten")]
