@@ -82,10 +82,20 @@ impl Renderer2D for SokolRenderer2D {
         unsafe { sg_destroy_image(old_image) };
     }
 
-    fn draw_sprite(sprite: &Box<dyn Sprite>, x: f32, y: f32) {
+    fn draw_sprite(sprite: &Box<dyn Sprite>, x: f32, y: f32, scale_factor: f32) {
         unsafe {
-            let dest_rect = sgp_rect { x, y, w: sprite.width() as f32, h: sprite.height() as f32 };
-            let src_rect = sgp_rect { x: 0., y: 0., w: sprite.width() as f32, h: sprite.height() as f32 };
+            let dest_rect = sgp_rect { 
+                x: x * scale_factor, 
+                y: y * scale_factor, 
+                w: sprite.width() as f32 * scale_factor, 
+                h: sprite.height() as f32 * scale_factor 
+            };
+            let src_rect = sgp_rect { 
+                x: 0., 
+                y: 0., 
+                w: sprite.width() as f32, 
+                h: sprite.height() as f32 
+            };
             let sokol_sprite = sprite.as_any().downcast_ref::<SokolSprite>().unwrap();
             sgp_set_image(0, sokol_sprite.image);
             sgp_draw_textured_rect(0, dest_rect, src_rect);
@@ -196,6 +206,7 @@ use image::GenericImageView;
 pub fn load_image(filename: &str) -> sg_image {
     unsafe {
         println!("Loading image: {}", filename);
+        
         let mut attr: emscripten_fetch_attr_t = std::mem::zeroed();
         emscripten_fetch_attr_init(&mut attr);
         attr.attributes = EMSCRIPTEN_FETCH_LOAD_TO_MEMORY;

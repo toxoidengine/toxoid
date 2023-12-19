@@ -82,12 +82,7 @@ extern "C" fn frame() {
         if let Some(sprite) = &mut SPRITE {
             sgp_reset_color();
             sgp_set_blend_mode(sgp_blend_mode_SGP_BLENDMODE_BLEND);
-            // sprite.set_width((sprite.width() as f32 * scale_factor) as u32);
-            // sprite.set_height((sprite.height() as f32 * scale_factor) as u32);
-            // println!("Sprite set: {} {}", (sprite.width() as f32 * scale_factor) as u32, (sprite.height() as f32 * scale_factor) as u32);
-            println!("Width: {}", sprite.width());
-            // sprite.set_width(27);
-            SokolRenderer2D::draw_sprite(sprite, x_sprite, y_sprite);
+            SokolRenderer2D::draw_sprite(sprite, x_sprite, y_sprite, scale_factor);
             sgp_reset_blend_mode();
         }
     }
