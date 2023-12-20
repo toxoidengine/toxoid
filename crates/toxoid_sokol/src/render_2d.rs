@@ -36,12 +36,26 @@ impl Sprite for SokolSprite {
     fn set_height(&mut self, height: u32) {
         self.height = height;
     }
+    /*
+    fn drop(&self) {
+        sg_destroy_image(&self.image);
+    }
+    */
 }
 
 impl RenderTarget for SokolRenderTarget {
     fn as_any(&self) -> &dyn Any {
         self
     }
+
+    /*
+    fn drop(&self) {
+        &self.sprite.drop();
+        sg_destroy_image(self.depth_image);
+        sg_destroy_pass(self.pass);
+        sg_destroy_sampler(self.sampler);
+    }
+    */
 }
 
 impl Renderer2D for SokolRenderer2D {
@@ -68,44 +82,44 @@ impl Renderer2D for SokolRenderer2D {
         // })
 
         // Create framebuffer image
-        let fb_image_desc = sg::ImageDesc {
+        let image_desc = sg::ImageDesc {
             render_target: true,
             width: width as i32,
             height: height as i32,
             ..Default::default()
         };
-        let fb_image = sg::make_image(&fb_image_desc);
+        let image = sg::make_image(&image_desc);
 
         // Create framebuffer depth stencil
-        let fb_depth_image_desc = sg::ImageDesc {
+        let depth_image_desc = sg::ImageDesc {
             render_target: true,
             width: width as i32,
             height: height as i32,
             pixel_format: sg::PixelFormat::DepthStencil,
             ..Default::default()
         };
-        let fb_depth_image = sg::make_image(&fb_depth_image_desc);
+        let depth_image = sg::make_image(&depth_image_desc);
 
         // Create linear sampler
-        let linear_sampler_desc = sg::SamplerDesc {
+        let sampler_desc = sg::SamplerDesc {
             min_filter: sg::Filter::Linear,
             mag_filter: sg::Filter::Linear,
             wrap_u: sg::Wrap::ClampToEdge,
             wrap_v: sg::Wrap::ClampToEdge,
             ..Default::default()
         };
-        let linear_sampler = sg::make_sampler(&linear_sampler_desc);
+        let sampler = sg::make_sampler(&sampler_desc);
 
         // Create framebuffer pass
         let mut pass_desc = sg::PassDesc::default();
-        pass_desc.color_attachments[0].image = fb_image;
-        pass_desc.depth_stencil_attachment.image = fb_depth_image;
+        pass_desc.color_attachments[0].image = image;
+        pass_desc.depth_stencil_attachment.image = depth_image;
         let fb_pass = sg::make_pass(&pass_desc);
 
-        let state_1 = sg::query_image_state(fb_image);
-        let state_2 = sg::query_image_state(fb_depth_image);
+        let state_1 = sg::query_image_state(image);
+        let state_2 = sg::query_image_state(depth_image);
         let state_3 = sg::query_pass_state(fb_pass);
-        let state_4 = sg::query_sampler_state(linear_sampler);
+        let state_4 = sg::query_sampler_state(sampler);
 
         println!("Image state: {:?}", state_1);
         println!("Depth image state: {:?}", state_2);
@@ -116,10 +130,10 @@ impl Renderer2D for SokolRenderer2D {
             sprite: SokolSprite {
                 width,
                 height,
-                image: sg::Image { id: fb_image.id },
+                image: sg::Image { id: image.id },
             },
-            depth_image: sg::Image { id: fb_depth_image.id },
-            sampler: sg::Sampler { id: linear_sampler.id },
+            depth_image: sg::Image { id: depth_image.id },
+            sampler: sg::Sampler { id: sampler.id },
             pass: sg::Pass { id: fb_pass.id },
         })
     }
