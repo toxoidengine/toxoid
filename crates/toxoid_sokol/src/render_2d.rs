@@ -14,7 +14,7 @@ pub struct SokolSprite {
 }
 
 pub struct SokolRenderTarget {
-    pub sprite: SokolSprite,
+    pub sprite: Box<dyn Sprite>,
     pub depth_image: sg::Image,
     pub sampler: sg::Sampler,
     pub pass: sg::Pass,
@@ -117,11 +117,11 @@ impl Renderer2D for SokolRenderer2D {
         // println!("Sampler state: {:?}", state_4);
         
         Box::new(SokolRenderTarget {
-            sprite: SokolSprite {
+            sprite: Box::new(SokolSprite {
                 width,
                 height,
                 image: sg::Image { id: image.id },
-            },
+            }),
             depth_image: sg::Image { id: depth_image.id },
             sampler: sg::Sampler { id: sampler.id },
             pass: sg::Pass { id: fb_pass.id },
@@ -142,26 +142,29 @@ impl Renderer2D for SokolRenderer2D {
     }
 
     fn blit_sprite(source: &Box<dyn Sprite>, sx: f32, sy: f32, sw: f32, sh: f32, destination: &Box<dyn RenderTarget>, dx: f32, dy: f32) {
-        unsafe {      // Get the source and destination Sokol sprites
+        unsafe {      
+            sgp_begin(sw as i32, sh as i32);
+            sgp_project(0., sw, sh, 0.);
             let sokol_source = source.as_any().downcast_ref::<SokolSprite>().unwrap();
             let sokol_destination = destination.as_any().downcast_ref::<SokolRenderTarget>().unwrap();
-    
+        
             // Set the source image
             sgp_set_image(0, sg_image { id: sokol_source.image.id });
-
-            // Set the framebuffer as the current render target
-            sg::begin_pass(sokol_destination.pass, &sg::PassAction::default());
-    
+        
             // Draw the source sprite onto the destination sprite
             let src_rect = sgp_rect { x: sx, y: sy, w: sw, h: sh };
             let dest_rect = sgp_rect { x: dx, y: dy, w: sw, h: sh };
             sgp_draw_textured_rect(0, dest_rect, src_rect);
-    
+
+            // Set the framebuffer as the current render target
+            let pass_action = sg::PassAction::default();
+            sg::begin_pass(sokol_destination.pass, &pass_action);
+
+            sgp_flush();
+            sgp_end();
+        
             // End the pass to apply the drawing commands to the framebuffer
             sg::end_pass();
-    
-            // Destroy the framebuffer after use
-            // sg::destroy_pass(sokol_destination.pass);
         }
     }
 
