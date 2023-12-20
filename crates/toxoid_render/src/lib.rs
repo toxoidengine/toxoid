@@ -48,7 +48,7 @@ pub trait Renderer2D {
     // Draw a line
     fn draw_line(ax: f32, ay: f32, bx: f32, by: f32);
     // Clear sprite
-    fn clear_sprite(sprite: &Box<dyn Sprite>, x: i32, y: i32, width: i32, height: i32);
+    fn clear_sprite(render_target: &Box<dyn RenderTarget>, x: i32, y: i32, width: i32, height: i32);
     // Clear entire canvas
     fn clear_canvas(x: i32, y: i32, width: i32, height: i32);
 }
