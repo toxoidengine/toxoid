@@ -64,24 +64,8 @@ impl Renderer2D for SokolRenderer2D {
     }
 
     fn create_render_target(width: u32, height: u32) -> Box<dyn RenderTarget> {
-        // let image_desc = sg::ImageDesc {
-        //     width: width as i32,
-        //     height: height as i32,
-        //     _type: sg::ImageType::Dim2,
-        //     usage: sg::Usage::Immutable,
-        //     // pixel_format: sg::PixelFormat::Rgba8,
-        //     pixel_format: sg::PixelFormat::Depth,
-        //     render_target: true,
-        //     ..Default::default()
-        // };
-        // let image = sg::make_image(&image_desc);
-        // Box::new(SokolSprite {
-        //     width,
-        //     height,
-        //     image,
-        // })
-
         // Create framebuffer image
+        // This is the color buffer of your framebuffer. When you render something onto this framebuffer, the color information is stored in this image. If you're blitting a sprite onto the framebuffer, the sprite's pixels will be written into this image.
         let image_desc = sg::ImageDesc {
             render_target: true,
             width: width as i32,
@@ -91,6 +75,8 @@ impl Renderer2D for SokolRenderer2D {
         let image = sg::make_image(&image_desc);
 
         // Create framebuffer depth stencil
+        // This is the depth buffer of your framebuffer. It's used for depth testing, which is a common technique in 3D rendering to determine which objects are in front of others.
+        // Depth is for depth testing, DepthStencil is for both depth and stencil testing. Stencil testing is a technique to mask out certain parts of the framebuffer. It's often used for special effects like outlining objects, mirrors, decals, etc.
         let depth_image_desc = sg::ImageDesc {
             render_target: true,
             width: width as i32,
@@ -101,6 +87,7 @@ impl Renderer2D for SokolRenderer2D {
         let depth_image = sg::make_image(&depth_image_desc);
 
         // Create linear sampler
+        // This is a sampler object. It's used to sample the color buffer when you blit it onto the screen. It's also used to sample textures when you render them onto the framebuffer.
         let sampler_desc = sg::SamplerDesc {
             min_filter: sg::Filter::Linear,
             mag_filter: sg::Filter::Linear,
@@ -111,20 +98,23 @@ impl Renderer2D for SokolRenderer2D {
         let sampler = sg::make_sampler(&sampler_desc);
 
         // Create framebuffer pass
+        // This is the framebuffer pass. It's used to render onto the framebuffer. You can only render onto a framebuffer using a framebuffer pass.
+        // This is the rendering pass that uses image and depth_image as its color and depth-stencil attachments, respectively. When you want to render to the framebuffer, you'll start this pass, issue your rendering commands, and then end the pass.
         let mut pass_desc = sg::PassDesc::default();
         pass_desc.color_attachments[0].image = image;
         pass_desc.depth_stencil_attachment.image = depth_image;
         let fb_pass = sg::make_pass(&pass_desc);
 
-        let state_1 = sg::query_image_state(image);
-        let state_2 = sg::query_image_state(depth_image);
-        let state_3 = sg::query_pass_state(fb_pass);
-        let state_4 = sg::query_sampler_state(sampler);
+        // TODO: Error handling
+        // let state_1 = sg::query_image_state(image);
+        // let state_2 = sg::query_image_state(depth_image);
+        // let state_3 = sg::query_pass_state(fb_pass);
+        // let state_4 = sg::query_sampler_state(sampler);
 
-        println!("Image state: {:?}", state_1);
-        println!("Depth image state: {:?}", state_2);
-        println!("Pass state: {:?}", state_3);
-        println!("Sampler state: {:?}", state_4);
+        // println!("Image state: {:?}", state_1);
+        // println!("Depth image state: {:?}", state_2);
+        // println!("Pass state: {:?}", state_3);
+        // println!("Sampler state: {:?}", state_4);
         
         Box::new(SokolRenderTarget {
             sprite: SokolSprite {
