@@ -145,6 +145,10 @@ impl Renderer2D for SokolRenderer2D {
         unsafe {      
             sgp_begin(sw as i32, sh as i32);
             sgp_project(0., sw, sh, 0.);
+            sgp_set_color(0., 0., 0., 0.);
+            sgp_clear();
+            sgp_reset_color();
+            sgp_set_blend_mode(sgp_blend_mode_SGP_BLENDMODE_BLEND);
             let sokol_source = source.as_any().downcast_ref::<SokolSprite>().unwrap();
             let sokol_destination = destination.as_any().downcast_ref::<SokolRenderTarget>().unwrap();
         

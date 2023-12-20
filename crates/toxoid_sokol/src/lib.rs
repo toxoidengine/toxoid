@@ -52,7 +52,7 @@ extern "C" fn init() {
         if let Some(sprite) = &mut SPRITE {
             if let Some(render_target) = &mut RENDER_TARGET {
                 // Blit sprite on render target
-                SokolRenderer2D::blit_sprite(sprite, 0., 00., 100., 100., render_target, 50., 50.);
+                SokolRenderer2D::blit_sprite(sprite, 0., 0., 100., 100., render_target, 0., 0.);
             }
         }
     }
@@ -70,11 +70,11 @@ extern "C" fn frame() {
     let width = 50.0 * scale_factor;
     let height = 50.0 * scale_factor;
 
-    let x = 0.0 * scale_factor; // Change this to the x position of your square
-    let y = 0.0 * scale_factor; // Change this to the y position of your square
+    let x = 0.0 * scale_factor; // Change this to the x position of sprite
+    let y = 0.0 * scale_factor; // Change this to the y position of sprite
 
-    let x_sprite = 100. * scale_factor; // Change this to the x position of your square
-    let y_sprite = 200. * scale_factor; // Change this to the y position of your square
+    let x_sprite = 100. * scale_factor; // Change this to the x position of sprite
+    let y_sprite = 100. * scale_factor; // Change this to the y position of sprite
     
     unsafe {
         // Begin recording draw commands for a frame buffer of size (width, height).
@@ -91,15 +91,13 @@ extern "C" fn frame() {
             toxoid_render::Rect { x: x as i32, y: y as i32, width: width as i32, height: height as i32 }, 
             toxoid_render::Color { r: 0, g: 255, b: 0, a: 255 }
         );
-        if let Some(sprite) = &mut SPRITE {
-            if let Some(render_target) = &mut RENDER_TARGET {
-                sgp_reset_color();
-                sgp_set_blend_mode(sgp_blend_mode_SGP_BLENDMODE_BLEND);
-                let target = render_target.as_any().downcast_ref::<render_2d::SokolRenderTarget>().unwrap();
-                SokolRenderer2D::draw_sprite(&target.sprite, x_sprite, y_sprite, scale_factor);
-                sgp_reset_blend_mode();
-            }  
-        }
+        if let Some(render_target) = &mut RENDER_TARGET {
+            sgp_reset_color();
+            sgp_set_blend_mode(sgp_blend_mode_SGP_BLENDMODE_BLEND);
+            let target = render_target.as_any().downcast_ref::<render_2d::SokolRenderTarget>().unwrap();
+            SokolRenderer2D::draw_sprite(&target.sprite, x_sprite, y_sprite, scale_factor);
+            sgp_reset_blend_mode();
+        }  
     }
     // Begin a render pass.
     sg::begin_default_pass(&state.pass_action, window_width, window_height);
