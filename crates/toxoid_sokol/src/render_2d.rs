@@ -1,7 +1,6 @@
 use crate::bindings::*;
-use sokol::app as sapp;
-use sokol::gfx as sg;
-use toxoid_render::{Renderer2D, Sprite, Rect, Color};
+use sokol::gfx::{self as sg};
+use toxoid_render::{Renderer2D, RenderTarget, Sprite, Rect, Color};
 use std::any::Any;
 use std::ptr;
 use std::os::raw::c_void;
@@ -11,7 +10,14 @@ pub struct SokolRenderer2D {}
 pub struct SokolSprite {
     pub width: u32,
     pub height: u32,
-    pub image: sg_image,
+    pub image: sg::Image,
+}
+
+pub struct SokolRenderTarget {
+    pub sprite: SokolSprite,
+    pub depth_image: sg::Sampler,
+    pub sampler: sg::Sampler,
+    pub pass: sg::Pass,
 }
 
 impl Sprite for SokolSprite {
@@ -32,9 +38,88 @@ impl Sprite for SokolSprite {
     }
 }
 
+impl RenderTarget for SokolRenderTarget {
+    fn as_any(&self) -> &dyn Any {
+        self
+    }
+}
+
 impl Renderer2D for SokolRenderer2D {
     fn new() -> Self {
         Self {}
+    }
+
+    fn create_render_target(width: u32, height: u32) -> Box<dyn RenderTarget> {
+        // let image_desc = sg::ImageDesc {
+        //     width: width as i32,
+        //     height: height as i32,
+        //     _type: sg::ImageType::Dim2,
+        //     usage: sg::Usage::Immutable,
+        //     // pixel_format: sg::PixelFormat::Rgba8,
+        //     pixel_format: sg::PixelFormat::Depth,
+        //     render_target: true,
+        //     ..Default::default()
+        // };
+        // let image = sg::make_image(&image_desc);
+        // Box::new(SokolSprite {
+        //     width,
+        //     height,
+        //     image,
+        // })
+
+        // Create framebuffer image
+        let fb_image_desc = sg::ImageDesc {
+            render_target: true,
+            width: width as i32,
+            height: height as i32,
+            ..Default::default()
+        };
+        let fb_image = sg::make_image(&fb_image_desc);
+
+        // Create framebuffer depth stencil
+        let fb_depth_image_desc = sg::ImageDesc {
+            render_target: true,
+            width: width as i32,
+            height: height as i32,
+            pixel_format: sg::PixelFormat::Depth, // DepthStencil maybe?
+            ..Default::default()
+        };
+        let fb_depth_image = sg::make_image(&fb_depth_image_desc);
+
+        // Create linear sampler
+        let linear_sampler_desc = sg::SamplerDesc {
+            min_filter: sg::Filter::Linear,
+            mag_filter: sg::Filter::Linear,
+            wrap_u: sg::Wrap::ClampToEdge,
+            wrap_v: sg::Wrap::ClampToEdge,
+            ..Default::default()
+        };
+        let linear_sampler = sg::make_sampler(&linear_sampler_desc);
+
+        // Create framebuffer pass
+        let pass_desc = sg::PassDesc {
+            color_attachments: [sg::PassAttachmentDesc {
+                image: fb_image,
+                ..Default::default()
+            }; 4],
+            depth_stencil_attachment: sg::PassAttachmentDesc {
+                image: fb_depth_image,
+                ..Default::default()
+            },
+            ..Default::default()
+        };
+        let fb_pass = sg::make_pass(&pass_desc);
+
+        Box::new(SokolRenderTarget {
+            sprite: SokolSprite {
+                width,
+                height,
+                image: sg::Image { id: fb_image.id },
+            },
+            depth_image: sg::Sampler { id: fb_depth_image.id },
+            sampler: sg::Sampler { id: linear_sampler.id },
+            pass: sg::Pass { id: fb_pass.id },
+        })
     }
 
     fn create_sprite(filename: &str) -> Box<dyn Sprite> {
@@ -46,40 +131,55 @@ impl Renderer2D for SokolRenderer2D {
         Box::new(SokolSprite {
             width: width as u32,
             height: height as u32,
-            image,
+            image: sg::Image { id: image.id },
         })
     }
 
-    fn blit_sprite(sprite: &Box<dyn Sprite>, sx: f32, sy: f32, sw: f32, sh: f32, dx: f32, dy: f32) {
-        unsafe {
-            let dest_rect = sgp_rect { x: dx, y: dy, w: sw, h: sh };
+    fn blit_sprite(source: &Box<dyn Sprite>, sx: f32, sy: f32, sw: f32, sh: f32, destination: &Box<dyn RenderTarget>, dx: f32, dy: f32) {
+        unsafe {      // Get the source and destination Sokol sprites
+            let sokol_source = source.as_any().downcast_ref::<SokolSprite>().unwrap();
+            let sokol_destination = destination.as_any().downcast_ref::<SokolRenderTarget>().unwrap();
+    
+            // Set the source image
+            sgp_set_image(0, sg_image { id: sokol_source.image.id });
+
+            // Set the framebuffer as the current render target
+            sg::begin_pass(sokol_destination.pass, &sg::PassAction::default());
+    
+            // Draw the source sprite onto the destination sprite
             let src_rect = sgp_rect { x: sx, y: sy, w: sw, h: sh };
-            let sokol_sprite = sprite.as_any().downcast_ref::<SokolSprite>().unwrap();
-            sgp_set_image(0, sokol_sprite.image);
+            let dest_rect = sgp_rect { x: dx, y: dy, w: sw, h: sh };
             sgp_draw_textured_rect(0, dest_rect, src_rect);
+    
+            // End the pass to apply the drawing commands to the framebuffer
+            sg::end_pass();
+    
+            // Destroy the framebuffer after use
+            // sg::destroy_pass(sokol_destination.pass);
         }
     }
 
     fn resize_sprite(sprite: &Box<dyn Sprite>, width: u32, height: u32) {
-        let sokol_sprite = sprite.as_any().downcast_ref::<SokolSprite>().unwrap();
-        let old_image = sokol_sprite.image;
+        // let sokol_sprite = sprite.as_any().downcast_ref::<SokolSprite>().unwrap();
+        // let old_image = sokol_sprite.image;
 
-        // Create a new image with the desired dimensions
-        let new_image_desc = sg_image_desc {
-            width: width as i32,
-            height: height as i32,
-            // Copy other parameters from the old image
-            ..unsafe { sg_query_image_desc(old_image) }
-        };
-        let _new_image = unsafe { sg_make_image(&new_image_desc) };
+        // // Create a new image with the desired dimensions
+        // let new_image_desc = sg_image_desc {
+        //     width: width as i32,
+        //     height: height as i32,
+        //     // Copy other parameters from the old image
+        //     ..unsafe { sg_query_image_desc(old_image) }
+        // };
+        // let _new_image = unsafe { sg_make_image(&new_image_desc) };
 
-        // TODO: Copy old image data into the new image
+        // // TODO: Copy old image data into the new image
 
-        // Replace the old image with the new one
-        // sokol_sprite.image = new_image;
+        // // Replace the old image with the new one
+        // // sokol_sprite.image = new_image;
 
-        // Destroy the old image
-        unsafe { sg_destroy_image(old_image) };
+        // // Destroy the old image
+        // unsafe { sg_destroy_image(old_image) };
+        unimplemented!()
     }
 
     fn draw_sprite(sprite: &Box<dyn Sprite>, x: f32, y: f32, scale_factor: f32) {
@@ -97,7 +197,7 @@ impl Renderer2D for SokolRenderer2D {
                 h: sprite.height() as f32 
             };
             let sokol_sprite = sprite.as_any().downcast_ref::<SokolSprite>().unwrap();
-            sgp_set_image(0, sokol_sprite.image);
+            sgp_set_image(0, sg_image { id: sokol_sprite.image.id });
             sgp_draw_textured_rect(0, dest_rect, src_rect);
         }
     }
@@ -256,7 +356,6 @@ pub fn load_image(filename: &str) -> sg_image {
         let image = sg_make_image(&mut image_desc);
         // emscripten_fetch_close(fetch);
         image
-        
     }
 }
 
