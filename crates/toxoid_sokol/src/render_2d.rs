@@ -235,16 +235,58 @@ impl Renderer2D for SokolRenderer2D {
         }
     }
 
-    fn clear_sprite(_sprite: &Box<dyn Sprite>, x: i32, y: i32, width: i32, height: i32) {
+    fn clear_sprite(sprite: &Box<dyn RenderTarget>, x: i32, y: i32, width: i32, height: i32) {
+        let sokol_render_target = sprite.as_any().downcast_ref::<SokolRenderTarget>().unwrap();
+    
         unsafe {
+            // The sgp_scissor function sets a scissor rectangle in the viewport. The scissor test is a per-sample operation performed after the fragment shader. It discards the fragment if the fragment's position lies outside the scissor rectangle. In other words, it restricts drawing to a certain rectangular area of the screen.
+            // You need to call sgp_begin before you can set a scissor rectangle with sgp_scissor, and you need to call sgp_end when you're done.
+            sgp_begin(width, height);
+            // The sgp_project function sets the coordinate space boundary in the current viewport. It's used to define the 2D projection matrix for the rendering context. The parameters left, right, top, and bottom define the boundaries of the coordinate space. This function is typically used when you want to set up a specific 2D coordinate system for your rendering context.
+            sgp_project(0., width as f32, height as f32, 0.);
+
+            // Set the framebuffer as the current render target
+            let pass_action = sg::PassAction {
+                colors: [sg::ColorAttachmentAction {
+                    load_action: sg::LoadAction::Load,
+                    store_action: sg::StoreAction::Store,
+                    clear_value: sg::Color::new(),
+                }; sg::MAX_COLOR_ATTACHMENTS],
+                depth: sg::DepthAttachmentAction {
+                    load_action: sg::LoadAction::Load,
+                    store_action: sg::StoreAction::Store,
+                    clear_value: 0.0,
+                },
+                stencil: sg::StencilAttachmentAction {
+                    load_action: sg::LoadAction::Load,
+                    store_action: sg::StoreAction::Store,
+                    clear_value: 0,
+                },
+                ..Default::default()
+            };
+            sg::begin_pass(sokol_render_target.pass, &pass_action);
+    
             // Set a scissor rectangle to the desired area
             sgp_scissor(x, y, width, height);
-
-            // Clear the scissor rectangle
-            sgp_clear();
-
+    
+            // Set the color to the clear color
+            sgp_set_color(0., 0., 0., 0.); // Replace with your clear color
+    
+            // Draw a rectangle over the scissor area
+            sgp_draw_filled_rect(x as f32, y as f32, width as f32, height as f32);
+    
             // Reset the scissor rectangle to default
             sgp_reset_scissor();
+
+            // Flush the draw commands to the 
+            // The sgp_flush function dispatches the current Sokol GFX draw commands. It's used to ensure that all the draw commands that have been issued up to this point are sent to the GPU for rendering. This function doesn't end the current draw command queue, so you can continue issuing draw commands after calling sgp_flush.
+            sgp_flush();
+
+            // Finish the draw command queue, clearing it
+            sgp_end();
+    
+            // End the pass to apply the drawing commands to the framebuffer
+            sg::end_pass();
         }
     }
 
@@ -252,6 +294,7 @@ impl Renderer2D for SokolRenderer2D {
         unsafe {
             sgp_scissor(x, y, width, height);
             sgp_clear();
+            sgp_reset_scissor();
         }
     }
 }

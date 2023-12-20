@@ -47,12 +47,13 @@ extern "C" fn init() {
 
         // Create sprite image and render target to blit on
         SPRITE = Some(SokolRenderer2D::create_sprite("assets/character.png"));
-        RENDER_TARGET = Some(SokolRenderer2D::create_render_target(500, 500));
+        RENDER_TARGET = Some(SokolRenderer2D::create_render_target(100, 100));
         
         if let Some(sprite) = &mut SPRITE {
             if let Some(render_target) = &mut RENDER_TARGET {
                 // Blit sprite on render target
                 SokolRenderer2D::blit_sprite(sprite, 0., 0., 100., 100., render_target, 0., 0.);
+                SokolRenderer2D::clear_sprite(render_target, 0, 0, 50, 50);
             }
         }
     }
@@ -96,7 +97,7 @@ extern "C" fn frame() {
             sgp_set_blend_mode(sgp_blend_mode_SGP_BLENDMODE_BLEND);
             let target = render_target.as_any().downcast_ref::<render_2d::SokolRenderTarget>().unwrap();
             SokolRenderer2D::draw_sprite(&target.sprite, x_sprite, y_sprite, scale_factor);
-            sgp_reset_blend_mode();
+            // sgp_reset_blend_mode();
         }  
     }
     // Begin a render pass.
