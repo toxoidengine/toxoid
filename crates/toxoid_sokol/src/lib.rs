@@ -22,6 +22,7 @@ struct State {
 
 static mut STATE: State = State { pass_action: sg::PassAction::new() };
 static mut SPRITE: Option<Box<dyn toxoid_render::Sprite>> = None;
+static mut RENDER_TARGET: Option<Box<dyn toxoid_render::RenderTarget>> = None;
 
 const RESOLUTION_WIDTH: u32 = 1280;
 const RESOLUTION_HEIGHT: u32 = 720;
@@ -43,6 +44,7 @@ extern "C" fn init() {
         };
         sgp_setup(&mut desc);
         SPRITE = Some(SokolRenderer2D::create_sprite("assets/character.png"));
+        RENDER_TARGET = Some(SokolRenderer2D::create_render_target(500, 500));
     }
 }
 
@@ -80,10 +82,13 @@ extern "C" fn frame() {
             toxoid_render::Color { r: 0, g: 255, b: 0, a: 255 }
         );
         if let Some(sprite) = &mut SPRITE {
-            sgp_reset_color();
-            sgp_set_blend_mode(sgp_blend_mode_SGP_BLENDMODE_BLEND);
-            SokolRenderer2D::draw_sprite(sprite, x_sprite, y_sprite, scale_factor);
-            sgp_reset_blend_mode();
+            if let Some(render_target) = &mut RENDER_TARGET {
+                sgp_reset_color();
+                sgp_set_blend_mode(sgp_blend_mode_SGP_BLENDMODE_BLEND);
+                SokolRenderer2D::blit_sprite(sprite, 0., 00., 100., 100., render_target, 50., 50.);
+                SokolRenderer2D::draw_sprite(sprite, x_sprite, y_sprite, scale_factor);
+                sgp_reset_blend_mode();
+            }  
         }
     }
     // Begin a render pass.
