@@ -53,7 +53,7 @@ extern "C" fn init() {
             if let Some(render_target) = &mut RENDER_TARGET {
                 // Blit sprite on render target
                 SokolRenderer2D::blit_sprite(sprite, 0., 0., 100., 100., render_target, 0., 0.);
-                SokolRenderer2D::clear_sprite(render_target, 0, 0, 50, 50);
+                // SokolRenderer2D::clear_sprite(render_target, 0, 0, 50, 50);
             }
         }
     }
