@@ -15,7 +15,7 @@ pub struct SokolSprite {
 
 pub struct SokolRenderTarget {
     pub sprite: SokolSprite,
-    pub depth_image: sg::Sampler,
+    pub depth_image: sg::Image,
     pub sampler: sg::Sampler,
     pub pass: sg::Pass,
 }
@@ -81,7 +81,7 @@ impl Renderer2D for SokolRenderer2D {
             render_target: true,
             width: width as i32,
             height: height as i32,
-            pixel_format: sg::PixelFormat::Depth, // DepthStencil maybe?
+            pixel_format: sg::PixelFormat::DepthStencil,
             ..Default::default()
         };
         let fb_depth_image = sg::make_image(&fb_depth_image_desc);
@@ -97,26 +97,28 @@ impl Renderer2D for SokolRenderer2D {
         let linear_sampler = sg::make_sampler(&linear_sampler_desc);
 
         // Create framebuffer pass
-        let pass_desc = sg::PassDesc {
-            color_attachments: [sg::PassAttachmentDesc {
-                image: fb_image,
-                ..Default::default()
-            }; 4],
-            depth_stencil_attachment: sg::PassAttachmentDesc {
-                image: fb_depth_image,
-                ..Default::default()
-            },
-            ..Default::default()
-        };
+        let mut pass_desc = sg::PassDesc::default();
+        pass_desc.color_attachments[0].image = fb_image;
+        pass_desc.depth_stencil_attachment.image = fb_depth_image;
         let fb_pass = sg::make_pass(&pass_desc);
 
+        let state_1 = sg::query_image_state(fb_image);
+        let state_2 = sg::query_image_state(fb_depth_image);
+        let state_3 = sg::query_pass_state(fb_pass);
+        let state_4 = sg::query_sampler_state(linear_sampler);
+
+        println!("Image state: {:?}", state_1);
+        println!("Depth image state: {:?}", state_2);
+        println!("Pass state: {:?}", state_3);
+        println!("Sampler state: {:?}", state_4);
+        
         Box::new(SokolRenderTarget {
             sprite: SokolSprite {
                 width,
                 height,
                 image: sg::Image { id: fb_image.id },
             },
-            depth_image: sg::Sampler { id: fb_depth_image.id },
+            depth_image: sg::Image { id: fb_depth_image.id },
             sampler: sg::Sampler { id: linear_sampler.id },
             pass: sg::Pass { id: fb_pass.id },
         })
