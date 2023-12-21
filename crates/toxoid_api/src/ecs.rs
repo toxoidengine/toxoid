@@ -257,10 +257,7 @@ impl Entity {
     }
 
     pub fn get_id(&self) -> ecs_entity_t {
-        unsafe {
-            self.id
-        }
-        
+        self.id
     }
 
     // TODO: FREE MEMORY

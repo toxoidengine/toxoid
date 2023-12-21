@@ -13,4 +13,4 @@ crate-type = ["cdylib"]
 # toxoid_ffi = { path="../../../crates/toxoid_ffi" }
 toxoid_api = { path="../../../crates/toxoid_api" }
 toxoid_api_macro = { path="../../../crates/toxoid_api_macro" }
-
+rand = "0.8.5"

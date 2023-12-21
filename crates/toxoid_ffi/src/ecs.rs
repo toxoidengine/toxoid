@@ -3,18 +3,17 @@
 
 use core::ffi::{c_char, c_void};
 use std::{collections::HashMap, cell::RefCell, any::TypeId};
-use core::alloc::{GlobalAlloc, Layout};
-
-use flecs_core::ecs_iter_t;
-use toxoid_api::{ALLOCATOR, ecs_entity_t};
+use core::alloc::Layout;
+use flecs_core::{ecs_entity_t, ecs_iter_t};
 use crate::utils::{SplitU64, split_u64};
+use crate::allocator::*;
 
 thread_local! {
-    pub static SYSTEMS: RefCell<Vec<toxoid_api::System>> = {
-        let systems = Vec::new();
-        RefCell::new(systems)
-    };
-    pub static COMPONENT_ID_CACHE: RefCell<HashMap<core::any::TypeId, ecs_entity_t>> = {
+    // pub static SYSTEMS: RefCell<Vec<toxoid_api::System>> = {
+    //     let systems = Vec::new();
+    //     RefCell::new(systems)
+    // };
+    pub static COMPONENT_ID_CACHE: RefCell<HashMap<TypeId, ecs_entity_t>> = {
         let cache = HashMap::new();
         RefCell::new(cache)
     };
@@ -69,9 +68,9 @@ pub unsafe extern "C" fn register_component_ecs(
 ) -> SplitU64 {
     unsafe {
         let member_names_layout = Layout::array::<*mut c_char>(member_names.len() as usize).unwrap();
-        let member_names_ptr = ALLOCATOR.alloc(member_names_layout) as *mut *mut c_char;
+        let member_names_ptr = host_alloc(member_names_layout) as *mut *mut c_char;
         let member_names_len_layout = Layout::array::<u8>(member_names.len() as usize).unwrap();
-        let member_names_len_ptr = ALLOCATOR.alloc(member_names_len_layout) as *mut u8;
+        let member_names_len_ptr = host_alloc(member_names_len_layout) as *mut u8;
         member_names
             .iter()
             .enumerate()
@@ -81,7 +80,7 @@ pub unsafe extern "C" fn register_component_ecs(
             });
 
         let member_types_layout = Layout::array::<u8>(member_types.len() as usize).unwrap();
-        let member_types_ptr = ALLOCATOR.alloc(member_types_layout) as *mut u8;
+        let member_types_ptr = host_alloc(member_types_layout) as *mut u8;
         member_types
             .iter()
             .enumerate()
@@ -259,7 +258,7 @@ pub unsafe fn toxoid_entity_get_component(entity: ecs_entity_t, component: ecs_e
 
 #[no_mangle]
 pub unsafe extern "C" fn toxoid_component_cache_insert(
-    type_id: core::any::TypeId,
+    type_id: TypeId,
     component_id: ecs_entity_t
 ) {
     COMPONENT_ID_CACHE.with(|c| {
@@ -269,7 +268,7 @@ pub unsafe extern "C" fn toxoid_component_cache_insert(
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn toxoid_component_cache_get(type_id: core::any::TypeId) -> SplitU64 {
+pub unsafe extern "C" fn toxoid_component_cache_get(type_id: TypeId) -> SplitU64 {
     COMPONENT_ID_CACHE.with(|c| {
         let cache = c.borrow_mut();
         let component_id = *cache.get(&type_id).unwrap_or(&0);
@@ -555,14 +554,14 @@ pub unsafe extern "C" fn toxoid_component_set_member_f32array(
     flecs_core::flecs_component_set_member_f32array(component_ptr, offset, value);
 }
 
-#[no_mangle]
-pub unsafe extern "C" fn toxoid_add_system(
-    system: toxoid_api::System
-) {
-    SYSTEMS.with(|systems| {
-        systems.borrow_mut().push(system);
-    });
-}
+// #[no_mangle]
+// pub unsafe extern "C" fn toxoid_add_system(
+//     system: toxoid_api::System
+// ) {
+//     SYSTEMS.with(|systems| {
+//         systems.borrow_mut().push(system);
+//     });
+// }
 
 #[no_mangle]
 pub unsafe fn toxoid_progress(delta_time: f32) -> bool {
