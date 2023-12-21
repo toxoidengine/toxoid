@@ -1,6 +1,7 @@
 {
     "rust-analyzer.linkedProjects": [
         "./crates/toxoid_sokol/Cargo.toml",
+        "./crates/toxoid_engine/Cargo.toml",
         "./examples/snake/snake_runner/Cargo.toml",
         "./libs/flecs-polyglot/rust/flecs_core/Cargo.toml",
     ]
