@@ -1,9 +1,11 @@
 use crate::bindings::*;
-use sokol::gfx::{self as sg};
+use sokol::{app as sapp, gfx as sg};
 use toxoid_render::{Renderer2D, RenderTarget, Sprite, Rect, Color};
 use std::any::Any;
 
-pub struct SokolRenderer2D {}
+pub struct SokolRenderer2D {
+    pass_action: sg::PassAction,
+}
 
 pub struct SokolSprite {
     pub width: u32,
@@ -58,7 +60,47 @@ impl RenderTarget for SokolRenderTarget {
 
 impl Renderer2D for SokolRenderer2D {
     fn new() -> Self {
-        Self {}
+        Self {
+            pass_action: sg::PassAction::new()
+        }
+    }
+
+    fn window_size() -> (u32, u32) {
+        (sapp::width() as u32, sapp::height() as u32)
+    }
+
+    fn begin() {
+        // Get the size of the window
+        let (window_width, window_height) = (sapp::width(), sapp::height());
+        unsafe {
+            // Begin recording draw commands for a frame buffer of size (width, height).
+            sgp_begin(window_width, window_height);
+            // Set frame buffer drawing region to (0,0,width,height).
+            sgp_viewport(0, 0, window_width, window_height);
+            // Set drawing coordinate space to (left=0, right=width, top=0, bottom=height).
+            sgp_project(0.0, window_width as f32, 0.0, window_height as f32);
+            // Clear the frame buffer.
+            sgp_set_color(0.1, 0.1, 0.1, 1.0);
+            sgp_clear();
+        }
+        
+    }
+
+    fn end(&self) {
+        // Get the size of the window
+        let (window_width, window_height) = (sapp::width(), sapp::height());
+        // Begin a render pass.
+        sg::begin_default_pass(&self.pass_action, window_width, window_height);
+        unsafe { 
+            // Dispatch all draw commands to Sokol GFX.
+            sgp_flush(); 
+            // Finish a draw command queue, clearing it.
+            sgp_end();
+        }
+        // End render pass.
+        sg::end_pass();
+        // Commit Sokol render.
+        sg::commit();
     }
 
     fn create_render_target(width: u32, height: u32) -> Box<dyn RenderTarget> {
