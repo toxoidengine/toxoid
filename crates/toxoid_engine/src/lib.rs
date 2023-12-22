@@ -60,13 +60,6 @@ pub fn init() {
     // Initialize FLECS ECS.
     toxoid_ffi::flecs_core::init();
 
-    // Initialize renderer
-    // TODO: Renderer backend feature flags
-    #[cfg(target_os = "emscripten")]
-    toxoid_sokol::init(frame_cb);
-    #[cfg(not(target_os = "emscripten"))]
-    toxoid_sokol::init(frame_cb);
-
     // Initialize default components.
     toxoid_api::components::init();
 
@@ -75,6 +68,13 @@ pub fn init() {
     entities::init();
     // Initialize default engine systems. Such as rendering, input, etc.
     systems::init();
+
+    // Initialize renderer
+    // TODO: Renderer backend feature flags
+    #[cfg(target_os = "emscripten")]
+    toxoid_sokol::init(frame_cb);
+    #[cfg(not(target_os = "emscripten"))]
+    toxoid_sokol::init(frame_cb);
     
     // Audio test
     // audio::init();

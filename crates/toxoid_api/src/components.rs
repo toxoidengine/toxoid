@@ -31,6 +31,11 @@ component! {
         x: u32,
         y: u32,
     },
+    GameConfig {
+        resolution_width: u32,
+        resolution_height: u32,
+        scale_factor: f32,
+    }
 }
 
 pub fn init() {    
@@ -41,4 +46,5 @@ pub fn init() {
     Rect::register();
     Color::register();
     Renderable::register();
+    GameConfig::register();
 }
