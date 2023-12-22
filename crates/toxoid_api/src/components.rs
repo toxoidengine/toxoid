@@ -17,7 +17,7 @@ component! {
         left: bool,
         right: bool, 
     },
-    Rect {
+    Size {
         width: u32,
         height: u32,
     },
@@ -43,7 +43,7 @@ pub fn init() {
     Position::register();
     Velocity::register();
     KeyboardInput::register();
-    Rect::register();
+    Size::register();
     Color::register();
     Renderable::register();
     GameConfig::register();

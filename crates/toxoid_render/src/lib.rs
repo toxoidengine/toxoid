@@ -1,5 +1,5 @@
 use std::any::Any;
-use toxoid_api::components::{Position, Rect, Color};
+use toxoid_api::components::{Position, Size, Color};
 
 pub trait Sprite: Any {
     // Define methods that all sprites should have
@@ -35,7 +35,7 @@ pub trait Renderer2D {
     // Render sprite
     fn draw_sprite(sprite: &Box<dyn Sprite>, x: f32, y: f32, scale_factor: f32);
     // Draw a filled rect
-    fn draw_filled_rect(pos: Position, rect: Rect, color: Color);
+    fn draw_filled_rect(pos: Position, size: Size, color: Color);
     // Draw a line
     fn draw_line(ax: f32, ay: f32, bx: f32, by: f32);
     // Clear sprite
