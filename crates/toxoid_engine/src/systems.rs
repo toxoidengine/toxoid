@@ -1,7 +1,42 @@
 use toxoid_api::{System, Query, World};
 use toxoid_api::components::*;
 use toxoid_render::Renderer2D;
-use toxoid_sokol::SokolRenderer2D;
+use std::sync::Mutex;
+
+pub static mut GAMEPLAY_SYSTEMS: Mutex<Vec<toxoid_api::System>> = Mutex::new(Vec::new());
+pub static mut RENDER_SYSTEMS: Mutex<Vec<toxoid_api::System>> = Mutex::new(Vec::new());
+
+#[no_mangle]
+pub unsafe extern "C" fn toxoid_add_system(
+    system: toxoid_api::System
+) {
+    let render_systems = unsafe { &mut *RENDER_SYSTEMS.lock().unwrap() };
+    render_systems.push(system);
+}
+
+pub fn render_rect_system(query: &mut Query) {
+    let query_iter = query.iter();
+    while query_iter.next() {
+        let entities = query_iter.entities();
+        entities
+            .iter()
+            .for_each(|entity| {
+                let pos = entity.get::<Position>();
+                let rect = entity.get::<Rect>();
+                let color = entity.get::<Color>();
+                
+                // Draw Rect
+                toxoid_sokol::SokolRenderer2D::draw_filled_rect(pos, rect, color);
+            });
+    }
+}
+
+pub fn init() {
+    // let input_system = System::new::<(KeyboardInput,)>(input_system_fn);
+    let render_rect_system = System::new::<(Rect, Renderable, Color, Position)>(render_rect_system);
+    World::add_system(render_rect_system);
+}
+
 // use crate::components::{KeyboardInput, Rect, Renderable, Color, Position};
 
 // pub fn input_system_fn(query: &mut Query) {
@@ -62,26 +97,3 @@ use toxoid_sokol::SokolRenderer2D;
 //         }
 //     });
 // }
-
-pub fn render_rect_system(query: &mut Query) {
-    let query_iter = query.iter();
-    while query_iter.next() {
-        let entities = query_iter.entities();
-        entities
-            .iter()
-            .for_each(|entity| {
-                let pos = entity.get::<Position>();
-                let rect = entity.get::<Rect>();
-                let color = entity.get::<Color>();
-                
-                // Draw Rect
-                toxoid_sokol::SokolRenderer2D::draw_filled_rect(pos, rect, color);
-            });
-    }
-}
-
-pub fn init() {
-    // let input_system = System::new::<(KeyboardInput,)>(input_system_fn);
-    let render_rect_system = System::new::<(Rect, Renderable, Color, Position)>(render_rect_system);
-    World::add_system(render_rect_system);
-}
