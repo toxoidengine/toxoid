@@ -9,10 +9,6 @@ use crate::utils::{SplitU64, split_u64};
 use crate::allocator::*;
 
 thread_local! {
-    // pub static SYSTEMS: RefCell<Vec<toxoid_api::System>> = {
-    //     let systems = Vec::new();
-    //     RefCell::new(systems)
-    // };
     pub static COMPONENT_ID_CACHE: RefCell<HashMap<TypeId, ecs_entity_t>> = {
         let cache = HashMap::new();
         RefCell::new(cache)
@@ -554,15 +550,6 @@ pub unsafe extern "C" fn toxoid_component_set_member_f32array(
     flecs_core::flecs_component_set_member_f32array(component_ptr, offset, value);
 }
 
-// #[no_mangle]
-// pub unsafe extern "C" fn toxoid_add_system(
-//     system: toxoid_api::System
-// ) {
-//     SYSTEMS.with(|systems| {
-//         systems.borrow_mut().push(system);
-//     });
-// }
-
 #[no_mangle]
 pub unsafe fn toxoid_progress(delta_time: f32) -> bool {
     flecs_core::flecs_progress(delta_time)
@@ -624,4 +611,25 @@ pub unsafe fn toxoid_entity_has_component(
     component: ecs_entity_t
 ) -> bool {
     flecs_core::flecs_entity_has_component(entity, component)
+}
+
+#[no_mangle]
+pub unsafe fn toxoid_singleton_add(
+    component: ecs_entity_t
+) {
+    flecs_core::flecs_singleton_add(component)
+}
+
+#[no_mangle]
+pub unsafe fn toxoid_singleton_get(
+    component: ecs_entity_t
+) -> *mut c_void {
+    flecs_core::flecs_singleton_get(component)
+}
+
+#[no_mangle]
+pub unsafe fn toxoid_singleton_remove(
+    component: ecs_entity_t
+) {
+    flecs_core::flecs_singleton_remove(component)
 }

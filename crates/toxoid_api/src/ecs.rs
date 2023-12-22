@@ -167,6 +167,7 @@ impl Query {
     }
 }
 
+#[allow(improper_ctypes_definitions)]
 #[repr(C)]
 pub struct System {
     pub query: Query,
@@ -193,6 +194,33 @@ impl World {
     pub fn add_system(system: System) {
         unsafe {
             toxoid_add_system(system);
+        }
+    }
+
+    pub fn add_singleton<T: IsComponent + 'static>() {
+        unsafe {
+            let component_id_split = toxoid_component_cache_get(core::any::TypeId::of::<T>());
+            let component_id = combine_u32(component_id_split);
+            toxoid_singleton_add(component_id);
+        }
+    }
+
+    pub fn get_singleton<T: Default + IsComponent + 'static>() -> T {
+        unsafe {
+            let mut component = T::default();
+            let component_id_split = toxoid_component_cache_get(core::any::TypeId::of::<T>());
+            let component_id = combine_u32(component_id_split);
+            let ptr = toxoid_singleton_get(component_id);
+            component.set_ptr(ptr);
+            component
+        }
+    }
+
+    pub fn remove_singleton<T: IsComponent + 'static>() {
+        unsafe {
+            let component_id_split = toxoid_component_cache_get(core::any::TypeId::of::<T>());
+            let component_id = combine_u32(component_id_split);
+            toxoid_singleton_remove(component_id);
         }
     }
 }

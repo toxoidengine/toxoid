@@ -322,7 +322,7 @@ pub fn component(input: TokenStream) -> TokenStream {
                     .zip(field_types.clone())
                     .map(|(field_name, field_type)| {
                         quote! {
-                            #field_name: #field_type,
+                            pub #field_name: #field_type,
                         }
                     });
 

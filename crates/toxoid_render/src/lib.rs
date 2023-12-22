@@ -1,18 +1,5 @@
 use std::any::Any;
-
-pub struct Rect {
-    pub x: i32,
-    pub y: i32,
-    pub width: i32,
-    pub height: i32,
-}
-
-pub struct Color {
-    pub r: u8,
-    pub g: u8,
-    pub b: u8,
-    pub a: u8,
-}
+use toxoid_api::components::{Position, Rect, Color};
 
 pub trait Sprite: Any {
     // Define methods that all sprites should have
@@ -48,9 +35,9 @@ pub trait Renderer2D {
     // Render sprite
     fn draw_sprite(sprite: &Box<dyn Sprite>, x: f32, y: f32, scale_factor: f32);
     // Draw a rect which is just the outline
-    fn draw_rect(rect: Rect, color: Color);
+    fn draw_rect(pos: Position, rect: Rect, color: Color);
     // Draw a filled rect
-    fn draw_filled_rect(rect: Rect, color: Color);
+    fn draw_filled_rect(pos: Position, rect: Rect, color: Color);
     // Draw a line
     fn draw_line(ax: f32, ay: f32, bx: f32, by: f32);
     // Clear sprite

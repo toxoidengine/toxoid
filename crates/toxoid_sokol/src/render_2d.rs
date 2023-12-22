@@ -1,6 +1,7 @@
 use crate::bindings::*;
 use sokol::{app as sapp, gfx as sg};
-use toxoid_render::{Renderer2D, RenderTarget, Sprite, Rect, Color};
+use toxoid_render::{Renderer2D, RenderTarget, Sprite};
+use toxoid_api::components::{Position, Rect, Color};
 use std::any::Any;
 
 pub struct SokolRenderer2D {
@@ -256,17 +257,17 @@ impl Renderer2D for SokolRenderer2D {
         }
     }
 
-    fn draw_rect(rect: Rect, color: Color) {
+    fn draw_rect(pos: Position, rect: Rect, color: Color) {
         unsafe {
-            sgp_set_color(color.r as f32 / 255., color.g as f32 / 255., color.b as f32 / 255., color.a as f32 / 255.);
-            sgp_draw_filled_rect(rect.x as f32, rect.y as f32, rect.width as f32, rect.height as f32);
+            sgp_set_color(color.get_r() as f32, color.get_g() as f32, color.get_b() as f32, color.get_a() as f32);
+            sgp_draw_filled_rect(pos.get_x() as f32, pos.get_y() as f32, rect.get_width() as f32, rect.get_height() as f32);
         }
     }
 
-    fn draw_filled_rect(rect: Rect, color: Color) {
+    fn draw_filled_rect(pos: Position, rect: Rect, color: Color) {
         unsafe {
-            sgp_set_color(color.r as f32 / 255., color.g as f32 / 255., color.b as f32 / 255., color.a as f32 / 255.);
-            sgp_draw_filled_rect(rect.x as f32, rect.y as f32, rect.width as f32, rect.height as f32);
+            sgp_set_color(color.get_r() as f32, color.get_g() as f32, color.get_b() as f32, color.get_a() as f32);
+            sgp_draw_filled_rect(pos.get_x() as f32, pos.get_y() as f32, rect.get_width() as f32, rect.get_height() as f32);
         }
     }
 
