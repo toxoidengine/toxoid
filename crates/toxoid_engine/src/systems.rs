@@ -1,6 +1,7 @@
 use toxoid_api::{System, Query, World};
-use toxoid_api::components::{Rect, Color, Position, Renderable};
+use toxoid_api::components::*;
 use toxoid_render::Renderer2D;
+use toxoid_sokol::SokolRenderer2D;
 // use crate::components::{KeyboardInput, Rect, Renderable, Color, Position};
 
 // pub fn input_system_fn(query: &mut Query) {

@@ -6,6 +6,8 @@ mod bindings;
 pub mod render_2d;
 // include!(concat!(env!("OUT_DIR"), "/bindings.rs"));
 pub use render_2d::*;
+use toxoid_api::components::GameConfig;
+use toxoid_api::World;
 use toxoid_render::Renderer2D;
 use bindings::*;
 use sokol::{app as sapp, gfx as sg};
@@ -27,9 +29,6 @@ struct State {
 static mut STATE: State = State { pass_action: sg::PassAction::new() };
 static mut SPRITE: Option<Box<dyn toxoid_render::Sprite>> = None;
 static mut RENDER_TARGET: Option<Box<dyn toxoid_render::RenderTarget>> = None;
-
-const RESOLUTION_WIDTH: u32 = 1280;
-const RESOLUTION_HEIGHT: u32 = 720;
 
 extern "C" fn init_cb() {
     // Setup sokol app
@@ -68,19 +67,22 @@ extern "C" fn cleanup_cb() {
 }
 
 pub fn init(frame_cb: extern "C" fn()) {
+    let game_config = World::get_singleton::<GameConfig>();
     let window_title = b"Toxoid Engine Demo\0".as_ptr() as _;
     let canvas_id = std::ffi::CString::new("canvas").unwrap();
+    
     unsafe {
-        emscripten_set_canvas_element_size(canvas_id.as_ptr(), RESOLUTION_WIDTH.try_into().unwrap(), RESOLUTION_HEIGHT.try_into().unwrap());
+        emscripten_set_canvas_element_size(canvas_id.as_ptr(), game_config.get_resolution_width() as i32, game_config.get_resolution_height() as i32);
     }
+    
     // Initialize renderer
     sapp::run(&sapp::Desc {
         init_cb: Some(init_cb),
         cleanup_cb: Some(cleanup_cb),
         frame_cb: Some(frame_cb),
         window_title,
-        width: RESOLUTION_WIDTH as i32,
-        height: RESOLUTION_HEIGHT as i32,
+        width: game_config.get_resolution_width() as i32,
+        height: game_config.get_resolution_height() as i32,
         sample_count: 1,
         icon: sapp::IconDesc {
             sokol_default: true,

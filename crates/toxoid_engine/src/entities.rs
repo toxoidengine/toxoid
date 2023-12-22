@@ -85,7 +85,7 @@
 //     }
 // }
 
-use toxoid_api::components::{Rect, Position, Color, Renderable};
+use toxoid_api::components::*;
 use toxoid_api::World;
 pub fn init() {
     let mut entity = toxoid_api::Entity::new();
@@ -108,11 +108,8 @@ pub fn init() {
     color.set_b(0);
     color.set_a(255);
 
-    World::add_singleton::<Position>();
-    let mut pos = World::get_singleton::<Position>();
-    pos.set_x(777);
-    pos.set_y(666);
-
-    let mut pos_2 = World::get_singleton::<Position>();
-    println!("Singleton pos: {}, {}", pos_2.get_x(), pos_2.get_y());
+    World::add_singleton::<GameConfig>();
+    let mut game_config = World::get_singleton::<GameConfig>();
+    game_config.set_resolution_width(1280);
+    game_config.set_resolution_height(720);
 }
