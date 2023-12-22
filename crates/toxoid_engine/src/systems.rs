@@ -69,14 +69,12 @@ pub fn render_rect_system(query: &mut Query) {
         entities
             .iter()
             .for_each(|entity| {
-                let rect = entity.get::<Rect>();
                 let pos = entity.get::<Position>();
+                let rect = entity.get::<Rect>();
                 let color = entity.get::<Color>();
+                
                 // Draw Rect
-                toxoid_sokol::SokolRenderer2D::draw_filled_rect(
-                    toxoid_render::Rect { x: pos.get_x() as i32, y: pos.get_y() as i32, width: 100, height: 100 }, 
-                    toxoid_render::Color { r: color.get_r(), g: 255, b: color.get_b(), a: 255 }
-                );
+                toxoid_sokol::SokolRenderer2D::draw_filled_rect(pos, rect, color);
             });
     }
 }

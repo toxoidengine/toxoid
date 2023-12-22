@@ -86,10 +86,33 @@
 // }
 
 use toxoid_api::components::{Rect, Position, Color, Renderable};
+use toxoid_api::World;
 pub fn init() {
     let mut entity = toxoid_api::Entity::new();
     entity.add::<Rect>();
     entity.add::<Position>();
     entity.add::<Color>();
     entity.add::<Renderable>();
+
+    let mut rect = entity.get::<Rect>();
+    rect.set_width(100);
+    rect.set_height(100);
+
+    let mut pos = entity.get::<Position>();
+    pos.set_x(0);
+    pos.set_y(0);
+
+    let mut color = entity.get::<Color>();
+    color.set_r(255);
+    color.set_g(0);
+    color.set_b(0);
+    color.set_a(255);
+
+    World::add_singleton::<Position>();
+    let mut pos = World::get_singleton::<Position>();
+    pos.set_x(777);
+    pos.set_y(666);
+
+    let mut pos_2 = World::get_singleton::<Position>();
+    println!("Singleton pos: {}, {}", pos_2.get_x(), pos_2.get_y());
 }

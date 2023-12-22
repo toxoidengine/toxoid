@@ -62,7 +62,6 @@ use toxoid_api::*;
 // }
 
 pub fn init() {    
-    print_string("Hello world!");
     // // Generic Components
     // Position::register();
     // Velocity::register();
