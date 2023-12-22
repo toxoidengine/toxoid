@@ -27,12 +27,6 @@ pub const EMSCRIPTEN_FETCH_NO_DOWNLOAD: u32 = 32;
 pub const EMSCRIPTEN_FETCH_SYNCHRONOUS: u32 = 64;
 pub const EMSCRIPTEN_FETCH_WAITABLE: u32 = 128;
 
-// unsafe extern "C" fn packaged_main_loop(_parg: *mut std::ffi::c_void) {
-//     if let Err(_) = crate::main_loop() {
-//        emscripten_cancel_main_loop();
-//     }
-// }
-
 pub fn start_loop(update_loop: unsafe extern "C" fn(*mut std::ffi::c_void)) {
     unsafe {
         emscripten_set_main_loop_arg(
