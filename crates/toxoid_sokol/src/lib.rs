@@ -11,9 +11,10 @@ use bindings::*;
 use sokol::{app as sapp, gfx as sg};
 use core::ffi::c_int;
 use core::ffi::c_char;
+use once_cell::sync::Lazy;
 use std::sync::Mutex;
 
-pub static mut RENDERER_2D: Mutex<Option<SokolRenderer2D>> = Mutex::new(None);
+pub static RENDERER_2D: Lazy<Mutex<SokolRenderer2D>> = Lazy::new(|| Mutex::new(SokolRenderer2D::new()));
 
 extern "C" {
     fn emscripten_set_canvas_element_size(id: *const c_char, width: c_int, height: c_int) -> c_int;
@@ -71,10 +72,7 @@ pub fn init(frame_cb: extern "C" fn()) {
     let canvas_id = std::ffi::CString::new("canvas").unwrap();
     unsafe {
         emscripten_set_canvas_element_size(canvas_id.as_ptr(), RESOLUTION_WIDTH.try_into().unwrap(), RESOLUTION_HEIGHT.try_into().unwrap());
-
-        RENDERER_2D = Mutex::new(Some(SokolRenderer2D::new()));
     }
-    
     // Initialize renderer
     sapp::run(&sapp::Desc {
         init_cb: Some(init_cb),

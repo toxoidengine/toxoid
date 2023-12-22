@@ -657,6 +657,7 @@ version = "0.1.0"
 dependencies = [
  "bindgen",
  "cc",
+ "once_cell",
  "sokol",
  "toxoid_render",
 ]

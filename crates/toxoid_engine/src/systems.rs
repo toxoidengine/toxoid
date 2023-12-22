@@ -1,4 +1,6 @@
-use toxoid_api::{System, Query, toxoid_add_system};
+use toxoid_api::{System, Query, World};
+use toxoid_api::components::{Rect, Color, Position, Renderable};
+use toxoid_render::Renderer2D;
 // use crate::components::{KeyboardInput, Rect, Renderable, Color, Position};
 
 // pub fn input_system_fn(query: &mut Query) {
@@ -60,30 +62,7 @@ use toxoid_api::{System, Query, toxoid_add_system};
 //     });
 // }
 
-// pub fn render_rect_system_fn(query: &mut Query) {
-//     use crate::components::{Rect, Color, Position};
-//     let query_iter = query.iter();
-//     while query_iter.next() {
-//         let entities = query_iter.entities();
-//         entities
-//             .iter()
-//             .for_each(|entity| {
-//                 let rect = entity.get::<Rect>();
-//                 let pos = entity.get::<Position>();
-//                 let color = entity.get::<Color>();
-//                 // Draw Rect
-//                 toxoid_sdl::CANVAS.with(|canvas_ref| {
-//                     let mut canvas = canvas_ref.borrow_mut();
-//                     canvas.set_draw_color(toxoid_sdl::pixels::Color::RGB(color.get_r(), color.get_g(), color.get_b()));
-//                     let rect = toxoid_sdl::rect::Rect::new(pos.get_x() as i32, pos.get_y() as i32, rect.get_width(), rect.get_height());
-//                     canvas.fill_rect(rect).unwrap();
-//                 }); 
-//             });
-//     }
-// }
-
 pub fn render_rect_system(query: &mut Query) {
-    use crate::components::{Rect, Color, Position};
     let query_iter = query.iter();
     while query_iter.next() {
         let entities = query_iter.entities();
@@ -94,45 +73,16 @@ pub fn render_rect_system(query: &mut Query) {
                 let pos = entity.get::<Position>();
                 let color = entity.get::<Color>();
                 // Draw Rect
-                unsafe {
-                    let renderer_2d = toxoid_sokol::RENDERER_2D.lock().unwrap().unwrap();
-                    renderer_2d.draw_filled_rect(
-                        toxoid_render::Rect { x: pos.get_x() as i32, y: pos.get_y() as i32, width: rect.get_width(), height: rect.get_height() }, 
-                        toxoid_render::Color { r: color.get_r(), g: color.get_g(), b: color.get_b(), a: color.get_a() }
-                    );
-                }
-            });
-    }
-}
-
-pub fn render_rect_system(query: &mut Query) {
-    use crate::components::{Rect, Color, Position};
-    let query_iter = query.iter();
-    while query_iter.next() {
-        let entities = query_iter.entities();
-        entities
-            .iter()
-            .for_each(|entity| {
-                let rect = entity.get::<Rect>();
-                let pos = entity.get::<Position>();
-                let color = entity.get::<Color>();
-                // Draw Rect
-                unsafe {
-                    let renderer_2d = toxoid_sokol::RENDERER_2D.lock().unwrap().unwrap();
-                    renderer_2d.draw_filled_rect(
-                        toxoid_render::Rect { x: pos.get_x() as i32, y: pos.get_y() as i32, width: rect.get_width(), height: rect.get_height() }, 
-                        toxoid_render::Color { r: color.get_r(), g: color.get_g(), b: color.get_b(), a: color.get_a() }
-                    );
-                }
+                toxoid_sokol::SokolRenderer2D::draw_filled_rect(
+                    toxoid_render::Rect { x: pos.get_x() as i32, y: pos.get_y() as i32, width: 100, height: 100 }, 
+                    toxoid_render::Color { r: color.get_r(), g: 255, b: color.get_b(), a: 255 }
+                );
             });
     }
 }
 
 pub fn init() {
     // let input_system = System::new::<(KeyboardInput,)>(input_system_fn);
-    let render_rect_system = System::new::<(Rect, Renderable, Color, Position)>(render_rect_system_fn);
-    unsafe {
-        // toxoid_add_system(input_system);
-        // toxoid_add_system(render_rect_system);
-    }
+    let render_rect_system = System::new::<(Rect, Renderable, Color, Position)>(render_rect_system);
+    World::add_system(render_rect_system);
 }
