@@ -1,7 +1,7 @@
 use crate::bindings::*;
 use sokol::{app as sapp, gfx as sg};
 use toxoid_render::{Renderer2D, RenderTarget, Sprite};
-use toxoid_api::components::{Position, Rect, Color, GameConfig};
+use toxoid_api::components::{Position, Size, Color, GameConfig};
 use toxoid_api::World;
 use std::any::Any;
 
@@ -258,13 +258,13 @@ impl Renderer2D for SokolRenderer2D {
         }
     }
 
-    fn draw_filled_rect(pos: Position, rect: Rect, color: Color) {
+    fn draw_filled_rect(pos: Position, size: Size, color: Color) {
         unsafe {
             let game_config = World::get_singleton::<GameConfig>();
             let (window_width, _) = SokolRenderer2D::window_size();
             let scale_factor = window_width as f32 / game_config.get_resolution_width() as f32;
             sgp_set_color(color.get_r() as f32, color.get_g() as f32, color.get_b() as f32, color.get_a() as f32);
-            sgp_draw_filled_rect(pos.get_x() as f32 * scale_factor, pos.get_y() as f32 * scale_factor, rect.get_width() as f32 * scale_factor, rect.get_height() as f32 * scale_factor);
+            sgp_draw_filled_rect(pos.get_x() as f32 * scale_factor, pos.get_y() as f32 * scale_factor, size.get_width() as f32 * scale_factor, size.get_height() as f32 * scale_factor);
         }
     }
 

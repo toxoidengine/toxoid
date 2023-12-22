@@ -22,22 +22,22 @@ pub fn render_rect_system(query: &mut Query) {
             .iter()
             .for_each(|entity| {
                 let pos = entity.get::<Position>();
-                let rect = entity.get::<Rect>();
+                let size = entity.get::<Size>();
                 let color = entity.get::<Color>();
                 
                 // Draw Rect
-                toxoid_sokol::SokolRenderer2D::draw_filled_rect(pos, rect, color);
+                toxoid_sokol::SokolRenderer2D::draw_filled_rect(pos, size, color);
             });
     }
 }
 
 pub fn init() {
     // let input_system = System::new::<(KeyboardInput,)>(input_system_fn);
-    let render_rect_system = System::new::<(Rect, Renderable, Color, Position)>(render_rect_system);
+    let render_rect_system = System::new::<(Size, Renderable, Color, Position)>(render_rect_system);
     World::add_system(render_rect_system);
 }
 
-// use crate::components::{KeyboardInput, Rect, Renderable, Color, Position};
+// use crate::components::{KeyboardInput, Size, Renderable, Color, Position};
 
 // pub fn input_system_fn(query: &mut Query) {
 //     use toxoid_sdl::event::Event;

@@ -1,6 +1,6 @@
 use core::cell::RefCell;
 
-use toxoid_ffi::{toxoid_add_system, toxoid_api::{Query, System}, KeyboardInput, Position, Direction, DirectionEnum, Player, Food, Rect};
+use toxoid_ffi::{toxoid_add_system, toxoid_api::{Query, System}, KeyboardInput, Position, Direction, DirectionEnum, Player, Food, Size};
 use toxoid_ffi::toxoid_api::*;
 use toxoid_ffi::*;
 
@@ -109,12 +109,12 @@ pub fn create_player_block(x: u32, y: u32, direction: u8, child: ecs_entity_t) {
     player_entity.parent_of(Entity { id: child, children: &mut [] });
     // Child Entity
     let mut render_target = Entity::new();
-    render_target.add::<Rect>();
+    render_target.add::<Size>();
     render_target.add::<Renderable>();
     render_target.add::<Color>();
     render_target.add::<Position>();
     render_target.child_of(player_entity);
-    let mut rect = render_target.get::<Rect>();
+    let mut rect = render_target.get::<Size>();
     rect.set_width(50);
     rect.set_height(50);
     let mut color = render_target.get::<Color>();
@@ -207,7 +207,7 @@ thread_local! {
     static FOOD_QUERY: RefCell<Query> = RefCell::new(Query::new::<(Food,)>());  
 }
 
-fn aabb(a: Position, a2: Rect, b: Position, b2: Rect) -> bool {
+fn aabb(a: Position, a2: Size, b: Position, b2: Size) -> bool {
     a.get_x() + a2.get_width() > b.get_x() &&
     a.get_x() < b.get_x() + b2.get_width() &&
     a.get_y() + a2.get_height() > b.get_y() &&
@@ -226,12 +226,12 @@ pub fn create_food_block() {
     pos.set_y(random_y as u32);
 
     let mut render_target = Entity::new();
-    render_target.add::<Rect>();
+    render_target.add::<Size>();
     render_target.add::<Renderable>();
     render_target.add::<Color>();
     render_target.add::<Position>();
     render_target.child_of(food_entity);
-    let mut rect = render_target.get::<Rect>();
+    let mut rect = render_target.get::<Size>();
     rect.set_width(50);
     rect.set_height(50);
     let mut color = render_target.get::<Color>();
@@ -263,9 +263,9 @@ pub fn eat_system_fn(query: &mut Query) {
                                             let food_entity_id = food_entity.get_id();
                                             food_entity.children_each(|food_child| {
                                                     let food_pos = food_child.get::<Position>();
-                                                    let food_rect = food_child.get::<Rect>();
+                                                    let food_rect = food_child.get::<Size>();
                                                     let player_child_pos = player_child.get::<Position>();
-                                                    let player_child_rect = player_child.get::<Rect>();
+                                                    let player_child_rect = player_child.get::<Size>();
                                                     if aabb(player_child_pos, player_child_rect, food_pos, food_rect) {
                                                         delete_entity(Entity { id: food_entity_id, children: &mut [] });
                                                         create_food_block();
