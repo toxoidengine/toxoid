@@ -1,5 +1,6 @@
 use toxoid_api_macro::component;
 use crate::*;
+use crate::IsComponent;
 
 component! {
     Position {

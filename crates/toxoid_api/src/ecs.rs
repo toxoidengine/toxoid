@@ -187,6 +187,17 @@ impl System {
 }
 
 #[repr(C)]
+pub struct World {}
+
+impl World {
+    pub fn add_system(system: System) {
+        unsafe {
+            toxoid_add_system(system);
+        }
+    }
+}
+ 
+#[repr(C)]
 #[derive(Debug)]
 pub struct Entity {
     pub id: ecs_id_t,
