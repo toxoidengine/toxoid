@@ -31,6 +31,12 @@ pub trait RenderTarget: Any {
 pub trait Renderer2D {
     // Constructor
     fn new() -> Self;
+    // Begin render pass
+    fn begin();
+    // End render pass
+    fn end(&self);
+    // Get window size
+    fn window_size() -> (u32, u32);
     // Create render target that we can blit sprites on (Tilemaps for example)
     fn create_render_target(width: u32, height: u32) -> Box<dyn RenderTarget>;
     // Create sprite
