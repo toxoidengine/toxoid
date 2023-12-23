@@ -31,10 +31,32 @@ pub fn render_rect_system(query: &mut Query) {
     }
 }
 
+use toxoid_ffi::emscripten::{EmBool, EmscriptenKeyboardEvent};
+unsafe extern "C" fn keydown_cb(
+    _event_type:  core::ffi::c_int, 
+    key_event: *const EmscriptenKeyboardEvent, 
+    _user_data: *mut core::ffi::c_void
+) -> EmBool {
+    let key = unsafe { (*key_event).keyCode };
+    println!("Key: {}", key);
+    return 0;
+}
+
 pub fn init() {
     // let input_system = System::new::<(KeyboardInput,)>(input_system_fn);
     let render_rect_system = System::new::<(Size, Renderable, Color, Position)>(render_rect_system);
     World::add_system(render_rect_system);
+
+    let canvas_id = std::ffi::CString::new("canvas").unwrap();
+    unsafe {
+        let result = toxoid_ffi::emscripten::toxoid_set_keydown_callback(
+            canvas_id.as_ptr() as *const core::ffi::c_char, 
+            std::ptr::null_mut(), 
+            1, 
+            keydown_cb
+        );
+        println!("Result: {:?}", result);
+    }
 }
 
 // use crate::components::{KeyboardInput, Size, Renderable, Color, Position};

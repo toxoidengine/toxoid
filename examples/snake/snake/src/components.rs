@@ -20,24 +20,16 @@ component! {
     Food {
         food: bool
     },
-    Despawn {
-        despawn: bool
-    },
-    Spawn {
-        spawn: bool
-    },
-    TailLength {
-        length: u32
-    },
     Head {
-        previous_head: u64
+        head: bool
     },
     Tail {
-        previous_tail: u64
+        tail: bool
     },
-    SnakeBody {
-        body: U32Array,
-        len: u32
+    Stats {
+        score: u32,
+        high_score: u32,
+        tail_length: u32
     }
 }
 
@@ -46,12 +38,9 @@ pub fn init() {
     Direction::register();
     Player::register();
     Food::register();
-    Despawn::register();
-    Spawn::register();
-    TailLength::register();
     Head::register();
     Tail::register();
-    SnakeBody::register();
+    Stats::register();
 
     // // Create a new entity.
     // let mut player = Entity::new();

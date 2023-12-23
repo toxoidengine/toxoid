@@ -6,7 +6,7 @@
                 background-color: #000
             }
 
-            .game {
+            #canvas {
                 position: absolute;
                 top: 0;
                 left: 0;
@@ -25,11 +25,19 @@
                 image-rendering: pixelated;
                 -ms-interpolation-mode: nearest-neighbor
             }
+
+            #canvas:focus {
+                outline: none;
+            }
         </style>
     </head>
     <body>
-        <canvas class="game" id="canvas"></canvas>
+        <canvas id="canvas"></canvas>
         <script type="module">
+            const canvas = document.getElementById('canvas')
+            canvas.setAttribute('tabindex', '0')
+            canvas.focus()
+
             // Import base game engine
             import snake_engine_wasm from './snake_engine.js'
             document

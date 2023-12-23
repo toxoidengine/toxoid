@@ -81,6 +81,25 @@ use crate::entities::*;
 const FRAMES_PER_MOVE: u32 = 15;  
 static mut FRAMES_SINCE_LAST_MOVE: u32 = 0;
 
+// Use ECS hierarchy to recursively go through player entity children and delete the
+// last child entity, which is the tail.
+pub fn tail_last_recurse_delete(index: &mut u32, length: u32, entity: &mut Entity) {
+    entity.children_each(|mut child_entity| {
+        // Check if player because there is also a "renderable" child entity
+        // That contains only render components rather than a player entity
+        // That contains player info
+        if child_entity.has::<Player>() {
+            *index += 1;
+            if *index == length {
+                // child_entity.add::<Despawn>();
+                World::delete_entity(child_entity);
+            } else {
+                tail_last_recurse_delete(index, length, &mut child_entity);
+            }
+        }
+    });
+}
+
 pub fn movement_system(query: &mut Query) { 
     unsafe {
         if FRAMES_SINCE_LAST_MOVE < FRAMES_PER_MOVE {
@@ -114,14 +133,10 @@ pub fn movement_system(query: &mut Query) {
                 entity.remove::<Head>();
                 entity.add::<Tail>();
 
-                let length = entity.children.len();
-                entity.children_each(|mut child_entity| {
-                    // print_i32(child_entity.get_id() as i32);
-                    if child_entity.has::<Tail>() && length > 1 {
-                        // print_i32(child_entity.get_id() as i32);
-                        // unsafe { toxoid_delete_entity(child_entity.get_id()) };
-                    }
-                });
+                // Use ECS hierarchy to recursively go through player entity children and delete the
+                // last child entity, which is the tail.
+                let mut index = 0;
+                tail_last_recurse_delete(&mut index, 3, entity);
             });
     }
     unsafe {
