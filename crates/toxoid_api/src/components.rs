@@ -2,6 +2,13 @@ use toxoid_api_macro::component;
 use crate::*;
 use crate::IsComponent;
 
+pub enum KeyCode {
+    Up = 38,
+    Down = 40,
+    Left = 37,
+    Right = 39
+}
+
 component! {
     Position {
         x: u32,
@@ -35,7 +42,7 @@ component! {
         resolution_width: u32,
         resolution_height: u32,
         scale_factor: f32,
-    }
+    },
 }
 
 pub fn init() {    

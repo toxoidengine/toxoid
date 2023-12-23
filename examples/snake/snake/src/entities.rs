@@ -1,19 +1,15 @@
 use toxoid_api::*;
 use crate::components::*;
-use core::alloc::{GlobalAlloc, Layout};
 
-pub fn create_player_block(x: u32, y: u32, direction: u8, child: u64) {
+pub fn create_player_block(x: u32, y: u32, child: u64) {
     let mut player_entity = toxoid_api::Entity::new();
     player_entity.add::<Player>();
     player_entity.add::<Position>();
-    player_entity.add::<Direction>();
+    // player_entity.add::<Direction>();
 
     let mut pos = player_entity.get::<Position>();
     pos.set_x(x);
     pos.set_y(y);
-
-    let mut dir = player_entity.get::<Direction>();
-    dir.set_direction(direction);
     
     player_entity.add::<Head>();
     if child != 0 {
@@ -44,6 +40,10 @@ pub fn create_player_block(x: u32, y: u32, direction: u8, child: u64) {
 }
 
 pub fn init() {
-    create_player_block(0, 0, DirectionEnum::Down as u8, 0);
+    create_player_block(0, 0, 0);
+    
+    World::add_singleton::<Direction>();
+    let mut direction = World::get_singleton::<Direction>();
+    direction.set_direction(DirectionEnum::Down as u8);
 }
 
