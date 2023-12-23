@@ -23,6 +23,8 @@ pub enum Type {
     F32Array,
 }
 
+pub const MAX_ELEMENTS: usize = 100;
+
 pub struct U32Array {
     pub ptr: *mut u32,
     pub len: u32,
@@ -59,6 +61,49 @@ impl U32Array {
             len,
         }
     }
+
+    pub fn from_array(array: [u32; MAX_ELEMENTS]) -> Self {
+        let layout = Layout::array::<u32>(MAX_ELEMENTS).unwrap();
+        let ptr = unsafe { ALLOCATOR.alloc(layout) as *mut u32 };
+        unsafe {
+            ptr.copy_from_nonoverlapping(array.as_ptr(), array.len());
+        }
+        Self {
+            ptr,
+            len: array.len() as u32,
+        }
+    }
+
+    pub fn create_array(len: u32) -> *mut u32 {
+        let mut arr = [0u32; MAX_ELEMENTS];
+        arr.as_mut_ptr()
+    }
+
+    pub fn from_array_any() -> Self {
+        let mut arr = [0u32; MAX_ELEMENTS];
+        let ptr = arr.as_mut_ptr();
+        Self {
+            ptr,
+            len: MAX_ELEMENTS as u32,
+        }
+    }
+
+    pub fn create(len: u32) -> Self {
+        let layout = Layout::array::<u32>(len as usize).unwrap();
+        let ptr = unsafe { ALLOCATOR.alloc(layout) as *mut u32 };
+        Self {
+            ptr,
+            len,
+        }
+    }
+
+    pub fn create_raw(len: u32) -> *mut u32 {
+        unsafe { ALLOCATOR.alloc(Layout::array::<u32>(len as usize).unwrap()) as *mut u32 }
+    }
+}
+
+pub fn create_raw(len: u32) -> *mut u32 {
+    unsafe { ALLOCATOR.alloc(Layout::array::<u32>(len as usize).unwrap()) as *mut u32 }
 }
 
 impl Clone for U32Array {

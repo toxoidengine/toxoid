@@ -36,7 +36,8 @@ component! {
         previous_tail: u64
     },
     SnakeBody {
-        body: U32Array
+        body: U32Array,
+        len: u32
     }
 }
 

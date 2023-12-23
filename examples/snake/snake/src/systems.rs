@@ -94,7 +94,7 @@ pub fn movement_system(query: &mut Query) {
         entities
             .iter_mut()
             .for_each(|entity| {
-                print_string("Moving");
+                // print_string("Moving");
                 let position = entity.get::<Position>();
                 let direction = entity.get::<Direction>();
                 let x = position.get_x();
@@ -116,9 +116,9 @@ pub fn movement_system(query: &mut Query) {
 
                 let length = entity.children.len();
                 entity.children_each(|mut child_entity| {
-                    print_i32(child_entity.get_id() as i32);
+                    // print_i32(child_entity.get_id() as i32);
                     if child_entity.has::<Tail>() && length > 1 {
-                        print_i32(child_entity.get_id() as i32);
+                        // print_i32(child_entity.get_id() as i32);
                         // unsafe { toxoid_delete_entity(child_entity.get_id()) };
                     }
                 });

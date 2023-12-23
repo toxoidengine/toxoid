@@ -1,6 +1,6 @@
-use toxoid_api::components::*;
-use toxoid_api::Entity;
+use toxoid_api::*;
 use crate::components::*;
+use core::alloc::{GlobalAlloc, Layout};
 
 pub fn create_player_block(x: u32, y: u32, direction: u8, child: u64) {
     let mut player_entity = toxoid_api::Entity::new();
@@ -43,4 +43,29 @@ pub fn create_player_block(x: u32, y: u32, direction: u8, child: u64) {
 
 pub fn init() {
     create_player_block(0, 0, DirectionEnum::Down as u8, 0);
+
+    World::add_singleton::<SnakeBody>();
+    let mut snake_body = World::get_singleton::<SnakeBody>();
+    
+    let layout = Layout::array::<u32>(5 as usize).unwrap();
+    let ptr = unsafe { ALLOCATOR.alloc(layout) as *mut u32 };
+    let u32_array = U32Array {
+        ptr,
+        len: 5
+    };
+    unsafe {
+        let slice = core::slice::from_raw_parts_mut(u32_array.ptr, 5 as usize);
+        slice[0] = 1;
+    }
+    snake_body.set_body(u32_array);
+
+    let body = snake_body.get_body();
+    unsafe {
+        core::slice::from_raw_parts_mut(body, 5 as usize)
+            .iter()
+            .for_each(|x| {
+                print_i32(*x as i32);
+            });
+    }
 }
+
