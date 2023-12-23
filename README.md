@@ -3,7 +3,7 @@
 
 
 # Web Target
-Setup emscripten: https://emscripten.org/docs/getting_started/downloads.html
+Set up Emscripten: https://emscripten.org/docs/getting_started/downloads.html
 
 # Examples
 How to run examples:
