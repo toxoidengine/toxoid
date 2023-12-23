@@ -2,7 +2,7 @@ use toxoid_api_macro::component;
 use toxoid_api::IsComponent;
 use toxoid_api::bindings::*;
 use toxoid_api::*;
-
+use toxoid_api::{U32Array, F32Array};
 pub enum DirectionEnum {
     Up = 0,
     Down = 1,
@@ -36,7 +36,7 @@ component! {
         previous_tail: u64
     },
     SnakeBody {
-        body: *mut u32
+        body: U32Array
     }
 }
 
@@ -50,7 +50,7 @@ pub fn init() {
     TailLength::register();
     Head::register();
     Tail::register();
-    // SnakeBody::register();
+    SnakeBody::register();
 
     // // Create a new entity.
     // let mut player = Entity::new();

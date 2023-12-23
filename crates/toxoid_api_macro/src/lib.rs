@@ -299,6 +299,34 @@ pub fn component(input: TokenStream) -> TokenStream {
                                     }
                                 }
                             },
+                            _ if field_type_str == "U32Array" => {
+                                quote! {
+                                    pub fn #getter_name(&self) -> *mut u32 {
+                                        unsafe {
+                                            toxoid_component_get_member_u32array(self.ptr, #field_offset)
+                                        }
+                                    }
+                                    pub fn #setter_name(&mut self, value: U32Array) {
+                                        unsafe {
+                                            toxoid_component_set_member_u32array(self.ptr, #field_offset, value.ptr);
+                                        }
+                                    }
+                                }
+                            },
+                            _ if field_type_str == "F32Array" => {
+                                quote! {
+                                    pub fn #getter_name(&self) -> *mut f32 {
+                                        unsafe {
+                                            toxoid_component_get_member_f32array(self.ptr, #field_offset)
+                                        }
+                                    }
+                                    pub fn #setter_name(&mut self, value: F32Array) {
+                                        unsafe {
+                                            toxoid_component_set_member_f32array(self.ptr, #field_offset, value.ptr);
+                                        }
+                                    }
+                                }
+                            },
                             _ => {
                                 println!("Unsupported field type: {}", quote!(#field_type));
                                 panic!("Unsupported field type for getter/setter");
@@ -388,7 +416,7 @@ pub fn component(input: TokenStream) -> TokenStream {
             };
 
             quote! {
-                #[derive(Debug, Clone, Copy, PartialEq)]
+                #[derive(Clone, PartialEq)]
                 #[repr(C)]
                 pub struct #name {
                     ptr: *mut core::ffi::c_void,
@@ -442,6 +470,8 @@ fn get_type_code(ty: &Type) -> u8 {
         Type::Path(tp) if tp.path.is_ident("f64") => FieldType::F64 as u8,
         Type::Path(tp) if tp.path.is_ident("bool") => FieldType::Bool as u8,
         Type::Path(tp) if tp.path.is_ident("String") => FieldType::String as u8,
+        Type::Path(tp) if tp.path.is_ident("U32Array") => FieldType::U32Array as u8,
+        Type::Path(tp) if tp.path.is_ident("F32Array") => FieldType::U32Array as u8,
         Type::Ptr(ptr) => {
             match *ptr.elem {
                 Type::Path(ref tp) if tp.path.is_ident("u32") => {
@@ -477,6 +507,8 @@ fn get_type_size(ty: &Type) -> u32 {
         Type::Path(tp) if tp.path.is_ident("f64") => 8,
         Type::Path(tp) if tp.path.is_ident("bool") => 1,
         Type::Path(tp) if tp.path.is_ident("String") => 4,
+        Type::Path(tp) if tp.path.is_ident("U32Array") => 4,
+        Type::Path(tp) if tp.path.is_ident("F32Array") => 4,
         Type::Ptr(ptr) => {
             match *ptr.elem {
                 Type::Path(ref tp) if tp.path.is_ident("u32") => {
@@ -491,10 +523,6 @@ fn get_type_size(ty: &Type) -> u32 {
                 }
             }
         }
-        // Type::Array(tp) if tp.elem.is_ident("u8") => FieldType::Array as u8,
-        // Type::Path(tp) if tp.path.is_ident("Vec<u8>") => 4,
-        // Type::Path(tp) if tp.path.is_ident("Vec<u32>") => 4,
-        // Type::Path(tp) if tp.path.is_ident("Vec<f32>") => 4,
         _ => {
             println!("Unsupported field type: {}", quote!(#ty));
             panic!("Unsupported field type")

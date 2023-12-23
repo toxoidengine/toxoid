@@ -23,6 +23,126 @@ pub enum Type {
     F32Array,
 }
 
+pub struct U32Array {
+    pub ptr: *mut u32,
+    pub len: u32,
+}
+
+pub struct F32Array {
+    pub ptr: *mut f32,
+    pub len: u32,
+}
+
+impl U32Array {
+    pub fn new(ptr: *mut u32, len: u32) -> Self {
+        Self {
+            ptr,
+            len,
+        }
+    }
+
+    pub fn from_slice(slice: &[u32]) -> Self {
+        let layout = Layout::array::<u32>(slice.len()).unwrap();
+        let ptr = unsafe { ALLOCATOR.alloc(layout) as *mut u32 };
+        unsafe {
+            ptr.copy_from_nonoverlapping(slice.as_ptr(), slice.len());
+        }
+        Self {
+            ptr,
+            len: slice.len() as u32,
+        }
+    }
+
+    pub fn from_raw(ptr: *mut u32, len: u32) -> Self {
+        Self {
+            ptr,
+            len,
+        }
+    }
+}
+
+impl Clone for U32Array {
+    fn clone(&self) -> Self {
+        let slice = unsafe { std::slice::from_raw_parts(self.ptr, self.len as usize) };
+        Self::from_slice(slice)
+    }
+}
+
+impl Copy for U32Array {}
+
+impl PartialEq for U32Array {
+    fn eq(&self, other: &Self) -> bool {
+        if self.len != other.len {
+            return false;
+        }
+        unsafe {
+            let self_slice = std::slice::from_raw_parts(self.ptr, self.len as usize);
+            let other_slice = std::slice::from_raw_parts(other.ptr, other.len as usize);
+            self_slice == other_slice
+        }
+    }
+}
+
+impl Default for U32Array {
+    fn default() -> Self {
+        Self {
+            ptr: core::ptr::null_mut(),
+            len: 0,
+        }
+    }
+}
+
+
+impl F32Array {
+    pub fn new(ptr: *mut f32, len: u32) -> Self {
+        Self {
+            ptr,
+            len,
+        }
+    }
+
+    pub fn from_slice(slice: &[f32]) -> Self {
+        let layout = Layout::array::<f32>(slice.len()).unwrap();
+        let ptr = unsafe { ALLOCATOR.alloc(layout) as *mut f32 };
+        unsafe {
+            ptr.copy_from_nonoverlapping(slice.as_ptr(), slice.len());
+        }
+        Self {
+            ptr,
+            len: slice.len() as u32,
+        }
+    }
+
+    pub fn from_raw(ptr: *mut f32, len: u32) -> Self {
+        Self {
+            ptr,
+            len,
+        }
+    }
+}
+
+impl Clone for F32Array {
+    fn clone(&self) -> Self {
+        let slice = unsafe { std::slice::from_raw_parts(self.ptr, self.len as usize) };
+        Self::from_slice(slice)
+    }
+}
+
+impl Copy for F32Array {}
+
+impl PartialEq for F32Array {
+    fn eq(&self, other: &Self) -> bool {
+        if self.len != other.len {
+            return false;
+        }
+        unsafe {
+            let self_slice = std::slice::from_raw_parts(self.ptr, self.len as usize);
+            let other_slice = std::slice::from_raw_parts(other.ptr, other.len as usize);
+            self_slice == other_slice
+        }
+    }
+}
+
 pub trait ComponentTuple {
     fn get_type_ids() -> &'static [TypeId];
 }
