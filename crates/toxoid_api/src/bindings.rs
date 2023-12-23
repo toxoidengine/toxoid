@@ -132,4 +132,5 @@ extern "C" {
     pub fn toxoid_singleton_get(component: ecs_entity_t) -> *mut c_void;
     pub fn toxoid_singleton_add(component: ecs_entity_t);
     pub fn toxoid_singleton_remove(component: ecs_entity_t);
+    pub fn gen_rng_grid_pos() -> (i32, i32);
 }
