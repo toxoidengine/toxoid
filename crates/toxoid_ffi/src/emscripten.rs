@@ -14,9 +14,60 @@ extern "C" {
     pub fn emscripten_cancel_main_loop();
     pub fn emscripten_fetch_attr_init(attr: *mut emscripten_fetch_attr_t);
     pub fn emscripten_fetch(attr: *const emscripten_fetch_attr_t, url: *const c_char) -> *mut emscripten_fetch_t;
+    pub fn emscripten_set_keypress_callback(
+        target: *const c_char,
+        userData: *mut c_void,
+        useCapture: EmBool,
+        callback: unsafe extern "C" fn(eventType: c_int, keyEvent: *const EmscriptenKeyboardEvent, userData: *mut c_void) -> EmBool,
+    ) -> EmscriptenResult;
+    pub fn emscripten_set_keydown_callback(
+        target: *const c_char,
+        userData: *mut c_void,
+        useCapture: EmBool,
+        callback: unsafe extern "C" fn(eventType: c_int, keyEvent: *const EmscriptenKeyboardEvent, userData: *mut c_void) -> EmBool,
+    ) -> EmscriptenResult;
+    pub fn emscripten_set_keyup_callback(
+        target: *const c_char,
+        userData: *mut c_void,
+        useCapture: EmBool,
+        callback: unsafe extern "C" fn(eventType: c_int, keyEvent: *const EmscriptenKeyboardEvent, userData: *mut c_void) -> EmBool,
+    ) -> EmscriptenResult;
+    pub fn toxoid_set_keydown_callback(
+        target: *const ::std::os::raw::c_char,
+        userData: *mut ::std::os::raw::c_void,
+        useCapture: ::std::os::raw::c_int,
+        callback: unsafe extern "C" fn(
+            eventType: ::std::os::raw::c_int,
+            keyEvent: *const EmscriptenKeyboardEvent,
+            userData: *mut ::std::os::raw::c_void,
+        ) -> EmBool,
+    ) -> EmscriptenResult;
+    pub fn emscripten_run_script(
+        script: *const ::std::os::raw::c_char,
+    );
 }
 
 pub type EmBool = c_int;
+pub type EmscriptenResult = c_int;
+
+#[allow(non_snake_case)]
+#[repr(C)]
+pub struct EmscriptenKeyboardEvent {
+    pub timestamp: f64,
+    pub location: u32,
+    pub ctrlKey: EmBool,
+    pub shiftKey: EmBool,
+    pub altKey: EmBool,
+    pub metaKey: EmBool,
+    pub repeat: EmBool,
+    pub charCode: u32,
+    pub keyCode: u32,
+    pub which: u32,
+    pub key: [u8; 32usize],
+    pub code: [u8; 32usize],
+    pub charValue: [u8; 32usize],
+    pub locale: [u8; 32usize],
+}
 
 pub const EMSCRIPTEN_FETCH_LOAD_TO_MEMORY: u32 = 1;
 pub const EMSCRIPTEN_FETCH_STREAM_DATA: u32 = 2;

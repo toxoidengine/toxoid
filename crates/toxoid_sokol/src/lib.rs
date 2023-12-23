@@ -2,10 +2,11 @@
 #![allow(dead_code)]
 #![allow(non_camel_case_types)]
 
-mod bindings;
+pub mod bindings;
 pub mod render_2d;
 // include!(concat!(env!("OUT_DIR"), "/bindings.rs"));
 pub use render_2d::*;
+pub use sokol;
 use toxoid_api::components::GameConfig;
 use toxoid_api::World;
 use toxoid_render::Renderer2D;
@@ -74,7 +75,7 @@ pub fn init(frame_cb: extern "C" fn()) {
     unsafe {
         emscripten_set_canvas_element_size(canvas_id.as_ptr(), game_config.get_resolution_width() as i32, game_config.get_resolution_height() as i32);
     }
-    
+
     // Initialize renderer
     sapp::run(&sapp::Desc {
         init_cb: Some(init_cb),

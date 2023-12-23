@@ -1,6 +1,6 @@
-// #include <emscripten.h>
+#include <emscripten.h>
 // #include <emscripten/fetch.h>
-// #include <emscripten/html5.h>
+#include <emscripten/html5.h>
 #include "sokol_app.h"
 #include "sokol_glue.h"
 #include "sokol_log.h"
@@ -13,3 +13,18 @@
 */
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
+
+EMSCRIPTEN_KEEPALIVE
+EMSCRIPTEN_RESULT toxoid_set_keypress_callback(const char *target, void *userData, EM_BOOL useCapture, em_key_callback_func callback) {
+    return emscripten_set_keypress_callback(target, userData, useCapture, callback);
+}
+
+EMSCRIPTEN_KEEPALIVE
+EMSCRIPTEN_RESULT toxoid_set_keydown_callback(const char *target, void *userData, EM_BOOL useCapture, em_key_callback_func callback) {
+    return emscripten_set_keydown_callback(target, userData, useCapture, callback);
+}
+
+EMSCRIPTEN_KEEPALIVE
+EMSCRIPTEN_RESULT toxoid_set_keyup_callback(const char *target, void *userData, EM_BOOL useCapture, em_key_callback_func callback) {
+    return emscripten_set_keyup_callback(target, userData, useCapture, callback);
+}

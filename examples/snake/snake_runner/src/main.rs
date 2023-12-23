@@ -114,7 +114,7 @@ fn build_packages() -> Result<(), Box<dyn std::error::Error>> {
                     "-sALLOW_MEMORY_GROWTH=1",
                     "-sMIN_WEBGL_VERSION=2",
                     "-sFETCH=1",
-                     // "-sUSE_SDL=2",
+                    // "-sUSE_SDL=2",
                     // "-sUSE_SDL_IMAGE=2",
                     // "-sEXCEPTION_CATCHING_ALLOWED",
                     // "-sASSERTIONS",

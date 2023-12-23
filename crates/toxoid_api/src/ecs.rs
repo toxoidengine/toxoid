@@ -388,6 +388,18 @@ impl World {
             toxoid_singleton_remove(component_id);
         }
     }
+
+    pub fn delete_entity(entity: Entity) {
+        unsafe {
+            toxoid_delete_entity(entity.get_id());
+        }
+    }
+    
+    pub fn delete_entity_mut(entity: &mut Entity) {
+        unsafe {
+            toxoid_delete_entity(entity.get_id());
+        }
+    }
 }
  
 #[repr(C)]
@@ -580,29 +592,29 @@ impl Entity {
     }
 }
 
-// pub fn delete_entity(entity: Entity) {
-//     unsafe {
-//         toxoid_delete_entity(entity.get_id());
-//     }
-// }
+pub fn delete_entity(entity: Entity) {
+    unsafe {
+        toxoid_delete_entity(entity.get_id());
+    }
+}
 
-// pub fn delete_entity_mut(entity: &mut Entity) {
-//     unsafe {
-//         toxoid_delete_entity(entity.get_id());
-//     }
-// }
+pub fn delete_entity_mut(entity: &mut Entity) {
+    unsafe {
+        toxoid_delete_entity(entity.get_id());
+    }
+}
 
-// pub fn is_valid(entity: Entity) -> bool {
-//     unsafe {
-//         toxoid_is_valid(entity.get_id())
-//     }
-// }
+pub fn is_valid(entity: Entity) -> bool {
+    unsafe {
+        toxoid_is_valid(entity.get_id())
+    }
+}
 
-// pub fn is_valid_mut(entity: &mut Entity) -> bool {
-//     unsafe {
-//         toxoid_is_valid(entity.get_id())
-//     }
-// }
+pub fn is_valid_mut(entity: &mut Entity) -> bool {
+    unsafe {
+        toxoid_is_valid(entity.get_id())
+    }
+}
 
 pub fn register_tag(name: &str) -> ecs_entity_t {
     unsafe { toxoid_register_tag(name.as_bytes().as_ptr() as *const i8, name.len()) }
