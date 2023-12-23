@@ -11,3 +11,4 @@ toxoid_api = { path="../toxoid_api" }
 # toxoid_api_macro = { path="../toxoid_api_macro" }
 toxoid_render = { path="../toxoid_render" }
 toxoid_sokol = { path="../toxoid_sokol" }
+rand = "0.8.5"

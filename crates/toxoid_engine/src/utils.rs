@@ -1,14 +1,16 @@
 use rand::Rng;
 
-pub fn gen_rng_range(min: i32, max: i32) -> i32 {
+#[no_mangle]
+pub extern "C" fn gen_rng_range(min: i32, max: i32) -> i32 {
     let mut rng = rand::thread_rng();
     rng.gen_range(min..max)
 }
 
-pub fn gen_rng_grid_pos() -> (i32, i32) {
+#[no_mangle]
+pub extern "C" fn gen_rng_grid_pos() -> (i32, i32) {
     let mut rng = rand::thread_rng();
-    let window_width = 800;
-    let window_height = 600;
+    let window_width = 1250;
+    let window_height = 700;
     let entity_width = 50;
     let entity_height = 50;
     let range_max_x = window_width / entity_width;

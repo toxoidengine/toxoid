@@ -3,9 +3,11 @@ use toxoid_render::Renderer2D;
 pub mod entities;
 pub mod systems;
 pub mod update;
+pub mod utils;
 
 pub use systems::*;
 pub use update::*;
+pub use utils::*;
 
 pub fn init() {
     // Initialize FLECS ECS.

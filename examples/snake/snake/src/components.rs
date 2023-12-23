@@ -2,7 +2,7 @@ use toxoid_api_macro::component;
 use toxoid_api::IsComponent;
 use toxoid_api::bindings::*;
 use toxoid_api::*;
-use toxoid_api::{U32Array, F32Array};
+
 pub enum DirectionEnum {
     Up = 0,
     Down = 1,
@@ -18,7 +18,7 @@ component! {
         player: bool
     },
     Food {
-        food: bool
+        entity: u64
     },
     Head {
         head: bool

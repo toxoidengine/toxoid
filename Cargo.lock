@@ -538,7 +538,6 @@ checksum = "a7cee0529a6d40f580e7a5e6c495c8fbfe21b7b52795ed4bb5e62cdf92bc6380"
 name = "snake"
 version = "0.1.0"
 dependencies = [
- "rand",
  "toxoid_api",
  "toxoid_api_macro",
 ]
@@ -634,6 +633,7 @@ dependencies = [
 name = "toxoid_engine"
 version = "0.1.0"
 dependencies = [
+ "rand",
  "toxoid_api",
  "toxoid_ffi",
  "toxoid_render",
