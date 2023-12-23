@@ -115,19 +115,19 @@ pub fn movement_system(query: &mut Query) {
             .for_each(|entity| {
                 // print_string("Moving");
                 let position = entity.get::<Position>();
-                let direction = entity.get::<Direction>();
+                let direction = World::get_singleton::<Direction>();
                 let x = position.get_x();
                 let y = position.get_y();
                 let direction = direction.get_direction();
 
                 if direction == DirectionEnum::Down as u8 {
-                    create_player_block(x, y + 50, direction, entity.get_id());
+                    create_player_block(x, y + 50, entity.get_id());
                 } else if direction == DirectionEnum::Up as u8 {
-                    create_player_block(x, y - 50, direction, entity.get_id());
+                    create_player_block(x, y - 50, entity.get_id());
                 } else if direction == DirectionEnum::Left as u8 {
-                    create_player_block(x - 50, y, direction, entity.get_id());
+                    create_player_block(x - 50, y, entity.get_id());
                 } else if direction == DirectionEnum::Right as u8 {
-                    create_player_block(x + 50, y, direction, entity.get_id());
+                    create_player_block(x + 50, y, entity.get_id());
                 }
 
                 entity.remove::<Head>();
@@ -144,7 +144,40 @@ pub fn movement_system(query: &mut Query) {
     }
 } 
 
+pub fn input_system(query: &mut Query) {
+    let query = query.iter();
+    while query.next() {
+        let entities = query.entities();
+        entities
+            .iter_mut()
+            .for_each(|entity| {
+                let mut direction = World::get_singleton::<Direction>();
+                let mut keyboard_input = entity.get::<KeyboardInput>();
+                if keyboard_input.get_up() {
+                    direction.set_direction(DirectionEnum::Up as u8);
+                    keyboard_input.set_up(false);
+                }
+                if keyboard_input.get_down() {
+                    direction.set_direction(DirectionEnum::Down as u8);
+                    keyboard_input.set_down(false);
+                }
+                if keyboard_input.get_left() {
+                    direction.set_direction(DirectionEnum::Left as u8);
+                    keyboard_input.set_left(false);
+                }
+                if keyboard_input.get_right() {
+                    print_string("Right pressed!");
+                    direction.set_direction(DirectionEnum::Right as u8);
+                    keyboard_input.set_right(false);
+                }
+            });
+    }
+}
+
 pub fn init() {
     let movement_system = System::new::<(Head, Player, Position, Direction)>(movement_system);
+    let input_system = System::new::<(KeyboardInput,)>(input_system);
+    
     World::add_system(movement_system);
+    World::add_system(input_system);
 }
