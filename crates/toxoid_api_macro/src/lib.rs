@@ -25,8 +25,8 @@ enum FieldType {
     Bool,
     String,
     // Array,
-    // U32Array,
-    // F32Array,
+    U32Array,
+    F32Array,
 }
 
 // Constants for FNV-1a hashing
@@ -271,7 +271,7 @@ pub fn component(input: TokenStream) -> TokenStream {
                                     }
                                 }
                             },
-                            _ if field_type_str == "*mut u32" => {
+                            _ if field_type_str == "* mut u32" => {
                                 quote! {
                                     pub fn #getter_name(&self) -> #field_type {
                                         unsafe {
@@ -285,7 +285,7 @@ pub fn component(input: TokenStream) -> TokenStream {
                                     }
                                 }
                             },
-                            _ if field_type_str == "*mut f32" => {
+                            _ if field_type_str == "* mut f32" => {
                                 quote! {
                                     pub fn #getter_name(&self) -> #field_type {
                                         unsafe {
@@ -300,18 +300,20 @@ pub fn component(input: TokenStream) -> TokenStream {
                                 }
                             },
                             _ => {
-                                quote! {
-                                    pub fn #getter_name(&self) -> #field_type {
-                                        unsafe {
-                                            toxoid_component_get_member_u8(self.ptr, #field_offset)
-                                        }
-                                    }
-                                    pub fn #setter_name(&mut self, value: u8) {
-                                        unsafe {
-                                            toxoid_component_set_member_string(self.ptr, #field_offset, value);
-                                        }
-                                    }
-                                }
+                                println!("Unsupported field type: {}", quote!(#field_type));
+                                panic!("Unsupported field type for getter/setter");
+                                // quote! {
+                                //     pub fn #getter_name(&self) -> #field_type {
+                                //         unsafe {
+                                //             toxoid_component_get_member_u8(self.ptr, #field_offset)
+                                //         }
+                                //     }
+                                //     pub fn #setter_name(&mut self, value: u8) {
+                                //         unsafe {
+                                //             toxoid_component_set_member_string(self.ptr, #field_offset, value);
+                                //         }
+                                //     }
+                                // }
                             }
                         }
                     });
@@ -440,15 +442,24 @@ fn get_type_code(ty: &Type) -> u8 {
         Type::Path(tp) if tp.path.is_ident("f64") => FieldType::F64 as u8,
         Type::Path(tp) if tp.path.is_ident("bool") => FieldType::Bool as u8,
         Type::Path(tp) if tp.path.is_ident("String") => FieldType::String as u8,
-        // Type::Path(tp) if tp.path.is_ident("Vec<u8>") => FieldType::Array as u8,
-        // Type::Path(tp) if tp.path.is_ident("Vec<u32>") => FieldType::U32Array as u8,
-        // Type::Path(tp) if tp.path.is_ident("Vec<f32>") => FieldType::F32Array as u8,
-        // Type::Array(tp) if tp.elem.is_ident("u8") => FieldType::Array as u8,
-        // _ => {
-        //     // print_string("Unsupported field type");
-        //     FieldType::Bool as u8
-        // }
-        _ => panic!("Unsupported type code")
+        Type::Ptr(ptr) => {
+            match *ptr.elem {
+                Type::Path(ref tp) if tp.path.is_ident("u32") => {
+                    FieldType::U32Array as u8
+                },
+                Type::Path(ref tp) if tp.path.is_ident("f32") => {
+                    FieldType::F32Array as u8
+                },
+                _ => {
+                    println!("Unsupported pointer type: {}", quote!(#ptr));
+                    panic!("Unsupported type code")
+                }
+            }
+        }
+        _ => {
+            println!("Unsupported type: {}", quote!(#ty));
+            panic!("Unsupported type code")
+        }
     }
 }
 
@@ -466,10 +477,27 @@ fn get_type_size(ty: &Type) -> u32 {
         Type::Path(tp) if tp.path.is_ident("f64") => 8,
         Type::Path(tp) if tp.path.is_ident("bool") => 1,
         Type::Path(tp) if tp.path.is_ident("String") => 4,
+        Type::Ptr(ptr) => {
+            match *ptr.elem {
+                Type::Path(ref tp) if tp.path.is_ident("u32") => {
+                    4
+                },
+                Type::Path(ref tp) if tp.path.is_ident("f32") => {
+                    4
+                },
+                _ => {
+                    println!("Unsupported pointer type: {}", quote!(#ptr));
+                    panic!("Unsupported field type")
+                }
+            }
+        }
         // Type::Array(tp) if tp.elem.is_ident("u8") => FieldType::Array as u8,
         // Type::Path(tp) if tp.path.is_ident("Vec<u8>") => 4,
         // Type::Path(tp) if tp.path.is_ident("Vec<u32>") => 4,
         // Type::Path(tp) if tp.path.is_ident("Vec<f32>") => 4,
-        _ => panic!("Unsupported field type"),
+        _ => {
+            println!("Unsupported field type: {}", quote!(#ty));
+            panic!("Unsupported field type")
+        }
     }
 }

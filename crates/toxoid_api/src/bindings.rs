@@ -91,6 +91,8 @@ extern "C" {
     pub fn toxoid_component_get_member_f32(component_ptr: *mut c_void, offset: u32) -> f32;
     pub fn toxoid_component_get_member_f64(component_ptr: *mut c_void, offset: u32) -> f64;
     pub fn toxoid_component_get_member_bool(component_ptr: *mut c_void, offset: u32) -> bool;
+    pub fn toxoid_component_get_member_u32array(component_ptr: *mut c_void, offset: u32) -> *mut u32;
+    pub fn toxoid_component_get_member_f32array(component_ptr: *mut c_void, offset: u32) -> *mut f32;
     pub fn toxoid_component_get_member_string(
         component_ptr: *mut c_void,
         offset: u32,
@@ -107,6 +109,8 @@ extern "C" {
     pub fn toxoid_component_set_member_f32(component_ptr: *mut c_void, offset: u32, value: f32);
     pub fn toxoid_component_set_member_f64(component_ptr: *mut c_void, offset: u32, value: f64);
     pub fn toxoid_component_set_member_bool(component_ptr: *mut c_void, offset: u32, value: bool);
+    pub fn toxoid_component_set_member_u32array(component_ptr: *mut c_void, offset: u32, value: *mut u32);
+    pub fn toxoid_component_set_member_f32array(component_ptr: *mut c_void, offset: u32, value: *mut f32);
     pub fn toxoid_component_set_member_string(
         component_ptr: *mut c_void,
         offset: u32,

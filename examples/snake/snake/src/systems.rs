@@ -2,14 +2,6 @@ use toxoid_api::*;
 use crate::components::*;
 use crate::entities::*;
 
-// For a 60 FPS rate, 6 frames is approximately 100ms
-// For a 60 FPS rate, 30 frames is approximately 500ms
-// const FRAMES_PER_MOVE: u32 = 15;  
-// static mut FRAMES_SINCE_LAST_MOVE: u32 = 0;
-// thread_local! {
-//     static FRAMES_SINCE_LAST_MOVE: std::cell::Cell<u32> = std::cell::Cell::new(0);
-// }
-
 // pub fn create_player_block(x: u32, y: u32, direction: u8, child: ecs_entity_t) {
 //     let mut player_entity = Entity::new();
 //     player_entity.add::<Position>();
@@ -118,8 +110,18 @@ pub fn movement_system(query: &mut Query) {
                 } else if direction == DirectionEnum::Right as u8 {
                     create_player_block(x + 50, y, direction, entity.get_id());
                 }
-                
+
                 entity.remove::<Head>();
+                entity.add::<Tail>();
+
+                let length = entity.children.len();
+                entity.children_each(|mut child_entity| {
+                    print_i32(child_entity.get_id() as i32);
+                    if child_entity.has::<Tail>() && length > 1 {
+                        print_i32(child_entity.get_id() as i32);
+                        // unsafe { toxoid_delete_entity(child_entity.get_id()) };
+                    }
+                });
             });
     }
     unsafe {

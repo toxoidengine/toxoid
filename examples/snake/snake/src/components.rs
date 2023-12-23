@@ -32,6 +32,12 @@ component! {
     Head {
         previous_head: u64
     },
+    Tail {
+        previous_tail: u64
+    },
+    SnakeBody {
+        body: *mut u32
+    }
 }
 
 pub fn init() {    
@@ -43,6 +49,8 @@ pub fn init() {
     Spawn::register();
     TailLength::register();
     Head::register();
+    Tail::register();
+    // SnakeBody::register();
 
     // // Create a new entity.
     // let mut player = Entity::new();
