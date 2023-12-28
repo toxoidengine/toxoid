@@ -14,18 +14,10 @@ component! {
     Direction {
         direction: u8
     },
-    Player {
-        player: bool
-    },
-    Food {
-        entity: u64
-    },
-    Head {
-        head: bool
-    },
-    Tail {
-        tail: bool
-    },
+    Player {},
+    Food {},
+    Head {},
+    Tail {},
     Stats {
         score: u32,
         high_score: u32,
