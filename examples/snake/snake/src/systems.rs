@@ -39,7 +39,6 @@ pub fn movement_system(query: &mut Query) {
         entities
             .iter_mut()
             .for_each(|entity| {
-                // print_string("Moving");
                 let position = entity.get::<Position>();
                 let direction = World::get_singleton::<Direction>();
                 let x = position.get_x();
@@ -110,12 +109,17 @@ pub fn input_system(query: &mut Query) {
 pub fn eat_system(query: &mut Query) {
     let query_iter = query.iter();
         while query_iter.next() {
-            // let entities = query_iter.entities();
-            // entities
-            //     .iter_mut()
-            //     .for_each(|player_entity| {
+            let entities = query_iter.entities();
+            entities
+                .iter_mut()
+                .for_each(|player_entity| {
+                    player_entity
+                        .children_each(|player_child| {
+                            if player_child.has::<Size>() {
 
-            //     });
+                            }
+                        });
+                });
         }
 }
 
