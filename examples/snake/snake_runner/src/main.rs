@@ -69,7 +69,7 @@ fn copy_files() -> Result<(), Box<dyn std::error::Error>> {
         
             match std::fs::copy(&source_path, &destination_path) {
                 Ok(_) => (),
-                Err(_e) => (),
+                Err(_e) => panic!("Failed to copy file {} to {}", source_path.display(), destination_path.display()),
             }
         }
     }
