@@ -4,7 +4,7 @@
 use core::ffi::{c_char, c_void};
 use std::{collections::HashMap, cell::RefCell, any::TypeId};
 use core::alloc::Layout;
-use flecs_core::{ecs_entity_t, ecs_iter_t};
+use flecs_core::{ecs_entity_t, ecs_iter_t, ecs_id_t};
 use crate::utils::{SplitU64, split_u64};
 use crate::allocator::*;
 
@@ -100,7 +100,6 @@ pub unsafe extern "C" fn register_component_ecs(
             );
             split_u64(entity)
         }
-        
     }
 }
 
@@ -641,27 +640,6 @@ pub unsafe fn toxoid_singleton_remove(
     flecs_core::flecs_singleton_remove(component)
 }
 
-/*
-#[no_mangle]
-pub unsafe fn flecs_component_set_member_ptr(
-    component_ptr: *mut c_void,
-    offset: u32,
-    value: *mut c_void,
-) {
-    let member_ptr = (component_ptr as *mut u8).add(offset as usize) as *mut *mut c_void;
-    *member_ptr = value;
-}
-
-#[no_mangle]
-pub unsafe fn flecs_component_get_member_ptr(
-    component_ptr: *mut c_void,
-    offset: u32,
-) -> *mut u32 {
-    let member_ptr = (component_ptr as *mut u8).add(offset as usize) as *mut *mut c_void;
-    *member_ptr as *mut u32
-}
- */
-
 #[no_mangle]
 pub unsafe fn toxoid_component_set_member_ptr(
     component_ptr: *mut c_void,
@@ -677,4 +655,12 @@ pub unsafe fn toxoid_component_get_member_ptr(
     offset: u32,
 ) -> *mut c_void {
     flecs_core::flecs_component_get_member_ptr(component_ptr, offset)
-}
+    
+#[no_mangle]
+pub unsafe fn toxoid_system_init(
+    system_name: *const c_char,
+    ids: [ecs_id_t; 16],
+    callback: unsafe extern "C" fn(*mut ecs_iter_t)
+) -> SplitU64 {
+    let entity = flecs_core::flecs_system_init(system_name, terms, callback);
+    split_u64(entity)

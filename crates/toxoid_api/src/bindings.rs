@@ -142,4 +142,8 @@ extern "C" {
     pub fn toxoid_singleton_add(component: ecs_entity_t);
     pub fn toxoid_singleton_remove(component: ecs_entity_t);
     pub fn gen_rng_grid_pos() -> (i32, i32);
+    pub fn toxoid_systems_init(system_name: *const c_char,
+        ids: [ecs_id_t; 16],
+        callback: unsafe extern "C" fn(*mut c_void)
+    ) -> ecs_entity_t;
 }
