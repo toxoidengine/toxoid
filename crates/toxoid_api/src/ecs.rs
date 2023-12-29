@@ -25,6 +25,58 @@ pub enum Type {
 
 pub const MAX_ELEMENTS: usize = 100;
 
+
+pub struct Pointer {
+    pub ptr: *mut c_void
+}
+
+impl Default for Pointer {
+    fn default() -> Self {
+        Self {
+            ptr: core::ptr::null_mut()
+        }
+    }
+}
+
+impl Clone for Pointer {
+    fn clone(&self) -> Self {
+        Self {
+            ptr: self.ptr
+        }
+    }
+}
+
+impl Copy for Pointer {}
+
+impl PartialEq for Pointer {
+    fn eq(&self, other: &Self) -> bool {
+        self.ptr == other.ptr
+    }
+}
+
+// pub struct Pointer<T> {
+//     pub ptr: *mut T,
+// }
+
+// impl<T> Pointer<T> {
+//     // Create a new Pointer
+//     pub fn new(ptr: *mut T) -> Self {
+//         Self { ptr }
+//     }
+
+//     // Dereference the pointer
+//     // Note: This is unsafe because the pointer could be null, or it could point to memory that has been freed.
+//     pub unsafe fn deref(&self) -> &T {
+//         &*self.ptr
+//     }
+
+//     // Get a mutable reference from the pointer
+//     // Note: This is unsafe for the same reasons as deref.
+//     pub unsafe fn deref_mut(&mut self) -> &mut T {
+//         &mut *self.ptr
+//     }
+// }
+
 pub struct U32Array {
     pub ptr: *mut u32,
     pub len: u32,

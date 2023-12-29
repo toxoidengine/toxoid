@@ -1,6 +1,7 @@
 use toxoid_api_macro::component;
 use crate::*;
 use crate::IsComponent;
+use core::ffi::c_void;
 
 pub enum KeyCode {
     Up = 38,
@@ -10,6 +11,20 @@ pub enum KeyCode {
 }
 
 component! {
+    // Singletons
+    GameConfig {
+        resolution_width: u32,
+        resolution_height: u32,
+        scale_factor: f32,
+    },
+    KeyboardInput {
+        up: bool,
+        down: bool,
+        left: bool,
+        right: bool, 
+    },
+
+    // Components
     Position {
         x: u32,
         y: u32,
@@ -17,12 +32,6 @@ component! {
     Velocity {  
         dx: f32,
         dy: f32,
-    },
-    KeyboardInput {
-        up: bool,
-        down: bool,
-        left: bool,
-        right: bool, 
     },
     Size {
         width: u32,
@@ -34,24 +43,30 @@ component! {
         b: u8,
         a: u8
     },
-    Renderable {
-        x: u32,
-        y: u32,
+    Sprite {
+        // filename: *const u8,
+        sprite: Pointer
     },
-    GameConfig {
-        resolution_width: u32,
-        resolution_height: u32,
-        scale_factor: f32,
-    },
+
+    // Tags
+    Renderable {},
+    Rect {},
+    Loadable {},
 }
 
 pub fn init() {    
-    // Generic Components
+    // Singletons
+    GameConfig::register();
+    KeyboardInput::register();
+    
+    // Components
     Position::register();
     Velocity::register();
-    KeyboardInput::register();
     Size::register();
     Color::register();
+    Sprite::register();
+
+    // Tags
     Renderable::register();
-    GameConfig::register();
+    Rect::register();
 }
