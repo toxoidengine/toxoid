@@ -27,6 +27,7 @@ enum FieldType {
     // Array,
     U32Array,
     F32Array,
+    Pointer,
 }
 
 // Constants for FNV-1a hashing
@@ -53,11 +54,6 @@ impl Parse for ComponentStruct {
         let fields = input.parse()?;
         Ok(ComponentStruct { name, fields })
     }
-}
-
-extern "C" {
-    pub fn toxoid_print_string(v: *const i8, v_len: usize);
-    pub fn toxoid_component_set_member_u32(component_ptr: *mut c_void, offset: u32, value: u32);
 }
  
 #[proc_macro]
@@ -299,6 +295,20 @@ pub fn component(input: TokenStream) -> TokenStream {
                                     }
                                 }
                             },
+                            _ if field_type_str == "* mut c_void" => {
+                                quote! {
+                                    pub fn #getter_name(&self) -> #field_type {
+                                        unsafe {
+                                            toxoid_component_get_member_ptr(self.ptr, #field_offset)
+                                        }
+                                    }
+                                    pub fn #setter_name(&mut self, value: *mut c_void) {
+                                        unsafe {
+                                            toxoid_component_set_member_ptr(self.ptr, #field_offset, value);
+                                        }
+                                    }
+                                }
+                            },
                             _ if field_type_str == "U32Array" => {
                                 quote! {
                                     pub fn #getter_name(&self) -> *mut u32 {
@@ -323,6 +333,20 @@ pub fn component(input: TokenStream) -> TokenStream {
                                     pub fn #setter_name(&mut self, value: F32Array) {
                                         unsafe {
                                             toxoid_component_set_member_f32array(self.ptr, #field_offset, value.ptr);
+                                        }
+                                    }
+                                }
+                            },
+                            _ if field_type_str == "Pointer" => {
+                                quote! {
+                                    pub fn #getter_name(&self) -> Pointer {
+                                        unsafe {
+                                            Pointer { ptr: toxoid_component_get_member_ptr(self.ptr, #field_offset) }
+                                        }
+                                    }
+                                    pub fn #setter_name(&mut self, value: Pointer) {
+                                        unsafe {
+                                            toxoid_component_set_member_ptr(self.ptr, #field_offset, value.ptr);
                                         }
                                     }
                                 }
@@ -472,6 +496,7 @@ fn get_type_code(ty: &Type) -> u8 {
         Type::Path(tp) if tp.path.is_ident("String") => FieldType::String as u8,
         Type::Path(tp) if tp.path.is_ident("U32Array") => FieldType::U32Array as u8,
         Type::Path(tp) if tp.path.is_ident("F32Array") => FieldType::U32Array as u8,
+        Type::Path(tp) if tp.path.is_ident("Pointer") => FieldType::Pointer as u8,
         Type::Ptr(ptr) => {
             match *ptr.elem {
                 Type::Path(ref tp) if tp.path.is_ident("u32") => {
@@ -480,8 +505,11 @@ fn get_type_code(ty: &Type) -> u8 {
                 Type::Path(ref tp) if tp.path.is_ident("f32") => {
                     FieldType::F32Array as u8
                 },
+                Type::Path(ref tp) if tp.path.is_ident("c_void") => {
+                    FieldType::Pointer as u8
+                },
                 _ => {
-                    println!("Unsupported pointer type: {}", quote!(#ptr));
+                    println!("Unsupported pointer type code: {}", quote!(#ptr));
                     panic!("Unsupported type code")
                 }
             }
@@ -509,6 +537,7 @@ fn get_type_size(ty: &Type) -> u32 {
         Type::Path(tp) if tp.path.is_ident("String") => 4,
         Type::Path(tp) if tp.path.is_ident("U32Array") => 4,
         Type::Path(tp) if tp.path.is_ident("F32Array") => 4,
+        Type::Path(tp) if tp.path.is_ident("Pointer") => 4,
         Type::Ptr(ptr) => {
             match *ptr.elem {
                 Type::Path(ref tp) if tp.path.is_ident("u32") => {
@@ -517,8 +546,11 @@ fn get_type_size(ty: &Type) -> u32 {
                 Type::Path(ref tp) if tp.path.is_ident("f32") => {
                     4
                 },
+                Type::Path(ref tp) if tp.path.is_ident("c_void") => {
+                    4
+                },
                 _ => {
-                    println!("Unsupported pointer type: {}", quote!(#ptr));
+                    println!("Unsupported pointer field type: {}", quote!(#ptr));
                     panic!("Unsupported field type")
                 }
             }

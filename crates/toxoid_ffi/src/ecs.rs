@@ -640,3 +640,41 @@ pub unsafe fn toxoid_singleton_remove(
 ) {
     flecs_core::flecs_singleton_remove(component)
 }
+
+/*
+#[no_mangle]
+pub unsafe fn flecs_component_set_member_ptr(
+    component_ptr: *mut c_void,
+    offset: u32,
+    value: *mut c_void,
+) {
+    let member_ptr = (component_ptr as *mut u8).add(offset as usize) as *mut *mut c_void;
+    *member_ptr = value;
+}
+
+#[no_mangle]
+pub unsafe fn flecs_component_get_member_ptr(
+    component_ptr: *mut c_void,
+    offset: u32,
+) -> *mut u32 {
+    let member_ptr = (component_ptr as *mut u8).add(offset as usize) as *mut *mut c_void;
+    *member_ptr as *mut u32
+}
+ */
+
+#[no_mangle]
+pub unsafe fn toxoid_component_set_member_ptr(
+    component_ptr: *mut c_void,
+    offset: u32,
+    value: *mut c_void,
+) {
+    flecs_core::flecs_component_set_member_ptr(component_ptr, offset, value as *mut c_void);
+}
+
+#[no_mangle]
+pub unsafe fn toxoid_component_get_member_ptr(
+    component_ptr: *mut c_void,
+    offset: u32,
+) -> *mut c_void {
+    flecs_core::flecs_component_get_member_ptr(component_ptr, offset)
+}

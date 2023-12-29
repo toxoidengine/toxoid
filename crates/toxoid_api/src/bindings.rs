@@ -117,6 +117,15 @@ extern "C" {
         len: u32,
         value: *mut c_char,
     );   
+    pub fn toxoid_component_set_member_ptr(
+        component_ptr: *mut c_void,
+        offset: u32,
+        value: *mut c_void,
+    );
+    pub fn toxoid_component_get_member_ptr(
+        component_ptr: *mut c_void,
+        offset: u32,
+    ) -> *mut c_void;
     pub fn toxoid_progress(delta_time: f32) -> bool;
     pub fn toxoid_filter_children_init(parent: ecs_entity_t) -> *mut c_void;
     pub fn toxoid_filter_iter(filter: *mut c_void) -> *mut c_void;
