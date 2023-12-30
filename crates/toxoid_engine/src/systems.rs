@@ -37,8 +37,9 @@ pub fn render_sprite_system(query: &mut Query) {
         entities
             .iter()
             .for_each(|entity| {
-                let pos = entity.get::<Position>();
-                let size = entity.get::<Size>();
+                println!("Hello renderable sprite!");
+                // let pos = entity.get::<Position>();
+                // let size = entity.get::<Size>();
                 
                 // Draw Sprite
                 // toxoid_sokol::SokolRenderer2D::draw_sprite(sprite, x, y, scale_factor)
@@ -46,22 +47,43 @@ pub fn render_sprite_system(query: &mut Query) {
     }
 }
 
+#[cfg(target_os = "emscripten")]
 pub fn load_sprite_system(query: &mut Query) {
     let query_iter = query.iter();
     while query_iter.next() {
         let entities = query_iter.entities();
         entities
-            .iter()
+            .iter_mut()
             .for_each(|entity| {
                 let pos = entity.get::<Position>();
                 let size = entity.get::<Size>();
                 let mut sprite = entity.get::<Sprite>();
+
+                println!("Sprite loaded!");
+                entity.remove::<Loadable>();
                 
-                // let filename = sprite.filename;
-                let filename = "assets/sprites/ship.png";
-                // Draw Sprite
-                let mut sprite_ptr = toxoid_sokol::SokolRenderer2D::create_sprite(filename);
-                sprite.set_sprite(Pointer { ptr: sprite_ptr.as_mut() as *mut _ as *mut core::ffi::c_void });
+                use core::ffi::CStr;
+                use toxoid_ffi::emscripten::*;
+                use crate::utils::*;
+
+                let raw_ptr = sprite.get_filename().ptr;
+                let c_str: &CStr =  unsafe { CStr::from_ptr(raw_ptr as *const i8) };
+                let filename: &str = c_str.to_str().unwrap();
+        
+                // Create fetch attributes
+                let mut attr: emscripten_fetch_attr_t = unsafe { std::mem::zeroed() };
+                unsafe { emscripten_fetch_attr_init(&mut attr) };
+                attr.attributes = EMSCRIPTEN_FETCH_LOAD_TO_MEMORY;
+                
+                // Callbacks
+                attr.onsuccess = Some(download_succeeded);
+                attr.onerror = Some(download_failed);
+                
+                // Convert filename to CString
+                let filename_cstring = std::ffi::CString::new(filename).unwrap();
+        
+                // Fetch file
+                unsafe { emscripten_fetch(&attr, filename_cstring.as_ptr()) };
             });
     }
 }
@@ -97,12 +119,12 @@ unsafe extern "C" fn keydown_cb(
 pub fn init() {
     // let input_system = System::new::<(KeyboardInput,)>(input_system_fn);
     let render_rect_system = System::new::<(Rect, Renderable, Color, Size, Position)>(render_rect_system);
-    World::add_system(render_rect_system);
-    // let render_sprite_system = System::new::<(Sprite, Renderable, Size, Position)>(render_rect_system);
-    // World::add_system(render_rect_system);
+    let render_sprite_system = System::new::<(Renderable, Sprite, Size, Position)>(render_sprite_system);
+    let load_sprite_system = System::new::<(Loadable, Sprite, Size, Position)>(load_sprite_system);
 
-    // let load_sprite_system = System::new::<(Sprite, Loadable, Size, Position)>(render_rect_system);
-    // World::add_system(render_rect_system);
+    World::add_system(render_rect_system);
+    World::add_system(render_sprite_system);
+    World::add_system(load_sprite_system);
 
     #[cfg(target_os = "emscripten")]
     {

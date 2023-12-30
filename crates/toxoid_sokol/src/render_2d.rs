@@ -171,8 +171,6 @@ impl Renderer2D for SokolRenderer2D {
     }
 
     fn create_sprite(filename: &str) -> Box<dyn Sprite> {
-        // let image = load_image(filename);
-
         // let desc = unsafe { sg_query_image_desc(image) };
         // let (width, height) = (desc.width, desc.height);
 
