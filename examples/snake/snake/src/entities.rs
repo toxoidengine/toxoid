@@ -17,6 +17,7 @@ pub fn create_player_block(x: u32, y: u32, child: u64) {
     }
 
     let mut renderable_entity = toxoid_api::Entity::new();
+    renderable_entity.add::<Rect>();
     renderable_entity.add::<Renderable>();
     renderable_entity.add::<Size>();
     renderable_entity.add::<Color>();
@@ -52,6 +53,7 @@ pub fn create_food_block() -> u64 {
     pos.set_y(random_y as u32);
 
     let mut renderable_entity = Entity::new();
+    renderable_entity.add::<Rect>();
     renderable_entity.add::<Renderable>();
     renderable_entity.add::<Size>();
     renderable_entity.add::<Color>();
