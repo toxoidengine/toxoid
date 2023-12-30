@@ -30,6 +30,14 @@ pub struct Pointer {
     pub ptr: *mut c_void
 }
 
+impl Pointer {
+    pub fn new(ptr: *mut c_void) -> Self {
+        Self {
+            ptr
+        }
+    }
+}
+
 impl Default for Pointer {
     fn default() -> Self {
         Self {

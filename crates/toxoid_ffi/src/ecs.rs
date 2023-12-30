@@ -655,12 +655,14 @@ pub unsafe fn toxoid_component_get_member_ptr(
     offset: u32,
 ) -> *mut c_void {
     flecs_core::flecs_component_get_member_ptr(component_ptr, offset)
-    
+}
+
 #[no_mangle]
 pub unsafe fn toxoid_system_init(
     system_name: *const c_char,
     ids: [ecs_id_t; 16],
     callback: unsafe extern "C" fn(*mut ecs_iter_t)
 ) -> SplitU64 {
-    let entity = flecs_core::flecs_system_init(system_name, terms, callback);
+    let entity = flecs_core::flecs_system_init(system_name, ids, callback);
     split_u64(entity)
+}

@@ -44,7 +44,7 @@ component! {
         a: u8
     },
     Sprite {
-        // filename: *const u8,
+        filename: Pointer,
         sprite: Pointer
     },
 
@@ -69,4 +69,5 @@ pub fn init() {
     // Tags
     Renderable::register();
     Rect::register();
+    Loadable::register();
 }

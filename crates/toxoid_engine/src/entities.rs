@@ -1,5 +1,4 @@
 use toxoid_api::*;
-use crate::components::*;
 
 pub fn init() {
     World::add_singleton::<GameConfig>();
@@ -9,11 +8,5 @@ pub fn init() {
 
     World::add_singleton::<KeyboardInput>();
 
-    let mut entity = Entity::new();
-    entity.add::<Sprite>();
-    let sprite = entity.get::<Sprite>();
-
-    sprite.set_sprite()
-    
-
+    crate::utils::load_image("assets/character.png");
 }
