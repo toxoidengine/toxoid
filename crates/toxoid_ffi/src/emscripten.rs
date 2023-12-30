@@ -14,6 +14,7 @@ extern "C" {
     pub fn emscripten_cancel_main_loop();
     pub fn emscripten_fetch_attr_init(attr: *mut emscripten_fetch_attr_t);
     pub fn emscripten_fetch(attr: *const emscripten_fetch_attr_t, url: *const c_char) -> *mut emscripten_fetch_t;
+    pub fn emscripten_fetch_close(fetch: *mut emscripten_fetch_t) -> i32;
     pub fn emscripten_set_keypress_callback(
         target: *const c_char,
         userData: *mut c_void,

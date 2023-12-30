@@ -49,9 +49,11 @@ component! {
     },
 
     // Tags
-    Renderable {},
     Rect {},
     Loadable {},
+    Renderable {},
+    Initializable {},
+    Constructable {}
 }
 
 pub fn init() {    
