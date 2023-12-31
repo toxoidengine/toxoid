@@ -33,7 +33,7 @@ pub trait Renderer2D {
     // Resize sprite
     fn resize_sprite(sprite: &Box<dyn Sprite>, width: u32, height: u32);
     // Render sprite
-    fn draw_sprite(sprite: &Box<dyn Sprite>, x: f32, y: f32, scale_factor: f32);
+    fn draw_sprite(sprite: &Box<dyn Sprite>, x: f32, y: f32);
     // Draw a filled rect
     fn draw_filled_rect(pos: Position, size: Size, color: Color);
     // Draw a line

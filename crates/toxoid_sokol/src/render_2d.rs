@@ -236,8 +236,13 @@ impl Renderer2D for SokolRenderer2D {
         unimplemented!()
     }
 
-    fn draw_sprite(sprite: &Box<dyn Sprite>, x: f32, y: f32, scale_factor: f32) {
+    fn draw_sprite(sprite: &Box<dyn Sprite>, x: f32, y: f32) {
         unsafe {
+            sgp_reset_color();
+            sgp_set_blend_mode(sgp_blend_mode_SGP_BLENDMODE_BLEND);
+            let game_config = World::get_singleton::<GameConfig>();
+            let (window_width, _) = SokolRenderer2D::window_size();
+            let scale_factor = window_width as f32 / game_config.get_resolution_width() as f32;
             let dest_rect = sgp_rect { 
                 x: (x * scale_factor).round(), 
                 y: (y * scale_factor).round(), 
@@ -261,6 +266,7 @@ impl Renderer2D for SokolRenderer2D {
             let game_config = World::get_singleton::<GameConfig>();
             let (window_width, _) = SokolRenderer2D::window_size();
             let scale_factor = window_width as f32 / game_config.get_resolution_width() as f32;
+            sgp_reset_color();
             sgp_set_color(color.get_r() as f32, color.get_g() as f32, color.get_b() as f32, color.get_a() as f32);
             sgp_draw_filled_rect(pos.get_x() as f32 * scale_factor, pos.get_y() as f32 * scale_factor, size.get_width() as f32 * scale_factor, size.get_height() as f32 * scale_factor);
         }
