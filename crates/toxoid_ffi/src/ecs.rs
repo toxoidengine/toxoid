@@ -185,11 +185,28 @@ pub unsafe fn toxoid_term_next(iter: *mut flecs_core::ecs_iter_t) -> bool {
 }
 
 #[no_mangle]
-pub unsafe fn toxoid_query_create(
-    ids: *mut ecs_entity_t,
-    components_count: i32,
-) -> *mut flecs_core::ecs_query_t {
-    flecs_core::flecs_query_create(ids, components_count)
+pub unsafe fn toxoid_query_create() -> *mut flecs_core::ecs_query_desc_t {
+    flecs_core::flecs_query_create()
+}
+
+#[no_mangle]
+pub unsafe fn toxoid_query_with(query_desc: *mut flecs_core::ecs_query_desc_t, filter_index: u8, ids: *mut ecs_entity_t, components_count: i32) -> u8 {
+    flecs_core::flecs_query_with(query_desc, filter_index, ids, components_count)
+}
+
+#[no_mangle]
+pub unsafe fn toxoid_query_without(query_desc: *mut flecs_core::ecs_query_desc_t, filter_index: u8, ids: *mut ecs_entity_t, components_count: i32) -> u8 {
+    flecs_core::flecs_query_without(query_desc, filter_index, ids, components_count)
+}
+
+#[no_mangle]
+pub unsafe fn toxoid_query_with_or(query_desc: *mut flecs_core::ecs_query_desc_t, filter_index: u8, ids: *mut ecs_entity_t, components_count: i32) -> u8 {
+    flecs_core::flecs_query_with_or(query_desc, filter_index, ids, components_count)
+}
+
+#[no_mangle]
+pub unsafe fn toxoid_query_build(query_desc: *mut flecs_core::ecs_query_desc_t) -> *mut flecs_core::ecs_query_t {
+    flecs_core::flecs_query_build(query_desc)
 }
 
 #[no_mangle]
