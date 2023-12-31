@@ -26,10 +26,12 @@ pub fn render_rect_system(query: &mut Query) {
                 let color = entity.get::<Color>();
                 
                 // Draw Rect
+                // #[cfg(feature = "sokol")]
                 toxoid_sokol::SokolRenderer2D::draw_filled_rect(pos, size, color);
             });
     }
 }
+
 
 pub fn render_sprite_system(query: &mut Query) {
     let query_iter = query.iter();
@@ -38,15 +40,12 @@ pub fn render_sprite_system(query: &mut Query) {
         entities
             .iter()
             .for_each(|entity| {
-                println!("Hello renderable sprite!");
-                // let pos = entity.get::<Position>();
-                // let size = entity.get::<Size>();
                 let sprite = entity.get::<Sprite>();
                 let sprite_ptr = sprite.get_sprite();
                 let sprite_box = unsafe { Box::from_raw(sprite_ptr.ptr as *mut SokolSprite) };
                 let sprite_trait_object: &Box<dyn toxoid_render::Sprite> = Box::leak(Box::new(sprite_box as Box<dyn toxoid_render::Sprite>));
-                
                 // Draw Sprite
+                // #[cfg(feature = "sokol")]
                 toxoid_sokol::SokolRenderer2D::draw_sprite(sprite_trait_object, 0., 0.);
             });
     }
