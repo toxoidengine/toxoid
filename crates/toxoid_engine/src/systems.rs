@@ -41,12 +41,13 @@ pub fn render_sprite_system(query: &mut Query) {
             .iter()
             .for_each(|entity| {
                 let sprite = entity.get::<Sprite>();
+                let pos = entity.get::<Position>();
                 let sprite_ptr = sprite.get_sprite();
                 let sprite_box = unsafe { Box::from_raw(sprite_ptr.ptr as *mut SokolSprite) };
                 let sprite_trait_object: &Box<dyn toxoid_render::Sprite> = Box::leak(Box::new(sprite_box as Box<dyn toxoid_render::Sprite>));
                 // Draw Sprite
                 // #[cfg(feature = "sokol")]
-                toxoid_sokol::SokolRenderer2D::draw_sprite(sprite_trait_object, 0., 0.);
+                toxoid_sokol::SokolRenderer2D::draw_sprite(sprite_trait_object, pos.get_x() as f32, pos.get_y() as f32);
             });
     }
 }
