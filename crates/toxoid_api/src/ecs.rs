@@ -263,7 +263,9 @@ pub trait IsComponent {
 #[repr(C)]
 pub struct Query {
     query: *mut c_void,
-    indexes: &'static [TypeId],
+    query_desc: *mut c_void,
+    filter_index: u8,
+    // indexes: &'static [TypeId],
     // For self reference and deallocating the iterator on drop
     iter: *mut c_void,
     // For deallocating all entities returned from query.entities() on drop
@@ -284,28 +286,94 @@ pub struct Query {
 // }
 
 impl Query {
-    pub fn new<T: ComponentTuple + 'static>() -> Query  {
-        unsafe {
-            let type_ids = T::get_type_ids();
-            let layout = Layout::array::<u64>(type_ids.len()).unwrap();
-            let ids_ptr = ALLOCATOR.alloc(layout) as *mut ecs_entity_t;
-            type_ids
-                .iter()
-                .enumerate()
-                .for_each(|(i, type_id)| {
-                    let id = toxoid_component_cache_get(*type_id);
-                    let id = combine_u32(id);
-                    ids_ptr.add(i).write(id);
-                });
+    // pub fn new<T: ComponentTuple + 'static>() -> Query  {
+    //     unsafe {
+    //         let type_ids = T::get_type_ids();
+    //         let layout = Layout::array::<u64>(type_ids.len()).unwrap();
+    //         let ids_ptr = ALLOCATOR.alloc(layout) as *mut ecs_entity_t;
+    //         type_ids
+    //             .iter()
+    //             .enumerate()
+    //             .for_each(|(i, type_id)| {
+    //                 let id = toxoid_component_cache_get(*type_id);
+    //                 let id = combine_u32(id);
+    //                 ids_ptr.add(i).write(id);
+    //             });
             
-            Query {
-                query: toxoid_query_create(ids_ptr, type_ids.len() as i32),
-                indexes: type_ids,
-                iter: core::ptr::null_mut(),  
-                entities: &mut [],
-            }
+    //         Query {
+    //             query: toxoid_query_create(ids_ptr, type_ids.len() as i32),
+    //             indexes: type_ids,
+    //             iter: core::ptr::null_mut(),  
+    //             entities: &mut [],
+    //         }
+    //     }
+    // }
+
+    pub fn new() -> Query  {
+        Query {
+            query: core::ptr::null_mut(),
+            query_desc: unsafe { toxoid_query_create() },
+            filter_index: 0,
+            iter: core::ptr::null_mut(),  
+            entities: &mut [],
         }
     }
+
+    pub fn with<T: ComponentTuple + 'static>(&mut self) -> &mut Query {
+        let type_ids = T::get_type_ids();
+        let layout = Layout::array::<u64>(type_ids.len()).unwrap();
+        let ids_ptr = unsafe { ALLOCATOR.alloc(layout) as *mut ecs_entity_t };
+        type_ids
+            .iter()
+            .enumerate()
+            .for_each(|(i, type_id)| {
+                let id = unsafe { toxoid_component_cache_get(*type_id) };
+                let id = combine_u32(id);
+                unsafe { ids_ptr.add(i).write(id) };
+            });
+        self.filter_index = unsafe { toxoid_query_with(self.query_desc, self.filter_index, ids_ptr, type_ids.len() as i32) };
+        self
+    }
+
+    pub fn without<T: ComponentTuple + 'static>(&mut self) -> &mut Query {
+        let type_ids = T::get_type_ids();
+        let layout = Layout::array::<u64>(type_ids.len()).unwrap();
+        let ids_ptr = unsafe { ALLOCATOR.alloc(layout) as *mut ecs_entity_t };
+        type_ids
+            .iter()
+            .enumerate()
+            .for_each(|(i, type_id)| {
+                let id = unsafe { toxoid_component_cache_get(*type_id) };
+                let id = combine_u32(id);
+                unsafe { ids_ptr.add(i).write(id) };
+            });
+        
+        self.filter_index = unsafe { toxoid_query_without(self.query_desc, self.filter_index, ids_ptr, type_ids.len() as i32) };
+        self
+    }
+
+    pub fn with_or<T: ComponentTuple + 'static>(&mut self) -> &mut Query {
+        let type_ids = T::get_type_ids();
+        let layout = Layout::array::<u64>(type_ids.len()).unwrap();
+        let ids_ptr = unsafe { ALLOCATOR.alloc(layout) as *mut ecs_entity_t };
+        type_ids
+            .iter()
+            .enumerate()
+            .for_each(|(i, type_id)| {
+                let id = unsafe { toxoid_component_cache_get(*type_id) };
+                let id = combine_u32(id);
+                unsafe { ids_ptr.add(i).write(id) };
+            });
+        
+        self.filter_index = unsafe { toxoid_query_with_or(self.query_desc, self.filter_index, ids_ptr, type_ids.len() as i32) };
+        self
+    }
+
+    pub fn build(&mut self) -> &mut Query {
+        self.query = unsafe { toxoid_query_build(self.query_desc) };
+        self
+    }
+
 
     pub fn iter(&mut self) -> &mut Query {
         self.iter = unsafe { toxoid_query_iter(self.query) };
@@ -326,40 +394,40 @@ impl Query {
     }
 
     // TODO: FREE MEMORY
-    pub fn field<T: Default + IsComponent + 'static>(&self) -> &'static [T] {
-        unsafe {
-            let count = toxoid_iter_count(self.iter);
-            // let component_id = toxoid_component_cache_get(core::any::TypeId::of::<T>());
-            // Get index of component type in query
-            let type_id = TypeId::of::<T>();
-            let mut term_index = 0;
-            self.indexes.iter().enumerate().for_each(|(i, &x)| {
-                if x == type_id {
-                    // + 1 because of 1-based indexing for term index
-                    term_index = i + 1;
-                }
-            });
-            // Get slice of pointers to components
-            let field_slice = toxoid_query_field_list(self.iter, term_index as i32, count as u32);
-            // Call allocator to create a slice of component structs
-            // TODO, look into making this Layout::array::<T>(count as usize).unwrap();
-            // Without Emscripten crashing
-            let layout = Layout::new::<T>();
-            let components_ptr = ALLOCATOR.alloc(layout) as *mut T;
-            field_slice
-                .iter()
-                .enumerate()
-                .for_each(|(i, &component_ptr)| { 
-                    let mut component = T::default();
-                    component.set_ptr(component_ptr as *mut c_void);
-                    components_ptr.add(i).write(component);
-                });
-            // Convert from pointer to slice
-            let components = core::slice::from_raw_parts(components_ptr, count as usize);
-            // Return slice of components
-            components
-        }
-    }
+    // pub fn field<T: Default + IsComponent + 'static>(&self) -> &'static [T] {
+    //     unsafe {
+    //         let count = toxoid_iter_count(self.iter);
+    //         // let component_id = toxoid_component_cache_get(core::any::TypeId::of::<T>());
+    //         // Get index of component type in query
+    //         let type_id = TypeId::of::<T>();
+    //         let mut term_index = 0;
+    //         self.indexes.iter().enumerate().for_each(|(i, &x)| {
+    //             if x == type_id {
+    //                 // + 1 because of 1-based indexing for term index
+    //                 term_index = i + 1;
+    //             }
+    //         });
+    //         // Get slice of pointers to components
+    //         let field_slice = toxoid_query_field_list(self.iter, term_index as i32, count as u32);
+    //         // Call allocator to create a slice of component structs
+    //         // TODO, look into making this Layout::array::<T>(count as usize).unwrap();
+    //         // Without Emscripten crashing
+    //         let layout = Layout::new::<T>();
+    //         let components_ptr = ALLOCATOR.alloc(layout) as *mut T;
+    //         field_slice
+    //             .iter()
+    //             .enumerate()
+    //             .for_each(|(i, &component_ptr)| { 
+    //                 let mut component = T::default();
+    //                 component.set_ptr(component_ptr as *mut c_void);
+    //                 components_ptr.add(i).write(component);
+    //             });
+    //         // Convert from pointer to slice
+    //         let components = core::slice::from_raw_parts(components_ptr, count as usize);
+    //         // Return slice of components
+    //         components
+    //     }
+    // }
 
     // pub fn each_mut<T: ComponentTuple>(&mut self, mut _func: impl FnMut(T)) {
     //     // Ensure we start from the beginning
@@ -387,7 +455,7 @@ impl Query {
         unsafe {
             ALLOCATOR.dealloc(self.iter as *mut u8, core::alloc::Layout::new::<c_void>()); 
             ALLOCATOR.dealloc(self.entities.as_ptr() as *mut u8,core::alloc::Layout::array::<Entity>(self.entities.len()).unwrap());
-            ALLOCATOR.dealloc(self.indexes.as_ptr() as *mut u8, core::alloc::Layout::array::<Entity>(self.indexes.len()).unwrap()); 
+            // ALLOCATOR.dealloc(self.indexes.as_ptr() as *mut u8, core::alloc::Layout::array::<Entity>(self.indexes.len()).unwrap()); 
         }   
     }
 }
@@ -404,11 +472,32 @@ pub trait SystemTrait {
 }
 
 impl System {
-    pub fn new<T: ComponentTuple + 'static>(update_fn: fn(&mut Query)) -> Self {
+    pub fn new(update_fn: fn(&mut Query)) -> Self {
         System {
-            query: Query::new::<T>(),
+            query: Query::new(),
             update_fn
         }
+    }
+
+
+    pub fn with<T: ComponentTuple + 'static>(&mut self) -> &mut Self {
+        self.query.with::<T>();
+        self
+    }
+
+    pub fn without<T: ComponentTuple + 'static>(&mut self) -> &mut Self {
+        self.query.without::<T>();
+        self
+    }
+
+    pub fn with_or<T: ComponentTuple + 'static>(&mut self) -> &mut Self {
+        self.query.with_or::<T>();
+        self
+    }
+
+    pub fn build(&mut self) -> &mut Self {
+        self.query.build();
+        self
     }
 }
 

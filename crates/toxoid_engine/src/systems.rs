@@ -117,14 +117,23 @@ unsafe extern "C" fn keydown_cb(
 }
 
 pub fn init() {
-    // let input_system = System::new::<(KeyboardInput,)>(input_system_fn);
-    let render_rect_system = System::new::<(Rect, Renderable, Color, Size, Position)>(render_rect_system);
-    let render_sprite_system = System::new::<(Renderable, Sprite, Size, Position)>(render_sprite_system);
-    let load_sprite_system = System::new::<(Loadable, Sprite, Size, Position)>(load_sprite_system);
+    let mut render_rect_system = System::new(render_rect_system);
+    let mut load_sprite_system = System::new(load_sprite_system);
+    let mut render_sprite_system = System::new(render_sprite_system);
+
+    render_rect_system
+        .with::<(Rect, Renderable, Color, Size, Position)>()
+        .build();
+    load_sprite_system
+        .with::<(Loadable, Sprite, Size, Position)>()
+        .build();
+    render_sprite_system
+        .with::<(Sprite, Renderable, Size, Position)>()
+        .build();
 
     World::add_system(render_rect_system);
-    World::add_system(render_sprite_system);
     World::add_system(load_sprite_system);
+    World::add_system(render_sprite_system);
 
     #[cfg(target_os = "emscripten")]
     {

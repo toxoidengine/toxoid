@@ -46,8 +46,11 @@ pub fn load_image(filename: &str) {
         entity.add::<Position>();
         entity.add::<Size>();
 
-        let entity_box = Box::new(&mut entity);
-        let entity_raw = Box::into_raw(entity_box) as *mut core::ffi::c_void;
+        println!("Entity ID: {:?}", entity.get_id());
+
+        let entity_box = Box::new(entity);
+        let entity_box = Box::leak(entity_box);
+        let entity_raw = entity_box as *mut _ as *mut core::ffi::c_void;
         attr.userData = entity_raw;
 
         // Fetch file
@@ -55,7 +58,7 @@ pub fn load_image(filename: &str) {
     }
 }
 
-pub fn create_image(data: *mut u8, size: usize, entity: Box<&mut Entity>) {
+pub fn create_image(data: *mut u8, size: usize, mut entity: Box<Entity>) {
         use toxoid_sokol::{SokolRenderer2D, SokolSprite};
         use toxoid_sokol::sokol::{app as sapp, gfx as sg};
         use toxoid_sokol::bindings::*;
@@ -98,21 +101,17 @@ pub fn create_image(data: *mut u8, size: usize, entity: Box<&mut Entity>) {
         };
 
         let image = unsafe { sg_make_image(&mut image_desc) };
-        // 
-
         let sprite_box = Box::new(SokolSprite {
                 width: width as u32,
                 height: height as u32,
                 image: sg::Image { id: image.id },
         });
+        let sprite_box = Box::leak(sprite_box);
 
         let mut sprite = entity.get::<Sprite>();
-        sprite.set_sprite(Pointer::new(Box::into_raw(sprite_box) as *mut c_void));
+        sprite.set_sprite(Pointer::new(sprite_box as *mut _ as *mut c_void));
 
         entity.add::<Renderable>();
-        println!("{:?}", entity);
-
-        println!("Image created! {:?}", image);
 }
 
 pub extern "C" fn download_succeeded(result: *mut emscripten_fetch_t) {
@@ -122,8 +121,10 @@ pub extern "C" fn download_succeeded(result: *mut emscripten_fetch_t) {
 
         // Grab entity passed into fetch attributes
         let entity_raw = (*result).userData;
-        let entity_box: Box<&mut Entity> = Box::from_raw(entity_raw as *mut &mut Entity);
+        let entity_box: Box<Entity> = Box::from_raw(entity_raw as *mut Entity);
         
+        println!("Entity passed into fetch: {:?}", entity_box.as_ref().get_id());
+
         // Get fetch data and size
         let data = (*result).data as *mut u8;
         let size = (*result).totalBytes as usize;
