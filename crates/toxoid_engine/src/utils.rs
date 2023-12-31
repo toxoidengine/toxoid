@@ -46,8 +46,6 @@ pub fn load_image(filename: &str) {
         entity.add::<Position>();
         entity.add::<Size>();
 
-        println!("Entity ID: {:?}", entity.get_id());
-
         let entity_box = Box::new(entity);
         let entity_box = Box::leak(entity_box);
         let entity_raw = entity_box as *mut _ as *mut core::ffi::c_void;
@@ -122,8 +120,6 @@ pub extern "C" fn download_succeeded(result: *mut emscripten_fetch_t) {
         // Grab entity passed into fetch attributes
         let entity_raw = (*result).userData;
         let entity_box: Box<Entity> = Box::from_raw(entity_raw as *mut Entity);
-        
-        println!("Entity passed into fetch: {:?}", entity_box.as_ref().get_id());
 
         // Get fetch data and size
         let data = (*result).data as *mut u8;

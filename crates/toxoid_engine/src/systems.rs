@@ -1,5 +1,6 @@
 use toxoid_api::*;
 use toxoid_render::Renderer2D;
+use toxoid_sokol::SokolSprite;
 use std::sync::Mutex;
 
 pub static mut GAMEPLAY_SYSTEMS: Mutex<Vec<toxoid_api::System>> = Mutex::new(Vec::new());
@@ -40,9 +41,13 @@ pub fn render_sprite_system(query: &mut Query) {
                 println!("Hello renderable sprite!");
                 // let pos = entity.get::<Position>();
                 // let size = entity.get::<Size>();
+                let sprite = entity.get::<Sprite>();
+                let sprite_ptr = sprite.get_sprite();
+                let sprite_box = unsafe { Box::from_raw(sprite_ptr.ptr as *mut SokolSprite) };
+                let sprite_trait_object: &Box<dyn toxoid_render::Sprite> = Box::leak(Box::new(sprite_box as Box<dyn toxoid_render::Sprite>));
                 
                 // Draw Sprite
-                // toxoid_sokol::SokolRenderer2D::draw_sprite(sprite, x, y, scale_factor)
+                toxoid_sokol::SokolRenderer2D::draw_sprite(sprite_trait_object, 0., 0.);
             });
     }
 }
