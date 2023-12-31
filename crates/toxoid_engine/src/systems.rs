@@ -95,7 +95,7 @@ pub fn load_sprite_system(query: &mut Query) {
 
 // emscripten cfg
 #[cfg(target_os = "emscripten")]
-use toxoid_ffi::emscripten::{EmBool, EmscriptenKeyboardEvent, toxoid_set_keydown_callback};
+use toxoid_ffi::emscripten::{EmBool, EmscriptenKeyboardEvent, toxoid_set_keydown_callback, toxoid_set_keyup_callback};
 
 #[cfg(target_os = "emscripten")]
 unsafe extern "C" fn keydown_cb(
@@ -127,6 +127,7 @@ unsafe extern "C" fn keyup_cb(
     key_event: *const EmscriptenKeyboardEvent, 
     _user_data: *mut core::ffi::c_void
 ) -> EmBool {
+    println!("keyup");
     let key = unsafe { (*key_event).keyCode };
     let mut keyboard_input = World::get_singleton::<KeyboardInput>();
 
