@@ -121,6 +121,30 @@ unsafe extern "C" fn keydown_cb(
     return 0;
 }
 
+#[cfg(target_os = "emscripten")]
+unsafe extern "C" fn keyup_cb(
+    _event_type:  core::ffi::c_int, 
+    key_event: *const EmscriptenKeyboardEvent, 
+    _user_data: *mut core::ffi::c_void
+) -> EmBool {
+    let key = unsafe { (*key_event).keyCode };
+    let mut keyboard_input = World::get_singleton::<KeyboardInput>();
+
+    if key == KeyCode::Up as u32 {
+        keyboard_input.set_up(false);
+    }
+    if key == KeyCode::Down as u32 {
+        keyboard_input.set_down(false);
+    }
+    if key == KeyCode::Left as u32 {
+        keyboard_input.set_left(false);
+    }
+    if key == KeyCode::Right as u32 {
+        keyboard_input.set_right(false);
+    }
+    return 0;
+}
+
 pub fn init() {
     let mut render_rect_system = System::new(render_rect_system);
     let mut load_sprite_system = System::new(load_sprite_system);
@@ -152,6 +176,15 @@ pub fn init() {
             );
             if result != 0 {
                 panic!("Error setting keydown callback");
+            }
+            let result = toxoid_set_keyup_callback(
+                canvas_id.as_ptr() as *const core::ffi::c_char, 
+                std::ptr::null_mut(), 
+                1, 
+                keyup_cb
+            );
+            if result != 0 {
+                panic!("Error setting keyup callback");
             }
         }
     }   

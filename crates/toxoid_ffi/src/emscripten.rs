@@ -43,6 +43,16 @@ extern "C" {
             userData: *mut ::std::os::raw::c_void,
         ) -> EmBool,
     ) -> EmscriptenResult;
+    pub fn toxoid_set_keyup_callback(
+        target: *const ::std::os::raw::c_char,
+        userData: *mut ::std::os::raw::c_void,
+        useCapture: ::std::os::raw::c_int,
+        callback: unsafe extern "C" fn(
+            eventType: ::std::os::raw::c_int,
+            keyEvent: *const EmscriptenKeyboardEvent,
+            userData: *mut ::std::os::raw::c_void,
+        ) -> EmBool,
+    ) -> EmscriptenResult;
     pub fn emscripten_run_script(
         script: *const ::std::os::raw::c_char,
     );
