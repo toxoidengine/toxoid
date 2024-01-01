@@ -127,7 +127,6 @@ unsafe extern "C" fn keyup_cb(
     key_event: *const EmscriptenKeyboardEvent, 
     _user_data: *mut core::ffi::c_void
 ) -> EmBool {
-    println!("keyup");
     let key = unsafe { (*key_event).keyCode };
     let mut keyboard_input = World::get_singleton::<KeyboardInput>();
 

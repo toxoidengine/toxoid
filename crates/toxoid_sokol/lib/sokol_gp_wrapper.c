@@ -1,6 +1,6 @@
 #include <emscripten.h>
-// #include <emscripten/fetch.h>
 #include <emscripten/html5.h>
+// #include <emscripten/websocket.h>
 #include "sokol_app.h"
 #include "sokol_glue.h"
 #include "sokol_log.h"
