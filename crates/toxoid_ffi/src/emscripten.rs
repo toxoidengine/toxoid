@@ -73,17 +73,36 @@ extern "C" {
         code: ::std::os::raw::c_int,
         reason: *const ::std::os::raw::c_char,
     );
-    /*EMSCRIPTEN_RESULT emscripten_websocket_set_onopen_callback_on_thread(EMSCRIPTEN_WEBSOCKET_T socket, void *userData, em_websocket_open_callback_func callback, pthread_t targetThread); */
     pub fn emscripten_websocket_set_onopen_callback_on_thread(
         socket: *mut ::std::os::raw::c_void,
         userData: *mut ::std::os::raw::c_void,
         callback: unsafe extern "C" fn(*mut ::std::os::raw::c_void, *mut ::std::os::raw::c_void),
         targetThread: *mut ::std::os::raw::c_void,
     ) -> EmscriptenResult;
+
+    pub fn emscripten_websocket_set_onmessage_callback_on_thread(
+        socket: *mut ::std::os::raw::c_void,
+        userData: *mut ::std::os::raw::c_void,
+        callback: unsafe extern "C" fn(
+            eventType: ::std::os::raw::c_int,
+            websocketEvent: *const EmscriptenWebSocketMessageEvent,
+            userData: *mut ::std::os::raw::c_void,
+        ),
+        targetThread: *mut ::std::os::raw::c_void
+    ) -> EmscriptenResult;
 }
 
 pub const EM_CALLBACK_THREAD_CONTEXT_MAIN_RUNTIME_THREAD: *mut c_void = 0x1 as *mut c_void;
 pub const EM_CALLBACK_THREAD_CONTEXT_CALLING_THREAD: *mut c_void = 0x2 as *mut c_void;
+
+#[allow(non_snake_case)]
+#[repr(C)]
+pub struct EmscriptenWebSocketMessageEvent {
+    pub socket: *mut c_void,
+    pub data: *mut u8,
+    pub numBytes: u32,
+    pub isText: EmBool,
+}
 
 #[repr(C)]
 pub struct EmscriptenWebSocketCreateAttributes {
