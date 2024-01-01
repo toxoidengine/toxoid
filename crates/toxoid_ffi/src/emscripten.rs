@@ -56,6 +56,39 @@ extern "C" {
     pub fn emscripten_run_script(
         script: *const ::std::os::raw::c_char,
     );
+    pub fn emscripten_websocket_new(
+        createAttributes: *mut EmscriptenWebSocketCreateAttributes
+    ) -> *mut ::std::os::raw::c_void;
+    pub fn emscripten_websocket_send_utf8_text(
+        websocket: *mut ::std::os::raw::c_void,
+        message: *const ::std::os::raw::c_char,
+    ) -> ::std::os::raw::c_int;
+    pub fn emscripten_websocket_send_binary(
+        websocket: *mut ::std::os::raw::c_void,
+        message: *const ::std::os::raw::c_void,
+        numBytes: ::std::os::raw::c_int,
+    ) -> ::std::os::raw::c_int;
+    pub fn emscripten_websocket_close(
+        websocket: *mut ::std::os::raw::c_void,
+        code: ::std::os::raw::c_int,
+        reason: *const ::std::os::raw::c_char,
+    );
+    /*EMSCRIPTEN_RESULT emscripten_websocket_set_onopen_callback_on_thread(EMSCRIPTEN_WEBSOCKET_T socket, void *userData, em_websocket_open_callback_func callback, pthread_t targetThread); */
+    pub fn emscripten_websocket_set_onopen_callback_on_thread(
+        socket: *mut ::std::os::raw::c_void,
+        userData: *mut ::std::os::raw::c_void,
+        callback: unsafe extern "C" fn(*mut ::std::os::raw::c_void, *mut ::std::os::raw::c_void),
+        targetThread: *mut ::std::os::raw::c_void,
+    ) -> EmscriptenResult;
+}
+
+pub const EM_CALLBACK_THREAD_CONTEXT_MAIN_RUNTIME_THREAD: *mut c_void = 0x1 as *mut c_void;
+pub const EM_CALLBACK_THREAD_CONTEXT_CALLING_THREAD: *mut c_void = 0x2 as *mut c_void;
+
+#[repr(C)]
+pub struct EmscriptenWebSocketCreateAttributes {
+    pub url: *const ::std::os::raw::c_char,
+    pub protocol: *const ::std::os::raw::c_char,
 }
 
 pub type EmBool = c_int;

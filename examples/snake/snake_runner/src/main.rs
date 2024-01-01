@@ -114,6 +114,8 @@ fn build_packages() -> Result<(), Box<dyn std::error::Error>> {
                     "-sALLOW_MEMORY_GROWTH=1",
                     "-sMIN_WEBGL_VERSION=2",
                     "-sFETCH=1",
+                    // "-sWEBSOCKET_DEBUG",
+                    "-lwebsocket.js",
                     // "-sUSE_SDL=2",
                     // "-sUSE_SDL_IMAGE=2",
                     // "-sEXCEPTION_CATCHING_ALLOWED",
@@ -123,6 +125,7 @@ fn build_packages() -> Result<(), Box<dyn std::error::Error>> {
                     ];
                 command.env("EMCC_CFLAGS", flags.join(" "));
                 // command.env("EMCC_FORCE_STDLIBS", "1");
+                // command.env("EMCC_FORCE_STDLIBS", "libmalloc,libc++,libc++abi,libsockets,libfetch");
                 // command.env("EMCC_DEBUG", "1");
             } else {
                 // If emscripten target library, set Emscripten environment variables for library / side module
