@@ -1,7 +1,7 @@
 use toxoid_api_macro::component;
-use toxoid_api::IsComponent;
 use toxoid_api::bindings::*;
 use toxoid_api::*;
+use serde::{Deserialize, Serialize};
 
 pub enum DirectionEnum {
     Up = 0,

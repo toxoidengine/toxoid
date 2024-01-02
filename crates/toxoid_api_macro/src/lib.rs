@@ -375,8 +375,37 @@ pub fn component(input: TokenStream) -> TokenStream {
                     .clone()
                     .zip(field_types.clone())
                     .map(|(field_name, field_type)| {
-                        quote! {
-                            pub #field_name: #field_type,
+                        let field_type_str = format!("{}", quote!(#field_type));
+                        match field_type_str.as_str() {
+                            "Pointer" => {
+                                quote! {
+                                    #[serde(skip)]
+                                    pub #field_name: #field_type,
+                                }
+                            },
+                            "* mut c_void" => {
+                                quote! {
+                                    #[serde(skip)]
+                                    pub #field_name: #field_type,
+                                }
+                            },
+                            "U32Array" => {
+                                quote! {
+                                    #[serde(skip)]
+                                    pub #field_name: #field_type,
+                                }
+                            },
+                            "F32Array" => {
+                                quote! {
+                                    #[serde(skip)]
+                                    pub #field_name: #field_type,
+                                }
+                            },
+                            _ => {
+                                quote! {
+                                    pub #field_name: #field_type,
+                                }
+                            }
                         }
                     });
 
@@ -401,8 +430,15 @@ pub fn component(input: TokenStream) -> TokenStream {
                 }
             };
 
-            // Create the register component tokens.
             let struct_name_str = name.to_string();
+            let type_hash = fnv1a_hash_str(&struct_name_str);
+            let type_hash_fn = quote! {
+                fn get_hash() -> u64 {
+                    #type_hash
+                }
+            };
+
+            // Create the register component tokens.
             let field_names_str = field_names.clone().map(|f| f.clone().unwrap().to_string());
             let field_types_code = field_types.clone().map(|f| get_type_code(f));
             let register_component_tokens = quote! {
@@ -414,7 +450,8 @@ pub fn component(input: TokenStream) -> TokenStream {
                     )
                 };
                 let component_id = combine_u32(component_id_split);
-                cache_component_ecs(core::any::TypeId::of::<#name>(), component_id);
+                let type_hash = split_u64(#type_hash);
+                cache_component_ecs(type_hash, component_id);
                 component_id
             };
             
@@ -424,14 +461,7 @@ pub fn component(input: TokenStream) -> TokenStream {
                     #register_component_tokens
                 }
             };
-
-            let type_hash = fnv1a_hash_str(&struct_name_str);
-            let type_hash_fn = quote! {
-                fn get_hash() -> u64 {
-                    #type_hash
-                }
-            };
-
+            
             let type_name = struct_name_str.as_str();
             let type_name_fn = quote! {
                 fn get_name() -> &'static str {
@@ -440,9 +470,10 @@ pub fn component(input: TokenStream) -> TokenStream {
             };
 
             quote! {
-                #[derive(Clone, PartialEq)]
+                #[derive(Clone, PartialEq, Serialize, Deserialize)]
                 #[repr(C)]
                 pub struct #name {
+                    #[serde(skip, default = "default_ptr")]
                     ptr: *mut core::ffi::c_void,
                     #(#struct_fields)*
                 }

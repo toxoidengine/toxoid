@@ -1,6 +1,7 @@
 // #![allow(non_camel_case_types)]
 // #![allow(improper_ctypes)]
 // extern crate toxoid_api_macro;
+extern crate serde;
 
 mod components;
 mod entities;

@@ -529,6 +529,26 @@ dependencies = [
 ]
 
 [[package]]
+name = "serde"
+version = "1.0.193"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "25dd9975e68d0cb5aa1120c288333fc98731bd1dd12f561e468ea4728c042b89"
+dependencies = [
+ "serde_derive",
+]
+
+[[package]]
+name = "serde_derive"
+version = "1.0.193"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "43576ca501357b9b071ac53cdc7da8ef0cbd9493d8df094cd821777ea6e894d3"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn 2.0.41",
+]
+
+[[package]]
 name = "shlex"
 version = "1.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -538,6 +558,7 @@ checksum = "a7cee0529a6d40f580e7a5e6c495c8fbfe21b7b52795ed4bb5e62cdf92bc6380"
 name = "snake"
 version = "0.1.0"
 dependencies = [
+ "serde",
  "toxoid_api",
  "toxoid_api_macro",
 ]
@@ -618,6 +639,7 @@ version = "0.1.0"
 name = "toxoid_api"
 version = "0.1.0"
 dependencies = [
+ "serde",
  "toxoid_api_macro",
 ]
 
