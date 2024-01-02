@@ -5,8 +5,8 @@
 // is used in this engine
 #[repr(C)]
 pub struct SplitU64 {
-    high: u32,
-    low: u32,
+    pub high: u32,
+    pub low: u32,
 }
 
 pub fn split_u64(value: u64) -> SplitU64 {
@@ -16,3 +16,6 @@ pub fn split_u64(value: u64) -> SplitU64 {
     }
 }
 
+pub fn combine_u32(split_u64: SplitU64) -> u64 {
+    ((split_u64.high as u64) << 32) | (split_u64.low as u64)
+}

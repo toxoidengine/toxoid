@@ -1,7 +1,6 @@
+use serde::{Deserialize, Serialize};
 use toxoid_api_macro::component;
 use crate::*;
-use crate::IsComponent;
-use core::ffi::c_void;
 
 pub enum KeyCode {
     Up = 38,
@@ -69,7 +68,9 @@ pub fn init() {
     Sprite::register();
 
     // Tags
-    Renderable::register();
     Rect::register();
     Loadable::register();
+    Renderable::register();
+    Initializable::register();
+    Constructable::register();
 }

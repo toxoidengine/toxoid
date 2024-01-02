@@ -2,14 +2,14 @@
 #![allow(improper_ctypes_definitions)]
 
 use core::ffi::{c_char, c_void};
-use std::{collections::HashMap, cell::RefCell, any::TypeId};
+use std::{collections::HashMap, cell::RefCell};
 use core::alloc::Layout;
 use flecs_core::{ecs_entity_t, ecs_iter_t, ecs_id_t};
-use crate::utils::{SplitU64, split_u64};
+use crate::utils::{SplitU64, split_u64, combine_u32};
 use crate::allocator::*;
 
 thread_local! {
-    pub static COMPONENT_ID_CACHE: RefCell<HashMap<TypeId, ecs_entity_t>> = {
+    pub static COMPONENT_ID_CACHE: RefCell<HashMap<u64, ecs_entity_t>> = {
         let cache = HashMap::new();
         RefCell::new(cache)
     };
@@ -139,13 +139,14 @@ pub unsafe extern "C" fn toxoid_register_component(
         .collect::<Vec<std::ffi::CString>>();
     let member_names_pointers: Vec<_> = member_names.iter().map(|c_string| c_string.as_ptr()).collect();
 
-    flecs_core::flecs_component_create(
+    let created = flecs_core::flecs_component_create(
         component_name.as_ptr(),
         member_names_pointers.as_ptr(),
         member_names_count,
         member_types,
         member_types_count,
-    )
+    );
+    created
 }
 
 #[no_mangle]
@@ -155,7 +156,7 @@ pub unsafe fn toxoid_entity_create() -> SplitU64 {
 }
 
 #[no_mangle]
-pub unsafe fn toxoid_entity_add_component(entity: ecs_entity_t, component: ecs_entity_t){
+pub unsafe fn toxoid_entity_add_component(entity: ecs_entity_t, component: ecs_entity_t) {
     flecs_core::flecs_entity_add_component(entity, component)
 }
 
@@ -277,20 +278,22 @@ pub unsafe fn toxoid_entity_get_component(entity: ecs_entity_t, component: ecs_e
 
 #[no_mangle]
 pub unsafe extern "C" fn toxoid_component_cache_insert(
-    type_id: TypeId,
+    type_hash: SplitU64,
     component_id: ecs_entity_t
 ) {
     COMPONENT_ID_CACHE.with(|c| {
         let mut cache = c.borrow_mut();
-        cache.insert(type_id, component_id);
+        let type_hash = combine_u32(type_hash);
+        cache.insert(type_hash, component_id);
     });
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn toxoid_component_cache_get(type_id: TypeId) -> SplitU64 {
+pub unsafe extern "C" fn toxoid_component_cache_get(type_hash: SplitU64) -> SplitU64 {
     COMPONENT_ID_CACHE.with(|c| {
         let cache = c.borrow_mut();
-        let component_id = *cache.get(&type_id).unwrap_or(&0);
+        let type_hash = combine_u32(type_hash);
+        let component_id = *cache.get(&type_hash).unwrap_or(&0);
         split_u64(component_id)
     })
 }

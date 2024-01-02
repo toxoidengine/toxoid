@@ -41,8 +41,6 @@ pub fn init() {
     let user_data = 0 as *mut ::std::os::raw::c_void;
     unsafe {
         toxoid_ffi::emscripten::emscripten_websocket_set_onopen_callback_on_thread(ws, user_data, callback,  toxoid_ffi::emscripten::EM_CALLBACK_THREAD_CONTEXT_CALLING_THREAD as *mut c_void);
-    }
-    unsafe {
         toxoid_ffi::emscripten::emscripten_websocket_set_onmessage_callback_on_thread(ws, user_data, onmessage_cb, toxoid_ffi::emscripten::EM_CALLBACK_THREAD_CONTEXT_CALLING_THREAD );
     }
 

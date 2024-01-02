@@ -3,6 +3,7 @@ use crate::*;
 use core::ffi::c_void;
 use core::alloc::{GlobalAlloc, Layout};
 use core::any::TypeId;
+use serde::{Serialize, Deserialize};
 
 #[repr(u8)]
 pub enum Type {
@@ -25,8 +26,13 @@ pub enum Type {
 
 pub const MAX_ELEMENTS: usize = 100;
 
+pub fn default_ptr() -> *mut c_void {
+    core::ptr::null_mut()
+}
 
+#[derive(Serialize, Deserialize)]
 pub struct Pointer {
+    #[serde(skip, default = "default_ptr")]
     pub ptr: *mut c_void
 }
 
@@ -249,7 +255,7 @@ impl PartialEq for F32Array {
 }
 
 pub trait ComponentTuple {
-    fn get_type_ids() -> &'static [TypeId];
+    fn get_type_ids() -> &'static [u64];
 }
 
 pub trait IsComponent {
@@ -327,7 +333,8 @@ impl Query {
             .iter()
             .enumerate()
             .for_each(|(i, type_id)| {
-                let id = unsafe { toxoid_component_cache_get(*type_id) };
+                let type_id = split_u64(*type_id);
+                let id = unsafe { toxoid_component_cache_get(type_id) };
                 let id = combine_u32(id);
                 unsafe { ids_ptr.add(i).write(id) };
             });
@@ -343,7 +350,8 @@ impl Query {
             .iter()
             .enumerate()
             .for_each(|(i, type_id)| {
-                let id = unsafe { toxoid_component_cache_get(*type_id) };
+                let type_id = split_u64(*type_id);
+                let id = unsafe { toxoid_component_cache_get(type_id) };
                 let id = combine_u32(id);
                 unsafe { ids_ptr.add(i).write(id) };
             });
@@ -360,7 +368,8 @@ impl Query {
             .iter()
             .enumerate()
             .for_each(|(i, type_id)| {
-                let id = unsafe { toxoid_component_cache_get(*type_id) };
+                let type_id = split_u64(*type_id);
+                let id = unsafe { toxoid_component_cache_get(type_id) };
                 let id = combine_u32(id);
                 unsafe { ids_ptr.add(i).write(id) };
             });
@@ -397,7 +406,8 @@ impl Query {
     // pub fn field<T: Default + IsComponent + 'static>(&self) -> &'static [T] {
     //     unsafe {
     //         let count = toxoid_iter_count(self.iter);
-    //         // let component_id = toxoid_component_cache_get(core::any::TypeId::of::<T>());
+    //
+    //         // let component_id = toxoid_component_cache_get(T::get_hash());
     //         // Get index of component type in query
     //         let type_id = TypeId::of::<T>();
     //         let mut term_index = 0;
@@ -513,7 +523,8 @@ impl World {
 
     pub fn add_singleton<T: IsComponent + 'static>() {
         unsafe {
-            let component_id_split = toxoid_component_cache_get(core::any::TypeId::of::<T>());
+            let type_hash = split_u64(T::get_hash());
+            let component_id_split = toxoid_component_cache_get(type_hash);
             let component_id = combine_u32(component_id_split);
             toxoid_singleton_add(component_id);
         }
@@ -522,7 +533,8 @@ impl World {
     pub fn get_singleton<T: Default + IsComponent + 'static>() -> T {
         unsafe {
             let mut component = T::default();
-            let component_id_split = toxoid_component_cache_get(core::any::TypeId::of::<T>());
+            let type_hash = split_u64(T::get_hash());
+            let component_id_split = toxoid_component_cache_get(type_hash);
             let component_id = combine_u32(component_id_split);
             let ptr = toxoid_singleton_get(component_id);
             component.set_ptr(ptr);
@@ -532,7 +544,8 @@ impl World {
 
     pub fn remove_singleton<T: IsComponent + 'static>() {
         unsafe {
-            let component_id_split = toxoid_component_cache_get(core::any::TypeId::of::<T>());
+            let type_hash = split_u64(T::get_hash());
+            let component_id_split = toxoid_component_cache_get(type_hash);
             let component_id = combine_u32(component_id_split);
             toxoid_singleton_remove(component_id);
         }
@@ -595,7 +608,8 @@ impl Entity {
 
     pub fn add<T: IsComponent + 'static>(&mut self) {
         unsafe {
-            let component_id_split = toxoid_component_cache_get(core::any::TypeId::of::<T>());
+            let type_hash = split_u64(T::get_hash());
+            let component_id_split = toxoid_component_cache_get(type_hash);
             let component_id = combine_u32(component_id_split);
             toxoid_entity_add_component(self.id, component_id);
         }
@@ -603,7 +617,8 @@ impl Entity {
 
     pub fn remove<T: IsComponent + 'static>(&mut self) {
         unsafe {
-            let component_id_split = toxoid_component_cache_get(core::any::TypeId::of::<T>());
+            let type_hash = split_u64(T::get_hash());
+            let component_id_split = toxoid_component_cache_get(type_hash);
             let component_id = combine_u32(component_id_split);
             toxoid_entity_remove_component(self.id, component_id);
         }
@@ -629,7 +644,8 @@ impl Entity {
     pub fn get<T: Default + IsComponent + 'static>(&self) -> T {
         unsafe {
             let mut component = T::default();
-            let component_id_split = toxoid_component_cache_get(core::any::TypeId::of::<T>());
+            let type_hash = split_u64(T::get_hash());
+            let component_id_split = toxoid_component_cache_get(type_hash);
             let component_id = combine_u32(component_id_split);
             let ptr = toxoid_entity_get_component(self.id, component_id);
             component.set_ptr(ptr);
@@ -639,7 +655,8 @@ impl Entity {
 
     pub fn has<T: IsComponent + 'static>(&self) -> bool {
         unsafe {
-            let component_id_split = toxoid_component_cache_get(core::any::TypeId::of::<T>());
+            let type_hash = split_u64(T::get_hash());
+            let component_id_split = toxoid_component_cache_get(type_hash);
             let component_id = combine_u32(component_id_split);
             toxoid_entity_has_component(self.id, component_id)
         }
@@ -769,7 +786,7 @@ pub fn register_tag(name: &str) -> ecs_entity_t {
     unsafe { toxoid_register_tag(name.as_bytes().as_ptr() as *const i8, name.len()) }
 }
 
-pub fn cache_component_ecs(type_id: TypeId, component_id: ecs_entity_t) {
+pub fn cache_component_ecs(type_id: SplitU64, component_id: ecs_entity_t) {
     unsafe {
         toxoid_component_cache_insert(type_id, component_id);
     }
@@ -786,14 +803,14 @@ macro_rules! impl_component_tuple {
     ($($name:ident)+) => {
         impl<$($name: Default + IsComponent + 'static),+> ComponentTuple for ($($name,)+) {
             #[allow(unused_assignments)]
-            fn get_type_ids() -> &'static [TypeId] {
+            fn get_type_ids() -> &'static [u64] { // Change return type to u64
                 unsafe {
                     let count = count_args!($($name),+);
-                    let layout = Layout::array::<TypeId>(count).unwrap();
-                    let type_ids_ptr = ALLOCATOR.alloc(layout) as *mut TypeId;
+                    let layout = Layout::array::<u64>(count).unwrap(); // Change layout to u64
+                    let type_ids_ptr = ALLOCATOR.alloc(layout) as *mut u64; // Change pointer type to u64
                     let mut i = 0;
                     $(
-                        type_ids_ptr.add(i).write(TypeId::of::<$name>());
+                        type_ids_ptr.add(i).write($name::get_hash()); // Use get_hash() instead of TypeId::of
                         i += 1;
                     )+
                     let type_ids = core::slice::from_raw_parts(type_ids_ptr, count as usize);

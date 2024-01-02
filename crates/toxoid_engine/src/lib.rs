@@ -1,4 +1,3 @@
-
 use toxoid_render::Renderer2D;
 pub mod entities;
 pub mod systems;
