@@ -2,12 +2,32 @@ use std::os::raw::c_void;
 
 use toxoid_api::*;
 use toxoid_ffi::emscripten::EmscriptenWebSocketCreateAttributes;
+use serde::{Deserialize, Serialize};
 
-pub extern "C" fn callback(
+#[derive(Debug, PartialEq, Serialize, Deserialize)]
+pub struct NetworkMessageComponent {
+    // name: String,
+    // object: Vec<u8>
+    pub x: u32,
+    pub y: u32,
+}
+
+#[derive(Debug, PartialEq, Serialize, Deserialize)]
+pub struct NetworkMessageEntity {
+    id: u64,
+    components: Vec<NetworkMessageComponent>
+}
+
+#[derive(Debug, PartialEq, Serialize, Deserialize)]
+pub struct NetworkMessages {
+    messages: Vec<NetworkMessageEntity>
+}
+
+pub extern "C" fn onopen_cb(
     event_type: *mut ::std::os::raw::c_void,
     user_data: *mut ::std::os::raw::c_void
 ) {
-    println!("Hello?");
+    println!("Connection opened.");
 }
 
 pub extern "C" fn onmessage_cb(
@@ -20,7 +40,9 @@ pub extern "C" fn onmessage_cb(
     let data_len = unsafe{ (*websocket_event).numBytes };
     let data = unsafe { std::slice::from_raw_parts(data, data_len as usize) };
     let data = std::str::from_utf8(data).unwrap();
+    let req = unsafe { toxoid_ffi::emscripten::emscripten_websocket_send_binary(user_data, "Hello".as_ptr() as *const c_void, 5) };
     println!("data: {}", data);
+    println!("req: {:?}", req);
 }
 
 
@@ -38,11 +60,14 @@ pub fn init() {
     };
     let ws = unsafe { toxoid_ffi::emscripten::emscripten_websocket_new(&mut attributes as *mut EmscriptenWebSocketCreateAttributes) };
     println!("ws: {:?}", ws);
-    let user_data = 0 as *mut ::std::os::raw::c_void;
+    // let user_data = 0 as *mut ::std::os::raw::c_void;
+    let user_data = ws as *mut ::std::os::raw::c_void;
     unsafe {
-        toxoid_ffi::emscripten::emscripten_websocket_set_onopen_callback_on_thread(ws, user_data, callback,  toxoid_ffi::emscripten::EM_CALLBACK_THREAD_CONTEXT_CALLING_THREAD as *mut c_void);
+        toxoid_ffi::emscripten::emscripten_websocket_set_onopen_callback_on_thread(ws, user_data, onopen_cb,  toxoid_ffi::emscripten::EM_CALLBACK_THREAD_CONTEXT_CALLING_THREAD as *mut c_void);
         toxoid_ffi::emscripten::emscripten_websocket_set_onmessage_callback_on_thread(ws, user_data, onmessage_cb, toxoid_ffi::emscripten::EM_CALLBACK_THREAD_CONTEXT_CALLING_THREAD );
     }
 
-    crate::utils::load_image("assets/character.png");
+    println!("user_data {:?}", user_data);
+    println!("ws {:?}", ws);
+    // crate::utils::load_image("assets/character.png");
 }

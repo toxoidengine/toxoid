@@ -46,13 +46,18 @@ component! {
         filename: Pointer,
         sprite: Pointer
     },
+    NetworkEntity {
+        id: u64
+    },
 
     // Tags
     Rect {},
     Loadable {},
     Renderable {},
     Initializable {},
-    Constructable {}
+    Constructable {},
+    Connected {},
+    Disconnected {},
 }
 
 pub fn init() {    

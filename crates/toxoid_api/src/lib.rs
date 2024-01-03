@@ -1,5 +1,3 @@
-extern crate serde;
-
 pub mod bindings;
 pub mod ecs;
 pub mod globals;
@@ -14,4 +12,5 @@ pub use globals::*;
 pub use log::*;
 pub use components::*;
 // pub use collections::*;
+pub use serde;
 pub use utils::*;
