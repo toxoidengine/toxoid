@@ -11,6 +11,5 @@ toxoid_api = { path="../toxoid_api" }
 # toxoid_api_macro = { path="../toxoid_api_macro" }
 toxoid_render = { path="../toxoid_render" }
 toxoid_sokol = { path="../toxoid_sokol" }
+toxoid_net = { path="../toxoid_net" }
 rand = "0.8.5"
-serde = { version = "1.0", features = ["derive"] }
-flexbuffers = "2.0.0"

@@ -746,11 +746,10 @@ dependencies = [
 name = "toxoid_engine"
 version = "0.1.0"
 dependencies = [
- "flexbuffers",
  "rand",
- "serde",
  "toxoid_api",
  "toxoid_ffi",
+ "toxoid_net",
  "toxoid_render",
  "toxoid_sokol",
 ]
