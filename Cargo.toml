@@ -13,7 +13,7 @@ members = [
 		"crates/toxoid_render",
 		"crates/toxoid_sokol",
 		"crates/toxoid_engine",
-		"crates/toxoid_net"
+		"crates/toxoid_net",
 		
 		# Examples
 		"examples/snake/snake",

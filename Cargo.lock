@@ -763,6 +763,10 @@ dependencies = [
 ]
 
 [[package]]
+name = "toxoid_net"
+version = "0.1.0"
+
+[[package]]
 name = "toxoid_render"
 version = "0.1.0"
 dependencies = [
