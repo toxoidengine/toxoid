@@ -2,27 +2,6 @@ use std::os::raw::c_void;
 
 use toxoid_api::*;
 use toxoid_ffi::emscripten::EmscriptenWebSocketCreateAttributes;
-use serde::{Deserialize, Serialize};
-
-#[derive(Debug, PartialEq, Serialize, Deserialize)]
-pub struct NetworkMessageComponent {
-    // name: String,
-    // object: Vec<u8>
-    pub x: u32,
-    pub y: u32,
-}
-
-#[derive(Debug, PartialEq, Serialize, Deserialize)]
-pub struct NetworkMessageEntity {
-    pub id: u64,
-    pub event: String,
-    pub components: Vec<NetworkMessageComponent>
-}
-
-#[derive(Debug, PartialEq, Serialize, Deserialize)]
-pub struct NetworkMessages {
-    pub messages: Vec<NetworkMessageEntity>
-}
 
 pub extern "C" fn onopen_cb(
     event_type: *mut ::std::os::raw::c_void,
