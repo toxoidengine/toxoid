@@ -26,6 +26,8 @@ pub fn serialize(network_messages: NetworkMessages) -> Vec<u8> {
     s.view().to_vec()
 }
 
-pub fn deserialize() {
-
+pub fn deserialize(data: &[u8]) -> NetworkMessages {
+    let d = flexbuffers::Reader::get_root(data).unwrap();
+    let network_messages: NetworkMessages = NetworkMessages::deserialize(d).unwrap();
+    network_messages
 }
