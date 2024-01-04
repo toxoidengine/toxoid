@@ -765,6 +765,10 @@ dependencies = [
 [[package]]
 name = "toxoid_net"
 version = "0.1.0"
+dependencies = [
+ "flexbuffers",
+ "serde",
+]
 
 [[package]]
 name = "toxoid_render"

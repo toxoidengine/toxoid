@@ -20,12 +20,12 @@ pub struct NetworkMessages {
     pub messages: Vec<NetworkMessageEntity>
 }
 
-pub fn serialize() -> &[u8] {
+pub fn serialize(network_messages: NetworkMessages) -> Vec<u8> {
     let mut s = flexbuffers::FlexbufferSerializer::new();
-    monster.serialize(&mut s).unwrap();
-    s.view()
+    network_messages.serialize(&mut s).unwrap();
+    s.view().to_vec()
 }
 
 pub fn deserialize() {
-    
+
 }
