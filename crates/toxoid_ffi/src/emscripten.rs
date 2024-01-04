@@ -3,7 +3,6 @@ use std::ffi::CString;
 use std::ptr;
 use std::os::raw::c_void;
 
-#[cfg(target_os = "emscripten")]
 extern "C" {
     pub fn emscripten_set_main_loop_arg(
         f: unsafe extern "C" fn(*mut std::ffi::c_void),
@@ -152,7 +151,6 @@ pub fn start_loop(update_loop: unsafe extern "C" fn(*mut std::ffi::c_void)) {
     }
 }
 
-#[cfg(target_os = "emscripten")]
 #[allow(non_snake_case)]
 #[repr(C)]
 pub struct emscripten_fetch_attr_t {
@@ -175,7 +173,6 @@ pub struct emscripten_fetch_attr_t {
     pub requestDataSize: usize,
 }
 
-#[cfg(target_os = "emscripten")]
 #[allow(non_snake_case)]
 #[repr(C)]
 pub struct emscripten_fetch_t {
