@@ -14,13 +14,14 @@ pub struct NetworkMessageComponent {
 
 #[derive(Debug, PartialEq, Serialize, Deserialize)]
 pub struct NetworkMessageEntity {
-    id: u64,
-    components: Vec<NetworkMessageComponent>
+    pub id: u64,
+    pub event: String,
+    pub components: Vec<NetworkMessageComponent>
 }
 
 #[derive(Debug, PartialEq, Serialize, Deserialize)]
 pub struct NetworkMessages {
-    messages: Vec<NetworkMessageEntity>
+    pub messages: Vec<NetworkMessageEntity>
 }
 
 pub extern "C" fn onopen_cb(
