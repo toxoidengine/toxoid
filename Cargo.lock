@@ -759,6 +759,7 @@ name = "toxoid_ffi"
 version = "0.1.0"
 dependencies = [
  "flecs_core",
+ "once_cell",
 ]
 
 [[package]]

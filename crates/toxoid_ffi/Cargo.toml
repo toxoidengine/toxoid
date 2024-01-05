@@ -7,3 +7,4 @@ edition = "2021"
 
 [dependencies]
 flecs_core = { path="../../libs/flecs-polyglot/rust/flecs_core" }
+once_cell = "1.19.0"
