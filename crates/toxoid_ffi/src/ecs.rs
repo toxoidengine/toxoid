@@ -5,15 +5,12 @@ use core::ffi::{c_char, c_void};
 use std::{collections::HashMap, cell::RefCell};
 use core::alloc::Layout;
 use flecs_core::{ecs_entity_t, ecs_iter_t, ecs_id_t};
+use once_cell::sync::Lazy;
+use std::sync::Mutex;
 use crate::utils::{SplitU64, split_u64, combine_u32};
 use crate::allocator::*;
 
-thread_local! {
-    pub static COMPONENT_ID_CACHE: RefCell<HashMap<u64, ecs_entity_t>> = {
-        let cache = HashMap::new();
-        RefCell::new(cache)
-    };
-}
+pub static COMPONENT_ID_CACHE: Lazy<Mutex<HashMap<u64, ecs_entity_t>>> = Lazy::new(|| Mutex::new(HashMap::new()));
 
 #[no_mangle]
 pub unsafe extern "C" fn toxoid_print_i32(v: i32) {
@@ -281,21 +278,17 @@ pub unsafe extern "C" fn toxoid_component_cache_insert(
     type_hash: SplitU64,
     component_id: ecs_entity_t
 ) {
-    COMPONENT_ID_CACHE.with(|c| {
-        let mut cache = c.borrow_mut();
-        let type_hash = combine_u32(type_hash);
-        cache.insert(type_hash, component_id);
-    });
+    let mut cache = COMPONENT_ID_CACHE.lock().unwrap();
+    let type_hash = combine_u32(type_hash);
+    cache.insert(type_hash, component_id);
 }
 
 #[no_mangle]
 pub unsafe extern "C" fn toxoid_component_cache_get(type_hash: SplitU64) -> SplitU64 {
-    COMPONENT_ID_CACHE.with(|c| {
-        let cache = c.borrow_mut();
-        let type_hash = combine_u32(type_hash);
-        let component_id = *cache.get(&type_hash).unwrap_or(&0);
-        split_u64(component_id)
-    })
+    let cache = COMPONENT_ID_CACHE.lock().unwrap();
+    let type_hash = combine_u32(type_hash);
+    let component_id = *cache.get(&type_hash).unwrap_or(&0);
+    split_u64(component_id)
 }
 
 #[no_mangle]
