@@ -31,3 +31,25 @@ pub fn deserialize(data: &[u8]) -> NetworkMessages {
     let network_messages: NetworkMessages = NetworkMessages::deserialize(d).unwrap();
     network_messages
 }
+
+#[no_mangle]
+pub fn toxoid_network_send(network_messages: NetworkMessages) {
+    // let mut network_messages = NetworkMessages {
+    //     messages: Vec::new()
+    // };
+    // let network_message = NetworkMessageEntity {
+    //     id: 1,
+    //     event: "PlayerMove".to_string(),
+    //     components: vec![
+    //         NetworkMessageComponent {
+    //             x: 1,
+    //             y: 2
+    //         }
+    //     ]
+    // };
+    // network_messages.messages.push(network_message);
+    // let data = serialize(network_messages);
+    // println!("data: {:?}", data);
+    // let network_messages = deserialize(&data);
+    // println!("network_messages: {:?}", network_messages);
+}
