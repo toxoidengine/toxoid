@@ -602,10 +602,6 @@ impl Entity {
         }
     }
 
-    pub fn test(&mut self) {
-        print_string("Test");
-    }
-
     pub fn add<T: IsComponent + 'static>(&mut self) {
         unsafe {
             let type_hash = split_u64(T::get_hash());
@@ -786,7 +782,7 @@ pub fn register_tag(name: &str) -> ecs_entity_t {
     unsafe { toxoid_register_tag(name.as_bytes().as_ptr() as *const i8, name.len()) }
 }
 
-pub fn cache_component_ecs(type_id: SplitU64, component_id: ecs_entity_t) {
+pub fn cache_component_ecs(type_id: SplitU64, component_id: SplitU64) {
     unsafe {
         toxoid_component_cache_insert(type_id, component_id);
     }

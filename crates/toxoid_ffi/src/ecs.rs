@@ -277,10 +277,11 @@ pub unsafe fn toxoid_entity_get_component(entity: ecs_entity_t, component: ecs_e
 #[no_mangle]
 pub unsafe extern "C" fn toxoid_component_cache_insert(
     type_hash: SplitU64,
-    component_id: ecs_entity_t
+    component_id: SplitU64
 ) {
     let mut cache = COMPONENT_ID_CACHE.lock().unwrap();
     let type_hash = combine_u32(type_hash);
+    let component_id = combine_u32(component_id);
     cache.insert(type_hash, component_id);
 }
 
@@ -294,20 +295,21 @@ pub unsafe extern "C" fn toxoid_component_cache_get(type_hash: SplitU64) -> Spli
 
 #[no_mangle]
 pub unsafe extern "C" fn toxoid_network_entity_cache_insert(
-    type_hash: SplitU64,
-    component_id: ecs_entity_t
+    entity_id: SplitU64,
+    network_id: SplitU64
 ) {
     let mut cache = NETWORK_ENTITY_CACHE.lock().unwrap();
-    let type_hash = combine_u32(type_hash);
-    cache.insert(type_hash, component_id);
+    let entity_id = combine_u32(entity_id);
+    let network_id = combine_u32(network_id);
+    cache.insert(entity_id, network_id);
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn toxoid_network_entity_cache_get(type_hash: SplitU64) -> SplitU64 {
+pub unsafe extern "C" fn toxoid_network_entity_cache_get(entity_id: SplitU64) -> SplitU64 {
     let cache = NETWORK_ENTITY_CACHE.lock().unwrap();
-    let type_hash = combine_u32(type_hash);
-    let component_id = *cache.get(&type_hash).unwrap_or(&0);
-    split_u64(component_id)
+    let entity_id = combine_u32(entity_id);
+    let network_id = *cache.get(&entity_id).unwrap_or(&0);
+    split_u64(network_id)
 }
 
 #[no_mangle]
