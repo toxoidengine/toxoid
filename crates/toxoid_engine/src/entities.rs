@@ -90,5 +90,4 @@ pub fn init() {
     websocket.set_socket(Pointer{ ptr: ws });
     
     let render_entity = crate::utils::load_image("assets/character.png");
-    render_entity.
 }
