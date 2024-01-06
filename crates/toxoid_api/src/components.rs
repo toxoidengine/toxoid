@@ -49,6 +49,9 @@ component! {
     NetworkEntity {
         id: u64
     },
+    WebSocket {
+        socket: Pointer
+    },
 
     // Tags
     Rect {},
@@ -58,12 +61,15 @@ component! {
     Constructable {},
     Connected {},
     Disconnected {},
+    Local {},
+    Remote {},
 }
 
 pub fn init() {    
     // Singletons
     GameConfig::register();
     KeyboardInput::register();
+    WebSocket::register();
     
     // Components
     Position::register();

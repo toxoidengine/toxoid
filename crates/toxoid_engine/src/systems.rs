@@ -129,17 +129,22 @@ unsafe extern "C" fn keyup_cb(
 ) -> EmBool {
     let key = unsafe { (*key_event).keyCode };
     let mut keyboard_input = World::get_singleton::<KeyboardInput>();
+    let websocket = World::get_singleton::<WebSocket>();
 
     if key == KeyCode::Up as u32 {
+        toxoid_ffi::emscripten::emscripten_websocket_send_binary(websocket.get_socket().ptr, "UP".as_ptr() as *const core::ffi::c_void, 2);
         keyboard_input.set_up(false);
     }
     if key == KeyCode::Down as u32 {
+        toxoid_ffi::emscripten::emscripten_websocket_send_binary(websocket.get_socket().ptr, "DOWN".as_ptr() as *const core::ffi::c_void, 4);
         keyboard_input.set_down(false);
     }
     if key == KeyCode::Left as u32 {
+        toxoid_ffi::emscripten::emscripten_websocket_send_binary(websocket.get_socket().ptr, "LEFT".as_ptr() as *const core::ffi::c_void, 4);
         keyboard_input.set_left(false);
     }
     if key == KeyCode::Right as u32 {
+        toxoid_ffi::emscripten::emscripten_websocket_send_binary(websocket.get_socket().ptr, "RIGHT".as_ptr() as *const core::ffi::c_void, 5);
         keyboard_input.set_right(false);
     }
     return 0;
