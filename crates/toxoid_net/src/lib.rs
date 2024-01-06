@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct NetworkMessageComponent {
     // name: String,
     // object: Vec<u8>
@@ -8,14 +8,14 @@ pub struct NetworkMessageComponent {
     pub y: u32,
 }
 
-#[derive(Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct NetworkMessageEntity {
     pub id: u64,
     pub event: String,
     pub components: Vec<NetworkMessageComponent>
 }
 
-#[derive(Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct NetworkMessages {
     pub messages: Vec<NetworkMessageEntity>
 }
