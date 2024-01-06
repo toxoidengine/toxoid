@@ -47,7 +47,8 @@ component! {
         sprite: Pointer
     },
     NetworkEntity {
-        id: u64
+        id: u64,
+        entity_id: u64,
     },
     WebSocket {
         socket: Pointer
@@ -77,6 +78,7 @@ pub fn init() {
     Size::register();
     Color::register();
     Sprite::register();
+    NetworkEntity::register();
 
     // Tags
     Rect::register();
@@ -84,4 +86,8 @@ pub fn init() {
     Renderable::register();
     Initializable::register();
     Constructable::register();
+    Connected::register();
+    Disconnected::register();
+    Local::register();
+    Remote::register();
 }

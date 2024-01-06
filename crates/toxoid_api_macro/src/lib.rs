@@ -451,7 +451,7 @@ pub fn component(input: TokenStream) -> TokenStream {
                 };
                 let component_id = combine_u32(component_id_split);
                 let type_hash = split_u64(#type_hash);
-                cache_component_ecs(type_hash, component_id);
+                cache_component_ecs(type_hash, split_u64(component_id));
                 component_id
             };
             

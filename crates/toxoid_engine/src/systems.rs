@@ -204,7 +204,7 @@ pub fn init() {
     // TODO: Remove
     let mut input_system = System::new(input_system);
     input_system
-        .with::<(Position, Sprite)>()
+        .with::<(Position, Sprite, Local)>()
         .build();
     World::add_system(input_system);
 

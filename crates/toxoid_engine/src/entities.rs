@@ -2,6 +2,7 @@ use std::os::raw::c_void;
 
 use toxoid_api::*;
 use toxoid_ffi::emscripten::EmscriptenWebSocketCreateAttributes;
+use toxoid_ffi::utils::{split_u64, combine_u32};
 
 pub extern "C" fn onopen_cb(
     _event_type: *mut ::std::os::raw::c_void,
@@ -30,29 +31,58 @@ pub extern "C" fn onmessage_cb(
         .messages
         .iter()
         .for_each(|entity| {
-            println!("Event received: {:?}", entity.event);
+            // println!("Event received: {:?}", entity.event);
             match entity.event.as_str() {
                 "LocalPlayerJoin" => {
                     println!("Local player ID received: {:?}", entity.id);
+                    // Set local player ID
                     let mut local_player = World::get_singleton::<NetworkEntity>();
                     local_player.set_id(entity.id);
+
+                    // Create entity
+                    let render_entity = crate::utils::load_image("assets/character.png");
+                    render_entity.add::<Local>();
+
+                    // Add to network entity cache
+                    unsafe { toxoid_ffi::ecs::toxoid_network_entity_cache_insert(split_u64(entity.id), split_u64(render_entity.get_id())) };
                 },
                 "PlayerJoin" => {
                     println!("ID received: {:?}", entity.id);
-                    // entity
-                    //     .components
-                    //     .iter()
-                    //     .for_each(|component| {
-                    //         println!("component: {:?}", component);
-                    //     });
-                    // let req = unsafe { toxoid_ffi::emscripten::emscripten_websocket_send_binary(user_data, "Hello".as_ptr() as *const c_void, 5) };
-                    // println!("req: {:?}", req);
+                    // Create entity
+                    let render_entity = crate::utils::load_image("assets/character.png");
+                    render_entity.add::<Remote>();
+                    
+                    // Update position
+                    let deserialized_component = entity.components[0].clone();
+                    let mut position = render_entity.get::<Position>();
+                    position.set_x(deserialized_component.x);
+                    position.set_y(deserialized_component.y);
+                    
+                    // Add to network entity cache
+                    unsafe { toxoid_ffi::ecs::toxoid_network_entity_cache_insert(split_u64(entity.id), split_u64(render_entity.get_id())) };
                 },
                 "PlayerLeave" => {
                     println!("Player ID {:?} disconnected from server.", entity.id);
                 },
                 "PlayerMove" => {
-                    println!("Player ID {:?} moved to position {:?}.", entity.id, entity.components[0]);
+                    // println!("Player ID {:?} moved to position {:?}.", entity.id, entity.components[0]);
+                    // Get entity from network entity cache
+                    let entity_id = unsafe { toxoid_ffi::ecs::toxoid_network_entity_cache_get(split_u64(entity.id)) };
+                    let entity_id = combine_u32(entity_id);
+                    if entity_id == 0 {
+                        return;
+                    }
+
+                    // Create entity object
+                    let render_entity = Entity {
+                        id: entity_id,
+                        children: &mut []
+                    };
+                    
+                    // Update position
+                    let mut position = render_entity.get::<Position>();
+                    position.set_x(entity.components[0].x);
+                    position.set_y(entity.components[0].y);
                 },
                 _ => {}
             }
@@ -88,6 +118,5 @@ pub fn init() {
     World::add_singleton::<WebSocket>();
     let mut websocket = World::get_singleton::<WebSocket>();
     websocket.set_socket(Pointer{ ptr: ws });
-    
-    let render_entity = crate::utils::load_image("assets/character.png");
+
 }
