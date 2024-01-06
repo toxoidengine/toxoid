@@ -19,44 +19,44 @@ pub extern "C" fn onmessage_cb(
     let data_len = unsafe{ (*websocket_event).numBytes };
     let data = unsafe { std::slice::from_raw_parts(data, data_len as usize) };
     
-    let data = std::str::from_utf8(data).unwrap();
-    println!("Message received: {:?}", data);
+    // let data = std::str::from_utf8(data).unwrap();
+    // println!("Message received: {:?}", data);
 
     // let req = unsafe { toxoid_ffi::emscripten::emscripten_websocket_send_binary(user_data, "Hello".as_ptr() as *const c_void, 5) };
     // println!("req: {:?}", req);
     
-    // let network_messages = toxoid_net::deserialize(data);
-    // network_messages
-    //     .messages
-    //     .iter()
-    //     .for_each(|entity| {
-    //         println!("Event received: {:?}", entity.event);
-    //         match entity.event.as_str() {
-    //             "LocalPlayerJoin" => {
-    //                 println!("Local player ID received: {:?}", entity.id);
-    //                 let mut local_player = World::get_singleton::<NetworkEntity>();
-    //                 local_player.set_id(entity.id);
-    //             },
-    //             "PlayerJoin" => {
-    //                 println!("ID received: {:?}", entity.id);
-    //                 // entity
-    //                 //     .components
-    //                 //     .iter()
-    //                 //     .for_each(|component| {
-    //                 //         println!("component: {:?}", component);
-    //                 //     });
-    //                 // let req = unsafe { toxoid_ffi::emscripten::emscripten_websocket_send_binary(user_data, "Hello".as_ptr() as *const c_void, 5) };
-    //                 // println!("req: {:?}", req);
-    //             },
-    //             "PlayerLeave" => {
-    //                 println!("Player ID {:?} disconnected from server.", entity.id);
-    //             },
-    //             "PlayerMove" => {
-    //                 println!("Player ID {:?} moved to position {:?}.", entity.id, entity.components[0]);
-    //             },
-    //             _ => {}
-    //         }
-    //     });
+    let network_messages = toxoid_net::deserialize(data);
+    network_messages
+        .messages
+        .iter()
+        .for_each(|entity| {
+            println!("Event received: {:?}", entity.event);
+            match entity.event.as_str() {
+                "LocalPlayerJoin" => {
+                    println!("Local player ID received: {:?}", entity.id);
+                    let mut local_player = World::get_singleton::<NetworkEntity>();
+                    local_player.set_id(entity.id);
+                },
+                "PlayerJoin" => {
+                    println!("ID received: {:?}", entity.id);
+                    // entity
+                    //     .components
+                    //     .iter()
+                    //     .for_each(|component| {
+                    //         println!("component: {:?}", component);
+                    //     });
+                    // let req = unsafe { toxoid_ffi::emscripten::emscripten_websocket_send_binary(user_data, "Hello".as_ptr() as *const c_void, 5) };
+                    // println!("req: {:?}", req);
+                },
+                "PlayerLeave" => {
+                    println!("Player ID {:?} disconnected from server.", entity.id);
+                },
+                "PlayerMove" => {
+                    println!("Player ID {:?} moved to position {:?}.", entity.id, entity.components[0]);
+                },
+                _ => {}
+            }
+        });
 }
 
 
@@ -71,7 +71,7 @@ pub fn init() {
     World::add_singleton::<KeyboardInput>();
 
     // Local Player
-    // World::add_singleton::<NetworkEntity>();
+    World::add_singleton::<NetworkEntity>();
     
     // WebSocket Networked Multiplayer Test
     let mut attributes = EmscriptenWebSocketCreateAttributes {
@@ -89,5 +89,6 @@ pub fn init() {
     let mut websocket = World::get_singleton::<WebSocket>();
     websocket.set_socket(Pointer{ ptr: ws });
     
-    crate::utils::load_image("assets/character.png");
+    let render_entity = crate::utils::load_image("assets/character.png");
+    render_entity.
 }
