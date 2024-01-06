@@ -23,7 +23,7 @@ pub extern "C" fn gen_rng_grid_pos() -> (i32, i32) {
 }
 
 #[cfg(target_os = "emscripten")]
-pub fn load_image(filename: &str) {
+pub fn load_image(filename: &str) -> &mut Entity {
     unsafe {
         println!("Loading image: {}", filename);
         
@@ -53,6 +53,8 @@ pub fn load_image(filename: &str) {
 
         // Fetch file
         emscripten_fetch(&attr, filename_cstring.as_ptr());
+
+        entity_box
     }
 }
 
