@@ -126,6 +126,7 @@ pub const SOKOL_GP_INCLUDED: u32 = 1;
 pub const SGP_BATCH_OPTIMIZER_DEPTH: u32 = 8;
 pub const SGP_UNIFORM_CONTENT_SLOTS: u32 = 4;
 pub const SGP_TEXTURE_SLOTS: u32 = 4;
+pub const SOKOL_IMGUI_INCLUDED: u32 = 1;
 pub type wchar_t = ::std::os::raw::c_ushort;
 pub type max_align_t = f64;
 pub type va_list = *mut ::std::os::raw::c_char;
@@ -14147,6 +14148,491 @@ extern "C" {
 }
 extern "C" {
     pub fn sgp_query_desc() -> sgp_desc;
+}
+pub const SIMGUI_INVALID_ID: _bindgen_ty_5 = 0;
+pub type _bindgen_ty_5 = ::std::os::raw::c_int;
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct simgui_image_t {
+    pub id: u32,
+}
+#[test]
+fn bindgen_test_layout_simgui_image_t() {
+    const UNINIT: ::std::mem::MaybeUninit<simgui_image_t> = ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
+    assert_eq!(
+        ::std::mem::size_of::<simgui_image_t>(),
+        4usize,
+        concat!("Size of: ", stringify!(simgui_image_t))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<simgui_image_t>(),
+        4usize,
+        concat!("Alignment of ", stringify!(simgui_image_t))
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).id) as usize - ptr as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(simgui_image_t),
+            "::",
+            stringify!(id)
+        )
+    );
+}
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct simgui_image_desc_t {
+    pub image: sg_image,
+    pub sampler: sg_sampler,
+}
+#[test]
+fn bindgen_test_layout_simgui_image_desc_t() {
+    const UNINIT: ::std::mem::MaybeUninit<simgui_image_desc_t> = ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
+    assert_eq!(
+        ::std::mem::size_of::<simgui_image_desc_t>(),
+        8usize,
+        concat!("Size of: ", stringify!(simgui_image_desc_t))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<simgui_image_desc_t>(),
+        4usize,
+        concat!("Alignment of ", stringify!(simgui_image_desc_t))
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).image) as usize - ptr as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(simgui_image_desc_t),
+            "::",
+            stringify!(image)
+        )
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).sampler) as usize - ptr as usize },
+        4usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(simgui_image_desc_t),
+            "::",
+            stringify!(sampler)
+        )
+    );
+}
+pub const simgui_log_item_t_SIMGUI_LOGITEM_OK: simgui_log_item_t = 0;
+pub const simgui_log_item_t_SIMGUI_LOGITEM_MALLOC_FAILED: simgui_log_item_t = 1;
+pub const simgui_log_item_t_SIMGUI_LOGITEM_IMAGE_POOL_EXHAUSTED: simgui_log_item_t = 2;
+pub type simgui_log_item_t = ::std::os::raw::c_int;
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct simgui_allocator_t {
+    pub alloc_fn: ::std::option::Option<
+        unsafe extern "C" fn(
+            size: usize,
+            user_data: *mut ::std::os::raw::c_void,
+        ) -> *mut ::std::os::raw::c_void,
+    >,
+    pub free_fn: ::std::option::Option<
+        unsafe extern "C" fn(
+            ptr: *mut ::std::os::raw::c_void,
+            user_data: *mut ::std::os::raw::c_void,
+        ),
+    >,
+    pub user_data: *mut ::std::os::raw::c_void,
+}
+#[test]
+fn bindgen_test_layout_simgui_allocator_t() {
+    const UNINIT: ::std::mem::MaybeUninit<simgui_allocator_t> = ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
+    assert_eq!(
+        ::std::mem::size_of::<simgui_allocator_t>(),
+        24usize,
+        concat!("Size of: ", stringify!(simgui_allocator_t))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<simgui_allocator_t>(),
+        8usize,
+        concat!("Alignment of ", stringify!(simgui_allocator_t))
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).alloc_fn) as usize - ptr as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(simgui_allocator_t),
+            "::",
+            stringify!(alloc_fn)
+        )
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).free_fn) as usize - ptr as usize },
+        8usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(simgui_allocator_t),
+            "::",
+            stringify!(free_fn)
+        )
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).user_data) as usize - ptr as usize },
+        16usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(simgui_allocator_t),
+            "::",
+            stringify!(user_data)
+        )
+    );
+}
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct simgui_logger_t {
+    pub func: ::std::option::Option<
+        unsafe extern "C" fn(
+            tag: *const ::std::os::raw::c_char,
+            log_level: u32,
+            log_item_id: u32,
+            message_or_null: *const ::std::os::raw::c_char,
+            line_nr: u32,
+            filename_or_null: *const ::std::os::raw::c_char,
+            user_data: *mut ::std::os::raw::c_void,
+        ),
+    >,
+    pub user_data: *mut ::std::os::raw::c_void,
+}
+#[test]
+fn bindgen_test_layout_simgui_logger_t() {
+    const UNINIT: ::std::mem::MaybeUninit<simgui_logger_t> = ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
+    assert_eq!(
+        ::std::mem::size_of::<simgui_logger_t>(),
+        16usize,
+        concat!("Size of: ", stringify!(simgui_logger_t))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<simgui_logger_t>(),
+        8usize,
+        concat!("Alignment of ", stringify!(simgui_logger_t))
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).func) as usize - ptr as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(simgui_logger_t),
+            "::",
+            stringify!(func)
+        )
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).user_data) as usize - ptr as usize },
+        8usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(simgui_logger_t),
+            "::",
+            stringify!(user_data)
+        )
+    );
+}
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct simgui_desc_t {
+    pub max_vertices: ::std::os::raw::c_int,
+    pub image_pool_size: ::std::os::raw::c_int,
+    pub color_format: sg_pixel_format,
+    pub depth_format: sg_pixel_format,
+    pub sample_count: ::std::os::raw::c_int,
+    pub ini_filename: *const ::std::os::raw::c_char,
+    pub no_default_font: bool,
+    pub disable_paste_override: bool,
+    pub disable_set_mouse_cursor: bool,
+    pub disable_windows_resize_from_edges: bool,
+    pub write_alpha_channel: bool,
+    pub allocator: simgui_allocator_t,
+    pub logger: simgui_logger_t,
+}
+#[test]
+fn bindgen_test_layout_simgui_desc_t() {
+    const UNINIT: ::std::mem::MaybeUninit<simgui_desc_t> = ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
+    assert_eq!(
+        ::std::mem::size_of::<simgui_desc_t>(),
+        80usize,
+        concat!("Size of: ", stringify!(simgui_desc_t))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<simgui_desc_t>(),
+        8usize,
+        concat!("Alignment of ", stringify!(simgui_desc_t))
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).max_vertices) as usize - ptr as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(simgui_desc_t),
+            "::",
+            stringify!(max_vertices)
+        )
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).image_pool_size) as usize - ptr as usize },
+        4usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(simgui_desc_t),
+            "::",
+            stringify!(image_pool_size)
+        )
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).color_format) as usize - ptr as usize },
+        8usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(simgui_desc_t),
+            "::",
+            stringify!(color_format)
+        )
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).depth_format) as usize - ptr as usize },
+        12usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(simgui_desc_t),
+            "::",
+            stringify!(depth_format)
+        )
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).sample_count) as usize - ptr as usize },
+        16usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(simgui_desc_t),
+            "::",
+            stringify!(sample_count)
+        )
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).ini_filename) as usize - ptr as usize },
+        24usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(simgui_desc_t),
+            "::",
+            stringify!(ini_filename)
+        )
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).no_default_font) as usize - ptr as usize },
+        32usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(simgui_desc_t),
+            "::",
+            stringify!(no_default_font)
+        )
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).disable_paste_override) as usize - ptr as usize },
+        33usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(simgui_desc_t),
+            "::",
+            stringify!(disable_paste_override)
+        )
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).disable_set_mouse_cursor) as usize - ptr as usize },
+        34usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(simgui_desc_t),
+            "::",
+            stringify!(disable_set_mouse_cursor)
+        )
+    );
+    assert_eq!(
+        unsafe {
+            ::std::ptr::addr_of!((*ptr).disable_windows_resize_from_edges) as usize - ptr as usize
+        },
+        35usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(simgui_desc_t),
+            "::",
+            stringify!(disable_windows_resize_from_edges)
+        )
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).write_alpha_channel) as usize - ptr as usize },
+        36usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(simgui_desc_t),
+            "::",
+            stringify!(write_alpha_channel)
+        )
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).allocator) as usize - ptr as usize },
+        40usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(simgui_desc_t),
+            "::",
+            stringify!(allocator)
+        )
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).logger) as usize - ptr as usize },
+        64usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(simgui_desc_t),
+            "::",
+            stringify!(logger)
+        )
+    );
+}
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct simgui_frame_desc_t {
+    pub width: ::std::os::raw::c_int,
+    pub height: ::std::os::raw::c_int,
+    pub delta_time: f64,
+    pub dpi_scale: f32,
+}
+#[test]
+fn bindgen_test_layout_simgui_frame_desc_t() {
+    const UNINIT: ::std::mem::MaybeUninit<simgui_frame_desc_t> = ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
+    assert_eq!(
+        ::std::mem::size_of::<simgui_frame_desc_t>(),
+        24usize,
+        concat!("Size of: ", stringify!(simgui_frame_desc_t))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<simgui_frame_desc_t>(),
+        8usize,
+        concat!("Alignment of ", stringify!(simgui_frame_desc_t))
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).width) as usize - ptr as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(simgui_frame_desc_t),
+            "::",
+            stringify!(width)
+        )
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).height) as usize - ptr as usize },
+        4usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(simgui_frame_desc_t),
+            "::",
+            stringify!(height)
+        )
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).delta_time) as usize - ptr as usize },
+        8usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(simgui_frame_desc_t),
+            "::",
+            stringify!(delta_time)
+        )
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).dpi_scale) as usize - ptr as usize },
+        16usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(simgui_frame_desc_t),
+            "::",
+            stringify!(dpi_scale)
+        )
+    );
+}
+extern "C" {
+    pub fn simgui_setup(desc: *const simgui_desc_t);
+}
+extern "C" {
+    pub fn simgui_new_frame(desc: *const simgui_frame_desc_t);
+}
+extern "C" {
+    pub fn simgui_render();
+}
+extern "C" {
+    pub fn simgui_make_image(desc: *const simgui_image_desc_t) -> simgui_image_t;
+}
+extern "C" {
+    pub fn simgui_destroy_image(img: simgui_image_t);
+}
+extern "C" {
+    pub fn simgui_query_image_desc(img: simgui_image_t) -> simgui_image_desc_t;
+}
+extern "C" {
+    pub fn simgui_imtextureid(img: simgui_image_t) -> *mut ::std::os::raw::c_void;
+}
+extern "C" {
+    pub fn simgui_image_from_imtextureid(
+        imtextureid: *mut ::std::os::raw::c_void,
+    ) -> simgui_image_t;
+}
+extern "C" {
+    pub fn simgui_add_focus_event(focus: bool);
+}
+extern "C" {
+    pub fn simgui_add_mouse_pos_event(x: f32, y: f32);
+}
+extern "C" {
+    pub fn simgui_add_touch_pos_event(x: f32, y: f32);
+}
+extern "C" {
+    pub fn simgui_add_mouse_button_event(mouse_button: ::std::os::raw::c_int, down: bool);
+}
+extern "C" {
+    pub fn simgui_add_mouse_wheel_event(wheel_x: f32, wheel_y: f32);
+}
+extern "C" {
+    pub fn simgui_add_key_event(
+        map_keycode: ::std::option::Option<
+            unsafe extern "C" fn(arg1: ::std::os::raw::c_int) -> ::std::os::raw::c_int,
+        >,
+        keycode: ::std::os::raw::c_int,
+        down: bool,
+    );
+}
+extern "C" {
+    pub fn simgui_add_input_character(c: u32);
+}
+extern "C" {
+    pub fn simgui_add_input_characters_utf8(c: *const ::std::os::raw::c_char);
+}
+extern "C" {
+    pub fn simgui_add_touch_button_event(mouse_button: ::std::os::raw::c_int, down: bool);
+}
+extern "C" {
+    pub fn simgui_handle_event(ev: *const sapp_event) -> bool;
+}
+extern "C" {
+    pub fn simgui_map_keycode(keycode: sapp_keycode) -> ::std::os::raw::c_int;
+}
+extern "C" {
+    pub fn simgui_shutdown();
 }
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]

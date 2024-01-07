@@ -23,14 +23,6 @@ extern "C" {
     fn emscripten_set_canvas_element_size(id: *const c_char, width: c_int, height: c_int) -> c_int;
 }
 
-struct State {
-    pass_action: sg::PassAction,
-}
-
-static mut STATE: State = State { pass_action: sg::PassAction::new() };
-static mut SPRITE: Option<Box<dyn toxoid_render::Sprite>> = None;
-static mut RENDER_TARGET: Option<Box<dyn toxoid_render::RenderTarget>> = None;
-
 extern "C" fn init_cb() {
     // Setup sokol app
     sg::setup(&sg::Desc {
@@ -48,17 +40,9 @@ extern "C" fn init_cb() {
         };
         sgp_setup(&mut desc);
 
-        // // Create sprite image and render target to blit on
-        // SPRITE = Some(SokolRenderer2D::create_sprite("assets/character.png"));
-        // RENDER_TARGET = Some(SokolRenderer2D::create_render_target(100, 100));
-        
-        // if let Some(sprite) = &mut SPRITE {
-        //     if let Some(render_target) = &mut RENDER_TARGET {
-        //         // Blit sprite on render target
-        //         SokolRenderer2D::blit_sprite(sprite, 0., 0., 100., 100., render_target, 0., 0.);
-        //         // SokolRenderer2D::clear_sprite(render_target, 0, 0, 50, 50);
-        //     }
-        // }
+        // Initialize SImGui
+        let mut sgui_desc: simgui_desc_t = core::mem::MaybeUninit::zeroed().assume_init();
+        simgui_setup(&mut sgui_desc);
     }
 }
 
