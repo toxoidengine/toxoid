@@ -59,59 +59,59 @@ pub fn load_image(filename: &str) -> &mut Entity {
 }
 
 pub fn create_image(data: *mut u8, size: usize, mut entity: Box<Entity>) {
-        use toxoid_sokol::{SokolRenderer2D, SokolSprite};
-        use toxoid_sokol::sokol::{app as sapp, gfx as sg};
-        use toxoid_sokol::bindings::*;
-        use core::ffi::{c_void, c_int};
-        use core::ptr;
+        // use toxoid_sokol::{SokolRenderer2D, SokolSprite};
+        // use toxoid_sokol::sokol::{app as sapp, gfx as sg};
+        // use toxoid_sokol::bindings::*;
+        // use core::ffi::{c_void, c_int};
+        // use core::ptr;
 
-        let mut width: i32 = 0;
-        let mut height: i32 = 0;
-        let mut channels: i32 = 0;
+        // let mut width: i32 = 0;
+        // let mut height: i32 = 0;
+        // let mut channels: i32 = 0;
         
-        let image_data = unsafe {
-            // Converts from PNG format to RGBA8 format
-            stbi_load_from_memory(data as *const u8, size as c_int, &mut width, &mut height, &mut channels, 0)
-        };
+        // let image_data = unsafe {
+        //     // Converts from PNG format to RGBA8 format
+        //     stbi_load_from_memory(data as *const u8, size as c_int, &mut width, &mut height, &mut channels, 0)
+        // };
 
-        // Create sg_image from data
-        let mut image_desc = sg_image_desc {
-            _start_canary: 0,
-            type_: sg_image_type_SG_IMAGETYPE_2D,
-            render_target: false,
-            width: 100, // You need to provide the width
-            height: 100, // You need to provide the height
-            num_slices: 1,
-            num_mipmaps: 1,
-            usage: sg_usage_SG_USAGE_IMMUTABLE,
-            pixel_format: sg_pixel_format_SG_PIXELFORMAT_RGBA8,
-            sample_count: 1,
-            data: sg_image_data {
-                subimage: [[sg_range { ptr: image_data as *const c_void, size: (width * height * 4) as usize }; 16]; 6],
-            },
-            label: ptr::null(),
-            gl_textures: [0; 2usize],
-            gl_texture_target: 0,
-            mtl_textures: [ptr::null(); 2usize],
-            d3d11_texture: ptr::null(),
-            d3d11_shader_resource_view: ptr::null(),
-            wgpu_texture: ptr::null(),
-            wgpu_texture_view: ptr::null(),
-            _end_canary: 0,
-        };
+        // // Create sg_image from data
+        // let mut image_desc = sg_image_desc {
+        //     _start_canary: 0,
+        //     type_: sg_image_type_SG_IMAGETYPE_2D,
+        //     render_target: false,
+        //     width: 100, // You need to provide the width
+        //     height: 100, // You need to provide the height
+        //     num_slices: 1,
+        //     num_mipmaps: 1,
+        //     usage: sg_usage_SG_USAGE_IMMUTABLE,
+        //     pixel_format: sg_pixel_format_SG_PIXELFORMAT_RGBA8,
+        //     sample_count: 1,
+        //     data: sg_image_data {
+        //         subimage: [[sg_range { ptr: image_data as *const c_void, size: (width * height * 4) as usize }; 16]; 6],
+        //     },
+        //     label: ptr::null(),
+        //     gl_textures: [0; 2usize],
+        //     gl_texture_target: 0,
+        //     mtl_textures: [ptr::null(); 2usize],
+        //     d3d11_texture: ptr::null(),
+        //     d3d11_shader_resource_view: ptr::null(),
+        //     wgpu_texture: ptr::null(),
+        //     wgpu_texture_view: ptr::null(),
+        //     _end_canary: 0,
+        // };
 
-        let image = unsafe { sg_make_image(&mut image_desc) };
-        let sprite_box = Box::new(SokolSprite {
-                width: width as u32,
-                height: height as u32,
-                image: sg::Image { id: image.id },
-        });
-        let sprite_box = Box::leak(sprite_box);
+        // let image = unsafe { sg_make_image(&mut image_desc) };
+        // let sprite_box = Box::new(SokolSprite {
+        //         width: width as u32,
+        //         height: height as u32,
+        //         image: sg::Image { id: image.id },
+        // });
+        // let sprite_box = Box::leak(sprite_box);
 
-        let mut sprite = entity.get::<Sprite>();
-        sprite.set_sprite(Pointer::new(sprite_box as *mut _ as *mut c_void));
+        // let mut sprite = entity.get::<Sprite>();
+        // sprite.set_sprite(Pointer::new(sprite_box as *mut _ as *mut c_void));
 
-        entity.add::<Renderable>();
+        // entity.add::<Renderable>();
 }
 
 pub extern "C" fn download_succeeded(result: *mut emscripten_fetch_t) {
