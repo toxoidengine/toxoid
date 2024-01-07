@@ -7,6 +7,7 @@ pub mod render_2d;
 // include!(concat!(env!("OUT_DIR"), "/bindings.rs"));
 pub use render_2d::*;
 pub use sokol;
+pub use imgui_sys;
 use toxoid_api::components::GameConfig;
 use toxoid_api::World;
 use toxoid_render::Renderer2D;

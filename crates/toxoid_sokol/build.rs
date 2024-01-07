@@ -2,7 +2,7 @@ extern crate bindgen;
 extern crate cc;
 
 use std::env;
-// use std::path::PathBuf;
+use std::path::PathBuf;
 use std::path::Path;
 
 fn main() {
@@ -30,7 +30,17 @@ fn main() {
     // Check if we are building for Emscripten
     let target = env::var("TARGET").unwrap();
     if !target.contains("emscripten") {
-        let _bindings = bindgen::Builder::default()
+        let bindings = bindgen::Builder::default()
+            .clang_arg("-x")
+            .clang_arg("c++")
+            .clang_arg("-std=c++11")
+            // CIMGUI_DEFINE_ENUMS_AND_STRUCTS
+            .clang_arg("-DCIMGUI_DEFINE_ENUMS_AND_STRUCTS=0")
+            // IMGUI_DISABLE_OBSOLETE_FUNCTIONS
+            .clang_arg("-DIMGUI_DISABLE_OBSOLETE_FUNCTIONS=1")
+            .clang_arg("-Wno-unused-parameter")
+            .clang_arg("-Wno-missing-field-initializers")
+
             .header(sokol_headers_path.join("sokol_app.h").to_str().unwrap())
             .header(sokol_headers_path.join("sokol_gfx.h").to_str().unwrap())
             .header(sokol_headers_path.join("sokol_glue.h").to_str().unwrap())
@@ -39,6 +49,7 @@ fn main() {
             .header(sokol_headers_path.join("stb_image.h").to_str().unwrap())
             .header(sokol_headers_path.join("sokol_gp.h").to_str().unwrap())
             .header(sokol_headers_path.join("sokol_imgui.h").to_str().unwrap())
+            .header(sokol_headers_path.join("cimgui").join("cimgui.h").to_str().unwrap())
             .generate()
             .expect("Unable to generate bindings");
 
@@ -69,5 +80,7 @@ fn main() {
         .file(sokol_gp_wrapper)
         // Compile
         .compile("toxoid_sokol");
+
+    println!("Hello world!");
 }
 
