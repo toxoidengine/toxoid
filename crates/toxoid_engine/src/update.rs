@@ -33,6 +33,10 @@ pub extern "C" fn render_loop() {
         desc.dpi_scale = 1.0;
         toxoid_sokol::bindings::simgui_new_frame(&desc);
         let mut test = false;
+        toxoid_sokol::bindings::igSetNextWindowSize(
+            toxoid_sokol::bindings::ImVec2 { x: 200.0, y: 200.0 },
+            toxoid_sokol::bindings::ImGuiCond__ImGuiCond_Always
+        );
         toxoid_sokol::bindings::igBegin(b"Demo window\0".as_ptr() as _, &mut test as _, 0);
         toxoid_sokol::bindings::igButton(
             b"Hello!\0".as_ptr() as _,
