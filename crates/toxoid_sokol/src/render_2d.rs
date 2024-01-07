@@ -93,11 +93,14 @@ impl Renderer2D for SokolRenderer2D {
         let (window_width, window_height) = (sapp::width(), sapp::height());
         // Begin a render pass.
         sg::begin_default_pass(&self.pass_action, window_width, window_height);
+        
         unsafe { 
+            // Render ImGui
             // Dispatch all draw commands to Sokol GFX.
             sgp_flush(); 
             // Finish a draw command queue, clearing it.
             sgp_end();
+            crate::bindings::simgui_render();
         }
         // End render pass.
         sg::end_pass();

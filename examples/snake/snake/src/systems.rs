@@ -98,7 +98,6 @@ pub fn input_system(query: &mut Query) {
                     keyboard_input.set_left(false);
                 }
                 if keyboard_input.get_right() {
-                    print_string("Right pressed!");
                     direction.set_direction(DirectionEnum::Right as u8);
                     keyboard_input.set_right(false);
                 }
@@ -125,11 +124,20 @@ pub fn eat_system(query: &mut Query) {
 
 
 pub fn init() {
-    // let movement_system = System::new::<(Head, Player, Position, Direction)>(movement_system);
-    // let input_system = System::new::<(KeyboardInput,)>(input_system);
-    // let eat_system = System::new::<(Head, Player)>(eat_system);
-    
-    // World::add_system(movement_system);
-    // World::add_system(input_system);
+    let mut movement_system = System::new(movement_system);
+    let mut input_system = System::new(input_system);
+    // let mut eat_system = System::new(eat_system);
+    movement_system
+        .with::<(Head, Player, Position, Direction)>()
+        .build();
+    input_system
+        .with::<(KeyboardInput,)>()
+        .build();
+    // eat_system
+    //     .with::<(Head, Player)>()
+    //     .build();
+
+    World::add_system(movement_system);
+    World::add_system(input_system);
     // World::add_system(eat_system);
 }

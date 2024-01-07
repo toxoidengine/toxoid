@@ -5,7 +5,7 @@ pub fn create_player_block(x: u32, y: u32, child: u64) {
     let mut player_entity = toxoid_api::Entity::new();
     player_entity.add::<Player>();
     player_entity.add::<Position>();
-    // player_entity.add::<Direction>();
+    player_entity.add::<Direction>();
 
     let mut pos = player_entity.get::<Position>();
     pos.set_x(x);
