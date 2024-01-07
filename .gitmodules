@@ -2,3 +2,8 @@
 	path = libs/flecs-polyglot
 	url = https://github.com/flecs-hub/flecs-polyglot.git
 	branch = main
+
+[submodule "cimgui"]
+	path = crates/toxoid_sokol/lib/cimgui
+	url = https://github.com/cimgui/cimgui.git
+	branch = main
