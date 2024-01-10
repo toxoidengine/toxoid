@@ -205,6 +205,7 @@ pub const SGP_BATCH_OPTIMIZER_DEPTH: u32 = 8;
 pub const SGP_UNIFORM_CONTENT_SLOTS: u32 = 4;
 pub const SGP_TEXTURE_SLOTS: u32 = 4;
 pub const SOKOL_IMGUI_INCLUDED: u32 = 1;
+pub const SOKOL_SPINE_INCLUDED: u32 = 1;
 pub const IMGUI_HAS_DOCK: u32 = 1;
 pub type std_nullptr_t = *const ::std::os::raw::c_void;
 pub type max_align_t = f64;
@@ -14694,6 +14695,2743 @@ extern "C" {
 }
 extern "C" {
     pub fn simgui_shutdown();
+}
+pub const SSPINE_INVALID_ID: _bindgen_ty_6 = 0;
+pub const SSPINE_MAX_SKINSET_SKINS: _bindgen_ty_6 = 32;
+pub const SSPINE_MAX_STRING_SIZE: _bindgen_ty_6 = 61;
+pub type _bindgen_ty_6 = ::std::os::raw::c_int;
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct sspine_context {
+    pub id: u32,
+}
+#[test]
+fn bindgen_test_layout_sspine_context() {
+    const UNINIT: ::std::mem::MaybeUninit<sspine_context> = ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
+    assert_eq!(
+        ::std::mem::size_of::<sspine_context>(),
+        4usize,
+        concat!("Size of: ", stringify!(sspine_context))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<sspine_context>(),
+        4usize,
+        concat!("Alignment of ", stringify!(sspine_context))
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).id) as usize - ptr as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(sspine_context),
+            "::",
+            stringify!(id)
+        )
+    );
+}
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct sspine_atlas {
+    pub id: u32,
+}
+#[test]
+fn bindgen_test_layout_sspine_atlas() {
+    const UNINIT: ::std::mem::MaybeUninit<sspine_atlas> = ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
+    assert_eq!(
+        ::std::mem::size_of::<sspine_atlas>(),
+        4usize,
+        concat!("Size of: ", stringify!(sspine_atlas))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<sspine_atlas>(),
+        4usize,
+        concat!("Alignment of ", stringify!(sspine_atlas))
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).id) as usize - ptr as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(sspine_atlas),
+            "::",
+            stringify!(id)
+        )
+    );
+}
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct sspine_skeleton {
+    pub id: u32,
+}
+#[test]
+fn bindgen_test_layout_sspine_skeleton() {
+    const UNINIT: ::std::mem::MaybeUninit<sspine_skeleton> = ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
+    assert_eq!(
+        ::std::mem::size_of::<sspine_skeleton>(),
+        4usize,
+        concat!("Size of: ", stringify!(sspine_skeleton))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<sspine_skeleton>(),
+        4usize,
+        concat!("Alignment of ", stringify!(sspine_skeleton))
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).id) as usize - ptr as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(sspine_skeleton),
+            "::",
+            stringify!(id)
+        )
+    );
+}
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct sspine_instance {
+    pub id: u32,
+}
+#[test]
+fn bindgen_test_layout_sspine_instance() {
+    const UNINIT: ::std::mem::MaybeUninit<sspine_instance> = ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
+    assert_eq!(
+        ::std::mem::size_of::<sspine_instance>(),
+        4usize,
+        concat!("Size of: ", stringify!(sspine_instance))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<sspine_instance>(),
+        4usize,
+        concat!("Alignment of ", stringify!(sspine_instance))
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).id) as usize - ptr as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(sspine_instance),
+            "::",
+            stringify!(id)
+        )
+    );
+}
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct sspine_skinset {
+    pub id: u32,
+}
+#[test]
+fn bindgen_test_layout_sspine_skinset() {
+    const UNINIT: ::std::mem::MaybeUninit<sspine_skinset> = ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
+    assert_eq!(
+        ::std::mem::size_of::<sspine_skinset>(),
+        4usize,
+        concat!("Size of: ", stringify!(sspine_skinset))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<sspine_skinset>(),
+        4usize,
+        concat!("Alignment of ", stringify!(sspine_skinset))
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).id) as usize - ptr as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(sspine_skinset),
+            "::",
+            stringify!(id)
+        )
+    );
+}
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct sspine_image {
+    pub atlas_id: u32,
+    pub index: ::std::os::raw::c_int,
+}
+#[test]
+fn bindgen_test_layout_sspine_image() {
+    const UNINIT: ::std::mem::MaybeUninit<sspine_image> = ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
+    assert_eq!(
+        ::std::mem::size_of::<sspine_image>(),
+        8usize,
+        concat!("Size of: ", stringify!(sspine_image))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<sspine_image>(),
+        4usize,
+        concat!("Alignment of ", stringify!(sspine_image))
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).atlas_id) as usize - ptr as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(sspine_image),
+            "::",
+            stringify!(atlas_id)
+        )
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).index) as usize - ptr as usize },
+        4usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(sspine_image),
+            "::",
+            stringify!(index)
+        )
+    );
+}
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct sspine_atlas_page {
+    pub atlas_id: u32,
+    pub index: ::std::os::raw::c_int,
+}
+#[test]
+fn bindgen_test_layout_sspine_atlas_page() {
+    const UNINIT: ::std::mem::MaybeUninit<sspine_atlas_page> = ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
+    assert_eq!(
+        ::std::mem::size_of::<sspine_atlas_page>(),
+        8usize,
+        concat!("Size of: ", stringify!(sspine_atlas_page))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<sspine_atlas_page>(),
+        4usize,
+        concat!("Alignment of ", stringify!(sspine_atlas_page))
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).atlas_id) as usize - ptr as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(sspine_atlas_page),
+            "::",
+            stringify!(atlas_id)
+        )
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).index) as usize - ptr as usize },
+        4usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(sspine_atlas_page),
+            "::",
+            stringify!(index)
+        )
+    );
+}
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct sspine_anim {
+    pub skeleton_id: u32,
+    pub index: ::std::os::raw::c_int,
+}
+#[test]
+fn bindgen_test_layout_sspine_anim() {
+    const UNINIT: ::std::mem::MaybeUninit<sspine_anim> = ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
+    assert_eq!(
+        ::std::mem::size_of::<sspine_anim>(),
+        8usize,
+        concat!("Size of: ", stringify!(sspine_anim))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<sspine_anim>(),
+        4usize,
+        concat!("Alignment of ", stringify!(sspine_anim))
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).skeleton_id) as usize - ptr as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(sspine_anim),
+            "::",
+            stringify!(skeleton_id)
+        )
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).index) as usize - ptr as usize },
+        4usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(sspine_anim),
+            "::",
+            stringify!(index)
+        )
+    );
+}
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct sspine_bone {
+    pub skeleton_id: u32,
+    pub index: ::std::os::raw::c_int,
+}
+#[test]
+fn bindgen_test_layout_sspine_bone() {
+    const UNINIT: ::std::mem::MaybeUninit<sspine_bone> = ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
+    assert_eq!(
+        ::std::mem::size_of::<sspine_bone>(),
+        8usize,
+        concat!("Size of: ", stringify!(sspine_bone))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<sspine_bone>(),
+        4usize,
+        concat!("Alignment of ", stringify!(sspine_bone))
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).skeleton_id) as usize - ptr as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(sspine_bone),
+            "::",
+            stringify!(skeleton_id)
+        )
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).index) as usize - ptr as usize },
+        4usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(sspine_bone),
+            "::",
+            stringify!(index)
+        )
+    );
+}
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct sspine_slot {
+    pub skeleton_id: u32,
+    pub index: ::std::os::raw::c_int,
+}
+#[test]
+fn bindgen_test_layout_sspine_slot() {
+    const UNINIT: ::std::mem::MaybeUninit<sspine_slot> = ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
+    assert_eq!(
+        ::std::mem::size_of::<sspine_slot>(),
+        8usize,
+        concat!("Size of: ", stringify!(sspine_slot))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<sspine_slot>(),
+        4usize,
+        concat!("Alignment of ", stringify!(sspine_slot))
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).skeleton_id) as usize - ptr as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(sspine_slot),
+            "::",
+            stringify!(skeleton_id)
+        )
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).index) as usize - ptr as usize },
+        4usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(sspine_slot),
+            "::",
+            stringify!(index)
+        )
+    );
+}
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct sspine_event {
+    pub skeleton_id: u32,
+    pub index: ::std::os::raw::c_int,
+}
+#[test]
+fn bindgen_test_layout_sspine_event() {
+    const UNINIT: ::std::mem::MaybeUninit<sspine_event> = ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
+    assert_eq!(
+        ::std::mem::size_of::<sspine_event>(),
+        8usize,
+        concat!("Size of: ", stringify!(sspine_event))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<sspine_event>(),
+        4usize,
+        concat!("Alignment of ", stringify!(sspine_event))
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).skeleton_id) as usize - ptr as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(sspine_event),
+            "::",
+            stringify!(skeleton_id)
+        )
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).index) as usize - ptr as usize },
+        4usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(sspine_event),
+            "::",
+            stringify!(index)
+        )
+    );
+}
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct sspine_iktarget {
+    pub skeleton_id: u32,
+    pub index: ::std::os::raw::c_int,
+}
+#[test]
+fn bindgen_test_layout_sspine_iktarget() {
+    const UNINIT: ::std::mem::MaybeUninit<sspine_iktarget> = ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
+    assert_eq!(
+        ::std::mem::size_of::<sspine_iktarget>(),
+        8usize,
+        concat!("Size of: ", stringify!(sspine_iktarget))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<sspine_iktarget>(),
+        4usize,
+        concat!("Alignment of ", stringify!(sspine_iktarget))
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).skeleton_id) as usize - ptr as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(sspine_iktarget),
+            "::",
+            stringify!(skeleton_id)
+        )
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).index) as usize - ptr as usize },
+        4usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(sspine_iktarget),
+            "::",
+            stringify!(index)
+        )
+    );
+}
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct sspine_skin {
+    pub skeleton_id: u32,
+    pub index: ::std::os::raw::c_int,
+}
+#[test]
+fn bindgen_test_layout_sspine_skin() {
+    const UNINIT: ::std::mem::MaybeUninit<sspine_skin> = ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
+    assert_eq!(
+        ::std::mem::size_of::<sspine_skin>(),
+        8usize,
+        concat!("Size of: ", stringify!(sspine_skin))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<sspine_skin>(),
+        4usize,
+        concat!("Alignment of ", stringify!(sspine_skin))
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).skeleton_id) as usize - ptr as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(sspine_skin),
+            "::",
+            stringify!(skeleton_id)
+        )
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).index) as usize - ptr as usize },
+        4usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(sspine_skin),
+            "::",
+            stringify!(index)
+        )
+    );
+}
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct sspine_range {
+    pub ptr: *const ::std::os::raw::c_void,
+    pub size: usize,
+}
+#[test]
+fn bindgen_test_layout_sspine_range() {
+    const UNINIT: ::std::mem::MaybeUninit<sspine_range> = ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
+    assert_eq!(
+        ::std::mem::size_of::<sspine_range>(),
+        16usize,
+        concat!("Size of: ", stringify!(sspine_range))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<sspine_range>(),
+        8usize,
+        concat!("Alignment of ", stringify!(sspine_range))
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).ptr) as usize - ptr as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(sspine_range),
+            "::",
+            stringify!(ptr)
+        )
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).size) as usize - ptr as usize },
+        8usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(sspine_range),
+            "::",
+            stringify!(size)
+        )
+    );
+}
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct sspine_vec2 {
+    pub x: f32,
+    pub y: f32,
+}
+#[test]
+fn bindgen_test_layout_sspine_vec2() {
+    const UNINIT: ::std::mem::MaybeUninit<sspine_vec2> = ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
+    assert_eq!(
+        ::std::mem::size_of::<sspine_vec2>(),
+        8usize,
+        concat!("Size of: ", stringify!(sspine_vec2))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<sspine_vec2>(),
+        4usize,
+        concat!("Alignment of ", stringify!(sspine_vec2))
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).x) as usize - ptr as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(sspine_vec2),
+            "::",
+            stringify!(x)
+        )
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).y) as usize - ptr as usize },
+        4usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(sspine_vec2),
+            "::",
+            stringify!(y)
+        )
+    );
+}
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct sspine_mat4 {
+    pub m: [f32; 16usize],
+}
+#[test]
+fn bindgen_test_layout_sspine_mat4() {
+    const UNINIT: ::std::mem::MaybeUninit<sspine_mat4> = ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
+    assert_eq!(
+        ::std::mem::size_of::<sspine_mat4>(),
+        64usize,
+        concat!("Size of: ", stringify!(sspine_mat4))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<sspine_mat4>(),
+        4usize,
+        concat!("Alignment of ", stringify!(sspine_mat4))
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).m) as usize - ptr as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(sspine_mat4),
+            "::",
+            stringify!(m)
+        )
+    );
+}
+pub type sspine_color = sg_color;
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct sspine_string {
+    pub valid: bool,
+    pub truncated: bool,
+    pub len: u8,
+    pub cstr: [::std::os::raw::c_char; 61usize],
+}
+#[test]
+fn bindgen_test_layout_sspine_string() {
+    const UNINIT: ::std::mem::MaybeUninit<sspine_string> = ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
+    assert_eq!(
+        ::std::mem::size_of::<sspine_string>(),
+        64usize,
+        concat!("Size of: ", stringify!(sspine_string))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<sspine_string>(),
+        1usize,
+        concat!("Alignment of ", stringify!(sspine_string))
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).valid) as usize - ptr as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(sspine_string),
+            "::",
+            stringify!(valid)
+        )
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).truncated) as usize - ptr as usize },
+        1usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(sspine_string),
+            "::",
+            stringify!(truncated)
+        )
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).len) as usize - ptr as usize },
+        2usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(sspine_string),
+            "::",
+            stringify!(len)
+        )
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).cstr) as usize - ptr as usize },
+        3usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(sspine_string),
+            "::",
+            stringify!(cstr)
+        )
+    );
+}
+pub const sspine_resource_state_SSPINE_RESOURCESTATE_INITIAL: sspine_resource_state = 0;
+pub const sspine_resource_state_SSPINE_RESOURCESTATE_ALLOC: sspine_resource_state = 1;
+pub const sspine_resource_state_SSPINE_RESOURCESTATE_VALID: sspine_resource_state = 2;
+pub const sspine_resource_state_SSPINE_RESOURCESTATE_FAILED: sspine_resource_state = 3;
+pub const sspine_resource_state_SSPINE_RESOURCESTATE_INVALID: sspine_resource_state = 4;
+pub const sspine_resource_state__SSPINE_RESOURCESTATE_FORCE_U32: sspine_resource_state = 2147483647;
+pub type sspine_resource_state = ::std::os::raw::c_int;
+pub const sspine_log_item_SSPINE_LOGITEM_OK: sspine_log_item = 0;
+pub const sspine_log_item_SSPINE_LOGITEM_MALLOC_FAILED: sspine_log_item = 1;
+pub const sspine_log_item_SSPINE_LOGITEM_CONTEXT_POOL_EXHAUSTED: sspine_log_item = 2;
+pub const sspine_log_item_SSPINE_LOGITEM_ATLAS_POOL_EXHAUSTED: sspine_log_item = 3;
+pub const sspine_log_item_SSPINE_LOGITEM_SKELETON_POOL_EXHAUSTED: sspine_log_item = 4;
+pub const sspine_log_item_SSPINE_LOGITEM_SKINSET_POOL_EXHAUSTED: sspine_log_item = 5;
+pub const sspine_log_item_SSPINE_LOGITEM_INSTANCE_POOL_EXHAUSTED: sspine_log_item = 6;
+pub const sspine_log_item_SSPINE_LOGITEM_CANNOT_DESTROY_DEFAULT_CONTEXT: sspine_log_item = 7;
+pub const sspine_log_item_SSPINE_LOGITEM_ATLAS_DESC_NO_DATA: sspine_log_item = 8;
+pub const sspine_log_item_SSPINE_LOGITEM_SPINE_ATLAS_CREATION_FAILED: sspine_log_item = 9;
+pub const sspine_log_item_SSPINE_LOGITEM_SG_ALLOC_IMAGE_FAILED: sspine_log_item = 10;
+pub const sspine_log_item_SSPINE_LOGITEM_SG_ALLOC_SAMPLER_FAILED: sspine_log_item = 11;
+pub const sspine_log_item_SSPINE_LOGITEM_SKELETON_DESC_NO_DATA: sspine_log_item = 12;
+pub const sspine_log_item_SSPINE_LOGITEM_SKELETON_DESC_NO_ATLAS: sspine_log_item = 13;
+pub const sspine_log_item_SSPINE_LOGITEM_SKELETON_ATLAS_NOT_VALID: sspine_log_item = 14;
+pub const sspine_log_item_SSPINE_LOGITEM_CREATE_SKELETON_DATA_FROM_JSON_FAILED: sspine_log_item =
+    15;
+pub const sspine_log_item_SSPINE_LOGITEM_CREATE_SKELETON_DATA_FROM_BINARY_FAILED: sspine_log_item =
+    16;
+pub const sspine_log_item_SSPINE_LOGITEM_SKINSET_DESC_NO_SKELETON: sspine_log_item = 17;
+pub const sspine_log_item_SSPINE_LOGITEM_SKINSET_SKELETON_NOT_VALID: sspine_log_item = 18;
+pub const sspine_log_item_SSPINE_LOGITEM_SKINSET_INVALID_SKIN_HANDLE: sspine_log_item = 19;
+pub const sspine_log_item_SSPINE_LOGITEM_INSTANCE_DESC_NO_SKELETON: sspine_log_item = 20;
+pub const sspine_log_item_SSPINE_LOGITEM_INSTANCE_SKELETON_NOT_VALID: sspine_log_item = 21;
+pub const sspine_log_item_SSPINE_LOGITEM_INSTANCE_ATLAS_NOT_VALID: sspine_log_item = 22;
+pub const sspine_log_item_SSPINE_LOGITEM_SPINE_SKELETON_CREATION_FAILED: sspine_log_item = 23;
+pub const sspine_log_item_SSPINE_LOGITEM_SPINE_ANIMATIONSTATE_CREATION_FAILED: sspine_log_item = 24;
+pub const sspine_log_item_SSPINE_LOGITEM_SPINE_SKELETONCLIPPING_CREATION_FAILED: sspine_log_item =
+    25;
+pub const sspine_log_item_SSPINE_LOGITEM_COMMAND_BUFFER_FULL: sspine_log_item = 26;
+pub const sspine_log_item_SSPINE_LOGITEM_VERTEX_BUFFER_FULL: sspine_log_item = 27;
+pub const sspine_log_item_SSPINE_LOGITEM_INDEX_BUFFER_FULL: sspine_log_item = 28;
+pub const sspine_log_item_SSPINE_LOGITEM_STRING_TRUNCATED: sspine_log_item = 29;
+pub const sspine_log_item_SSPINE_LOGITEM_ADD_COMMIT_LISTENER_FAILED: sspine_log_item = 30;
+pub type sspine_log_item = ::std::os::raw::c_int;
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct sspine_layer_transform {
+    pub size: sspine_vec2,
+    pub origin: sspine_vec2,
+}
+#[test]
+fn bindgen_test_layout_sspine_layer_transform() {
+    const UNINIT: ::std::mem::MaybeUninit<sspine_layer_transform> =
+        ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
+    assert_eq!(
+        ::std::mem::size_of::<sspine_layer_transform>(),
+        16usize,
+        concat!("Size of: ", stringify!(sspine_layer_transform))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<sspine_layer_transform>(),
+        4usize,
+        concat!("Alignment of ", stringify!(sspine_layer_transform))
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).size) as usize - ptr as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(sspine_layer_transform),
+            "::",
+            stringify!(size)
+        )
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).origin) as usize - ptr as usize },
+        8usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(sspine_layer_transform),
+            "::",
+            stringify!(origin)
+        )
+    );
+}
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct sspine_bone_transform {
+    pub position: sspine_vec2,
+    pub rotation: f32,
+    pub scale: sspine_vec2,
+    pub shear: sspine_vec2,
+}
+#[test]
+fn bindgen_test_layout_sspine_bone_transform() {
+    const UNINIT: ::std::mem::MaybeUninit<sspine_bone_transform> =
+        ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
+    assert_eq!(
+        ::std::mem::size_of::<sspine_bone_transform>(),
+        28usize,
+        concat!("Size of: ", stringify!(sspine_bone_transform))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<sspine_bone_transform>(),
+        4usize,
+        concat!("Alignment of ", stringify!(sspine_bone_transform))
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).position) as usize - ptr as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(sspine_bone_transform),
+            "::",
+            stringify!(position)
+        )
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).rotation) as usize - ptr as usize },
+        8usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(sspine_bone_transform),
+            "::",
+            stringify!(rotation)
+        )
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).scale) as usize - ptr as usize },
+        12usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(sspine_bone_transform),
+            "::",
+            stringify!(scale)
+        )
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).shear) as usize - ptr as usize },
+        20usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(sspine_bone_transform),
+            "::",
+            stringify!(shear)
+        )
+    );
+}
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct sspine_context_desc {
+    pub max_vertices: ::std::os::raw::c_int,
+    pub max_commands: ::std::os::raw::c_int,
+    pub color_format: sg_pixel_format,
+    pub depth_format: sg_pixel_format,
+    pub sample_count: ::std::os::raw::c_int,
+    pub color_write_mask: sg_color_mask,
+}
+#[test]
+fn bindgen_test_layout_sspine_context_desc() {
+    const UNINIT: ::std::mem::MaybeUninit<sspine_context_desc> = ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
+    assert_eq!(
+        ::std::mem::size_of::<sspine_context_desc>(),
+        24usize,
+        concat!("Size of: ", stringify!(sspine_context_desc))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<sspine_context_desc>(),
+        4usize,
+        concat!("Alignment of ", stringify!(sspine_context_desc))
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).max_vertices) as usize - ptr as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(sspine_context_desc),
+            "::",
+            stringify!(max_vertices)
+        )
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).max_commands) as usize - ptr as usize },
+        4usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(sspine_context_desc),
+            "::",
+            stringify!(max_commands)
+        )
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).color_format) as usize - ptr as usize },
+        8usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(sspine_context_desc),
+            "::",
+            stringify!(color_format)
+        )
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).depth_format) as usize - ptr as usize },
+        12usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(sspine_context_desc),
+            "::",
+            stringify!(depth_format)
+        )
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).sample_count) as usize - ptr as usize },
+        16usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(sspine_context_desc),
+            "::",
+            stringify!(sample_count)
+        )
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).color_write_mask) as usize - ptr as usize },
+        20usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(sspine_context_desc),
+            "::",
+            stringify!(color_write_mask)
+        )
+    );
+}
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct sspine_context_info {
+    pub num_vertices: ::std::os::raw::c_int,
+    pub num_indices: ::std::os::raw::c_int,
+    pub num_commands: ::std::os::raw::c_int,
+}
+#[test]
+fn bindgen_test_layout_sspine_context_info() {
+    const UNINIT: ::std::mem::MaybeUninit<sspine_context_info> = ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
+    assert_eq!(
+        ::std::mem::size_of::<sspine_context_info>(),
+        12usize,
+        concat!("Size of: ", stringify!(sspine_context_info))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<sspine_context_info>(),
+        4usize,
+        concat!("Alignment of ", stringify!(sspine_context_info))
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).num_vertices) as usize - ptr as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(sspine_context_info),
+            "::",
+            stringify!(num_vertices)
+        )
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).num_indices) as usize - ptr as usize },
+        4usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(sspine_context_info),
+            "::",
+            stringify!(num_indices)
+        )
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).num_commands) as usize - ptr as usize },
+        8usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(sspine_context_info),
+            "::",
+            stringify!(num_commands)
+        )
+    );
+}
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct sspine_image_info {
+    pub valid: bool,
+    pub sgimage: sg_image,
+    pub sgsampler: sg_sampler,
+    pub min_filter: sg_filter,
+    pub mag_filter: sg_filter,
+    pub mipmap_filter: sg_filter,
+    pub wrap_u: sg_wrap,
+    pub wrap_v: sg_wrap,
+    pub width: ::std::os::raw::c_int,
+    pub height: ::std::os::raw::c_int,
+    pub premul_alpha: bool,
+    pub filename: sspine_string,
+}
+#[test]
+fn bindgen_test_layout_sspine_image_info() {
+    const UNINIT: ::std::mem::MaybeUninit<sspine_image_info> = ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
+    assert_eq!(
+        ::std::mem::size_of::<sspine_image_info>(),
+        108usize,
+        concat!("Size of: ", stringify!(sspine_image_info))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<sspine_image_info>(),
+        4usize,
+        concat!("Alignment of ", stringify!(sspine_image_info))
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).valid) as usize - ptr as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(sspine_image_info),
+            "::",
+            stringify!(valid)
+        )
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).sgimage) as usize - ptr as usize },
+        4usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(sspine_image_info),
+            "::",
+            stringify!(sgimage)
+        )
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).sgsampler) as usize - ptr as usize },
+        8usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(sspine_image_info),
+            "::",
+            stringify!(sgsampler)
+        )
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).min_filter) as usize - ptr as usize },
+        12usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(sspine_image_info),
+            "::",
+            stringify!(min_filter)
+        )
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).mag_filter) as usize - ptr as usize },
+        16usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(sspine_image_info),
+            "::",
+            stringify!(mag_filter)
+        )
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).mipmap_filter) as usize - ptr as usize },
+        20usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(sspine_image_info),
+            "::",
+            stringify!(mipmap_filter)
+        )
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).wrap_u) as usize - ptr as usize },
+        24usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(sspine_image_info),
+            "::",
+            stringify!(wrap_u)
+        )
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).wrap_v) as usize - ptr as usize },
+        28usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(sspine_image_info),
+            "::",
+            stringify!(wrap_v)
+        )
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).width) as usize - ptr as usize },
+        32usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(sspine_image_info),
+            "::",
+            stringify!(width)
+        )
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).height) as usize - ptr as usize },
+        36usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(sspine_image_info),
+            "::",
+            stringify!(height)
+        )
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).premul_alpha) as usize - ptr as usize },
+        40usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(sspine_image_info),
+            "::",
+            stringify!(premul_alpha)
+        )
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).filename) as usize - ptr as usize },
+        41usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(sspine_image_info),
+            "::",
+            stringify!(filename)
+        )
+    );
+}
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct sspine_atlas_overrides {
+    pub min_filter: sg_filter,
+    pub mag_filter: sg_filter,
+    pub mipmap_filter: sg_filter,
+    pub wrap_u: sg_wrap,
+    pub wrap_v: sg_wrap,
+    pub premul_alpha_enabled: bool,
+    pub premul_alpha_disabled: bool,
+}
+#[test]
+fn bindgen_test_layout_sspine_atlas_overrides() {
+    const UNINIT: ::std::mem::MaybeUninit<sspine_atlas_overrides> =
+        ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
+    assert_eq!(
+        ::std::mem::size_of::<sspine_atlas_overrides>(),
+        24usize,
+        concat!("Size of: ", stringify!(sspine_atlas_overrides))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<sspine_atlas_overrides>(),
+        4usize,
+        concat!("Alignment of ", stringify!(sspine_atlas_overrides))
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).min_filter) as usize - ptr as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(sspine_atlas_overrides),
+            "::",
+            stringify!(min_filter)
+        )
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).mag_filter) as usize - ptr as usize },
+        4usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(sspine_atlas_overrides),
+            "::",
+            stringify!(mag_filter)
+        )
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).mipmap_filter) as usize - ptr as usize },
+        8usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(sspine_atlas_overrides),
+            "::",
+            stringify!(mipmap_filter)
+        )
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).wrap_u) as usize - ptr as usize },
+        12usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(sspine_atlas_overrides),
+            "::",
+            stringify!(wrap_u)
+        )
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).wrap_v) as usize - ptr as usize },
+        16usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(sspine_atlas_overrides),
+            "::",
+            stringify!(wrap_v)
+        )
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).premul_alpha_enabled) as usize - ptr as usize },
+        20usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(sspine_atlas_overrides),
+            "::",
+            stringify!(premul_alpha_enabled)
+        )
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).premul_alpha_disabled) as usize - ptr as usize },
+        21usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(sspine_atlas_overrides),
+            "::",
+            stringify!(premul_alpha_disabled)
+        )
+    );
+}
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct sspine_atlas_desc {
+    pub data: sspine_range,
+    pub override_: sspine_atlas_overrides,
+}
+#[test]
+fn bindgen_test_layout_sspine_atlas_desc() {
+    const UNINIT: ::std::mem::MaybeUninit<sspine_atlas_desc> = ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
+    assert_eq!(
+        ::std::mem::size_of::<sspine_atlas_desc>(),
+        40usize,
+        concat!("Size of: ", stringify!(sspine_atlas_desc))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<sspine_atlas_desc>(),
+        8usize,
+        concat!("Alignment of ", stringify!(sspine_atlas_desc))
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).data) as usize - ptr as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(sspine_atlas_desc),
+            "::",
+            stringify!(data)
+        )
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).override_) as usize - ptr as usize },
+        16usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(sspine_atlas_desc),
+            "::",
+            stringify!(override_)
+        )
+    );
+}
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct sspine_atlas_page_info {
+    pub valid: bool,
+    pub atlas: sspine_atlas,
+    pub image: sspine_image_info,
+    pub overrides: sspine_atlas_overrides,
+}
+#[test]
+fn bindgen_test_layout_sspine_atlas_page_info() {
+    const UNINIT: ::std::mem::MaybeUninit<sspine_atlas_page_info> =
+        ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
+    assert_eq!(
+        ::std::mem::size_of::<sspine_atlas_page_info>(),
+        140usize,
+        concat!("Size of: ", stringify!(sspine_atlas_page_info))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<sspine_atlas_page_info>(),
+        4usize,
+        concat!("Alignment of ", stringify!(sspine_atlas_page_info))
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).valid) as usize - ptr as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(sspine_atlas_page_info),
+            "::",
+            stringify!(valid)
+        )
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).atlas) as usize - ptr as usize },
+        4usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(sspine_atlas_page_info),
+            "::",
+            stringify!(atlas)
+        )
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).image) as usize - ptr as usize },
+        8usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(sspine_atlas_page_info),
+            "::",
+            stringify!(image)
+        )
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).overrides) as usize - ptr as usize },
+        116usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(sspine_atlas_page_info),
+            "::",
+            stringify!(overrides)
+        )
+    );
+}
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct sspine_skeleton_desc {
+    pub atlas: sspine_atlas,
+    pub prescale: f32,
+    pub anim_default_mix: f32,
+    pub json_data: *const ::std::os::raw::c_char,
+    pub binary_data: sspine_range,
+}
+#[test]
+fn bindgen_test_layout_sspine_skeleton_desc() {
+    const UNINIT: ::std::mem::MaybeUninit<sspine_skeleton_desc> = ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
+    assert_eq!(
+        ::std::mem::size_of::<sspine_skeleton_desc>(),
+        40usize,
+        concat!("Size of: ", stringify!(sspine_skeleton_desc))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<sspine_skeleton_desc>(),
+        8usize,
+        concat!("Alignment of ", stringify!(sspine_skeleton_desc))
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).atlas) as usize - ptr as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(sspine_skeleton_desc),
+            "::",
+            stringify!(atlas)
+        )
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).prescale) as usize - ptr as usize },
+        4usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(sspine_skeleton_desc),
+            "::",
+            stringify!(prescale)
+        )
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).anim_default_mix) as usize - ptr as usize },
+        8usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(sspine_skeleton_desc),
+            "::",
+            stringify!(anim_default_mix)
+        )
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).json_data) as usize - ptr as usize },
+        16usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(sspine_skeleton_desc),
+            "::",
+            stringify!(json_data)
+        )
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).binary_data) as usize - ptr as usize },
+        24usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(sspine_skeleton_desc),
+            "::",
+            stringify!(binary_data)
+        )
+    );
+}
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct sspine_skinset_desc {
+    pub skeleton: sspine_skeleton,
+    pub skins: [sspine_skin; 32usize],
+}
+#[test]
+fn bindgen_test_layout_sspine_skinset_desc() {
+    const UNINIT: ::std::mem::MaybeUninit<sspine_skinset_desc> = ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
+    assert_eq!(
+        ::std::mem::size_of::<sspine_skinset_desc>(),
+        260usize,
+        concat!("Size of: ", stringify!(sspine_skinset_desc))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<sspine_skinset_desc>(),
+        4usize,
+        concat!("Alignment of ", stringify!(sspine_skinset_desc))
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).skeleton) as usize - ptr as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(sspine_skinset_desc),
+            "::",
+            stringify!(skeleton)
+        )
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).skins) as usize - ptr as usize },
+        4usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(sspine_skinset_desc),
+            "::",
+            stringify!(skins)
+        )
+    );
+}
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct sspine_anim_info {
+    pub valid: bool,
+    pub index: ::std::os::raw::c_int,
+    pub duration: f32,
+    pub name: sspine_string,
+}
+#[test]
+fn bindgen_test_layout_sspine_anim_info() {
+    const UNINIT: ::std::mem::MaybeUninit<sspine_anim_info> = ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
+    assert_eq!(
+        ::std::mem::size_of::<sspine_anim_info>(),
+        76usize,
+        concat!("Size of: ", stringify!(sspine_anim_info))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<sspine_anim_info>(),
+        4usize,
+        concat!("Alignment of ", stringify!(sspine_anim_info))
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).valid) as usize - ptr as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(sspine_anim_info),
+            "::",
+            stringify!(valid)
+        )
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).index) as usize - ptr as usize },
+        4usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(sspine_anim_info),
+            "::",
+            stringify!(index)
+        )
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).duration) as usize - ptr as usize },
+        8usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(sspine_anim_info),
+            "::",
+            stringify!(duration)
+        )
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).name) as usize - ptr as usize },
+        12usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(sspine_anim_info),
+            "::",
+            stringify!(name)
+        )
+    );
+}
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct sspine_bone_info {
+    pub valid: bool,
+    pub index: ::std::os::raw::c_int,
+    pub parent_bone: sspine_bone,
+    pub length: f32,
+    pub pose: sspine_bone_transform,
+    pub color: sspine_color,
+    pub name: sspine_string,
+}
+#[test]
+fn bindgen_test_layout_sspine_bone_info() {
+    const UNINIT: ::std::mem::MaybeUninit<sspine_bone_info> = ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
+    assert_eq!(
+        ::std::mem::size_of::<sspine_bone_info>(),
+        128usize,
+        concat!("Size of: ", stringify!(sspine_bone_info))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<sspine_bone_info>(),
+        4usize,
+        concat!("Alignment of ", stringify!(sspine_bone_info))
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).valid) as usize - ptr as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(sspine_bone_info),
+            "::",
+            stringify!(valid)
+        )
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).index) as usize - ptr as usize },
+        4usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(sspine_bone_info),
+            "::",
+            stringify!(index)
+        )
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).parent_bone) as usize - ptr as usize },
+        8usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(sspine_bone_info),
+            "::",
+            stringify!(parent_bone)
+        )
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).length) as usize - ptr as usize },
+        16usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(sspine_bone_info),
+            "::",
+            stringify!(length)
+        )
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).pose) as usize - ptr as usize },
+        20usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(sspine_bone_info),
+            "::",
+            stringify!(pose)
+        )
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).color) as usize - ptr as usize },
+        48usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(sspine_bone_info),
+            "::",
+            stringify!(color)
+        )
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).name) as usize - ptr as usize },
+        64usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(sspine_bone_info),
+            "::",
+            stringify!(name)
+        )
+    );
+}
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct sspine_slot_info {
+    pub valid: bool,
+    pub index: ::std::os::raw::c_int,
+    pub bone: sspine_bone,
+    pub color: sspine_color,
+    pub attachment_name: sspine_string,
+    pub name: sspine_string,
+}
+#[test]
+fn bindgen_test_layout_sspine_slot_info() {
+    const UNINIT: ::std::mem::MaybeUninit<sspine_slot_info> = ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
+    assert_eq!(
+        ::std::mem::size_of::<sspine_slot_info>(),
+        160usize,
+        concat!("Size of: ", stringify!(sspine_slot_info))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<sspine_slot_info>(),
+        4usize,
+        concat!("Alignment of ", stringify!(sspine_slot_info))
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).valid) as usize - ptr as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(sspine_slot_info),
+            "::",
+            stringify!(valid)
+        )
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).index) as usize - ptr as usize },
+        4usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(sspine_slot_info),
+            "::",
+            stringify!(index)
+        )
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).bone) as usize - ptr as usize },
+        8usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(sspine_slot_info),
+            "::",
+            stringify!(bone)
+        )
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).color) as usize - ptr as usize },
+        16usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(sspine_slot_info),
+            "::",
+            stringify!(color)
+        )
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).attachment_name) as usize - ptr as usize },
+        32usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(sspine_slot_info),
+            "::",
+            stringify!(attachment_name)
+        )
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).name) as usize - ptr as usize },
+        96usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(sspine_slot_info),
+            "::",
+            stringify!(name)
+        )
+    );
+}
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct sspine_iktarget_info {
+    pub valid: bool,
+    pub index: ::std::os::raw::c_int,
+    pub target_bone: sspine_bone,
+    pub name: sspine_string,
+}
+#[test]
+fn bindgen_test_layout_sspine_iktarget_info() {
+    const UNINIT: ::std::mem::MaybeUninit<sspine_iktarget_info> = ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
+    assert_eq!(
+        ::std::mem::size_of::<sspine_iktarget_info>(),
+        80usize,
+        concat!("Size of: ", stringify!(sspine_iktarget_info))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<sspine_iktarget_info>(),
+        4usize,
+        concat!("Alignment of ", stringify!(sspine_iktarget_info))
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).valid) as usize - ptr as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(sspine_iktarget_info),
+            "::",
+            stringify!(valid)
+        )
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).index) as usize - ptr as usize },
+        4usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(sspine_iktarget_info),
+            "::",
+            stringify!(index)
+        )
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).target_bone) as usize - ptr as usize },
+        8usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(sspine_iktarget_info),
+            "::",
+            stringify!(target_bone)
+        )
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).name) as usize - ptr as usize },
+        16usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(sspine_iktarget_info),
+            "::",
+            stringify!(name)
+        )
+    );
+}
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct sspine_skin_info {
+    pub valid: bool,
+    pub index: ::std::os::raw::c_int,
+    pub name: sspine_string,
+}
+#[test]
+fn bindgen_test_layout_sspine_skin_info() {
+    const UNINIT: ::std::mem::MaybeUninit<sspine_skin_info> = ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
+    assert_eq!(
+        ::std::mem::size_of::<sspine_skin_info>(),
+        72usize,
+        concat!("Size of: ", stringify!(sspine_skin_info))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<sspine_skin_info>(),
+        4usize,
+        concat!("Alignment of ", stringify!(sspine_skin_info))
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).valid) as usize - ptr as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(sspine_skin_info),
+            "::",
+            stringify!(valid)
+        )
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).index) as usize - ptr as usize },
+        4usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(sspine_skin_info),
+            "::",
+            stringify!(index)
+        )
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).name) as usize - ptr as usize },
+        8usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(sspine_skin_info),
+            "::",
+            stringify!(name)
+        )
+    );
+}
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct sspine_event_info {
+    pub valid: bool,
+    pub index: ::std::os::raw::c_int,
+    pub int_value: ::std::os::raw::c_int,
+    pub float_value: f32,
+    pub volume: f32,
+    pub balance: f32,
+    pub name: sspine_string,
+    pub string_value: sspine_string,
+    pub audio_path: sspine_string,
+}
+#[test]
+fn bindgen_test_layout_sspine_event_info() {
+    const UNINIT: ::std::mem::MaybeUninit<sspine_event_info> = ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
+    assert_eq!(
+        ::std::mem::size_of::<sspine_event_info>(),
+        216usize,
+        concat!("Size of: ", stringify!(sspine_event_info))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<sspine_event_info>(),
+        4usize,
+        concat!("Alignment of ", stringify!(sspine_event_info))
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).valid) as usize - ptr as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(sspine_event_info),
+            "::",
+            stringify!(valid)
+        )
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).index) as usize - ptr as usize },
+        4usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(sspine_event_info),
+            "::",
+            stringify!(index)
+        )
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).int_value) as usize - ptr as usize },
+        8usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(sspine_event_info),
+            "::",
+            stringify!(int_value)
+        )
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).float_value) as usize - ptr as usize },
+        12usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(sspine_event_info),
+            "::",
+            stringify!(float_value)
+        )
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).volume) as usize - ptr as usize },
+        16usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(sspine_event_info),
+            "::",
+            stringify!(volume)
+        )
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).balance) as usize - ptr as usize },
+        20usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(sspine_event_info),
+            "::",
+            stringify!(balance)
+        )
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).name) as usize - ptr as usize },
+        24usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(sspine_event_info),
+            "::",
+            stringify!(name)
+        )
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).string_value) as usize - ptr as usize },
+        88usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(sspine_event_info),
+            "::",
+            stringify!(string_value)
+        )
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).audio_path) as usize - ptr as usize },
+        152usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(sspine_event_info),
+            "::",
+            stringify!(audio_path)
+        )
+    );
+}
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct sspine_triggered_event_info {
+    pub valid: bool,
+    pub event: sspine_event,
+    pub time: f32,
+    pub int_value: ::std::os::raw::c_int,
+    pub float_value: f32,
+    pub volume: f32,
+    pub balance: f32,
+    pub string_value: sspine_string,
+}
+#[test]
+fn bindgen_test_layout_sspine_triggered_event_info() {
+    const UNINIT: ::std::mem::MaybeUninit<sspine_triggered_event_info> =
+        ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
+    assert_eq!(
+        ::std::mem::size_of::<sspine_triggered_event_info>(),
+        96usize,
+        concat!("Size of: ", stringify!(sspine_triggered_event_info))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<sspine_triggered_event_info>(),
+        4usize,
+        concat!("Alignment of ", stringify!(sspine_triggered_event_info))
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).valid) as usize - ptr as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(sspine_triggered_event_info),
+            "::",
+            stringify!(valid)
+        )
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).event) as usize - ptr as usize },
+        4usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(sspine_triggered_event_info),
+            "::",
+            stringify!(event)
+        )
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).time) as usize - ptr as usize },
+        12usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(sspine_triggered_event_info),
+            "::",
+            stringify!(time)
+        )
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).int_value) as usize - ptr as usize },
+        16usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(sspine_triggered_event_info),
+            "::",
+            stringify!(int_value)
+        )
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).float_value) as usize - ptr as usize },
+        20usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(sspine_triggered_event_info),
+            "::",
+            stringify!(float_value)
+        )
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).volume) as usize - ptr as usize },
+        24usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(sspine_triggered_event_info),
+            "::",
+            stringify!(volume)
+        )
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).balance) as usize - ptr as usize },
+        28usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(sspine_triggered_event_info),
+            "::",
+            stringify!(balance)
+        )
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).string_value) as usize - ptr as usize },
+        32usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(sspine_triggered_event_info),
+            "::",
+            stringify!(string_value)
+        )
+    );
+}
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct sspine_instance_desc {
+    pub skeleton: sspine_skeleton,
+}
+#[test]
+fn bindgen_test_layout_sspine_instance_desc() {
+    const UNINIT: ::std::mem::MaybeUninit<sspine_instance_desc> = ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
+    assert_eq!(
+        ::std::mem::size_of::<sspine_instance_desc>(),
+        4usize,
+        concat!("Size of: ", stringify!(sspine_instance_desc))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<sspine_instance_desc>(),
+        4usize,
+        concat!("Alignment of ", stringify!(sspine_instance_desc))
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).skeleton) as usize - ptr as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(sspine_instance_desc),
+            "::",
+            stringify!(skeleton)
+        )
+    );
+}
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct sspine_allocator {
+    pub alloc_fn: ::std::option::Option<
+        unsafe extern "C" fn(
+            size: usize,
+            user_data: *mut ::std::os::raw::c_void,
+        ) -> *mut ::std::os::raw::c_void,
+    >,
+    pub free_fn: ::std::option::Option<
+        unsafe extern "C" fn(
+            ptr: *mut ::std::os::raw::c_void,
+            user_data: *mut ::std::os::raw::c_void,
+        ),
+    >,
+    pub user_data: *mut ::std::os::raw::c_void,
+}
+#[test]
+fn bindgen_test_layout_sspine_allocator() {
+    const UNINIT: ::std::mem::MaybeUninit<sspine_allocator> = ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
+    assert_eq!(
+        ::std::mem::size_of::<sspine_allocator>(),
+        24usize,
+        concat!("Size of: ", stringify!(sspine_allocator))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<sspine_allocator>(),
+        8usize,
+        concat!("Alignment of ", stringify!(sspine_allocator))
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).alloc_fn) as usize - ptr as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(sspine_allocator),
+            "::",
+            stringify!(alloc_fn)
+        )
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).free_fn) as usize - ptr as usize },
+        8usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(sspine_allocator),
+            "::",
+            stringify!(free_fn)
+        )
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).user_data) as usize - ptr as usize },
+        16usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(sspine_allocator),
+            "::",
+            stringify!(user_data)
+        )
+    );
+}
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct sspine_logger {
+    pub func: ::std::option::Option<
+        unsafe extern "C" fn(
+            tag: *const ::std::os::raw::c_char,
+            log_level: u32,
+            log_item_id: u32,
+            message_or_null: *const ::std::os::raw::c_char,
+            line_nr: u32,
+            filename_or_null: *const ::std::os::raw::c_char,
+            user_data: *mut ::std::os::raw::c_void,
+        ),
+    >,
+    pub user_data: *mut ::std::os::raw::c_void,
+}
+#[test]
+fn bindgen_test_layout_sspine_logger() {
+    const UNINIT: ::std::mem::MaybeUninit<sspine_logger> = ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
+    assert_eq!(
+        ::std::mem::size_of::<sspine_logger>(),
+        16usize,
+        concat!("Size of: ", stringify!(sspine_logger))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<sspine_logger>(),
+        8usize,
+        concat!("Alignment of ", stringify!(sspine_logger))
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).func) as usize - ptr as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(sspine_logger),
+            "::",
+            stringify!(func)
+        )
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).user_data) as usize - ptr as usize },
+        8usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(sspine_logger),
+            "::",
+            stringify!(user_data)
+        )
+    );
+}
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct sspine_desc {
+    pub max_vertices: ::std::os::raw::c_int,
+    pub max_commands: ::std::os::raw::c_int,
+    pub context_pool_size: ::std::os::raw::c_int,
+    pub atlas_pool_size: ::std::os::raw::c_int,
+    pub skeleton_pool_size: ::std::os::raw::c_int,
+    pub skinset_pool_size: ::std::os::raw::c_int,
+    pub instance_pool_size: ::std::os::raw::c_int,
+    pub color_format: sg_pixel_format,
+    pub depth_format: sg_pixel_format,
+    pub sample_count: ::std::os::raw::c_int,
+    pub color_write_mask: sg_color_mask,
+    pub allocator: sspine_allocator,
+    pub logger: sspine_logger,
+}
+#[test]
+fn bindgen_test_layout_sspine_desc() {
+    const UNINIT: ::std::mem::MaybeUninit<sspine_desc> = ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
+    assert_eq!(
+        ::std::mem::size_of::<sspine_desc>(),
+        88usize,
+        concat!("Size of: ", stringify!(sspine_desc))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<sspine_desc>(),
+        8usize,
+        concat!("Alignment of ", stringify!(sspine_desc))
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).max_vertices) as usize - ptr as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(sspine_desc),
+            "::",
+            stringify!(max_vertices)
+        )
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).max_commands) as usize - ptr as usize },
+        4usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(sspine_desc),
+            "::",
+            stringify!(max_commands)
+        )
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).context_pool_size) as usize - ptr as usize },
+        8usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(sspine_desc),
+            "::",
+            stringify!(context_pool_size)
+        )
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).atlas_pool_size) as usize - ptr as usize },
+        12usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(sspine_desc),
+            "::",
+            stringify!(atlas_pool_size)
+        )
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).skeleton_pool_size) as usize - ptr as usize },
+        16usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(sspine_desc),
+            "::",
+            stringify!(skeleton_pool_size)
+        )
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).skinset_pool_size) as usize - ptr as usize },
+        20usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(sspine_desc),
+            "::",
+            stringify!(skinset_pool_size)
+        )
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).instance_pool_size) as usize - ptr as usize },
+        24usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(sspine_desc),
+            "::",
+            stringify!(instance_pool_size)
+        )
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).color_format) as usize - ptr as usize },
+        28usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(sspine_desc),
+            "::",
+            stringify!(color_format)
+        )
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).depth_format) as usize - ptr as usize },
+        32usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(sspine_desc),
+            "::",
+            stringify!(depth_format)
+        )
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).sample_count) as usize - ptr as usize },
+        36usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(sspine_desc),
+            "::",
+            stringify!(sample_count)
+        )
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).color_write_mask) as usize - ptr as usize },
+        40usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(sspine_desc),
+            "::",
+            stringify!(color_write_mask)
+        )
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).allocator) as usize - ptr as usize },
+        48usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(sspine_desc),
+            "::",
+            stringify!(allocator)
+        )
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).logger) as usize - ptr as usize },
+        72usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(sspine_desc),
+            "::",
+            stringify!(logger)
+        )
+    );
+}
+extern "C" {
+    pub fn sspine_setup(desc: *const sspine_desc);
+}
+extern "C" {
+    pub fn sspine_shutdown();
+}
+extern "C" {
+    pub fn sspine_make_context(desc: *const sspine_context_desc) -> sspine_context;
+}
+extern "C" {
+    pub fn sspine_destroy_context(ctx: sspine_context);
+}
+extern "C" {
+    pub fn sspine_set_context(ctx: sspine_context);
+}
+extern "C" {
+    pub fn sspine_get_context() -> sspine_context;
+}
+extern "C" {
+    pub fn sspine_default_context() -> sspine_context;
+}
+extern "C" {
+    pub fn sspine_get_context_info(ctx: sspine_context) -> sspine_context_info;
+}
+extern "C" {
+    pub fn sspine_make_atlas(desc: *const sspine_atlas_desc) -> sspine_atlas;
+}
+extern "C" {
+    pub fn sspine_make_skeleton(desc: *const sspine_skeleton_desc) -> sspine_skeleton;
+}
+extern "C" {
+    pub fn sspine_make_skinset(desc: *const sspine_skinset_desc) -> sspine_skinset;
+}
+extern "C" {
+    pub fn sspine_make_instance(desc: *const sspine_instance_desc) -> sspine_instance;
+}
+extern "C" {
+    pub fn sspine_destroy_atlas(atlas: sspine_atlas);
+}
+extern "C" {
+    pub fn sspine_destroy_skeleton(skeleton: sspine_skeleton);
+}
+extern "C" {
+    pub fn sspine_destroy_skinset(skinset: sspine_skinset);
+}
+extern "C" {
+    pub fn sspine_destroy_instance(instance: sspine_instance);
+}
+extern "C" {
+    pub fn sspine_set_skinset(instance: sspine_instance, skinset: sspine_skinset);
+}
+extern "C" {
+    pub fn sspine_update_instance(instance: sspine_instance, delta_time: f32);
+}
+extern "C" {
+    pub fn sspine_num_triggered_events(instance: sspine_instance) -> ::std::os::raw::c_int;
+}
+extern "C" {
+    pub fn sspine_get_triggered_event_info(
+        instance: sspine_instance,
+        triggered_event_index: ::std::os::raw::c_int,
+    ) -> sspine_triggered_event_info;
+}
+extern "C" {
+    pub fn sspine_draw_instance_in_layer(instance: sspine_instance, layer: ::std::os::raw::c_int);
+}
+extern "C" {
+    pub fn sspine_context_draw_instance_in_layer(
+        ctx: sspine_context,
+        instance: sspine_instance,
+        layer: ::std::os::raw::c_int,
+    );
+}
+extern "C" {
+    pub fn sspine_layer_transform_to_mat4(tform: *const sspine_layer_transform) -> sspine_mat4;
+}
+extern "C" {
+    pub fn sspine_draw_layer(layer: ::std::os::raw::c_int, tform: *const sspine_layer_transform);
+}
+extern "C" {
+    pub fn sspine_context_draw_layer(
+        ctx: sspine_context,
+        layer: ::std::os::raw::c_int,
+        tform: *const sspine_layer_transform,
+    );
+}
+extern "C" {
+    pub fn sspine_get_context_resource_state(context: sspine_context) -> sspine_resource_state;
+}
+extern "C" {
+    pub fn sspine_get_atlas_resource_state(atlas: sspine_atlas) -> sspine_resource_state;
+}
+extern "C" {
+    pub fn sspine_get_skeleton_resource_state(skeleton: sspine_skeleton) -> sspine_resource_state;
+}
+extern "C" {
+    pub fn sspine_get_skinset_resource_state(skinset: sspine_skinset) -> sspine_resource_state;
+}
+extern "C" {
+    pub fn sspine_get_instance_resource_state(instance: sspine_instance) -> sspine_resource_state;
+}
+extern "C" {
+    pub fn sspine_context_valid(context: sspine_context) -> bool;
+}
+extern "C" {
+    pub fn sspine_atlas_valid(atlas: sspine_atlas) -> bool;
+}
+extern "C" {
+    pub fn sspine_skeleton_valid(skeleton: sspine_skeleton) -> bool;
+}
+extern "C" {
+    pub fn sspine_instance_valid(instance: sspine_instance) -> bool;
+}
+extern "C" {
+    pub fn sspine_skinset_valid(skinset: sspine_skinset) -> bool;
+}
+extern "C" {
+    pub fn sspine_get_skeleton_atlas(skeleton: sspine_skeleton) -> sspine_atlas;
+}
+extern "C" {
+    pub fn sspine_get_instance_skeleton(instance: sspine_instance) -> sspine_skeleton;
+}
+extern "C" {
+    pub fn sspine_num_images(atlas: sspine_atlas) -> ::std::os::raw::c_int;
+}
+extern "C" {
+    pub fn sspine_image_by_index(atlas: sspine_atlas, index: ::std::os::raw::c_int)
+        -> sspine_image;
+}
+extern "C" {
+    pub fn sspine_image_valid(image: sspine_image) -> bool;
+}
+extern "C" {
+    pub fn sspine_image_equal(first: sspine_image, second: sspine_image) -> bool;
+}
+extern "C" {
+    pub fn sspine_get_image_info(image: sspine_image) -> sspine_image_info;
+}
+extern "C" {
+    pub fn sspine_num_atlas_pages(atlas: sspine_atlas) -> ::std::os::raw::c_int;
+}
+extern "C" {
+    pub fn sspine_atlas_page_by_index(
+        atlas: sspine_atlas,
+        index: ::std::os::raw::c_int,
+    ) -> sspine_atlas_page;
+}
+extern "C" {
+    pub fn sspine_atlas_page_valid(page: sspine_atlas_page) -> bool;
+}
+extern "C" {
+    pub fn sspine_atlas_page_equal(first: sspine_atlas_page, second: sspine_atlas_page) -> bool;
+}
+extern "C" {
+    pub fn sspine_get_atlas_page_info(page: sspine_atlas_page) -> sspine_atlas_page_info;
+}
+extern "C" {
+    pub fn sspine_set_position(instance: sspine_instance, position: sspine_vec2);
+}
+extern "C" {
+    pub fn sspine_set_scale(instance: sspine_instance, scale: sspine_vec2);
+}
+extern "C" {
+    pub fn sspine_set_color(instance: sspine_instance, color: sspine_color);
+}
+extern "C" {
+    pub fn sspine_get_position(instance: sspine_instance) -> sspine_vec2;
+}
+extern "C" {
+    pub fn sspine_get_scale(instance: sspine_instance) -> sspine_vec2;
+}
+extern "C" {
+    pub fn sspine_get_color(instance: sspine_instance) -> sspine_color;
+}
+extern "C" {
+    pub fn sspine_num_anims(skeleton: sspine_skeleton) -> ::std::os::raw::c_int;
+}
+extern "C" {
+    pub fn sspine_anim_by_name(
+        skeleton: sspine_skeleton,
+        name: *const ::std::os::raw::c_char,
+    ) -> sspine_anim;
+}
+extern "C" {
+    pub fn sspine_anim_by_index(
+        skeleton: sspine_skeleton,
+        index: ::std::os::raw::c_int,
+    ) -> sspine_anim;
+}
+extern "C" {
+    pub fn sspine_anim_valid(anim: sspine_anim) -> bool;
+}
+extern "C" {
+    pub fn sspine_anim_equal(first: sspine_anim, second: sspine_anim) -> bool;
+}
+extern "C" {
+    pub fn sspine_get_anim_info(anim: sspine_anim) -> sspine_anim_info;
+}
+extern "C" {
+    pub fn sspine_clear_animation_tracks(instance: sspine_instance);
+}
+extern "C" {
+    pub fn sspine_clear_animation_track(
+        instance: sspine_instance,
+        track_index: ::std::os::raw::c_int,
+    );
+}
+extern "C" {
+    pub fn sspine_set_animation(
+        instance: sspine_instance,
+        anim: sspine_anim,
+        track_index: ::std::os::raw::c_int,
+        loop_: bool,
+    );
+}
+extern "C" {
+    pub fn sspine_add_animation(
+        instance: sspine_instance,
+        anim: sspine_anim,
+        track_index: ::std::os::raw::c_int,
+        loop_: bool,
+        delay: f32,
+    );
+}
+extern "C" {
+    pub fn sspine_set_empty_animation(
+        instance: sspine_instance,
+        track_index: ::std::os::raw::c_int,
+        mix_duration: f32,
+    );
+}
+extern "C" {
+    pub fn sspine_add_empty_animation(
+        instance: sspine_instance,
+        track_index: ::std::os::raw::c_int,
+        mix_duration: f32,
+        delay: f32,
+    );
+}
+extern "C" {
+    pub fn sspine_num_bones(skeleton: sspine_skeleton) -> ::std::os::raw::c_int;
+}
+extern "C" {
+    pub fn sspine_bone_by_name(
+        skeleton: sspine_skeleton,
+        name: *const ::std::os::raw::c_char,
+    ) -> sspine_bone;
+}
+extern "C" {
+    pub fn sspine_bone_by_index(
+        skeleton: sspine_skeleton,
+        index: ::std::os::raw::c_int,
+    ) -> sspine_bone;
+}
+extern "C" {
+    pub fn sspine_bone_valid(bone: sspine_bone) -> bool;
+}
+extern "C" {
+    pub fn sspine_bone_equal(first: sspine_bone, second: sspine_bone) -> bool;
+}
+extern "C" {
+    pub fn sspine_get_bone_info(bone: sspine_bone) -> sspine_bone_info;
+}
+extern "C" {
+    pub fn sspine_set_bone_transform(
+        instance: sspine_instance,
+        bone: sspine_bone,
+        transform: *const sspine_bone_transform,
+    );
+}
+extern "C" {
+    pub fn sspine_set_bone_position(
+        instance: sspine_instance,
+        bone: sspine_bone,
+        position: sspine_vec2,
+    );
+}
+extern "C" {
+    pub fn sspine_set_bone_rotation(instance: sspine_instance, bone: sspine_bone, rotation: f32);
+}
+extern "C" {
+    pub fn sspine_set_bone_scale(instance: sspine_instance, bone: sspine_bone, scale: sspine_vec2);
+}
+extern "C" {
+    pub fn sspine_set_bone_shear(instance: sspine_instance, bone: sspine_bone, shear: sspine_vec2);
+}
+extern "C" {
+    pub fn sspine_get_bone_transform(
+        instance: sspine_instance,
+        bone: sspine_bone,
+    ) -> sspine_bone_transform;
+}
+extern "C" {
+    pub fn sspine_get_bone_position(instance: sspine_instance, bone: sspine_bone) -> sspine_vec2;
+}
+extern "C" {
+    pub fn sspine_get_bone_rotation(instance: sspine_instance, bone: sspine_bone) -> f32;
+}
+extern "C" {
+    pub fn sspine_get_bone_scale(instance: sspine_instance, bone: sspine_bone) -> sspine_vec2;
+}
+extern "C" {
+    pub fn sspine_get_bone_shear(instance: sspine_instance, bone: sspine_bone) -> sspine_vec2;
+}
+extern "C" {
+    pub fn sspine_get_bone_world_position(
+        instance: sspine_instance,
+        bone: sspine_bone,
+    ) -> sspine_vec2;
+}
+extern "C" {
+    pub fn sspine_bone_local_to_world(
+        instance: sspine_instance,
+        bone: sspine_bone,
+        local_pos: sspine_vec2,
+    ) -> sspine_vec2;
+}
+extern "C" {
+    pub fn sspine_bone_world_to_local(
+        instance: sspine_instance,
+        bone: sspine_bone,
+        world_pos: sspine_vec2,
+    ) -> sspine_vec2;
+}
+extern "C" {
+    pub fn sspine_num_slots(skeleton: sspine_skeleton) -> ::std::os::raw::c_int;
+}
+extern "C" {
+    pub fn sspine_slot_by_name(
+        skeleton: sspine_skeleton,
+        name: *const ::std::os::raw::c_char,
+    ) -> sspine_slot;
+}
+extern "C" {
+    pub fn sspine_slot_by_index(
+        skeleton: sspine_skeleton,
+        index: ::std::os::raw::c_int,
+    ) -> sspine_slot;
+}
+extern "C" {
+    pub fn sspine_slot_valid(slot: sspine_slot) -> bool;
+}
+extern "C" {
+    pub fn sspine_slot_equal(first: sspine_slot, second: sspine_slot) -> bool;
+}
+extern "C" {
+    pub fn sspine_get_slot_info(slot: sspine_slot) -> sspine_slot_info;
+}
+extern "C" {
+    pub fn sspine_set_slot_color(instance: sspine_instance, slot: sspine_slot, color: sspine_color);
+}
+extern "C" {
+    pub fn sspine_get_slot_color(instance: sspine_instance, slot: sspine_slot) -> sspine_color;
+}
+extern "C" {
+    pub fn sspine_num_events(skeleton: sspine_skeleton) -> ::std::os::raw::c_int;
+}
+extern "C" {
+    pub fn sspine_event_by_name(
+        skeleton: sspine_skeleton,
+        name: *const ::std::os::raw::c_char,
+    ) -> sspine_event;
+}
+extern "C" {
+    pub fn sspine_event_by_index(
+        skeleton: sspine_skeleton,
+        index: ::std::os::raw::c_int,
+    ) -> sspine_event;
+}
+extern "C" {
+    pub fn sspine_event_valid(event: sspine_event) -> bool;
+}
+extern "C" {
+    pub fn sspine_event_equal(first: sspine_event, second: sspine_event) -> bool;
+}
+extern "C" {
+    pub fn sspine_get_event_info(event: sspine_event) -> sspine_event_info;
+}
+extern "C" {
+    pub fn sspine_num_iktargets(skeleton: sspine_skeleton) -> ::std::os::raw::c_int;
+}
+extern "C" {
+    pub fn sspine_iktarget_by_name(
+        skeleton: sspine_skeleton,
+        name: *const ::std::os::raw::c_char,
+    ) -> sspine_iktarget;
+}
+extern "C" {
+    pub fn sspine_iktarget_by_index(
+        skeleton: sspine_skeleton,
+        index: ::std::os::raw::c_int,
+    ) -> sspine_iktarget;
+}
+extern "C" {
+    pub fn sspine_iktarget_valid(iktarget: sspine_iktarget) -> bool;
+}
+extern "C" {
+    pub fn sspine_iktarget_equal(first: sspine_iktarget, second: sspine_iktarget) -> bool;
+}
+extern "C" {
+    pub fn sspine_get_iktarget_info(iktarget: sspine_iktarget) -> sspine_iktarget_info;
+}
+extern "C" {
+    pub fn sspine_set_iktarget_world_pos(
+        instance: sspine_instance,
+        iktarget: sspine_iktarget,
+        world_pos: sspine_vec2,
+    );
+}
+extern "C" {
+    pub fn sspine_num_skins(skeleton: sspine_skeleton) -> ::std::os::raw::c_int;
+}
+extern "C" {
+    pub fn sspine_skin_by_name(
+        skeleton: sspine_skeleton,
+        name: *const ::std::os::raw::c_char,
+    ) -> sspine_skin;
+}
+extern "C" {
+    pub fn sspine_skin_by_index(
+        skeleton: sspine_skeleton,
+        index: ::std::os::raw::c_int,
+    ) -> sspine_skin;
+}
+extern "C" {
+    pub fn sspine_skin_valid(skin: sspine_skin) -> bool;
+}
+extern "C" {
+    pub fn sspine_skin_equal(first: sspine_skin, second: sspine_skin) -> bool;
+}
+extern "C" {
+    pub fn sspine_get_skin_info(skin: sspine_skin) -> sspine_skin_info;
+}
+extern "C" {
+    pub fn sspine_set_skin(instance: sspine_instance, skin: sspine_skin);
 }
 pub type ImU64 = ::std::os::raw::c_ulonglong;
 #[repr(C)]

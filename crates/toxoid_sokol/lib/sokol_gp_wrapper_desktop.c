@@ -8,6 +8,9 @@
 #define CIMGUI_DEFINE_ENUMS_AND_STRUCTS
 #include "cimgui/cimgui.h"
 #include "sokol_imgui.h"
+#include "spine-runtimes/spine-c/spine-c/include/spine/spine.h"
+#define SOKOL_SPINE_IMPL
+#include "sokol_spine.h"
 /*
     Unlike most libraries out there, the STB headers are (usually) directly compiled within your project's source code; no linking required. Most other stb headers require you to define special macros before you include them. Read the documentation (at the top of the header files) to know which macro to define.
 */
