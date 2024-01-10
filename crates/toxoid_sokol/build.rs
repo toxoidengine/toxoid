@@ -30,7 +30,7 @@ fn main() {
     // Check if we are building for Emscripten
     let target = env::var("TARGET").unwrap();
     if !target.contains("emscripten") {
-        let bindings = bindgen::Builder::default()
+        let _bindings = bindgen::Builder::default()
             .clang_arg("-x")
             .clang_arg("c++")
             .clang_arg("-std=c++11")
@@ -49,6 +49,7 @@ fn main() {
             .header(sokol_headers_path.join("stb_image.h").to_str().unwrap())
             .header(sokol_headers_path.join("sokol_gp.h").to_str().unwrap())
             .header(sokol_headers_path.join("sokol_imgui.h").to_str().unwrap())
+            .header(sokol_headers_path.join("sokol_spine.h").to_str().unwrap())
             .header(sokol_headers_path.join("cimgui").join("cimgui.h").to_str().unwrap())
             .generate()
             .expect("Unable to generate bindings");
@@ -72,6 +73,7 @@ fn main() {
         .flag_if_supported("-Wno-unused-parameter")
         .flag_if_supported("-Wno-missing-field-initializers")
         // Build files
+        .include("lib/spine-runtimes/spine-c/spine-c/include")
         .file(lib_imgui_draw)
         .file(lib_imgui_tables)
         .file(lib_imgui_widgets)

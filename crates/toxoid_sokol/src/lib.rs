@@ -11,7 +11,6 @@ pub mod render_2d;
 // include!(concat!(env!("OUT_DIR"), "/bindings.rs"));
 pub use render_2d::*;
 pub use sokol;
-pub use imgui_sys;
 use toxoid_api::components::GameConfig;
 use toxoid_api::World;
 use toxoid_render::Renderer2D;
@@ -48,6 +47,18 @@ extern "C" fn init_cb() {
         // Initialize SImGui
         let mut sgui_desc: simgui_desc_t = core::mem::MaybeUninit::zeroed().assume_init();
         simgui_setup(&mut sgui_desc);
+
+        let mut sspine_desc_obj: sspine_desc = core::mem::MaybeUninit::zeroed().assume_init();
+        sspine_desc_obj.max_vertices = 1024;      // default: (1<<16) = 65536
+        sspine_desc_obj.max_commands = 128;       // default: (1<<14) = 16384
+        sspine_desc_obj.context_pool_size = 1;    // default: 4
+        sspine_desc_obj.atlas_pool_size = 1;      // default: 64
+        sspine_desc_obj.skeleton_pool_size = 1;   // default: 64
+        sspine_desc_obj.skinset_pool_size = 1;    // default: 64
+        sspine_desc_obj.instance_pool_size = 16;  // default: 1024
+        sspine_desc_obj.logger.func = Some(sokol::log::slog_func);
+        
+        sspine_setup(&sspine_desc_obj);
     }
 }
 
