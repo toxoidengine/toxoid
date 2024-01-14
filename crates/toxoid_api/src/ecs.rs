@@ -4,6 +4,7 @@ use core::ffi::c_void;
 use core::alloc::{GlobalAlloc, Layout};
 use core::any::TypeId;
 use serde::{Serialize, Deserialize};
+use bindings::*;
 
 #[repr(u8)]
 pub enum Type {
@@ -264,6 +265,87 @@ pub trait IsComponent {
     fn get_hash() -> u64;
     fn set_ptr(&mut self, ptr: *mut c_void);
     fn get_ptr(&self) -> *mut c_void;
+}
+
+#[repr(C)]
+pub struct Filter {
+    pub filter: *mut c_void,
+    pub filter_desc: *mut c_void,
+    pub filter_index: u8,
+    // For self reference and deallocating the iterator on drop
+    iter: *mut c_void,
+    // For deallocating all entities returned from query.entities() on drop
+    entities: &'static mut [Entity],
+}
+
+impl Filter {
+    pub fn new() -> Filter  {
+        Filter {
+            filter: core::ptr::null_mut(),
+            filter_desc: unsafe { toxoid_filter_create() },
+            filter_index: 0,
+            iter: core::ptr::null_mut(),  
+            entities: &mut [],
+        }
+    }
+
+    pub fn with<T: ComponentTuple + 'static>(&mut self) -> &mut Filter {
+        let type_ids = T::get_type_ids();
+        let layout = Layout::array::<u64>(type_ids.len()).unwrap();
+        let ids_ptr = unsafe { ALLOCATOR.alloc(layout) as *mut ecs_entity_t };
+        type_ids
+            .iter()
+            .enumerate()
+            .for_each(|(i, type_id)| {
+                let type_id = split_u64(*type_id);
+                let id = unsafe { toxoid_component_cache_get(type_id) };
+                let id = combine_u32(id);
+                unsafe { ids_ptr.add(i).write(id) };
+            });
+        self.filter_index = unsafe { toxoid_filter_with(self.filter_desc, self.filter_index, ids_ptr, type_ids.len() as i32) };
+        self
+    }
+
+    pub fn without<T: ComponentTuple + 'static>(&mut self) -> &mut Filter {
+        let type_ids = T::get_type_ids();
+        let layout = Layout::array::<u64>(type_ids.len()).unwrap();
+        let ids_ptr = unsafe { ALLOCATOR.alloc(layout) as *mut ecs_entity_t };
+        type_ids
+            .iter()
+            .enumerate()
+            .for_each(|(i, type_id)| {
+                let type_id = split_u64(*type_id);
+                let id = unsafe { toxoid_component_cache_get(type_id) };
+                let id = combine_u32(id);
+                unsafe { ids_ptr.add(i).write(id) };
+            });
+        
+        self.filter_index = unsafe { toxoid_filter_without(self.filter_desc, self.filter_index, ids_ptr, type_ids.len() as i32) };
+        self
+    }
+
+    pub fn with_or<T: ComponentTuple + 'static>(&mut self) -> &mut Filter {
+        let type_ids = T::get_type_ids();
+        let layout = Layout::array::<u64>(type_ids.len()).unwrap();
+        let ids_ptr = unsafe { ALLOCATOR.alloc(layout) as *mut ecs_entity_t };
+        type_ids
+            .iter()
+            .enumerate()
+            .for_each(|(i, type_id)| {
+                let type_id = split_u64(*type_id);
+                let id = unsafe { toxoid_component_cache_get(type_id) };
+                let id = combine_u32(id);
+                unsafe { ids_ptr.add(i).write(id) };
+            });
+
+        self.filter_index = unsafe { toxoid_filter_with_or(self.filter_desc, self.filter_index, ids_ptr, type_ids.len() as i32) };
+        self
+    }
+
+    pub fn build(&mut self) -> &mut Filter {
+        self.filter = unsafe { toxoid_filter_build(self.filter_desc) };
+        self
+    }
 }
 
 #[repr(C)]

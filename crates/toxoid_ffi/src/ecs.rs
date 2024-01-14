@@ -700,3 +700,76 @@ pub unsafe fn toxoid_system_init(
     let entity = flecs_core::flecs_system_init(system_name, ids, callback);
     split_u64(entity)
 }
+
+#[no_mangle]
+pub unsafe fn toxoid_filter_create() -> *mut flecs_core::ecs_filter_desc_t {
+    flecs_core::flecs_filter_create()    
+}
+
+#[no_mangle]
+pub unsafe fn toxoid_filter_with(filter_desc: *mut flecs_core::ecs_filter_desc_t, filter_index: u8, ids: *mut ecs_entity_t, components_count: i32) -> u8 {
+    flecs_core::flecs_filter_with(filter_desc, filter_index, ids, components_count)
+}
+
+#[no_mangle]
+pub unsafe fn toxoid_filter_without(filter_desc: *mut flecs_core::ecs_filter_desc_t, filter_index: u8, ids: *mut ecs_entity_t, components_count: i32) -> u8 {
+    flecs_core::flecs_filter_without(filter_desc, filter_index, ids, components_count)
+}
+
+#[no_mangle]
+pub unsafe fn toxoid_filter_with_or(filter_desc: *mut flecs_core::ecs_filter_desc_t, filter_index: u8, ids: *mut ecs_entity_t, components_count: i32) -> u8 {
+    flecs_core::flecs_filter_with_or(filter_desc, filter_index, ids, components_count)
+}
+
+#[no_mangle]
+pub unsafe fn toxoid_filter_build(desc: *mut flecs_core::ecs_filter_desc_t) -> *mut flecs_core::ecs_filter_t {
+    flecs_core::flecs_filter_build(desc)
+}
+
+#[no_mangle]
+pub unsafe fn toxoid_filter_iter_component(
+    component_array_ptr: *mut u8,
+    component_index: u32,
+    count: u32,
+    component_id: ecs_entity_t,
+) -> *const u8 {
+    flecs_core::flecs_filter_iter_component(component_array_ptr, component_index, count, component_id)
+}
+
+#[no_mangle]
+pub unsafe fn toxoid_filter_field(
+    iter: *mut flecs_core::ecs_iter_t,
+    term_index: i32,
+    count: u32,
+    index: u32,
+) -> *const c_void {
+    flecs_core::flecs_filter_field(iter, term_index, count, index)
+}
+
+#[no_mangle]
+pub unsafe fn toxoid_filter_field_size(
+    iter: *mut flecs_core::ecs_iter_t,
+    term_index: i32,
+) -> usize {
+    flecs_core::flecs_filter_field_size(iter, term_index)
+}
+
+#[no_mangle]
+pub unsafe fn toxoid_filter_field_list(
+    iter: *mut flecs_core::ecs_iter_t,
+    term_index: i32,
+    count: u32
+) -> &'static mut [*const c_void] {
+    flecs_core::flecs_filter_field_list(iter, term_index, count)
+}
+
+#[no_mangle]
+pub unsafe fn toxoid_filter_entity(iter: *mut flecs_core::ecs_iter_t, count: u32, index: u32) -> ecs_entity_t {
+    flecs_core::flecs_filter_entity(iter, count, index)
+}
+
+#[no_mangle]
+pub unsafe fn toxoid_filter_entity_list(iter: *mut flecs_core::ecs_iter_t) -> *mut ecs_entity_t {
+    flecs_core::flecs_filter_entity_list(iter)
+}
+
