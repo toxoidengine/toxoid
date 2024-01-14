@@ -114,6 +114,8 @@ fn build_packages() -> Result<(), Box<dyn std::error::Error>> {
                     "-sALLOW_MEMORY_GROWTH=1",
                     "-sMIN_WEBGL_VERSION=2",
                     "-sFETCH=1",
+                    // "-sUSE_PTHREADS=1", 
+                    // "-sPTHREAD_POOL_SIZE=4",
                     // "-sWEBSOCKET_DEBUG",
                     "-lwebsocket.js",
                     // "-sUSE_SDL=2",
@@ -123,6 +125,7 @@ fn build_packages() -> Result<(), Box<dyn std::error::Error>> {
                     // "-sDISABLE_EXCEPTION_CATCHING=0"
                     // "--preload-file assets",
                     ];
+                // command.env("RUSTFLAGS", "-C target-feature=+atomics,+bulk-memory");
                 command.env("EMCC_CFLAGS", flags.join(" "));
                 // command.env("EMCC_FORCE_STDLIBS", "1");
                 // command.env("EMCC_FORCE_STDLIBS", "libmalloc,libc++,libc++abi,libsockets,libfetch");

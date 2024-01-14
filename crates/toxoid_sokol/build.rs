@@ -16,12 +16,27 @@ fn main() {
     let sokol_gp_wrapper = sokol_gp_wrapper.to_str().unwrap();
 
     // ImGui
-    let sokol_imgui_path = sokol_headers_path.join("cimgui").join("imgui");
+    let sokol_imgui_path = sokol_headers_path.join("cimgui").join("imgui"); 
     let lib_imgui_tables = sokol_imgui_path.join("imgui_tables.cpp");
     let lib_imgui_widgets = sokol_imgui_path.join("imgui_widgets.cpp");
     let lib_imgui_draw = sokol_imgui_path.join("imgui_draw.cpp");
     let lib_imgui = sokol_imgui_path.join("imgui.cpp");
     let lib_c_imgui = sokol_headers_path.join("cimgui").join("cimgui.cpp");
+    let lib_c_spine = sokol_headers_path
+        .join("spine-runtimes")
+        .join("spine-c")
+        .join("spine-c")
+        .join("src")
+        .join("spine");
+    let spine_files: Vec<PathBuf> = std::fs::read_dir(lib_c_spine)
+    .expect("Unable to list spine files")
+    .filter_map(|entry| {
+        entry.ok().and_then(|e| {
+            let path = e.path();
+            if path.is_file() { Some(path) } else { None }
+        })
+    })
+    .collect();
     
     // Rebuild on build.rs change
     println!("cargo:rerun-if-changed=build.rs");
@@ -50,6 +65,8 @@ fn main() {
             .header(sokol_headers_path.join("sokol_gp.h").to_str().unwrap())
             .header(sokol_headers_path.join("sokol_imgui.h").to_str().unwrap())
             .header(sokol_headers_path.join("sokol_spine.h").to_str().unwrap())
+            .header(sokol_headers_path.join("sokol_fetch.h").to_str().unwrap())
+            .header(sokol_headers_path.join("sokol_audio.h").to_str().unwrap())
             .header(sokol_headers_path.join("cimgui").join("cimgui.h").to_str().unwrap())
             .generate()
             .expect("Unable to generate bindings");
@@ -80,7 +97,7 @@ fn main() {
         .file(lib_imgui)
         .file(lib_c_imgui)
         .file(sokol_gp_wrapper)
-        // Compile
+        .files(spine_files)
         .compile("toxoid_sokol");
 
     println!("Hello world!");

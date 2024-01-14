@@ -90,6 +90,7 @@ pub extern "C" fn onmessage_cb(
 }
 
 
+
 pub fn init() {
     // Game Config
     World::add_singleton::<GameConfig>();
@@ -118,5 +119,29 @@ pub fn init() {
     World::add_singleton::<WebSocket>();
     let mut websocket = World::get_singleton::<WebSocket>();
     websocket.set_socket(Pointer{ ptr: ws });
-
+    
+    // #[repr(C)]
+    // struct Buffers {
+    //     atlas: [u8; 4 * 1024],
+    //     skeleton: [u8; 128 * 1024],
+    //     image: [u8; 512 * 1024]
+    // }
+    // let buffers = Buffers {
+    //     atlas: [0; 4 * 1024],
+    //     skeleton: [0; 128 * 1024],
+    //     image: [0; 512 * 1024]
+    // };
+    // unsafe {
+    //     let mut sfetch_request: toxoid_sokol::bindings::sfetch_request_t = core::mem::MaybeUninit::zeroed().assume_init();
+    //     // sfetch_request.path = "assets/character.png\0".as_ptr() as *const i8;
+    //     sfetch_request.path = "assets/character.png\0".as_ptr() as *const i8;
+    //     sfetch_request.channel = 0;
+    //     sfetch_request.buffer = toxoid_sokol::bindings::sfetch_range_t {
+    //         ptr:  &buffers.image as *const u8 as *const c_void,
+    //         size: 512 * 1024 
+    //     };
+    //     sfetch_request.callback = Some(atlas_data_loaded);
+    //     toxoid_sokol::bindings::sfetch_send(&sfetch_request);
+    // }
+    crate::utils::load_atlas("assets/player_spine.atlas");
 }

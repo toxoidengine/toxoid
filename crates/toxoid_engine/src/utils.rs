@@ -1,6 +1,7 @@
 use rand::Rng;
 use toxoid_ffi::emscripten::*;
 use toxoid_api::*;
+use toxoid_sokol::bindings::sspine_atlas_desc;
 
 #[no_mangle]
 pub extern "C" fn gen_rng_range(min: i32, max: i32) -> i32 {
@@ -31,10 +32,69 @@ pub fn load_image(filename: &str) -> &mut Entity {
         let mut attr: emscripten_fetch_attr_t = core::mem::zeroed();
         emscripten_fetch_attr_init(&mut attr);
         attr.attributes = EMSCRIPTEN_FETCH_LOAD_TO_MEMORY;
-
         // Callbacks
         attr.onsuccess = Some(download_succeeded);
         attr.onerror = Some(download_failed);
+        
+        // Convert filename to CString
+        let filename_cstring = std::ffi::CString::new(filename).unwrap();
+
+        // Create entity and pass it to fetch
+        let mut entity = Entity::new();
+        entity.add::<Loadable>();
+        entity.add::<Sprite>();
+        entity.add::<Position>();
+        entity.add::<Size>();
+
+        let entity_box = Box::new(entity);
+        let entity_box = Box::leak(entity_box);
+        let entity_raw = entity_box as *mut _ as *mut core::ffi::c_void;
+        attr.userData = entity_raw;
+
+        // Fetch file
+        emscripten_fetch(&attr, filename_cstring.as_ptr());
+
+        entity_box
+    }
+}
+
+
+// const sfetch_response_t* respons
+pub extern "C" fn atlas_data_loaded(result: *mut emscripten_fetch_t) {
+     println!("Atlas data loaded.");
+     /*sspine_make_atlas(&(sspine_atlas_desc){
+        .data = state.load_status.atlas.data,
+    }); */
+    unsafe {
+        let mut atlas: sspine_atlas_desc = core::mem::MaybeUninit::zeroed().assume_init();
+        atlas.data = toxoid_sokol::bindings::sspine_range {
+            ptr: (*result).data as *const core::ffi::c_void,
+            size: (*result).totalBytes as usize
+        };
+        let spine_atlas = toxoid_sokol::bindings::sspine_make_atlas(&atlas);
+        println!("Spine atlas: {:?}", spine_atlas);
+
+        let atlas_num = toxoid_sokol::bindings::sspine_num_images(spine_atlas);
+        println!("Atlas num: {}", atlas_num);
+    }
+ }
+
+pub extern "C" fn atlas_data_failed(result: *mut emscripten_fetch_t) {}
+ 
+
+#[cfg(target_os = "emscripten")]
+pub fn load_atlas(filename: &str) -> &mut Entity {
+    unsafe {
+        println!("Loading image: {}", filename);
+        
+        // Create fetch attributes
+        let mut attr: emscripten_fetch_attr_t = core::mem::zeroed();
+        emscripten_fetch_attr_init(&mut attr);
+        attr.attributes = EMSCRIPTEN_FETCH_LOAD_TO_MEMORY;
+
+        // Callbacks
+        attr.onsuccess = Some(atlas_data_loaded);
+        attr.onerror = Some(atlas_data_failed);
         
         // Convert filename to CString
         let filename_cstring = std::ffi::CString::new(filename).unwrap();

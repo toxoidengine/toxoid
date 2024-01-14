@@ -2,6 +2,8 @@ use crate::systems::{GAMEPLAY_SYSTEMS, RENDER_SYSTEMS};
 use toxoid_render::Renderer2D;
 
 pub extern "C" fn gameplay_loop(_parg: *mut std::ffi::c_void) {
+    // unsafe { toxoid_sokol::bindings::sfetch_dowork() };
+    
     // Get gameplay systems
     let gameplay_systems = unsafe { &mut *GAMEPLAY_SYSTEMS.lock().unwrap() };
     // Update gameplay systems

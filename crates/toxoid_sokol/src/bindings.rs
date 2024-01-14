@@ -206,6 +206,8 @@ pub const SGP_UNIFORM_CONTENT_SLOTS: u32 = 4;
 pub const SGP_TEXTURE_SLOTS: u32 = 4;
 pub const SOKOL_IMGUI_INCLUDED: u32 = 1;
 pub const SOKOL_SPINE_INCLUDED: u32 = 1;
+pub const SOKOL_FETCH_INCLUDED: u32 = 1;
+pub const SOKOL_AUDIO_INCLUDED: u32 = 1;
 pub const IMGUI_HAS_DOCK: u32 = 1;
 pub type std_nullptr_t = *const ::std::os::raw::c_void;
 pub type max_align_t = f64;
@@ -17432,6 +17434,949 @@ extern "C" {
 }
 extern "C" {
     pub fn sspine_set_skin(instance: sspine_instance, skin: sspine_skin);
+}
+pub const sfetch_log_item_t_SFETCH_LOGITEM_OK: sfetch_log_item_t = 0;
+pub const sfetch_log_item_t_SFETCH_LOGITEM_MALLOC_FAILED: sfetch_log_item_t = 1;
+pub const sfetch_log_item_t_SFETCH_LOGITEM_FILE_PATH_UTF8_DECODING_FAILED: sfetch_log_item_t = 2;
+pub const sfetch_log_item_t_SFETCH_LOGITEM_SEND_QUEUE_FULL: sfetch_log_item_t = 3;
+pub const sfetch_log_item_t_SFETCH_LOGITEM_REQUEST_CHANNEL_INDEX_TOO_BIG: sfetch_log_item_t = 4;
+pub const sfetch_log_item_t_SFETCH_LOGITEM_REQUEST_PATH_IS_NULL: sfetch_log_item_t = 5;
+pub const sfetch_log_item_t_SFETCH_LOGITEM_REQUEST_PATH_TOO_LONG: sfetch_log_item_t = 6;
+pub const sfetch_log_item_t_SFETCH_LOGITEM_REQUEST_CALLBACK_MISSING: sfetch_log_item_t = 7;
+pub const sfetch_log_item_t_SFETCH_LOGITEM_REQUEST_CHUNK_SIZE_GREATER_BUFFER_SIZE:
+    sfetch_log_item_t = 8;
+pub const sfetch_log_item_t_SFETCH_LOGITEM_REQUEST_USERDATA_PTR_IS_SET_BUT_USERDATA_SIZE_IS_NULL:
+    sfetch_log_item_t = 9;
+pub const sfetch_log_item_t_SFETCH_LOGITEM_REQUEST_USERDATA_PTR_IS_NULL_BUT_USERDATA_SIZE_IS_NOT:
+    sfetch_log_item_t = 10;
+pub const sfetch_log_item_t_SFETCH_LOGITEM_REQUEST_USERDATA_SIZE_TOO_BIG: sfetch_log_item_t = 11;
+pub const sfetch_log_item_t_SFETCH_LOGITEM_CLAMPING_NUM_CHANNELS_TO_MAX_CHANNELS:
+    sfetch_log_item_t = 12;
+pub const sfetch_log_item_t_SFETCH_LOGITEM_REQUEST_POOL_EXHAUSTED: sfetch_log_item_t = 13;
+pub type sfetch_log_item_t = ::std::os::raw::c_int;
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct sfetch_logger_t {
+    pub func: ::std::option::Option<
+        unsafe extern "C" fn(
+            tag: *const ::std::os::raw::c_char,
+            log_level: u32,
+            log_item_id: u32,
+            message_or_null: *const ::std::os::raw::c_char,
+            line_nr: u32,
+            filename_or_null: *const ::std::os::raw::c_char,
+            user_data: *mut ::std::os::raw::c_void,
+        ),
+    >,
+    pub user_data: *mut ::std::os::raw::c_void,
+}
+#[test]
+fn bindgen_test_layout_sfetch_logger_t() {
+    const UNINIT: ::std::mem::MaybeUninit<sfetch_logger_t> = ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
+    assert_eq!(
+        ::std::mem::size_of::<sfetch_logger_t>(),
+        16usize,
+        concat!("Size of: ", stringify!(sfetch_logger_t))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<sfetch_logger_t>(),
+        8usize,
+        concat!("Alignment of ", stringify!(sfetch_logger_t))
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).func) as usize - ptr as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(sfetch_logger_t),
+            "::",
+            stringify!(func)
+        )
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).user_data) as usize - ptr as usize },
+        8usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(sfetch_logger_t),
+            "::",
+            stringify!(user_data)
+        )
+    );
+}
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct sfetch_range_t {
+    pub ptr: *const ::std::os::raw::c_void,
+    pub size: usize,
+}
+#[test]
+fn bindgen_test_layout_sfetch_range_t() {
+    const UNINIT: ::std::mem::MaybeUninit<sfetch_range_t> = ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
+    assert_eq!(
+        ::std::mem::size_of::<sfetch_range_t>(),
+        16usize,
+        concat!("Size of: ", stringify!(sfetch_range_t))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<sfetch_range_t>(),
+        8usize,
+        concat!("Alignment of ", stringify!(sfetch_range_t))
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).ptr) as usize - ptr as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(sfetch_range_t),
+            "::",
+            stringify!(ptr)
+        )
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).size) as usize - ptr as usize },
+        8usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(sfetch_range_t),
+            "::",
+            stringify!(size)
+        )
+    );
+}
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct sfetch_allocator_t {
+    pub alloc_fn: ::std::option::Option<
+        unsafe extern "C" fn(
+            size: usize,
+            user_data: *mut ::std::os::raw::c_void,
+        ) -> *mut ::std::os::raw::c_void,
+    >,
+    pub free_fn: ::std::option::Option<
+        unsafe extern "C" fn(
+            ptr: *mut ::std::os::raw::c_void,
+            user_data: *mut ::std::os::raw::c_void,
+        ),
+    >,
+    pub user_data: *mut ::std::os::raw::c_void,
+}
+#[test]
+fn bindgen_test_layout_sfetch_allocator_t() {
+    const UNINIT: ::std::mem::MaybeUninit<sfetch_allocator_t> = ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
+    assert_eq!(
+        ::std::mem::size_of::<sfetch_allocator_t>(),
+        24usize,
+        concat!("Size of: ", stringify!(sfetch_allocator_t))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<sfetch_allocator_t>(),
+        8usize,
+        concat!("Alignment of ", stringify!(sfetch_allocator_t))
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).alloc_fn) as usize - ptr as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(sfetch_allocator_t),
+            "::",
+            stringify!(alloc_fn)
+        )
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).free_fn) as usize - ptr as usize },
+        8usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(sfetch_allocator_t),
+            "::",
+            stringify!(free_fn)
+        )
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).user_data) as usize - ptr as usize },
+        16usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(sfetch_allocator_t),
+            "::",
+            stringify!(user_data)
+        )
+    );
+}
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct sfetch_desc_t {
+    pub max_requests: u32,
+    pub num_channels: u32,
+    pub num_lanes: u32,
+    pub allocator: sfetch_allocator_t,
+    pub logger: sfetch_logger_t,
+}
+#[test]
+fn bindgen_test_layout_sfetch_desc_t() {
+    const UNINIT: ::std::mem::MaybeUninit<sfetch_desc_t> = ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
+    assert_eq!(
+        ::std::mem::size_of::<sfetch_desc_t>(),
+        56usize,
+        concat!("Size of: ", stringify!(sfetch_desc_t))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<sfetch_desc_t>(),
+        8usize,
+        concat!("Alignment of ", stringify!(sfetch_desc_t))
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).max_requests) as usize - ptr as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(sfetch_desc_t),
+            "::",
+            stringify!(max_requests)
+        )
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).num_channels) as usize - ptr as usize },
+        4usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(sfetch_desc_t),
+            "::",
+            stringify!(num_channels)
+        )
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).num_lanes) as usize - ptr as usize },
+        8usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(sfetch_desc_t),
+            "::",
+            stringify!(num_lanes)
+        )
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).allocator) as usize - ptr as usize },
+        16usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(sfetch_desc_t),
+            "::",
+            stringify!(allocator)
+        )
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).logger) as usize - ptr as usize },
+        40usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(sfetch_desc_t),
+            "::",
+            stringify!(logger)
+        )
+    );
+}
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct sfetch_handle_t {
+    pub id: u32,
+}
+#[test]
+fn bindgen_test_layout_sfetch_handle_t() {
+    const UNINIT: ::std::mem::MaybeUninit<sfetch_handle_t> = ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
+    assert_eq!(
+        ::std::mem::size_of::<sfetch_handle_t>(),
+        4usize,
+        concat!("Size of: ", stringify!(sfetch_handle_t))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<sfetch_handle_t>(),
+        4usize,
+        concat!("Alignment of ", stringify!(sfetch_handle_t))
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).id) as usize - ptr as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(sfetch_handle_t),
+            "::",
+            stringify!(id)
+        )
+    );
+}
+pub const sfetch_error_t_SFETCH_ERROR_NO_ERROR: sfetch_error_t = 0;
+pub const sfetch_error_t_SFETCH_ERROR_FILE_NOT_FOUND: sfetch_error_t = 1;
+pub const sfetch_error_t_SFETCH_ERROR_NO_BUFFER: sfetch_error_t = 2;
+pub const sfetch_error_t_SFETCH_ERROR_BUFFER_TOO_SMALL: sfetch_error_t = 3;
+pub const sfetch_error_t_SFETCH_ERROR_UNEXPECTED_EOF: sfetch_error_t = 4;
+pub const sfetch_error_t_SFETCH_ERROR_INVALID_HTTP_STATUS: sfetch_error_t = 5;
+pub const sfetch_error_t_SFETCH_ERROR_CANCELLED: sfetch_error_t = 6;
+pub type sfetch_error_t = ::std::os::raw::c_int;
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct sfetch_response_t {
+    pub handle: sfetch_handle_t,
+    pub dispatched: bool,
+    pub fetched: bool,
+    pub paused: bool,
+    pub finished: bool,
+    pub failed: bool,
+    pub cancelled: bool,
+    pub error_code: sfetch_error_t,
+    pub channel: u32,
+    pub lane: u32,
+    pub path: *const ::std::os::raw::c_char,
+    pub user_data: *mut ::std::os::raw::c_void,
+    pub data_offset: u32,
+    pub data: sfetch_range_t,
+    pub buffer: sfetch_range_t,
+}
+#[test]
+fn bindgen_test_layout_sfetch_response_t() {
+    const UNINIT: ::std::mem::MaybeUninit<sfetch_response_t> = ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
+    assert_eq!(
+        ::std::mem::size_of::<sfetch_response_t>(),
+        80usize,
+        concat!("Size of: ", stringify!(sfetch_response_t))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<sfetch_response_t>(),
+        8usize,
+        concat!("Alignment of ", stringify!(sfetch_response_t))
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).handle) as usize - ptr as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(sfetch_response_t),
+            "::",
+            stringify!(handle)
+        )
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).dispatched) as usize - ptr as usize },
+        4usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(sfetch_response_t),
+            "::",
+            stringify!(dispatched)
+        )
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).fetched) as usize - ptr as usize },
+        5usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(sfetch_response_t),
+            "::",
+            stringify!(fetched)
+        )
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).paused) as usize - ptr as usize },
+        6usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(sfetch_response_t),
+            "::",
+            stringify!(paused)
+        )
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).finished) as usize - ptr as usize },
+        7usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(sfetch_response_t),
+            "::",
+            stringify!(finished)
+        )
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).failed) as usize - ptr as usize },
+        8usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(sfetch_response_t),
+            "::",
+            stringify!(failed)
+        )
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).cancelled) as usize - ptr as usize },
+        9usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(sfetch_response_t),
+            "::",
+            stringify!(cancelled)
+        )
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).error_code) as usize - ptr as usize },
+        12usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(sfetch_response_t),
+            "::",
+            stringify!(error_code)
+        )
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).channel) as usize - ptr as usize },
+        16usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(sfetch_response_t),
+            "::",
+            stringify!(channel)
+        )
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).lane) as usize - ptr as usize },
+        20usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(sfetch_response_t),
+            "::",
+            stringify!(lane)
+        )
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).path) as usize - ptr as usize },
+        24usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(sfetch_response_t),
+            "::",
+            stringify!(path)
+        )
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).user_data) as usize - ptr as usize },
+        32usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(sfetch_response_t),
+            "::",
+            stringify!(user_data)
+        )
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).data_offset) as usize - ptr as usize },
+        40usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(sfetch_response_t),
+            "::",
+            stringify!(data_offset)
+        )
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).data) as usize - ptr as usize },
+        48usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(sfetch_response_t),
+            "::",
+            stringify!(data)
+        )
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).buffer) as usize - ptr as usize },
+        64usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(sfetch_response_t),
+            "::",
+            stringify!(buffer)
+        )
+    );
+}
+pub type sfetch_callback_t =
+    ::std::option::Option<unsafe extern "C" fn(arg1: *const sfetch_response_t)>;
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct sfetch_request_t {
+    pub channel: u32,
+    pub path: *const ::std::os::raw::c_char,
+    pub callback: sfetch_callback_t,
+    pub chunk_size: u32,
+    pub buffer: sfetch_range_t,
+    pub user_data: sfetch_range_t,
+}
+#[test]
+fn bindgen_test_layout_sfetch_request_t() {
+    const UNINIT: ::std::mem::MaybeUninit<sfetch_request_t> = ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
+    assert_eq!(
+        ::std::mem::size_of::<sfetch_request_t>(),
+        64usize,
+        concat!("Size of: ", stringify!(sfetch_request_t))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<sfetch_request_t>(),
+        8usize,
+        concat!("Alignment of ", stringify!(sfetch_request_t))
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).channel) as usize - ptr as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(sfetch_request_t),
+            "::",
+            stringify!(channel)
+        )
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).path) as usize - ptr as usize },
+        8usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(sfetch_request_t),
+            "::",
+            stringify!(path)
+        )
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).callback) as usize - ptr as usize },
+        16usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(sfetch_request_t),
+            "::",
+            stringify!(callback)
+        )
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).chunk_size) as usize - ptr as usize },
+        24usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(sfetch_request_t),
+            "::",
+            stringify!(chunk_size)
+        )
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).buffer) as usize - ptr as usize },
+        32usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(sfetch_request_t),
+            "::",
+            stringify!(buffer)
+        )
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).user_data) as usize - ptr as usize },
+        48usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(sfetch_request_t),
+            "::",
+            stringify!(user_data)
+        )
+    );
+}
+extern "C" {
+    pub fn sfetch_setup(desc: *const sfetch_desc_t);
+}
+extern "C" {
+    pub fn sfetch_shutdown();
+}
+extern "C" {
+    pub fn sfetch_valid() -> bool;
+}
+extern "C" {
+    pub fn sfetch_desc() -> sfetch_desc_t;
+}
+extern "C" {
+    pub fn sfetch_max_userdata_bytes() -> ::std::os::raw::c_int;
+}
+extern "C" {
+    pub fn sfetch_max_path() -> ::std::os::raw::c_int;
+}
+extern "C" {
+    pub fn sfetch_send(request: *const sfetch_request_t) -> sfetch_handle_t;
+}
+extern "C" {
+    pub fn sfetch_handle_valid(h: sfetch_handle_t) -> bool;
+}
+extern "C" {
+    pub fn sfetch_dowork();
+}
+extern "C" {
+    pub fn sfetch_bind_buffer(h: sfetch_handle_t, buffer: sfetch_range_t);
+}
+extern "C" {
+    pub fn sfetch_unbind_buffer(h: sfetch_handle_t) -> *mut ::std::os::raw::c_void;
+}
+extern "C" {
+    pub fn sfetch_cancel(h: sfetch_handle_t);
+}
+extern "C" {
+    pub fn sfetch_pause(h: sfetch_handle_t);
+}
+extern "C" {
+    pub fn sfetch_continue(h: sfetch_handle_t);
+}
+pub const saudio_log_item_SAUDIO_LOGITEM_OK: saudio_log_item = 0;
+pub const saudio_log_item_SAUDIO_LOGITEM_MALLOC_FAILED: saudio_log_item = 1;
+pub const saudio_log_item_SAUDIO_LOGITEM_ALSA_SND_PCM_OPEN_FAILED: saudio_log_item = 2;
+pub const saudio_log_item_SAUDIO_LOGITEM_ALSA_FLOAT_SAMPLES_NOT_SUPPORTED: saudio_log_item = 3;
+pub const saudio_log_item_SAUDIO_LOGITEM_ALSA_REQUESTED_BUFFER_SIZE_NOT_SUPPORTED: saudio_log_item =
+    4;
+pub const saudio_log_item_SAUDIO_LOGITEM_ALSA_REQUESTED_CHANNEL_COUNT_NOT_SUPPORTED:
+    saudio_log_item = 5;
+pub const saudio_log_item_SAUDIO_LOGITEM_ALSA_SND_PCM_HW_PARAMS_SET_RATE_NEAR_FAILED:
+    saudio_log_item = 6;
+pub const saudio_log_item_SAUDIO_LOGITEM_ALSA_SND_PCM_HW_PARAMS_FAILED: saudio_log_item = 7;
+pub const saudio_log_item_SAUDIO_LOGITEM_ALSA_PTHREAD_CREATE_FAILED: saudio_log_item = 8;
+pub const saudio_log_item_SAUDIO_LOGITEM_WASAPI_CREATE_EVENT_FAILED: saudio_log_item = 9;
+pub const saudio_log_item_SAUDIO_LOGITEM_WASAPI_CREATE_DEVICE_ENUMERATOR_FAILED: saudio_log_item =
+    10;
+pub const saudio_log_item_SAUDIO_LOGITEM_WASAPI_GET_DEFAULT_AUDIO_ENDPOINT_FAILED: saudio_log_item =
+    11;
+pub const saudio_log_item_SAUDIO_LOGITEM_WASAPI_DEVICE_ACTIVATE_FAILED: saudio_log_item = 12;
+pub const saudio_log_item_SAUDIO_LOGITEM_WASAPI_AUDIO_CLIENT_INITIALIZE_FAILED: saudio_log_item =
+    13;
+pub const saudio_log_item_SAUDIO_LOGITEM_WASAPI_AUDIO_CLIENT_GET_BUFFER_SIZE_FAILED:
+    saudio_log_item = 14;
+pub const saudio_log_item_SAUDIO_LOGITEM_WASAPI_AUDIO_CLIENT_GET_SERVICE_FAILED: saudio_log_item =
+    15;
+pub const saudio_log_item_SAUDIO_LOGITEM_WASAPI_AUDIO_CLIENT_SET_EVENT_HANDLE_FAILED:
+    saudio_log_item = 16;
+pub const saudio_log_item_SAUDIO_LOGITEM_WASAPI_CREATE_THREAD_FAILED: saudio_log_item = 17;
+pub const saudio_log_item_SAUDIO_LOGITEM_AAUDIO_STREAMBUILDER_OPEN_STREAM_FAILED: saudio_log_item =
+    18;
+pub const saudio_log_item_SAUDIO_LOGITEM_AAUDIO_PTHREAD_CREATE_FAILED: saudio_log_item = 19;
+pub const saudio_log_item_SAUDIO_LOGITEM_AAUDIO_RESTARTING_STREAM_AFTER_ERROR: saudio_log_item = 20;
+pub const saudio_log_item_SAUDIO_LOGITEM_USING_AAUDIO_BACKEND: saudio_log_item = 21;
+pub const saudio_log_item_SAUDIO_LOGITEM_AAUDIO_CREATE_STREAMBUILDER_FAILED: saudio_log_item = 22;
+pub const saudio_log_item_SAUDIO_LOGITEM_USING_SLES_BACKEND: saudio_log_item = 23;
+pub const saudio_log_item_SAUDIO_LOGITEM_SLES_CREATE_ENGINE_FAILED: saudio_log_item = 24;
+pub const saudio_log_item_SAUDIO_LOGITEM_SLES_ENGINE_GET_ENGINE_INTERFACE_FAILED: saudio_log_item =
+    25;
+pub const saudio_log_item_SAUDIO_LOGITEM_SLES_CREATE_OUTPUT_MIX_FAILED: saudio_log_item = 26;
+pub const saudio_log_item_SAUDIO_LOGITEM_SLES_MIXER_GET_VOLUME_INTERFACE_FAILED: saudio_log_item =
+    27;
+pub const saudio_log_item_SAUDIO_LOGITEM_SLES_ENGINE_CREATE_AUDIO_PLAYER_FAILED: saudio_log_item =
+    28;
+pub const saudio_log_item_SAUDIO_LOGITEM_SLES_PLAYER_GET_PLAY_INTERFACE_FAILED: saudio_log_item =
+    29;
+pub const saudio_log_item_SAUDIO_LOGITEM_SLES_PLAYER_GET_VOLUME_INTERFACE_FAILED: saudio_log_item =
+    30;
+pub const saudio_log_item_SAUDIO_LOGITEM_SLES_PLAYER_GET_BUFFERQUEUE_INTERFACE_FAILED:
+    saudio_log_item = 31;
+pub const saudio_log_item_SAUDIO_LOGITEM_COREAUDIO_NEW_OUTPUT_FAILED: saudio_log_item = 32;
+pub const saudio_log_item_SAUDIO_LOGITEM_COREAUDIO_ALLOCATE_BUFFER_FAILED: saudio_log_item = 33;
+pub const saudio_log_item_SAUDIO_LOGITEM_COREAUDIO_START_FAILED: saudio_log_item = 34;
+pub const saudio_log_item_SAUDIO_LOGITEM_BACKEND_BUFFER_SIZE_ISNT_MULTIPLE_OF_PACKET_SIZE:
+    saudio_log_item = 35;
+pub type saudio_log_item = ::std::os::raw::c_int;
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct saudio_logger {
+    pub func: ::std::option::Option<
+        unsafe extern "C" fn(
+            tag: *const ::std::os::raw::c_char,
+            log_level: u32,
+            log_item_id: u32,
+            message_or_null: *const ::std::os::raw::c_char,
+            line_nr: u32,
+            filename_or_null: *const ::std::os::raw::c_char,
+            user_data: *mut ::std::os::raw::c_void,
+        ),
+    >,
+    pub user_data: *mut ::std::os::raw::c_void,
+}
+#[test]
+fn bindgen_test_layout_saudio_logger() {
+    const UNINIT: ::std::mem::MaybeUninit<saudio_logger> = ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
+    assert_eq!(
+        ::std::mem::size_of::<saudio_logger>(),
+        16usize,
+        concat!("Size of: ", stringify!(saudio_logger))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<saudio_logger>(),
+        8usize,
+        concat!("Alignment of ", stringify!(saudio_logger))
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).func) as usize - ptr as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(saudio_logger),
+            "::",
+            stringify!(func)
+        )
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).user_data) as usize - ptr as usize },
+        8usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(saudio_logger),
+            "::",
+            stringify!(user_data)
+        )
+    );
+}
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct saudio_allocator {
+    pub alloc_fn: ::std::option::Option<
+        unsafe extern "C" fn(
+            size: usize,
+            user_data: *mut ::std::os::raw::c_void,
+        ) -> *mut ::std::os::raw::c_void,
+    >,
+    pub free_fn: ::std::option::Option<
+        unsafe extern "C" fn(
+            ptr: *mut ::std::os::raw::c_void,
+            user_data: *mut ::std::os::raw::c_void,
+        ),
+    >,
+    pub user_data: *mut ::std::os::raw::c_void,
+}
+#[test]
+fn bindgen_test_layout_saudio_allocator() {
+    const UNINIT: ::std::mem::MaybeUninit<saudio_allocator> = ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
+    assert_eq!(
+        ::std::mem::size_of::<saudio_allocator>(),
+        24usize,
+        concat!("Size of: ", stringify!(saudio_allocator))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<saudio_allocator>(),
+        8usize,
+        concat!("Alignment of ", stringify!(saudio_allocator))
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).alloc_fn) as usize - ptr as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(saudio_allocator),
+            "::",
+            stringify!(alloc_fn)
+        )
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).free_fn) as usize - ptr as usize },
+        8usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(saudio_allocator),
+            "::",
+            stringify!(free_fn)
+        )
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).user_data) as usize - ptr as usize },
+        16usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(saudio_allocator),
+            "::",
+            stringify!(user_data)
+        )
+    );
+}
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct saudio_desc {
+    pub sample_rate: ::std::os::raw::c_int,
+    pub num_channels: ::std::os::raw::c_int,
+    pub buffer_frames: ::std::os::raw::c_int,
+    pub packet_frames: ::std::os::raw::c_int,
+    pub num_packets: ::std::os::raw::c_int,
+    pub stream_cb: ::std::option::Option<
+        unsafe extern "C" fn(
+            buffer: *mut f32,
+            num_frames: ::std::os::raw::c_int,
+            num_channels: ::std::os::raw::c_int,
+        ),
+    >,
+    pub stream_userdata_cb: ::std::option::Option<
+        unsafe extern "C" fn(
+            buffer: *mut f32,
+            num_frames: ::std::os::raw::c_int,
+            num_channels: ::std::os::raw::c_int,
+            user_data: *mut ::std::os::raw::c_void,
+        ),
+    >,
+    pub user_data: *mut ::std::os::raw::c_void,
+    pub allocator: saudio_allocator,
+    pub logger: saudio_logger,
+}
+#[test]
+fn bindgen_test_layout_saudio_desc() {
+    const UNINIT: ::std::mem::MaybeUninit<saudio_desc> = ::std::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
+    assert_eq!(
+        ::std::mem::size_of::<saudio_desc>(),
+        88usize,
+        concat!("Size of: ", stringify!(saudio_desc))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<saudio_desc>(),
+        8usize,
+        concat!("Alignment of ", stringify!(saudio_desc))
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).sample_rate) as usize - ptr as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(saudio_desc),
+            "::",
+            stringify!(sample_rate)
+        )
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).num_channels) as usize - ptr as usize },
+        4usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(saudio_desc),
+            "::",
+            stringify!(num_channels)
+        )
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).buffer_frames) as usize - ptr as usize },
+        8usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(saudio_desc),
+            "::",
+            stringify!(buffer_frames)
+        )
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).packet_frames) as usize - ptr as usize },
+        12usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(saudio_desc),
+            "::",
+            stringify!(packet_frames)
+        )
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).num_packets) as usize - ptr as usize },
+        16usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(saudio_desc),
+            "::",
+            stringify!(num_packets)
+        )
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).stream_cb) as usize - ptr as usize },
+        24usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(saudio_desc),
+            "::",
+            stringify!(stream_cb)
+        )
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).stream_userdata_cb) as usize - ptr as usize },
+        32usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(saudio_desc),
+            "::",
+            stringify!(stream_userdata_cb)
+        )
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).user_data) as usize - ptr as usize },
+        40usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(saudio_desc),
+            "::",
+            stringify!(user_data)
+        )
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).allocator) as usize - ptr as usize },
+        48usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(saudio_desc),
+            "::",
+            stringify!(allocator)
+        )
+    );
+    assert_eq!(
+        unsafe { ::std::ptr::addr_of!((*ptr).logger) as usize - ptr as usize },
+        72usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(saudio_desc),
+            "::",
+            stringify!(logger)
+        )
+    );
+}
+extern "C" {
+    pub fn saudio_setup(desc: *const saudio_desc);
+}
+extern "C" {
+    pub fn saudio_shutdown();
+}
+extern "C" {
+    pub fn saudio_isvalid() -> bool;
+}
+extern "C" {
+    pub fn saudio_userdata() -> *mut ::std::os::raw::c_void;
+}
+extern "C" {
+    pub fn saudio_query_desc() -> saudio_desc;
+}
+extern "C" {
+    pub fn saudio_sample_rate() -> ::std::os::raw::c_int;
+}
+extern "C" {
+    pub fn saudio_buffer_frames() -> ::std::os::raw::c_int;
+}
+extern "C" {
+    pub fn saudio_channels() -> ::std::os::raw::c_int;
+}
+extern "C" {
+    pub fn saudio_suspended() -> bool;
+}
+extern "C" {
+    pub fn saudio_expect() -> ::std::os::raw::c_int;
+}
+extern "C" {
+    pub fn saudio_push(
+        frames: *const f32,
+        num_frames: ::std::os::raw::c_int,
+    ) -> ::std::os::raw::c_int;
 }
 pub type ImU64 = ::std::os::raw::c_ulonglong;
 #[repr(C)]
