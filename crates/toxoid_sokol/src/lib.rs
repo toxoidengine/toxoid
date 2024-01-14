@@ -48,6 +48,7 @@ extern "C" fn init_cb() {
         let mut sgui_desc: simgui_desc_t = core::mem::MaybeUninit::zeroed().assume_init();
         simgui_setup(&mut sgui_desc);
 
+        // Initialize Spine
         let mut sspine_desc_obj: sspine_desc = core::mem::MaybeUninit::zeroed().assume_init();
         sspine_desc_obj.max_vertices = 1024;      // default: (1<<16) = 65536
         sspine_desc_obj.max_commands = 128;       // default: (1<<14) = 16384
@@ -57,8 +58,20 @@ extern "C" fn init_cb() {
         sspine_desc_obj.skinset_pool_size = 1;    // default: 64
         sspine_desc_obj.instance_pool_size = 16;  // default: 1024
         sspine_desc_obj.logger.func = Some(sokol::log::slog_func);
-        
         sspine_setup(&sspine_desc_obj);
+
+        // // Initialize SFetch
+        // let mut sfetch_desc: sfetch_desc_t = core::mem::MaybeUninit::zeroed().assume_init();
+        // sfetch_desc.max_requests = 3;
+        // sfetch_desc.num_channels = 1;
+        // sfetch_desc.num_lanes = 1;
+        // sfetch_desc.logger.func = Some(sokol::log::slog_func);     
+        // // let sfetch_desc = Box::new(sfetch_desc);
+        // // let sfetch_desc = Box::leak(sfetch_desc); 
+        // sfetch_setup(&mut sfetch_desc);
+        // if !sfetch_valid() {
+        //     panic!("sfetch is not valid");
+        // }
     }
 }
 
