@@ -1,3 +1,5 @@
+use core::ffi::c_void;
+
 use rand::Rng;
 use toxoid_ffi::emscripten::*;
 use toxoid_api::*;
@@ -106,7 +108,6 @@ pub extern "C" fn animation_load_success(result: *mut emscripten_fetch_t) {
             // Next create a spine skeleton object, skeleton data files can be either
             // text (JSON) or binary (in our case, 'raptor-pro.skel' is a binary skeleton file).
             // In case of JSON data, make sure that the data is 0-terminated!
-            let atlas_num = toxoid_sokol::bindings::sspine_num_images(spine_atlas);
             let mut skeleton_desc: toxoid_sokol::bindings::sspine_skeleton_desc = core::mem::MaybeUninit::zeroed().assume_init();
             let skeleton = (*entity).get::<Skeleton>();
             let ptr = skeleton.get_skeleton().ptr;
@@ -129,13 +130,47 @@ pub extern "C" fn animation_load_success(result: *mut emscripten_fetch_t) {
             // that's passed to the sspine_draw_layer() during rendering (in our
             // case it's simply framebuffer pixels, with the origin in the
             // center)
+            toxoid_sokol::bindings::sspine_set_position(instance, toxoid_sokol::bindings::sspine_vec2 { x: -100., y:200. });
 
             // configure a simple animation sequence
-            let anim_c_string = std::ffi::CString::new("idle_down_weapon").unwrap().as_ptr();
+            let anim_c_string = std::ffi::CString::new("idle_down_weapon").unwrap();
+            let anim_c_string = anim_c_string.as_ptr();
             toxoid_sokol::bindings::sspine_add_animation(instance, toxoid_sokol::bindings::sspine_anim_by_name(spine_skeleton, anim_c_string), 0, true, 0.);
             
-            println!("Spine atlas: {:?}", spine_atlas);
-            println!("Atlas num: {}", atlas_num);
+            let atlas_images_num = toxoid_sokol::bindings::sspine_num_images(spine_atlas);
+            for img_index in 0..atlas_images_num {
+                let img = toxoid_sokol::bindings::sspine_image_by_index(spine_atlas, img_index);
+                let img_info = toxoid_sokol::bindings::sspine_get_image_info(img);
+                println!("Image info filename: {:?}", img_info);
+
+                // We'll store the sspine_image handle in the fetch request's user data
+                // blob, because we need the image info again later in the fetch callback
+                // in order to initialize the sokol-gfx image with the right parameters.
+                //      
+                // Also important to note: all image fetch requests load their data into the same
+                // buffer. This is fine because sokol-fetch has been configured
+                // with num_lanes=1, this will cause all requests on the same
+                // channel to be serialized (not run in parallel). That way
+                // the same buffer can be reused even if there are multiple atlas images.
+                // The downside is that loading multiple images would take longer.
+                // let path_buf = [0; 512];
+                // let path_buf = toxoid_sokol::bindings::fileutil_get_path(img_info.filename.as_ptr() as *const i8, path_buf.as_ptr() as *mut i8,  512);
+                // let path_buf = std::ffi::CString::from_raw(path_buf);
+                // let path_buf = path_buf.as_ptr();
+                // let mut sfetch_request: toxoid_sokol::bindings::sfetch_request_t = core::mem::MaybeUninit::zeroed().assume_init();
+                // sfetch_request.path = path_buf;
+                // sfetch_request.channel = 0;
+                // sfetch_request.buffer = toxoid_sokol::bindings::sfetch_range_t {
+                //     ptr:  &buffers.image as *const u8 as *const c_void,
+                //     size: 512 * 1024 
+                // };
+                // sfetch_request.callback = image_data_loaded;
+                // sfetch_request.user_data = toxoid_sokol::bindings::sfetch_range_t {
+                //     ptr: img as *const u8 as *const c_void,
+                //     size: 512 * 1024 
+                // };
+                // toxoid_sokol::bindings::sfetch_send(&mut sfetch_request);
+            }
         }
     }
 }
