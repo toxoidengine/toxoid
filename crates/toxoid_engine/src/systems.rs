@@ -52,7 +52,6 @@ pub fn render_sprite_system(query: &mut Query) {
     }
 }
 
-#[cfg(target_os = "emscripten")]
 pub fn load_sprite_system(query: &mut Query) {
     let query_iter = query.iter();
     while query_iter.next() {
@@ -60,38 +59,41 @@ pub fn load_sprite_system(query: &mut Query) {
         entities
             .iter_mut()
             .for_each(|entity| {
-                let pos = entity.get::<Position>();
-                let size = entity.get::<Size>();
-                let mut sprite = entity.get::<Sprite>();
+                let sprite = entity.get::<Sprite>();
 
-                println!("Sprite loaded!");
+                println!("Sprite loading!");
                 entity.remove::<Loadable>();
                 
-                use core::ffi::CStr;
-                use toxoid_ffi::emscripten::*;
                 use crate::utils::*;
 
-                let raw_ptr = sprite.get_filename().ptr;
-                let c_str: &CStr =  unsafe { CStr::from_ptr(raw_ptr as *const i8) };
-                let filename: &str = c_str.to_str().unwrap();
-        
-                // Create fetch attributes
-                let mut attr: emscripten_fetch_attr_t = unsafe { std::mem::zeroed() };
-                unsafe { emscripten_fetch_attr_init(&mut attr) };
-                attr.attributes = EMSCRIPTEN_FETCH_LOAD_TO_MEMORY;
-                
-                // Callbacks
-                attr.onsuccess = Some(download_succeeded);
-                attr.onerror = Some(download_failed);
-                
-                // Convert filename to CString
-                let filename_cstring = std::ffi::CString::new(filename).unwrap();
-        
-                // Fetch file
-                unsafe { emscripten_fetch(&attr, filename_cstring.as_ptr()) };
+                let filename = sprite.get_filename();
+                fetch(filename, entity as *mut Entity as *mut core::ffi::c_void, image_load_success, image_load_fail);
             });
     }
 }
+
+pub fn load_bone_animation_system(query: &mut Query) {
+    let query_iter = query.iter();
+    while query_iter.next() {
+        let entities = query_iter.entities();
+        entities
+            .iter_mut()
+            .for_each(|entity| {
+                println!("Animation loading!");
+                use crate::utils::*;
+
+                entity.remove::<Loadable>();
+
+                let skeleton = entity.get::<Skeleton>();
+                let atlas = entity.get::<Atlas>();
+                let skeleton_filename = skeleton.get_skeleton_filename();
+                let atlas_filename = atlas.get_atlas_filename();
+                
+                fetch(skeleton_filename, entity as *mut Entity as *mut core::ffi::c_void, animation_load_success, animation_load_failed);
+                fetch(atlas_filename, entity as *mut Entity as *mut core::ffi::c_void, animation_load_success, animation_load_failed);
+            });
+    }
+} 
 
 // emscripten cfg
 #[cfg(target_os = "emscripten")]
@@ -186,6 +188,7 @@ pub fn init() {
     let mut render_rect_system = System::new(render_rect_system);
     let mut load_sprite_system = System::new(load_sprite_system);
     let mut render_sprite_system = System::new(render_sprite_system);
+    let mut load_bone_animation_system = System::new(load_bone_animation_system);
 
     render_rect_system
         .with::<(Rect, Renderable, Color, Size, Position)>()
@@ -196,10 +199,14 @@ pub fn init() {
     render_sprite_system
         .with::<(Sprite, Renderable, Size, Position)>()
         .build();
+    load_bone_animation_system
+        .with::<(Loadable, Atlas, Skeleton, Images)>()
+        .build();
 
     World::add_system(render_rect_system);
     World::add_system(load_sprite_system);
     World::add_system(render_sprite_system);
+    World::add_system(load_bone_animation_system);
 
     // TODO: Remove
     let mut input_system = System::new(input_system);
@@ -231,5 +238,5 @@ pub fn init() {
                 panic!("Error setting keyup callback");
             }
         }
-    }   
+    }  
 }

@@ -165,5 +165,6 @@ extern "C" {
         callback: unsafe extern "C" fn(*mut c_void)
     ) -> ecs_entity_t;
     pub fn toxoid_prefab_create() -> SplitU64;
-    pub fn toxoid_prefab_instance(prefab: SplitU64) -> SplitU64;
+    pub fn toxoid_prefab_instance(prefab_high: u32, prefab_low: u32) -> SplitU64;
+    pub fn make_c_string(string: &str) -> *mut i8;
 }

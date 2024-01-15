@@ -24,10 +24,10 @@ enum FieldType {
     F64,
     Bool,
     String,
-    // Array,
     U32Array,
     F32Array,
     Pointer,
+    StringPtr,
 }
 
 // Constants for FNV-1a hashing
@@ -351,6 +351,23 @@ pub fn component(input: TokenStream) -> TokenStream {
                                     }
                                 }
                             },
+                            _ if field_type_str == "StringPtr" => {
+                                quote! {
+                                    pub fn #getter_name(&self) -> &str {
+                                        unsafe {
+                                            let member_ptr = toxoid_component_get_member_ptr(self.ptr, #field_offset);
+                                            let c_str: &core::ffi::CStr = unsafe { core::ffi::CStr::from_ptr(member_ptr as *const i8) };
+                                            let string_ptr: &str = c_str.to_str().unwrap();
+                                            string_ptr
+                                        }
+                                    }
+                                    pub fn #setter_name(&mut self, value: StringPtr) {
+                                        unsafe {
+                                            toxoid_component_set_member_ptr(self.ptr, #field_offset, value.ptr as *mut core::ffi::c_void);
+                                        }
+                                    }
+                                }
+                            },
                             _ => {
                                 println!("Unsupported field type: {}", quote!(#field_type));
                                 panic!("Unsupported field type for getter/setter");
@@ -528,6 +545,7 @@ fn get_type_code(ty: &Type) -> u8 {
         Type::Path(tp) if tp.path.is_ident("U32Array") => FieldType::U32Array as u8,
         Type::Path(tp) if tp.path.is_ident("F32Array") => FieldType::U32Array as u8,
         Type::Path(tp) if tp.path.is_ident("Pointer") => FieldType::Pointer as u8,
+        Type::Path(tp) if tp.path.is_ident("StringPtr") => FieldType::StringPtr as u8,
         Type::Ptr(ptr) => {
             match *ptr.elem {
                 Type::Path(ref tp) if tp.path.is_ident("u32") => {
@@ -569,6 +587,7 @@ fn get_type_size(ty: &Type) -> u32 {
         Type::Path(tp) if tp.path.is_ident("U32Array") => 4,
         Type::Path(tp) if tp.path.is_ident("F32Array") => 4,
         Type::Path(tp) if tp.path.is_ident("Pointer") => 4,
+        Type::Path(tp) if tp.path.is_ident("StringPtr") => 4,
         Type::Ptr(ptr) => {
             match *ptr.elem {
                 Type::Path(ref tp) if tp.path.is_ident("u32") => {

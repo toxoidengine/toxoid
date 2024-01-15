@@ -43,7 +43,7 @@ component! {
         a: u8
     },
     Sprite {
-        filename: Pointer,
+        filename: StringPtr,
         sprite: Pointer
     },
     NetworkEntity {
@@ -52,6 +52,26 @@ component! {
     },
     WebSocket {
         socket: Pointer
+    },
+    Atlas {
+        atlas_filename: StringPtr,
+        atlas: Pointer,
+        data_size: u64,
+        loaded: bool,
+    },
+    Skeleton {
+        skeleton_filename: StringPtr,
+        skeleton: Pointer,
+        data_size: u64,
+        loaded: bool,
+    },
+    Images {
+        images: Pointer,
+        loaded: bool,
+    },
+    BoneAnimation {
+        animation_state: StringPtr,
+        animation: StringPtr
     },
 
     // Tags
@@ -79,6 +99,10 @@ pub fn init() {
     Color::register();
     Sprite::register();
     NetworkEntity::register();
+    Atlas::register();
+    Skeleton::register();
+    Images::register();
+    BoneAnimation::register();
 
     // Tags
     Rect::register();

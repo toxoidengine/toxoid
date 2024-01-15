@@ -778,8 +778,11 @@ pub unsafe fn toxoid_prefab_create() -> SplitU64 {
     split_u64(flecs_core::flecs_prefab_create())
 }
 
+// Does not accept SplitU64 -> SplitU64 on Emscripten because of weird linker bug
+// Use tools like nm, objdump, or readelf to inspect the symbols and their signatures in the compiled object files.
+// Look at the generated WebAssembly text format (.wat file) or bytecode (.wasm file) to verify the exported function signatures.
 #[no_mangle]
-pub unsafe fn toxoid_prefab_instance(prefab: ecs_entity_t) -> SplitU64 {
-    split_u64(flecs_core::flecs_prefab_instance(prefab))
+pub unsafe fn toxoid_prefab_instance(prefab_high: u32, prefab_low: u32) -> SplitU64 {
+    split_u64(flecs_core::flecs_prefab_instance(combine_u32(SplitU64 { high: prefab_high, low: prefab_low })))
 }
 
