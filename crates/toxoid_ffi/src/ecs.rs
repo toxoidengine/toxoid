@@ -773,3 +773,13 @@ pub unsafe fn toxoid_filter_entity_list(iter: *mut flecs_core::ecs_iter_t) -> *m
     flecs_core::flecs_filter_entity_list(iter)
 }
 
+#[no_mangle]
+pub unsafe fn toxoid_prefab_create() -> SplitU64 {
+    split_u64(flecs_core::flecs_prefab_create())
+}
+
+#[no_mangle]
+pub unsafe fn toxoid_prefab_instance(prefab: ecs_entity_t) -> SplitU64 {
+    split_u64(flecs_core::flecs_prefab_instance(prefab))
+}
+

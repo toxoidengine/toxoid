@@ -645,6 +645,90 @@ impl World {
         }
     }
 }
+
+#[repr(C)]
+pub struct Prefab {
+    entity: Entity
+}
+
+impl Prefab {
+    pub fn new() -> Prefab {
+        let entity = Entity {
+            id: unsafe { combine_u32(toxoid_prefab_create()) },
+            children: &mut []
+        };
+        Prefab {
+            entity
+        }
+    }
+
+    pub fn add<T: IsComponent + 'static>(&mut self) {
+        unsafe {
+            let type_hash = split_u64(T::get_hash());
+            let component_id_split = toxoid_component_cache_get(type_hash);
+            let component_id = combine_u32(component_id_split);
+            toxoid_entity_add_component(self.entity.id, component_id);
+        }
+    }
+
+    pub fn remove<T: IsComponent + 'static>(&mut self) {
+        unsafe {
+            let type_hash = split_u64(T::get_hash());
+            let component_id_split = toxoid_component_cache_get(type_hash);
+            let component_id = combine_u32(component_id_split);
+            toxoid_entity_remove_component(self.entity.id, component_id);
+        }
+    }
+
+    pub fn add_id(&mut self, component: ecs_id_t) {
+        unsafe {
+            toxoid_entity_add_component(self.entity.id, component);
+        }
+    }
+
+    pub fn add_tag(&mut self, tag: ecs_entity_t) {
+        unsafe {
+            toxoid_entity_add_tag(self.entity.id, tag);
+        }
+    }
+
+    pub fn get_id(&self) -> ecs_entity_t {
+        self.entity.id
+    }
+
+    pub fn get<T: Default + IsComponent + 'static>(&self) -> T {
+        unsafe {
+            let mut component = T::default();
+            let type_hash = split_u64(T::get_hash());
+            let component_id_split = toxoid_component_cache_get(type_hash);
+            let component_id = combine_u32(component_id_split);
+            let ptr = toxoid_entity_get_component(self.entity.id, component_id);
+            component.set_ptr(ptr);
+            component
+        }
+    }
+
+    pub fn has<T: IsComponent + 'static>(&self) -> bool {
+        unsafe {
+            let type_hash = split_u64(T::get_hash());
+            let component_id_split = toxoid_component_cache_get(type_hash);
+            let component_id = combine_u32(component_id_split);
+            toxoid_entity_has_component(self.entity.id, component_id)
+        }
+    }
+
+    pub fn child_of(&mut self, parent: Entity) {
+        unsafe {
+            toxoid_entity_child_of(self.entity.id, parent.get_id());
+        }
+    }
+
+    pub fn parent_of(&mut self, child: Entity) {
+        unsafe {
+            toxoid_entity_child_of(child.get_id(), self.entity.id);
+        }
+    }
+}
  
 #[repr(C)]
 #[derive(Debug)]
@@ -677,6 +761,15 @@ pub struct Entity {
 impl Entity {
     pub fn new() -> Entity {
         let entity_split = unsafe { toxoid_entity_create() };
+        let entity = combine_u32(entity_split);
+        Entity {
+            id: entity,
+            children: &mut []
+        }
+    }
+
+    pub fn from_prefab(prefab: Prefab) -> Entity {
+        let entity_split = unsafe { toxoid_prefab_instance(split_u64(prefab.entity.id)) };
         let entity = combine_u32(entity_split);
         Entity {
             id: entity,

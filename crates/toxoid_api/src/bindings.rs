@@ -164,4 +164,6 @@ extern "C" {
         ids: [ecs_id_t; 16],
         callback: unsafe extern "C" fn(*mut c_void)
     ) -> ecs_entity_t;
+    pub fn toxoid_prefab_create() -> SplitU64;
+    pub fn toxoid_prefab_instance(prefab: SplitU64) -> SplitU64;
 }
