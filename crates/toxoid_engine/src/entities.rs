@@ -143,5 +143,5 @@ pub fn init() {
     //     sfetch_request.callback = Some(atlas_data_loaded);
     //     toxoid_sokol::bindings::sfetch_send(&sfetch_request);
     // }
-    crate::utils::load_atlas("assets/player_spine.atlas");
+    crate::utils::load_animation("assets/player_spine.atlas", "assets/player_spine.json");
 }

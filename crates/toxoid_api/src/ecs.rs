@@ -31,6 +31,10 @@ pub fn default_ptr() -> *mut c_void {
     core::ptr::null_mut()
 }
 
+pub fn default_string() -> *mut i8 {
+    core::ptr::null_mut()
+}
+
 #[derive(Serialize, Deserialize)]
 pub struct Pointer {
     #[serde(skip, default = "default_ptr")]
@@ -69,28 +73,43 @@ impl PartialEq for Pointer {
     }
 }
 
-// pub struct Pointer<T> {
-//     pub ptr: *mut T,
-// }
+#[derive(Serialize, Deserialize)]
+pub struct StringPtr {
+    #[serde(skip, default = "default_string")]
+    pub ptr: *mut c_char
+}
 
-// impl<T> Pointer<T> {
-//     // Create a new Pointer
-//     pub fn new(ptr: *mut T) -> Self {
-//         Self { ptr }
-//     }
+impl StringPtr {
+    pub fn new(rust_str: &str) -> Self {
+        Self {
+            ptr: unsafe { make_c_string(rust_str) }
+        }
+    }
+}
 
-//     // Dereference the pointer
-//     // Note: This is unsafe because the pointer could be null, or it could point to memory that has been freed.
-//     pub unsafe fn deref(&self) -> &T {
-//         &*self.ptr
-//     }
+impl Default for StringPtr {
+    fn default() -> Self {
+        Self {
+            ptr: core::ptr::null_mut()
+        }
+    }
+}
 
-//     // Get a mutable reference from the pointer
-//     // Note: This is unsafe for the same reasons as deref.
-//     pub unsafe fn deref_mut(&mut self) -> &mut T {
-//         &mut *self.ptr
-//     }
-// }
+impl Clone for StringPtr {
+    fn clone(&self) -> Self {
+        Self {
+            ptr: self.ptr
+        }
+    }
+}
+
+impl Copy for StringPtr {}
+
+impl PartialEq for StringPtr {
+    fn eq(&self, other: &Self) -> bool {
+        self.ptr == other.ptr
+    }
+}
 
 pub struct U32Array {
     pub ptr: *mut u32,
@@ -769,7 +788,8 @@ impl Entity {
     }
 
     pub fn from_prefab(prefab: Prefab) -> Entity {
-        let entity_split = unsafe { toxoid_prefab_instance(split_u64(prefab.entity.id)) };
+        let prefab_split = split_u64(prefab.entity.id);
+        let entity_split = unsafe { toxoid_prefab_instance(prefab_split.high, prefab_split.low) };
         let entity = combine_u32(entity_split);
         Entity {
             id: entity,
