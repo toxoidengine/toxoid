@@ -74,7 +74,6 @@ pub fn load_image(filename: &str) -> &mut Entity {
 // Finally any images required by the atlas object are loaded
 // const sfetch_response_t* respons
 pub extern "C" fn animation_load_success(result: *mut emscripten_fetch_t) {
-    // From Cstring (*result).url
     use core::ffi::CStr;
     unsafe {
         let url = CStr::from_ptr((*result).url).to_str().unwrap();
@@ -90,6 +89,12 @@ pub extern "C" fn animation_load_success(result: *mut emscripten_fetch_t) {
             let mut skeleton = (*entity).get::<Skeleton>();
             skeleton.set_loaded(true);
             skeleton.set_data_size((*result).totalBytes);
+            // let ptr = (*result).data as *mut u8;
+            // let size = (*result).totalBytes as usize;
+            // let ptr = core::slice::from_raw_parts(ptr, size + 1).as_ptr() as *const i8;
+            // let ptr = std::ffi::CString::from_raw(ptr as *mut i8);
+            // println!("Skeleton data: {:?}", ptr);
+            println!("Skeleton ptr: {:?}", (*result).data);
             skeleton.set_skeleton(Pointer::new((*result).data as *mut core::ffi::c_void));
         }
         
@@ -112,6 +117,9 @@ pub extern "C" fn animation_load_success(result: *mut emscripten_fetch_t) {
             let skeleton = (*entity).get::<Skeleton>();
             let ptr = skeleton.get_skeleton().ptr;
             let size = skeleton.get_data_size() as usize;
+            let ptr = core::slice::from_raw_parts(ptr, size + 1).as_ptr() as *const i8;
+            let ptr = std::ffi::CString::from_raw(ptr as *mut i8);
+            let ptr = ptr.as_ptr();
             skeleton_desc.atlas = spine_atlas;
             skeleton_desc.json_data = ptr as *const i8;
             skeleton_desc.prescale = 0.5;
@@ -161,7 +169,7 @@ pub extern "C" fn animation_load_success(result: *mut emscripten_fetch_t) {
                 fetch(file_path, (*result).userData, images_load_success, images_load_fail);
             }
         }
-        emscripten_fetch_close(result);
+        // emscripten_fetch_close(result);
     }
 }
 
