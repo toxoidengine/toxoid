@@ -143,6 +143,8 @@ pub extern "C" fn animation_load_success(result: *mut emscripten_fetch_t) {
                 let img_info = toxoid_sokol::bindings::sspine_get_image_info(img);
                 println!("Image info filename: {:?}", img_info);
 
+                let filename_c_str = core::ffi::CStr::from_ptr(img_info.filename.cstr.as_ptr());
+                println!("Image info filename: {:?}", filename_c_str);
                 // We'll store the sspine_image handle in the fetch request's user data
                 // blob, because we need the image info again later in the fetch callback
                 // in order to initialize the sokol-gfx image with the right parameters.
@@ -153,26 +155,22 @@ pub extern "C" fn animation_load_success(result: *mut emscripten_fetch_t) {
                 // channel to be serialized (not run in parallel). That way
                 // the same buffer can be reused even if there are multiple atlas images.
                 // The downside is that loading multiple images would take longer.
-                // let path_buf = [0; 512];
-                // let path_buf = toxoid_sokol::bindings::fileutil_get_path(img_info.filename.as_ptr() as *const i8, path_buf.as_ptr() as *mut i8,  512);
-                // let path_buf = std::ffi::CString::from_raw(path_buf);
-                // let path_buf = path_buf.as_ptr();
-                // let mut sfetch_request: toxoid_sokol::bindings::sfetch_request_t = core::mem::MaybeUninit::zeroed().assume_init();
-                // sfetch_request.path = path_buf;
-                // sfetch_request.channel = 0;
-                // sfetch_request.buffer = toxoid_sokol::bindings::sfetch_range_t {
-                //     ptr:  &buffers.image as *const u8 as *const c_void,
-                //     size: 512 * 1024 
-                // };
-                // sfetch_request.callback = image_data_loaded;
-                // sfetch_request.user_data = toxoid_sokol::bindings::sfetch_range_t {
-                //     ptr: img as *const u8 as *const c_void,
-                //     size: 512 * 1024 
-                // };
-                // toxoid_sokol::bindings::sfetch_send(&mut sfetch_request);
+                // core::
+                let file_path = format!("assets/{}", filename_c_str.to_str().unwrap());
+                let file_path = file_path.as_str();
+                fetch(file_path, (*result).userData, images_load_success, images_load_fail);
             }
         }
+        emscripten_fetch_close(result);
     }
+}
+
+pub extern "C" fn images_load_success(result: *mut emscripten_fetch_t) {
+    println!("Images load success");
+}
+
+pub extern "C" fn images_load_fail(result: *mut emscripten_fetch_t) {
+    println!("Failed images load");
 }
 
 pub extern "C" fn animation_load_failed(result: *mut emscripten_fetch_t) {
