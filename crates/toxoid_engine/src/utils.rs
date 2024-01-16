@@ -117,7 +117,7 @@ pub extern "C" fn animation_load_success(result: *mut emscripten_fetch_t) {
             let ptr = ptr.as_ptr();
             skeleton_desc.atlas = spine_atlas;
             skeleton_desc.json_data = ptr as *const i8;
-            skeleton_desc.prescale = 0.5;
+            skeleton_desc.prescale = 15.0;
             skeleton_desc.anim_default_mix = 0.2;
 
             let spine_skeleton = sspine_make_skeleton(&skeleton_desc);
@@ -144,7 +144,7 @@ pub extern "C" fn animation_load_success(result: *mut emscripten_fetch_t) {
             sspine_set_position(instance, sspine_vec2 { x: -100., y:200. });
 
             // configure a simple animation sequence
-            let anim_c_string = std::ffi::CString::new("idle_down_weapon").unwrap();
+            let anim_c_string = std::ffi::CString::new("idle_down").unwrap();
             let anim_c_string = anim_c_string.as_ptr();
             sspine_add_animation(instance, sspine_anim_by_name(spine_skeleton, anim_c_string), 0, true, 0.);
             
@@ -194,39 +194,8 @@ pub extern "C" fn images_load_success(result: *mut emscripten_fetch_t) {
         let img_info = sspine_get_image_info(img);
         let filename_c_str = core::ffi::CStr::from_ptr(img_info.filename.cstr.as_ptr());
         println!("Successfully loaded images {}", filename_c_str.to_str().unwrap());
-        
-        // // decode pixels via stb_image.h
-        // const int desired_channels = 4;
-        // int img_width, img_height, num_channels;
-        // stbi_uc* pixels = stbi_load_from_memory(
-        //     response->data.ptr,
-        //     (int)response->data.size,
-        //     &img_width,
-        //     &img_height,
-        //     &num_channels, desired_channels);
-        // // sokol-spine has already allocated an image and sampler handle,
-        // // just need to call sg_init_image() and sg_init_sampler() to complete setup
-        // sg_init_image(img_info.sgimage, &(sg_image_desc){
-        //     .width = img_width,
-        //     .height = img_height,
-        //     .pixel_format = SG_PIXELFORMAT_RGBA8,
-        //     .label = img_info.filename.cstr,
-        //     .data.subimage[0][0] = {
-        //         .ptr = pixels,
-        //         .size = (size_t)(img_width * img_height * 4)
-        //     }
-        // });
-        // sg_init_sampler(img_info.sgsampler, &(sg_sampler_desc){
-        //     .min_filter = img_info.min_filter,
-        //     .mag_filter = img_info.mag_filter,
-        //     .mipmap_filter = img_info.mipmap_filter,
-        //     .wrap_u = img_info.wrap_u,
-        //     .wrap_v = img_info.wrap_v,
-        //     .label = img_info.filename.cstr,
-        // });
-        // stbi_image_free(pixels);
 
-        // Conver th above to Rust
+        // get the image data from the fetch result
         let desired_channels = 4;
         let mut img_width: i32 = 0;
         let mut img_height: i32 = 0;
