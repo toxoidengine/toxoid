@@ -22,6 +22,10 @@ component! {
         left: bool,
         right: bool, 
     },
+    SpineInstance {
+        instance: Pointer,
+        instantiated: bool
+    },
 
     // Components
     Position {
@@ -91,6 +95,7 @@ pub fn init() {
     GameConfig::register();
     KeyboardInput::register();
     WebSocket::register();
+    SpineInstance::register();
     
     // Components
     Position::register();

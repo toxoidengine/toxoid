@@ -93,14 +93,26 @@ impl Renderer2D for SokolRenderer2D {
         let (window_width, window_height) = (sapp::width(), sapp::height());
         // Begin a render pass.
         sg::begin_default_pass(&self.pass_action, window_width, window_height);
-        
+
+        // The actual sokol-gfx render pass, here we also don't need to care about
+        // if the atlas image have already been loaded yet, if the image handles
+        // recorded by sokol-spine for rendering are not yet valid, rendering
+        // operations will silently be skipped.
+
+        // Render Spine
+        let layer_transform = sspine_layer_transform {
+            size: sspine_vec2 { x: window_width as f32, y: window_height as f32 },
+            origin: sspine_vec2 { x: window_width as f32 * 0.5, y: window_height as f32 * 0.5 }
+        };
+        unsafe { sspine_draw_layer(0, &layer_transform) };
+
         unsafe { 
             // Render ImGui
             // Dispatch all draw commands to Sokol GFX.
             sgp_flush(); 
             // Finish a draw command queue, clearing it.
             sgp_end();
-            crate::bindings::simgui_render();
+            simgui_render();
         }
         // End render pass.
         sg::end_pass();
