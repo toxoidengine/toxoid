@@ -128,6 +128,14 @@ pub extern "C" fn animation_load_success(result: *mut emscripten_fetch_t) {
             // create a spine instance object, that's the thing that's actually rendered
             let instance = sspine_make_instance(&spine_instance_desc);
 
+            // Store Spine instance in singleton for now
+            let mut instance_singleton = World::get_singleton::<SpineInstance>();
+            let instance_ptr = Box::new(instance);
+            let instance_ptr = Box::into_raw(instance_ptr) as *mut c_void;
+            instance_singleton.set_instance(Pointer::new(instance_ptr));
+            instance_singleton.set_instantiated(true);
+            
+
             // Since the spine instance doesn't move, its position can be set once,
             // the coordinate units depends on the sspine_layer_transform struct
             // that's passed to the sspine_draw_layer() during rendering (in our
