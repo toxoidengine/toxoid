@@ -12,6 +12,19 @@ rustup target add wasm32-unknown-emscripten
 make example-snake
 ```
 
+Snake:
+
+https://github.com/toxoidengine/toxoid/assets/16667416/a9cf38da-bad2-4746-9f63-cfbfd5657b9c
+
+Spine Bone Animation:
+
+https://github.com/toxoidengine/toxoid/assets/16667416/8b2d95cd-26df-4760-b92a-b9aaf20fa494
+
+# Related Projects
+- Powers my UGC game / multiplayer online sandbox RPG [Legend of Worlds](http://legendofworlds.com/).
+- Also maintain [flecs-polyglot](https://github.com/flecs-hub/flecs-polyglot) - A universal scripting API for flecs on all languages that compile to WebAssembly.
+
+
 # Credits
 This technology would not be possible without:
 - [Flecs](https://github.com/SanderMertens/flecs): A fast, lightweight (zero dependency), and portable entity component system written in C.
