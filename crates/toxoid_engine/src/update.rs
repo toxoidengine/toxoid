@@ -28,24 +28,6 @@ pub extern "C" fn render_loop() {
         (system.update_fn)(query);
     }
 
-    // Advance the instance animation and draw the instance.
-    // Important to note here is that no actual sokol-gfx rendering happens yet,
-    // instead sokol-spine will only record vertices, indices and draw commands.
-    // Also, all sokol-spine functions can be called with invalid or 'incomplete'
-    // handles, that way we don't need to care about whether the spine objects
-    // have actually been created yet (because their data might still be loading)
-    use toxoid_sokol::bindings::*;
-    unsafe {
-        let spine_instance = World::get_singleton::<SpineInstance>();
-        let instantiated = spine_instance.get_instantiated();
-        if instantiated {
-            let instance = spine_instance.get_instance().ptr as *mut sspine_instance;
-            let delta_time = sapp_frame_duration();
-            sspine_update_instance(*instance, delta_time as f32);
-            sspine_draw_instance_in_layer(*instance, 0);
-        }  
-    }
-
     unsafe {
         let mut desc: toxoid_sokol::bindings::simgui_frame_desc_t = core::mem::MaybeUninit::zeroed().assume_init();
         desc.width = 1280;

@@ -117,7 +117,7 @@ pub extern "C" fn animation_load_success(result: *mut emscripten_fetch_t) {
             let ptr = ptr.as_ptr();
             skeleton_desc.atlas = spine_atlas;
             skeleton_desc.json_data = ptr as *const i8;
-            skeleton_desc.prescale = 2.0;
+            skeleton_desc.prescale = 5.0;
             skeleton_desc.anim_default_mix = 0.2;
 
             let spine_skeleton = sspine_make_skeleton(&skeleton_desc);
@@ -129,12 +129,12 @@ pub extern "C" fn animation_load_success(result: *mut emscripten_fetch_t) {
             let instance = sspine_make_instance(&spine_instance_desc);
 
             // Store Spine instance in singleton for now
-            let mut instance_singleton = World::get_singleton::<SpineInstance>();
+            (*entity).add::<SpineInstance>();
+            let mut instance_singleton = (*entity).get::<SpineInstance>();
             let instance_ptr = Box::new(instance);
             let instance_ptr = Box::into_raw(instance_ptr) as *mut c_void;
             instance_singleton.set_instance(Pointer::new(instance_ptr));
             instance_singleton.set_instantiated(true);
-            
 
             // Since the spine instance doesn't move, its position can be set once,
             // the coordinate units depends on the sspine_layer_transform struct
