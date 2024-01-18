@@ -16,7 +16,7 @@ Snake:
 
 https://github.com/toxoidengine/toxoid/assets/16667416/a9cf38da-bad2-4746-9f63-cfbfd5657b9c
 
-Spine Bone Animation:
+Spine Bone Animation and ImGui:
 
 https://github.com/toxoidengine/toxoid/assets/16667416/8b2d95cd-26df-4760-b92a-b9aaf20fa494
 
