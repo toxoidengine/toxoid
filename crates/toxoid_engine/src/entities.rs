@@ -149,7 +149,7 @@ pub fn init() {
 
     let player_animation_entity = crate::utils::load_animation("assets/player_spine.atlas", "assets/player_spine.json");
     let mut position = player_animation_entity.get::<Position>();
-    position.set_x(100);
-    position.set_y(100);
+    // position.set_x(100);
+    // position.set_y(100);
     player_animation_entity.add::<Local>();
 }

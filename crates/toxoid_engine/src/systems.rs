@@ -184,7 +184,7 @@ pub fn input_system(query: &mut Query) {
     }
 }
 
-pub fn update_bone_animation_position(query: &mut Query) {
+pub fn draw_bone_animation(query: &mut Query) {
     let query_iter = query.iter();
     while query_iter.next() {
         let entities = query_iter.entities();
@@ -192,14 +192,21 @@ pub fn update_bone_animation_position(query: &mut Query) {
             .iter_mut()
             .for_each(|entity| {
                 use toxoid_sokol::bindings::*;
-                let spine_instance = World::get_singleton::<SpineInstance>();
-                let instantiated = spine_instance.get_instantiated();
-                if instantiated {
-                    let pos = entity.get::<Position>();
-                    let instance_singleton = World::get_singleton::<SpineInstance>();
-                    let instance = instance_singleton.get_instance().ptr as *mut sspine_instance;
-                    unsafe { sspine_set_position(*instance, sspine_vec2 { x: pos.get_x() as f32, y: pos.get_y() as f32 }) };
-                }
+                let spine_instance = entity.get::<SpineInstance>();
+                let pos = entity.get::<Position>();
+                let instance = spine_instance.get_instance().ptr as *mut sspine_instance;
+                unsafe { 
+                    let delta_time = sapp_frame_duration();
+                    sspine_set_position(*instance, sspine_vec2 { x: pos.get_x() as f32, y: pos.get_y() as f32 });
+                    // Advance the instance animation and draw the instance.
+                    // Important to note here is that no actual sokol-gfx rendering happens yet,
+                    // instead sokol-spine will only record vertices, indices and draw commands.
+                    // Also, all sokol-spine functions can be called with invalid or 'incomplete'
+                    // handles, that way we don't need to care about whether the spine objects
+                    // have actually been created yet (because their data might still be loading)
+                    sspine_update_instance(*instance, delta_time as f32);
+                    sspine_draw_instance_in_layer(*instance, 0); 
+                };
             });
     }
 }
@@ -209,7 +216,7 @@ pub fn init() {
     let mut load_sprite_system = System::new(load_sprite_system);
     let mut render_sprite_system = System::new(render_sprite_system);
     let mut load_bone_animation_system = System::new(load_bone_animation_system);
-    let mut update_bone_animation_position = System::new(update_bone_animation_position);
+    let mut draw_bone_animation = System::new(draw_bone_animation);
 
     render_rect_system
         .with::<(Rect, Renderable, Color, Size, Position)>()
@@ -223,22 +230,23 @@ pub fn init() {
     load_bone_animation_system
         .with::<(Loadable, Atlas, Skeleton, Images)>()
         .build();
-    update_bone_animation_position
-        .with::<(Position, BoneAnimation)>()
+    draw_bone_animation
+        .with::<(Position, BoneAnimation, SpineInstance)>()
         .build();
 
     World::add_system(render_rect_system);
     World::add_system(load_sprite_system);
     World::add_system(render_sprite_system);
     World::add_system(load_bone_animation_system);
-    World::add_system(update_bone_animation_position);
+    World::add_system(draw_bone_animation);
 
     // TODO: Remove
     let mut input_system = System::new(input_system);
     input_system
-        .with::<(Position, BoneAnimation, Local)>()
+        .with::<(Position, BoneAnimation, SpineInstance, Local)>()
         .build();
     World::add_system(input_system);
+    
 
     #[cfg(target_os = "emscripten")]
     {
