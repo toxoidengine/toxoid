@@ -165,20 +165,40 @@ pub fn input_system(query: &mut Query) {
                 let mut pos = entity.get::<Position>();
 
                 if keyboard_input.get_up() {
-                    pos.set_y(pos.get_y() - 3);
+                    // pos.set_y(pos.get_y() - 3);
                     unsafe { toxoid_ffi::emscripten::emscripten_websocket_send_binary(websocket.get_socket().ptr, "UP".as_ptr() as *const core::ffi::c_void, 2) };
                 }
                 if keyboard_input.get_down() {
-                    unsafe { toxoid_ffi::emscripten::emscripten_websocket_send_binary(websocket.get_socket().ptr, "DOWN".as_ptr() as *const core::ffi::c_void, 4);
-                    pos.set_y(pos.get_y() + 3) };
+                    unsafe { toxoid_ffi::emscripten::emscripten_websocket_send_binary(websocket.get_socket().ptr, "DOWN".as_ptr() as *const core::ffi::c_void, 4) };
+                    // pos.set_y(pos.get_y() + 3);
                 }
                 if keyboard_input.get_left() {
-                    unsafe { toxoid_ffi::emscripten::emscripten_websocket_send_binary(websocket.get_socket().ptr, "LEFT".as_ptr() as *const core::ffi::c_void, 4);
-                    pos.set_x(pos.get_x() - 3) };
+                    unsafe { toxoid_ffi::emscripten::emscripten_websocket_send_binary(websocket.get_socket().ptr, "LEFT".as_ptr() as *const core::ffi::c_void, 4) };
+                    // pos.set_x(pos.get_x() - 3);
                 }
                 if keyboard_input.get_right() {
-                    unsafe { toxoid_ffi::emscripten::emscripten_websocket_send_binary(websocket.get_socket().ptr, "RIGHT".as_ptr() as *const core::ffi::c_void, 5);
-                    pos.set_x(pos.get_x() + 3) };
+                    unsafe { toxoid_ffi::emscripten::emscripten_websocket_send_binary(websocket.get_socket().ptr, "RIGHT".as_ptr() as *const core::ffi::c_void, 5) };
+                    // pos.set_x(pos.get_x() + 3);
+                }
+            });
+    }
+}
+
+pub fn update_bone_animation_position(query: &mut Query) {
+    let query_iter = query.iter();
+    while query_iter.next() {
+        let entities = query_iter.entities();
+        entities
+            .iter_mut()
+            .for_each(|entity| {
+                use toxoid_sokol::bindings::*;
+                let spine_instance = World::get_singleton::<SpineInstance>();
+                let instantiated = spine_instance.get_instantiated();
+                if instantiated {
+                    let pos = entity.get::<Position>();
+                    let instance_singleton = World::get_singleton::<SpineInstance>();
+                    let instance = instance_singleton.get_instance().ptr as *mut sspine_instance;
+                    unsafe { sspine_set_position(*instance, sspine_vec2 { x: pos.get_x() as f32, y: pos.get_y() as f32 }) };
                 }
             });
     }
@@ -189,6 +209,7 @@ pub fn init() {
     let mut load_sprite_system = System::new(load_sprite_system);
     let mut render_sprite_system = System::new(render_sprite_system);
     let mut load_bone_animation_system = System::new(load_bone_animation_system);
+    let mut update_bone_animation_position = System::new(update_bone_animation_position);
 
     render_rect_system
         .with::<(Rect, Renderable, Color, Size, Position)>()
@@ -202,16 +223,20 @@ pub fn init() {
     load_bone_animation_system
         .with::<(Loadable, Atlas, Skeleton, Images)>()
         .build();
+    update_bone_animation_position
+        .with::<(Position, BoneAnimation)>()
+        .build();
 
     World::add_system(render_rect_system);
     World::add_system(load_sprite_system);
     World::add_system(render_sprite_system);
     World::add_system(load_bone_animation_system);
+    World::add_system(update_bone_animation_position);
 
     // TODO: Remove
     let mut input_system = System::new(input_system);
     input_system
-        .with::<(Position, Sprite, Local)>()
+        .with::<(Position, BoneAnimation, Local)>()
         .build();
     World::add_system(input_system);
 
