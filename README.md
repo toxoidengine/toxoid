@@ -16,9 +16,9 @@ Snake:
 
 https://github.com/toxoidengine/toxoid/assets/16667416/a9cf38da-bad2-4746-9f63-cfbfd5657b9c
 
-Spine Bone Animation and ImGui:
+Multiplayer Spine Bone Animation and ImGui:
 
-https://github.com/toxoidengine/toxoid/assets/16667416/8b2d95cd-26df-4760-b92a-b9aaf20fa494
+https://github.com/toxoidengine/toxoid/assets/16667416/59fd5454-69c2-4f90-83c2-6f83da03c888
 
 # Related Projects
 - Powers my UGC game / multiplayer online sandbox RPG [Legend of Worlds](http://legendofworlds.com/).
