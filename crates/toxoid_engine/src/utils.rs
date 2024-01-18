@@ -117,7 +117,7 @@ pub extern "C" fn animation_load_success(result: *mut emscripten_fetch_t) {
             let ptr = ptr.as_ptr();
             skeleton_desc.atlas = spine_atlas;
             skeleton_desc.json_data = ptr as *const i8;
-            skeleton_desc.prescale = 15.0;
+            skeleton_desc.prescale = 2.0;
             skeleton_desc.anim_default_mix = 0.2;
 
             let spine_skeleton = sspine_make_skeleton(&skeleton_desc);
@@ -141,10 +141,10 @@ pub extern "C" fn animation_load_success(result: *mut emscripten_fetch_t) {
             // that's passed to the sspine_draw_layer() during rendering (in our
             // case it's simply framebuffer pixels, with the origin in the
             // center)
-            sspine_set_position(instance, sspine_vec2 { x: -100., y:200. });
+            sspine_set_position(instance, sspine_vec2 { x: 0., y: 0. });
 
             // configure a simple animation sequence
-            let anim_c_string = std::ffi::CString::new("idle_down").unwrap();
+            let anim_c_string = std::ffi::CString::new("idle_down_weapon").unwrap();
             let anim_c_string = anim_c_string.as_ptr();
             sspine_add_animation(instance, sspine_anim_by_name(spine_skeleton, anim_c_string), 0, true, 0.);
             

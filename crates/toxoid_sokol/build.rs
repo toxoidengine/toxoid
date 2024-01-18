@@ -28,9 +28,11 @@ fn main() {
         .join("spine-c")
         .join("src")
         .join("spine");
+    println!("Reading spine files");
     let spine_files: Vec<PathBuf> = std::fs::read_dir(lib_c_spine)
     .expect("Unable to list spine files")
     .filter_map(|entry| {
+        println!("toxoid_sokol build.rs spine file entry: {:?}", entry);
         entry.ok().and_then(|e| {
             let path = e.path();
             if path.is_file() { Some(path) } else { None }

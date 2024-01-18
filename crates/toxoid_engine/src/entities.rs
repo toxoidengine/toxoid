@@ -49,17 +49,20 @@ pub extern "C" fn onmessage_cb(
                 "PlayerJoin" => {
                     println!("ID received: {:?}", entity.id);
                     // Create entity
-                    let render_entity = crate::utils::load_image("assets/character.png");
-                    render_entity.add::<Remote>();
+                    let player_animation_entity = crate::utils::load_animation("assets/player_spine.atlas", "assets/player_spine.json");
+                    let mut position = player_animation_entity.get::<Position>();
+                    position.set_x(100);
+                    position.set_y(100);
+                    player_animation_entity.add::<Remote>();
                     
                     // Update position
                     let deserialized_component = entity.components[0].clone();
-                    let mut position = render_entity.get::<Position>();
+                    let mut position = player_animation_entity.get::<Position>();
                     position.set_x(deserialized_component.x);
                     position.set_y(deserialized_component.y);
                     
                     // Add to network entity cache
-                    unsafe { toxoid_ffi::ecs::toxoid_network_entity_cache_insert(split_u64(entity.id), split_u64(render_entity.get_id())) };
+                    unsafe { toxoid_ffi::ecs::toxoid_network_entity_cache_insert(split_u64(entity.id), split_u64(player_animation_entity.get_id())) };
                 },
                 "PlayerLeave" => {
                     println!("Player ID {:?} disconnected from server.", entity.id);
@@ -143,5 +146,10 @@ pub fn init() {
     //     sfetch_request.callback = Some(atlas_data_loaded);
     //     toxoid_sokol::bindings::sfetch_send(&sfetch_request);
     // }
-    crate::utils::load_animation("assets/player_spine.atlas", "assets/player_spine.json");
+
+    let player_animation_entity = crate::utils::load_animation("assets/player_spine.atlas", "assets/player_spine.json");
+    let mut position = player_animation_entity.get::<Position>();
+    position.set_x(100);
+    position.set_y(100);
+    player_animation_entity.add::<Local>();
 }
