@@ -18,7 +18,7 @@ https://github.com/toxoidengine/toxoid/assets/16667416/a9cf38da-bad2-4746-9f63-c
 
 Multiplayer Spine Bone Animation and ImGui:
 
-https://github.com/toxoidengine/toxoid/assets/16667416/59fd5454-69c2-4f90-83c2-6f83da03c888
+https://github.com/toxoidengine/toxoid/assets/16667416/4474e276-3675-462e-909a-7d9a5b1e649b
 
 # Related Projects
 - Powers my UGC game / multiplayer online sandbox RPG [Legend of Worlds](http://legendofworlds.com/).
