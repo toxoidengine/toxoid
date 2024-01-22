@@ -19,6 +19,7 @@ pub fn init() {
     }
 
     World::add_singleton::<WebSocket>();
+    
     let mut websocket = World::get_singleton::<WebSocket>();
     websocket.set_socket(Pointer{ ptr: ws });
 }
