@@ -14,7 +14,7 @@ pub fn init() {
     // Local Player
     World::add_singleton::<NetworkEntity>();
     
-    let player_animation_entity = crate::utils::loader::load_animation("assets/player_spine.atlas", "assets/player_spine.json");
+    let player_animation_entity = crate::utils::load::load_animation("assets/player_spine.atlas", "assets/player_spine.json");
     // let mut position = player_animation_entity.get::<Position>();
     player_animation_entity.add::<Local>();
 }

@@ -1,3 +1,4 @@
+// TODO: Make this file more crossplatform generic and less dependent on Emscripten
 use toxoid_ffi::emscripten::EmscriptenWebSocketCreateAttributes;
 use toxoid_net::{NetworkMessages, NetworkMessageComponent};
 use toxoid_api::{*, split_u64, combine_u32};
@@ -60,7 +61,7 @@ pub extern "C" fn onmessage_cb(
                     local_player.set_id(entity.id);
 
                     // Create entity
-                    let render_entity = crate::utils::loader::load_image("assets/character.png");
+                    let render_entity = crate::utils::load::load_image("assets/character.png");
                     render_entity.add::<Local>();
 
                     // Add to network entity cache
@@ -69,7 +70,7 @@ pub extern "C" fn onmessage_cb(
                 "PlayerJoin" => {
                     println!("ID received: {:?}", entity.id);
                     // Create entity
-                    let player_animation_entity = crate::utils::loader::load_animation("assets/player_spine.atlas", "assets/player_spine.json");
+                    let player_animation_entity = crate::utils::load::load_animation("assets/player_spine.atlas", "assets/player_spine.json");
                     let mut position = player_animation_entity.get::<Position>();
                     position.set_x(100);
                     position.set_y(100);

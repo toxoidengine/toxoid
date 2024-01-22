@@ -1,3 +1,4 @@
+// TODO: Make this file more crossplatform generic and less dependent on Emscripten (must fix sokol-fetch)
 use toxoid_ffi::emscripten::*;
 use toxoid_api::*;
 use toxoid_sokol::bindings::*;
