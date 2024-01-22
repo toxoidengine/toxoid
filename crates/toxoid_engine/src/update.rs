@@ -47,7 +47,7 @@ pub extern "C" fn render_loop() {
         );
         toxoid_sokol::bindings::igEnd();
     }
-
+    
     // End render pass
     let renderer_2d = &mut *toxoid_sokol::RENDERER_2D.lock().unwrap();
     renderer_2d.end();
