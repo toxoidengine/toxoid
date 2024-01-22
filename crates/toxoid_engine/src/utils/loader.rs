@@ -30,7 +30,7 @@ pub fn fetch() {
 
 #[cfg(target_os = "emscripten")]
 pub fn load_image(filename: &str) -> &mut Entity {
-    println!("Loading image: {}", filename);
+    // println!("Loading image: {}", filename);
 
     // Create entity and pass it to fetch
     let mut entity = Entity::new();
@@ -57,13 +57,13 @@ pub extern "C" fn animation_load_success(result: *mut emscripten_fetch_t) {
         let url = CStr::from_ptr((*result).url).to_str().unwrap();
         let entity = (*result).userData as *mut Entity;
         if url.contains("atlas") {
-            println!("Successfully loaded atlas {}", url);
+            // println!("Successfully loaded atlas {}", url);
             let mut atlas = (*entity).get::<Atlas>();
             atlas.set_loaded(true);
             atlas.set_data_size((*result).totalBytes);
             atlas.set_atlas(Pointer::new((*result).data as *mut c_void));
         } else if url.contains("json") {
-            println!("Successfully loaded skeleton {}", url);
+            // println!("Successfully loaded skeleton {}", url);
             let mut skeleton = (*entity).get::<Skeleton>();
             skeleton.set_loaded(true);
             skeleton.set_data_size((*result).totalBytes);
@@ -164,13 +164,13 @@ pub extern "C" fn animation_load_success(result: *mut emscripten_fetch_t) {
 // image object into the 'failed' resource state.
 //
 pub extern "C" fn images_load_success(result: *mut emscripten_fetch_t) {
-    println!("Images load success");
-    // println!("Successfully loaded {}", CStr::from_ptr((*result).url).to_str().unwrap());
+    // println!("Images load success");
+    // // println!("Successfully loaded {}", CStr::from_ptr((*result).url).to_str().unwrap());
     unsafe {
         let img = *((*result).userData as *mut sspine_image);
         let img_info = sspine_get_image_info(img);
         let filename_c_str = core::ffi::CStr::from_ptr(img_info.filename.cstr.as_ptr());
-        println!("Successfully loaded images {}", filename_c_str.to_str().unwrap());
+        // println!("Successfully loaded images {}", filename_c_str.to_str().unwrap());
 
         // get the image data from the fetch result
         let desired_channels = 4;
@@ -225,11 +225,11 @@ pub extern "C" fn images_load_success(result: *mut emscripten_fetch_t) {
 }
 
 pub extern "C" fn images_load_fail(result: *mut emscripten_fetch_t) {
-    println!("Failed images load");
+    // println!("Failed images load");
 }
 
 pub extern "C" fn animation_load_failed(result: *mut emscripten_fetch_t) {
-    println!("Failed animation load");
+    // println!("Failed animation load");
 }
 
 #[cfg(target_os = "emscripten")]
@@ -261,7 +261,7 @@ pub fn load_animation(atlas_filename: &str, skeleton_filename: &str) -> &'static
 pub extern "C" fn image_load_success(result: *mut emscripten_fetch_t) {
     unsafe {
         use core::ffi::CStr;
-        println!("Successfully loaded {}", CStr::from_ptr((*result).url).to_str().unwrap());
+        // println!("Successfully loaded {}", CStr::from_ptr((*result).url).to_str().unwrap());
 
         // Grab entity passed into fetch attributes
         let entity_raw = (*result).userData;
@@ -281,8 +281,8 @@ pub extern "C" fn image_load_success(result: *mut emscripten_fetch_t) {
 
 pub extern "C" fn image_load_fail(fetch: *mut emscripten_fetch_t) {
     unsafe {
-        // println!("Fail!");
-        // eprintln!("Failed to load image: {}", CStr::from_ptr((*fetch).url).to_str().unwrap());
+        // // println!("Fail!");
+        // // eprintln!("Failed to load image: {}", CStr::from_ptr((*fetch).url).to_str().unwrap());
         // emscripten_fetch_close(fetch);
     }
 }

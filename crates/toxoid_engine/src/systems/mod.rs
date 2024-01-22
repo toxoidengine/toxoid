@@ -78,7 +78,7 @@ pub fn load_bone_animation_system(query: &mut Query) {
         entities
             .iter_mut()
             .for_each(|entity| {
-                println!("Animation loading!");
+                // println!("Animation loading!");
                 use crate::utils::loader::*;
 
                 entity.remove::<Loadable>();
