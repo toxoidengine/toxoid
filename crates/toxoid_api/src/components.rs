@@ -50,9 +50,10 @@ component! {
         filename: StringPtr,
         sprite: Pointer
     },
-    NetworkEntity {
+    Networked {
         id: u64,
         entity_id: u64,
+        messages: Pointer
     },
     WebSocket {
         socket: Pointer
@@ -88,6 +89,8 @@ component! {
     Disconnected {},
     Local {},
     Remote {},
+    Player {},
+    Updated {},
 }
 
 pub fn init() {    
@@ -103,7 +106,7 @@ pub fn init() {
     Size::register();
     Color::register();
     Sprite::register();
-    NetworkEntity::register();
+    Networked::register();
     Atlas::register();
     Skeleton::register();
     Images::register();
@@ -119,4 +122,6 @@ pub fn init() {
     Disconnected::register();
     Local::register();
     Remote::register();
+    Player::register();
+    Updated::register();
 }

@@ -760,6 +760,7 @@ version = "0.1.0"
 dependencies = [
  "flecs_core",
  "once_cell",
+ "toxoid_net",
 ]
 
 [[package]]
