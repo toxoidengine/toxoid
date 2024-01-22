@@ -32,7 +32,6 @@ pub fn render_rect_system(query: &mut Query) {
     }
 }
 
-
 pub fn render_sprite_system(query: &mut Query) {
     let query_iter = query.iter();
     while query_iter.next() {
@@ -64,7 +63,7 @@ pub fn load_sprite_system(query: &mut Query) {
                 println!("Sprite loading!");
                 entity.remove::<Loadable>();
                 
-                use crate::utils::*;
+                use crate::utils::loader::*;
 
                 let filename = sprite.get_filename();
                 fetch(filename, entity as *mut Entity as *mut core::ffi::c_void, image_load_success, image_load_fail);
@@ -80,7 +79,7 @@ pub fn load_bone_animation_system(query: &mut Query) {
             .iter_mut()
             .for_each(|entity| {
                 println!("Animation loading!");
-                use crate::utils::*;
+                use crate::utils::loader::*;
 
                 entity.remove::<Loadable>();
 

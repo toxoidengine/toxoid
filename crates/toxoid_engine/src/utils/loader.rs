@@ -1,32 +1,9 @@
-use rand::Rng;
 use toxoid_ffi::emscripten::*;
 use toxoid_api::*;
 use toxoid_sokol::bindings::*;
 use core::ffi::CStr;
 use core::ffi::c_void;
 use std::mem::MaybeUninit;
-use std::mem::size_of;
-
-#[no_mangle]
-pub extern "C" fn gen_rng_range(min: i32, max: i32) -> i32 {
-    let mut rng = rand::thread_rng();
-    rng.gen_range(min..max)
-}
-
-#[no_mangle]
-pub extern "C" fn gen_rng_grid_pos() -> (i32, i32) {
-    let mut rng = rand::thread_rng();
-    let window_width = 1250;
-    let window_height = 700;
-    let entity_width = 50;
-    let entity_height = 50;
-    let range_max_x = window_width / entity_width;
-    let range_max_y = window_height / entity_height;
-    let random_x = rng.gen_range(0..range_max_x) * entity_width; // divided by entity height 
-    let random_y = rng.gen_range(0..range_max_y) * entity_height; 
-    (random_x, random_y)
-}
-
 
 #[cfg(target_os = "emscripten")]
 pub fn fetch(filename: &str, user_data: *mut c_void, success_cb: extern "C" fn(*mut emscripten_fetch_t), error_cb: extern "C" fn(*mut emscripten_fetch_t)) {
@@ -304,7 +281,7 @@ pub extern "C" fn image_load_success(result: *mut emscripten_fetch_t) {
 
 pub extern "C" fn image_load_fail(fetch: *mut emscripten_fetch_t) {
     unsafe {
-        println!("Fail!");
+        // println!("Fail!");
         // eprintln!("Failed to load image: {}", CStr::from_ptr((*fetch).url).to_str().unwrap());
         // emscripten_fetch_close(fetch);
     }

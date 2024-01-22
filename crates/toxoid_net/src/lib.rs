@@ -1,11 +1,10 @@
 use serde::{Deserialize, Serialize};
+pub use flexbuffers;
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct NetworkMessageComponent {
-    // name: String,
-    // object: Vec<u8>
-    pub x: u32,
-    pub y: u32,
+    pub name: String,
+    pub object: Vec<u8>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
