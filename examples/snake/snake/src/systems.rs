@@ -87,6 +87,7 @@ pub fn input_system(query: &mut Query) {
                 let mut keyboard_input = entity.get::<KeyboardInput>();
                 if keyboard_input.get_up() {
                     direction.set_direction(DirectionEnum::Up as u8);
+                    print_string("Hello world");
                     keyboard_input.set_up(false);
                 }
                 if keyboard_input.get_down() {

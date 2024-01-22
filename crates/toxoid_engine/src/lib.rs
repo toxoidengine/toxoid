@@ -21,6 +21,9 @@ pub fn init() {
     // Initialize network functionality.
     utils::network::init();
 
+    // Initialize input functionality.
+    utils::input::init();
+
     // Initialize default engine systems. Such as rendering, input, etc.
     systems::init();
 
