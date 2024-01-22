@@ -9,9 +9,11 @@ use once_cell::sync::Lazy;
 use std::sync::Mutex;
 use crate::utils::{SplitU64, split_u64, combine_u32};
 use crate::allocator::*;
+use toxoid_net::NetworkMessageEntity;
 
 pub static COMPONENT_ID_CACHE: Lazy<Mutex<HashMap<u64, ecs_entity_t>>> = Lazy::new(|| Mutex::new(HashMap::new()));
 pub static NETWORK_ENTITY_CACHE: Lazy<Mutex<HashMap<u64, ecs_entity_t>>> = Lazy::new(|| Mutex::new(HashMap::new()));
+pub static NETWORK_EVENT_CACHE: Lazy<Mutex<HashMap<&str, extern "C" fn(message: &NetworkMessageEntity)>>> = Lazy::new(|| Mutex::new(HashMap::new()));
 
 #[no_mangle]
 pub unsafe extern "C" fn toxoid_print_i32(v: i32) {
@@ -786,3 +788,25 @@ pub unsafe fn toxoid_prefab_instance(prefab_high: u32, prefab_low: u32) -> Split
     split_u64(flecs_core::flecs_prefab_instance(combine_u32(SplitU64 { high: prefab_high, low: prefab_low })))
 }
 
+#[no_mangle]
+pub unsafe fn toxoid_add_network_event(
+    event_name: &'static str,
+    callback: extern "C" fn(message: &NetworkMessageEntity)
+) {
+    let mut cache = NETWORK_EVENT_CACHE.lock().unwrap();
+    cache.insert(event_name, callback);
+}
+
+#[no_mangle]
+pub unsafe fn toxoid_run_network_event(
+    event_name: &'static str,
+    message: &NetworkMessageEntity
+) {
+    let cache = NETWORK_EVENT_CACHE.lock().unwrap();
+    let event_cb = cache.get(&event_name);
+    if event_cb.is_some() {
+        event_cb.unwrap()(message);
+    } else {
+        eprintln!("Event not found: {:?}", event_name);
+    }
+}

@@ -787,6 +787,13 @@ impl Entity {
         }
     }
 
+    pub fn from_id(id: ecs_id_t) -> Entity {
+        Entity {
+            id,
+            children: &mut []
+        }
+    }
+
     pub fn from_prefab(prefab: Prefab) -> Entity {
         let prefab_split = split_u64(prefab.entity.id);
         let entity_split = unsafe { toxoid_prefab_instance(prefab_split.high, prefab_split.low) };
