@@ -1,5 +1,5 @@
-pub mod join;
-use join::*;
+pub mod player;
+use player::*;
 
 pub fn init() {
     unsafe {
