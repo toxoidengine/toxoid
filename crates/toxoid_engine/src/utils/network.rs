@@ -1,7 +1,6 @@
 // TODO: Make this file more crossplatform generic and less dependent on Emscripten
 use toxoid_ffi::emscripten::EmscriptenWebSocketCreateAttributes;
-use toxoid_net::{NetworkMessages, NetworkMessageComponent, NetworkMessageEntity};
-use toxoid_api::{*, split_u64, combine_u32};
+use toxoid_api::*;
 use core::ffi::c_void;
 
 #[cfg(target_os = "emscripten")]
@@ -21,24 +20,6 @@ pub fn init() {
     World::add_singleton::<WebSocket>();
     let mut websocket = World::get_singleton::<WebSocket>();
     websocket.set_socket(Pointer{ ptr: ws });
-
-    unsafe {
-        toxoid_ffi::ecs::toxoid_add_network_event("LocalPlayerJoin", local_player_join);
-    }
-}
-
-pub extern "C" fn local_player_join(message: &NetworkMessageEntity) {
-    println!("Local player ID received: {:?}", message.id);
-    // Set local player ID
-    let mut local_player = World::get_singleton::<Networked>();
-    local_player.set_id(message.id);
-
-    // Create entity
-    let render_entity = crate::utils::load::load_image("assets/character.png");
-    render_entity.add::<Local>();
-
-    // Add to network entity cache
-    unsafe { toxoid_network_entity_cache_insert(split_u64(message.id), split_u64(render_entity.get_id())) };
 }
 
 #[cfg(target_os = "emscripten")]

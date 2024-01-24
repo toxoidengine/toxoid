@@ -2,6 +2,7 @@ pub mod prefabs;
 pub mod systems;
 pub mod update;
 pub mod utils;
+pub mod events;
 
 pub use systems::*;
 pub use update::*;
@@ -17,6 +18,9 @@ pub fn init() {
 
     // Initialize default entities.
     prefabs::init();
+
+    // Initialize default events.
+    events::init();
     
     // Initialize network functionality.
     utils::network::init();

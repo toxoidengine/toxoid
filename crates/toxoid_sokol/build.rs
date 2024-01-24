@@ -101,7 +101,5 @@ fn main() {
         .file(sokol_gp_wrapper)
         .files(spine_files)
         .compile("toxoid_sokol");
-
-    println!("Hello world!");
 }
 
