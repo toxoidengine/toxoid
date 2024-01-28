@@ -8,7 +8,7 @@
 	url = https://github.com/cimgui/cimgui.git
 	branch = docking_inter
 
-[submodule "cimgui"]
+[submodule "spine"]
 	path = crates/toxoid_sokol/lib/spine-runtimes
 	url = https://github.com/EsotericSoftware/spine-runtimes.git
 	branch = 4.1
