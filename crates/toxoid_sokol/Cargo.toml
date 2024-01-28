@@ -13,3 +13,12 @@ once_cell = "1.19.0"
 [build-dependencies]
 bindgen = "0.69.1"
 cc = "1.0.83"
+
+[features]
+default = ["renderer", "fetch", "audio", "imgui", "spine"]
+renderer = []
+spine = []
+imgui = []
+fetch = []
+audio = []
+
