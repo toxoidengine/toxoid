@@ -16,7 +16,7 @@ fn main() {
 
     // ImGui
     // Check if IMGUI feature is enabled
-    let imgui_files = if var("CARGO_CFG_IMGUI").is_ok() {
+    let imgui_files = if var("CARGO_FEATURE_IMGUI").is_ok() {
         let sokol_imgui_path = sokol_headers_path.join("cimgui").join("imgui"); 
         let lib_imgui_tables = sokol_imgui_path.join("imgui_tables.cpp");
         let lib_imgui_widgets = sokol_imgui_path.join("imgui_widgets.cpp");
@@ -39,7 +39,7 @@ fn main() {
     };
     // Spine
     // Check if spine feature is enabled
-    let spine_files = if var("CARGO_CFG_SPINE").is_ok() {
+    let spine_files = if var("CARGO_FEATURE_SPINE").is_ok() {
         let lib_c_spine = sokol_headers_path
             .join("spine-runtimes")
             .join("spine-c")
@@ -128,15 +128,15 @@ fn main() {
         build.define("SOKOL_METAL", None);
     }
     // If fetch feature is enabled, define TOXOID_FETCH
-    if var("CARGO_CFG_FETCH").is_ok() {
+    if var("CARGO_FEATURE_FETCH").is_ok() {
         build.define("TOXOID_FETCH", None);
     }
     // If audio feature is enabled, define TOXOID_AUDIO
-    if var("CARGO_CFG_AUDIO").is_ok() {
+    if var("CARGO_FEATURE_AUDIO").is_ok() {
         build.define("TOXOID_AUDIO", None);
     }
     // If imgui feature is enabled, add imgui files
-    if var("CARGO_CFG_IMGUI").is_ok() {
+    if var("CARGO_FEATURE_IMGUI").is_ok() {
         build
             .define("TOXOID_IMGUI", None)
             .define("IMGUI_DISABLE_OBSOLETE_FUNCTIONS", None)
@@ -144,7 +144,7 @@ fn main() {
             .files(imgui_files);
     }
     // If spine feature is enabled, add spine files
-    if var("CARGO_CFG_SPINE").is_ok() {
+    if var("CARGO_FEATURE_SPINE").is_ok() {
         build
             .define("TOXOID_SPINE", None)
             .include("lib/spine-runtimes/spine-c/spine-c/include")
