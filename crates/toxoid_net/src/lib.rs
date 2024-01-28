@@ -52,3 +52,7 @@ pub fn toxoid_network_send(network_messages: NetworkMessages) {
     // let network_messages = deserialize(&data);
     // println!("network_messages: {:?}", network_messages);
 }
+
+#[no_mangle]
+pub fn toxoid_network_recv(network_messages: NetworkMessages) {
+}

@@ -25,7 +25,7 @@ pub fn fetch(filename: &str, user_data: *mut c_void, success_cb: extern "C" fn(*
 }
 
 #[cfg(not(target_os = "emscripten"))]
-pub fn fetch() {
+pub fn fetch(filename: &str, user_data: *mut c_void, success_cb: extern "C" fn(*mut emscripten_fetch_t), error_cb: extern "C" fn(*mut emscripten_fetch_t)) {
     // ssfetch_send(&mut sfetch_request);
 }
 
@@ -53,6 +53,7 @@ pub fn load_image(filename: &str) -> &mut Entity {
 // object (which requires an atlas object as dependency), then a spine instance object.
 // Finally any images required by the atlas object are loaded
 // const sfetch_response_t* respons
+#[cfg(target_os = "emscripten")]
 pub extern "C" fn animation_load_success(result: *mut emscripten_fetch_t) {
     unsafe {
         let url = CStr::from_ptr((*result).url).to_str().unwrap();
@@ -164,6 +165,7 @@ pub extern "C" fn animation_load_success(result: *mut emscripten_fetch_t) {
 // calling sg_init_image(), or if loading has failed, put the
 // image object into the 'failed' resource state.
 //
+#[cfg(target_os = "emscripten")]
 pub extern "C" fn images_load_success(result: *mut emscripten_fetch_t) {
     // println!("Images load success");
     // // println!("Successfully loaded {}", CStr::from_ptr((*result).url).to_str().unwrap());
@@ -225,10 +227,12 @@ pub extern "C" fn images_load_success(result: *mut emscripten_fetch_t) {
     }
 }
 
+#[cfg(target_os = "emscripten")]
 pub extern "C" fn images_load_fail(result: *mut emscripten_fetch_t) {
     // println!("Failed images load");
 }
 
+#[cfg(target_os = "emscripten")]
 pub extern "C" fn animation_load_failed(result: *mut emscripten_fetch_t) {
     // println!("Failed animation load");
 }
@@ -259,6 +263,7 @@ pub fn load_animation(atlas_filename: &str, skeleton_filename: &str) -> &'static
     }
 }
 
+#[cfg(target_os = "emscripten")]
 pub extern "C" fn image_load_success(result: *mut emscripten_fetch_t) {
     unsafe {
         use core::ffi::CStr;
@@ -280,6 +285,7 @@ pub extern "C" fn image_load_success(result: *mut emscripten_fetch_t) {
     }
 }
 
+#[cfg(target_os = "emscripten")]
 pub extern "C" fn image_load_fail(fetch: *mut emscripten_fetch_t) {
     unsafe {
         // // println!("Fail!");
@@ -288,6 +294,7 @@ pub extern "C" fn image_load_fail(fetch: *mut emscripten_fetch_t) {
     }
 }
 
+#[cfg(target_os = "emscripten")]
 pub fn create_image(data: *mut u8, size: usize, mut entity: Box<Entity>) {
     // use toxoid_sokol::{SokolRenderer2D, SokolSprite};
     // use toxoid_sokol::sokol::{app as sapp, gfx as sg};

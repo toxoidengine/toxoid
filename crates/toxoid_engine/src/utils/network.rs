@@ -34,7 +34,7 @@ pub extern "C" fn onopen_cb(
 pub extern "C" fn onmessage_cb(
     _event_type: ::std::os::raw::c_int,
     websocket_event: *const toxoid_ffi::emscripten::EmscriptenWebSocketMessageEvent,
-    user_data: *mut ::std::os::raw::c_void,
+    _user_data: *mut ::std::os::raw::c_void,
 )  {
     let data = unsafe{ (*websocket_event).data };
     let data_len = unsafe{ (*websocket_event).numBytes };

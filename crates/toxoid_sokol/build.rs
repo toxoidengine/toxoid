@@ -1,13 +1,12 @@
 extern crate bindgen;
 extern crate cc;
 
-use std::env;
-use std::path::PathBuf;
-use std::path::Path;
+use std::env::var;
+use std::path::{PathBuf, Path};
 
 fn main() {
     // Get the current directory so we can find the sokol headers
-    let manifest_dir = env::var("CARGO_MANIFEST_DIR").unwrap();
+    let manifest_dir = var("CARGO_MANIFEST_DIR").unwrap();
     // Get the path to the sokol headers
     let sokol_headers_path = Path::new(&manifest_dir).join("lib");
     
@@ -16,36 +15,62 @@ fn main() {
     let sokol_gp_wrapper = sokol_gp_wrapper.to_str().unwrap();
 
     // ImGui
-    let sokol_imgui_path = sokol_headers_path.join("cimgui").join("imgui"); 
-    let lib_imgui_tables = sokol_imgui_path.join("imgui_tables.cpp");
-    let lib_imgui_widgets = sokol_imgui_path.join("imgui_widgets.cpp");
-    let lib_imgui_draw = sokol_imgui_path.join("imgui_draw.cpp");
-    let lib_imgui = sokol_imgui_path.join("imgui.cpp");
-    let lib_c_imgui = sokol_headers_path.join("cimgui").join("cimgui.cpp");
-    let lib_c_spine = sokol_headers_path
-        .join("spine-runtimes")
-        .join("spine-c")
-        .join("spine-c")
-        .join("src")
-        .join("spine");
-    println!("Reading spine files");
-    let spine_files: Vec<PathBuf> = std::fs::read_dir(lib_c_spine)
-    .expect("Unable to list spine files")
-    .filter_map(|entry| {
-        println!("toxoid_sokol build.rs spine file entry: {:?}", entry);
-        entry.ok().and_then(|e| {
-            let path = e.path();
-            if path.is_file() { Some(path) } else { None }
-        })
-    })
-    .collect();
+    // Check if IMGUI feature is enabled
+    let imgui_files = if var("CARGO_CFG_IMGUI").is_ok() {
+        let sokol_imgui_path = sokol_headers_path.join("cimgui").join("imgui"); 
+        let lib_imgui_tables = sokol_imgui_path.join("imgui_tables.cpp");
+        let lib_imgui_widgets = sokol_imgui_path.join("imgui_widgets.cpp");
+        let lib_imgui_draw = sokol_imgui_path.join("imgui_draw.cpp");
+        let lib_imgui = sokol_imgui_path.join("imgui.cpp");
+        let lib_c_imgui = sokol_headers_path.join("cimgui").join("cimgui.cpp");
+
+        let imgui_files = vec![
+            sokol_imgui_path,
+             lib_imgui_tables,
+             lib_imgui_widgets,
+             lib_imgui_draw,
+             lib_imgui,
+             lib_c_imgui
+        ];
+        imgui_files
+    } else {
+        println!("Skipping imgui files");
+        Vec::new()
+    };
+    // Spine
+    // Check if spine feature is enabled
+    let spine_files = if var("CARGO_CFG_SPINE").is_ok() {
+        let lib_c_spine = sokol_headers_path
+            .join("spine-runtimes")
+            .join("spine-c")
+            .join("spine-c")
+            .join("src")
+            .join("spine");
+
+        println!("Reading spine files");
+
+        let spine_files: Vec<PathBuf> = std::fs::read_dir(lib_c_spine)
+            .expect("Unable to list spine files")
+            .filter_map(|entry| {
+                println!("toxoid_sokol build.rs spine file entry: {:?}", entry);
+                entry.ok().and_then(|e| {
+                    let path = e.path();
+                    if path.is_file() { Some(path) } else { None }
+                })
+            })
+            .collect();
+        spine_files
+    } else {
+        println!("Skipping spine files");
+        Vec::new()
+    };
     
     // Rebuild on build.rs change
     println!("cargo:rerun-if-changed=build.rs");
     println!("{}", format!("cargo:rerun-if-changed={}", sokol_gp_wrapper));
 
     // Check if we are building for Emscripten
-    let target = env::var("TARGET").unwrap();
+    let target = var("TARGET").unwrap();
     if !target.contains("emscripten") {
         let _bindings = bindgen::Builder::default()
             .clang_arg("-x")
@@ -74,7 +99,7 @@ fn main() {
             .expect("Unable to generate bindings");
 
         // Write the bindings to the $OUT_DIR/bindings.rs file.
-        // let out_path = PathBuf::from(std::env::var("OUT_DIR").unwrap());
+        // let out_path = PathBuf::from(var("OUT_DIR").unwrap());
         // let out_path = PathBuf::from("./src");
         // bindings
         //     .write_to_file(out_path.join("bindings.rs"))
@@ -82,24 +107,51 @@ fn main() {
     }
     
     let mut build = cc::Build::new();
-    // TODO: Match on target_os, for now target GLES3 for Emscripten
-    // Define variables
+    // Flags
     build
-        .define("SOKOL_GLES3", None)
-        .define("IMPL", None)
-        .define("IMGUI_DISABLE_OBSOLETE_FUNCTIONS", None)
-        // Flags
         .flag_if_supported("-Wno-unused-parameter")
-        .flag_if_supported("-Wno-missing-field-initializers")
-        // Build files
-        .include("lib/spine-runtimes/spine-c/spine-c/include")
-        .file(lib_imgui_draw)
-        .file(lib_imgui_tables)
-        .file(lib_imgui_widgets)
-        .file(lib_imgui)
-        .file(lib_c_imgui)
+        .flag_if_supported("-Wno-missing-field-initializers");
+
+    // Define sokol render backend
+    if target.contains("emscripten") {
+        build.define("__EMSCRIPTEN__", None);
+        build.define("SOKOL_GLES3", None);
+    } else if target.contains("windows") {
+        build.define("SOKOL_D3D11", None);
+    } else if target.contains("linux") {
+        build.define("SOKOL_GLCORE33", None);
+    } else if target.contains("darwin") {
+        build.define("SOKOL_GLCORE33", None);
+    } else if target.contains("android") {
+        build.define("SOKOL_GLES3", None);
+    } else if target.contains("ios") {
+        build.define("SOKOL_METAL", None);
+    }
+    // If fetch feature is enabled, define TOXOID_FETCH
+    if var("CARGO_CFG_FETCH").is_ok() {
+        build.define("TOXOID_FETCH", None);
+    }
+    // If audio feature is enabled, define TOXOID_AUDIO
+    if var("CARGO_CFG_AUDIO").is_ok() {
+        build.define("TOXOID_AUDIO", None);
+    }
+    // If imgui feature is enabled, add imgui files
+    if var("CARGO_CFG_IMGUI").is_ok() {
+        build
+            .define("TOXOID_IMGUI", None)
+            .define("IMGUI_DISABLE_OBSOLETE_FUNCTIONS", None)
+            .define("CIMGUI_DEFINE_ENUMS_AND_STRUCTS", None)
+            .files(imgui_files);
+    }
+    // If spine feature is enabled, add spine files
+    if var("CARGO_CFG_SPINE").is_ok() {
+        build
+            .define("TOXOID_SPINE", None)
+            .include("lib/spine-runtimes/spine-c/spine-c/include")
+            .files(spine_files);
+    }
+    build
         .file(sokol_gp_wrapper)
-        .files(spine_files)
         .compile("toxoid_sokol");
 }
 
