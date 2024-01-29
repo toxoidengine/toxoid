@@ -779,8 +779,9 @@ pub struct Entity {
 
 impl Entity {
     pub fn new() -> Entity {
-        let entity_split = unsafe { toxoid_entity_create() };
-        let entity = combine_u32(entity_split);
+        let entity = unsafe { toxoid_entity_create() };
+        #[cfg(target_arch="wasm32")]
+        let entity = combine_u32(entity);
         Entity {
             id: entity,
             children: &mut []
