@@ -1,5 +1,6 @@
 use toxoid_api::*;
 
+#[cfg(target_os = "emscripten")]
 pub fn load_sprite_system(query: &mut Query) {
     let query_iter = query.iter();
     while query_iter.next() {
@@ -20,6 +21,8 @@ pub fn load_sprite_system(query: &mut Query) {
     }
 }
 
+
+#[cfg(target_os = "emscripten")]
 pub fn load_bone_animation_system(query: &mut Query) {
     let query_iter = query.iter();
     while query_iter.next() {

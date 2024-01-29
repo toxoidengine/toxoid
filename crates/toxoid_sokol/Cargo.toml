@@ -15,10 +15,10 @@ bindgen = "0.69.1"
 cc = "1.0.83"
 
 [features]
-default = ["renderer", "fetch", "audio", "imgui", "spine"]
+default = ["renderer", "fetch", "audio", "imgui", "spine", "stb"]
 renderer = []
 spine = []
 imgui = []
 fetch = []
 audio = []
-
+stb = []

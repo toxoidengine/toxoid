@@ -5,6 +5,9 @@ use std::env::var;
 use std::path::{PathBuf, Path};
 
 fn main() {
+    // Rebuild on build.rs change
+    println!("cargo:rerun-if-changed=build.rs");
+
     // Get the current directory so we can find the sokol headers
     let manifest_dir = var("CARGO_MANIFEST_DIR").unwrap();
     // Get the path to the sokol headers
@@ -14,27 +17,30 @@ fn main() {
     let sokol_wrapper = sokol_headers_path.join("sokol_wrapper.c");
     let sokol_wrapper = sokol_wrapper.to_str().unwrap();
 
+    // Rebuild on sokol_wrapper.c change
+    println!("{}", format!("cargo:rerun-if-changed={}", sokol_wrapper));
+
     // ImGui
     // Check if IMGUI feature is enabled
     let imgui_files = if var("CARGO_FEATURE_IMGUI").is_ok() {
         let sokol_imgui_path = sokol_headers_path.join("cimgui").join("imgui"); 
+        
+        let lib_imgui_draw = sokol_imgui_path.join("imgui_draw.cpp");
         let lib_imgui_tables = sokol_imgui_path.join("imgui_tables.cpp");
         let lib_imgui_widgets = sokol_imgui_path.join("imgui_widgets.cpp");
-        let lib_imgui_draw = sokol_imgui_path.join("imgui_draw.cpp");
         let lib_imgui = sokol_imgui_path.join("imgui.cpp");
         let lib_c_imgui = sokol_headers_path.join("cimgui").join("cimgui.cpp");
 
         let imgui_files = vec![
-            sokol_imgui_path,
-             lib_imgui_tables,
-             lib_imgui_widgets,
-             lib_imgui_draw,
-             lib_imgui,
-             lib_c_imgui
+            lib_imgui_draw,
+            lib_imgui_tables,
+            lib_imgui_widgets,
+            lib_imgui,
+            lib_c_imgui
         ];
         imgui_files
     } else {
-        println!("Skipping imgui files");
+        eprintln!("Skipping imgui files");
         Vec::new()
     };
     // Spine
@@ -46,8 +52,6 @@ fn main() {
             .join("spine-c")
             .join("src")
             .join("spine");
-
-        println!("Reading spine files");
 
         let spine_files: Vec<PathBuf> = std::fs::read_dir(lib_c_spine)
             .expect("Unable to list spine files")
@@ -61,13 +65,9 @@ fn main() {
             .collect();
         spine_files
     } else {
-        println!("Skipping spine files");
+        eprintln!("Skipping spine files");
         Vec::new()
     };
-    
-    // Rebuild on build.rs change
-    println!("cargo:rerun-if-changed=build.rs");
-    println!("{}", format!("cargo:rerun-if-changed={}", sokol_wrapper));
 
     // Check if we are building for Emscripten
     let target = var("TARGET").unwrap();
@@ -140,7 +140,6 @@ fn main() {
         build
             .define("TOXOID_IMGUI", None)
             .define("IMGUI_DISABLE_OBSOLETE_FUNCTIONS", None)
-            .define("CIMGUI_DEFINE_ENUMS_AND_STRUCTS", None)
             .files(imgui_files);
     }
     // If spine feature is enabled, add spine files
@@ -149,6 +148,9 @@ fn main() {
             .define("TOXOID_SPINE", None)
             .include("lib/spine-runtimes/spine-c/spine-c/include")
             .files(spine_files);
+    }
+    if var("CARGO_FEATURE_STB").is_ok() {
+        build.define("TOXOID_STB", None);
     }
     build
         .file(sokol_wrapper)

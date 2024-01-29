@@ -1,4 +1,5 @@
 // TODO: Make this file more crossplatform generic and less dependent on Emscripten (must fix sokol-fetch)
+#[cfg(target_os = "emscripten")]
 use toxoid_ffi::emscripten::*;
 use toxoid_api::*;
 use toxoid_sokol::bindings::*;
@@ -25,7 +26,7 @@ pub fn fetch(filename: &str, user_data: *mut c_void, success_cb: extern "C" fn(*
 }
 
 #[cfg(not(target_os = "emscripten"))]
-pub fn fetch(filename: &str, user_data: *mut c_void, success_cb: extern "C" fn(*mut emscripten_fetch_t), error_cb: extern "C" fn(*mut emscripten_fetch_t)) {
+pub fn fetch() {
     // ssfetch_send(&mut sfetch_request);
 }
 
