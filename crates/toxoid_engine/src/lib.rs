@@ -40,9 +40,4 @@ pub fn init() {
 
     #[cfg(target_os = "emscripten")]
     toxoid_ffi::emscripten::start_loop(gameplay_loop);
-    #[cfg(not(target_os = "emscripten"))]
-    loop {
-        // Update gameplay systems
-        gameplay_loop(std::ptr::null_mut());
-    }
 }

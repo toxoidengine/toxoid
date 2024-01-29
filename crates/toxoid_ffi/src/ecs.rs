@@ -149,10 +149,17 @@ pub unsafe extern "C" fn toxoid_register_component(
     created
 }
 
+#[cfg(target_arch="wasm32")]
 #[no_mangle]
 pub unsafe fn toxoid_entity_create() -> SplitU64 {
     let entity = flecs_core::flecs_entity_create();
     split_u64(entity)
+}
+
+#[cfg(not(target_arch="wasm32"))]
+#[no_mangle]
+pub unsafe fn toxoid_entity_create() -> u64 {
+    flecs_core::flecs_entity_create()
 }
 
 #[no_mangle]

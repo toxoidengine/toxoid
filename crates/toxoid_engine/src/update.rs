@@ -2,7 +2,23 @@ use crate::systems::{GAMEPLAY_SYSTEMS, RENDER_SYSTEMS};
 use toxoid_api::{World, SpineInstance};
 use toxoid_render::Renderer2D;
 
+
+#[cfg(target_os = "emscripten")]
 pub extern "C" fn gameplay_loop(_parg: *mut std::ffi::c_void) {
+    // unsafe { toxoid_sokol::bindings::sfetch_dowork() };
+    
+    // Get gameplay systems
+    let gameplay_systems = unsafe { &mut *GAMEPLAY_SYSTEMS.lock().unwrap() };
+    // Update gameplay systems
+    for system in gameplay_systems.iter_mut() {
+        let system = &mut *system;
+        let query = &mut system.query;
+        (system.update_fn)(query);
+    }
+}
+
+#[cfg(not(target_os = "emscripten"))]
+pub extern "C" fn gameplay_loop() {
     // unsafe { toxoid_sokol::bindings::sfetch_dowork() };
     
     // Get gameplay systems
