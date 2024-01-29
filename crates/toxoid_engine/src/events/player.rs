@@ -1,4 +1,5 @@
 use toxoid_api::{*, split_u64};
+#[cfg(feature = "render")]
 use toxoid_net::NetworkMessageEntity;
 
 #[cfg(target_os = "emscripten")]

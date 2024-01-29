@@ -15,8 +15,8 @@ bindgen = "0.69.1"
 cc = "1.0.83"
 
 [features]
-default = ["renderer", "fetch", "audio", "imgui", "spine", "stb"]
-renderer = []
+default = ["render", "fetch", "audio", "imgui", "spine", "stb"]
+render = []
 spine = []
 imgui = []
 fetch = []

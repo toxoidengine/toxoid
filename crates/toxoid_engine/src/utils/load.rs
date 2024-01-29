@@ -2,6 +2,7 @@
 #[cfg(target_os = "emscripten")]
 use toxoid_ffi::emscripten::*;
 use toxoid_api::*;
+#[cfg(feature = "render")]
 use toxoid_sokol::bindings::*;
 use core::ffi::CStr;
 use core::ffi::c_void;

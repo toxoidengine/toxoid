@@ -15,6 +15,7 @@ pub extern "C" fn gameplay_loop(_parg: *mut std::ffi::c_void) {
     }
 }
 
+#[cfg(feature = "render")]
 pub extern "C" fn render_loop() {
     // Begin render pass
     toxoid_sokol::SokolRenderer2D::begin();
@@ -28,6 +29,7 @@ pub extern "C" fn render_loop() {
         (system.update_fn)(query);
     }
 
+    #[cfg(feature = "imgui")]
     unsafe {
         let mut desc: toxoid_sokol::bindings::simgui_frame_desc_t = core::mem::MaybeUninit::zeroed().assume_init();
         desc.width = 1280;

@@ -118,6 +118,7 @@ impl Renderer2D for SokolRenderer2D {
             sspine_draw_layer(0, &layer_transform);
 
             // Render ImGui
+            #[cfg(feature = "imgui")]
             simgui_render();
         }
         // End render pass.
