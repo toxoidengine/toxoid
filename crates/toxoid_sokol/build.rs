@@ -129,10 +129,7 @@ fn main() {
     }
     // If fetch feature is enabled, define TOXOID_FETCH
     if var("CARGO_FEATURE_FETCH").is_ok() {
-        eprintln!("Not skipping fetch files");
         build.define("TOXOID_FETCH", None);
-    } else {
-        eprintln!("Skipping fetch files")
     }
     // If audio feature is enabled, define TOXOID_AUDIO
     if var("CARGO_FEATURE_AUDIO").is_ok() {
