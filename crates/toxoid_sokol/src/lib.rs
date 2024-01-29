@@ -45,9 +45,12 @@ extern "C" fn init_cb() {
         sgp_setup(&mut desc);
 
         // Initialize SImGui
-        let mut sgui_desc: simgui_desc_t = core::mem::MaybeUninit::zeroed().assume_init();
-        simgui_setup(&mut sgui_desc);
-
+        #[cfg(feature = "imgui")] 
+        {
+            let mut sgui_desc: simgui_desc_t = core::mem::MaybeUninit::zeroed().assume_init();
+            simgui_setup(&mut sgui_desc);
+        }
+        
         // Initialize Spine
         let mut sspine_desc_obj: sspine_desc = core::mem::MaybeUninit::zeroed().assume_init();
         sspine_desc_obj.max_vertices = 1024;      // default: (1<<16) = 65536
@@ -80,11 +83,13 @@ extern "C" fn cleanup_cb() {
     sg::shutdown()
 }
 
+#[cfg(feature = "renderer")]
 pub fn init(frame_cb: extern "C" fn()) {
     let game_config = World::get_singleton::<GameConfig>();
     let window_title = b"Toxoid Engine Demo\0".as_ptr() as _;
     let canvas_id = std::ffi::CString::new("canvas").unwrap();
     
+    #[cfg(target_os = "emscripten")]
     unsafe {
         emscripten_set_canvas_element_size(canvas_id.as_ptr(), game_config.get_resolution_width() as i32, game_config.get_resolution_height() as i32);
     }

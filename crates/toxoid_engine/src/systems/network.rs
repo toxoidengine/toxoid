@@ -1,6 +1,8 @@
 use toxoid_api::*;
+#[cfg(feature = "net")]
 use toxoid_net::NetworkMessages;
 
+#[cfg(feature = "net")]
 pub fn network_event_system(query: &mut Query) {
     let query = query.iter();
     while query.next() {

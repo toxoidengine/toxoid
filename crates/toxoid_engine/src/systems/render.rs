@@ -1,7 +1,9 @@
 use toxoid_api::*;
 use toxoid_render::Renderer2D;
+#[cfg(feature = "render")]
 use toxoid_sokol::SokolSprite;
 
+#[cfg(feature = "render")]
 pub fn render_rect_system(query: &mut Query) {
     let query_iter = query.iter();
     while query_iter.next() {
@@ -20,6 +22,7 @@ pub fn render_rect_system(query: &mut Query) {
     }
 }
 
+#[cfg(feature = "render")]
 pub fn render_sprite_system(query: &mut Query) {
     let query_iter = query.iter();
     while query_iter.next() {
@@ -39,6 +42,7 @@ pub fn render_sprite_system(query: &mut Query) {
     }
 }
 
+#[cfg(all(feature = "render", feature = "spine"))]
 pub fn draw_bone_animation(query: &mut Query) {
     let query_iter = query.iter();
     while query_iter.next() {

@@ -8,6 +8,7 @@ pub use systems::*;
 pub use update::*;
 pub use utils::*;
 pub use utils::rand::*;
+pub use toxoid_ffi;
 
 pub fn init() {
     // Initialize FLECS ECS.
@@ -33,9 +34,8 @@ pub fn init() {
 
     // Initialize renderer
     // TODO: Renderer backend feature flags
-    #[cfg(target_os = "emscripten")]
-    toxoid_sokol::init(render_loop);
-    #[cfg(not(target_os = "emscripten"))]
+    // Check if emscripten but also check if renderer feature is enabled
+    #[cfg(all(feature = "render", target_os = "emscripten"))]
     toxoid_sokol::init(render_loop);
 
     #[cfg(target_os = "emscripten")]
