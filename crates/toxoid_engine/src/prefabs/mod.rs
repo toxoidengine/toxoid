@@ -23,7 +23,10 @@ pub fn init() {
     local_player.set_entity_id(player_entity.get_id());
 
     // TODO: Make this a child entity later
+    
+    #[cfg(target_os = "emscripten")]
     let player_animation_entity = crate::utils::load::load_animation("assets/player_spine.atlas", "assets/player_spine.json");
     // let mut position = player_animation_entity.get::<Position>();
+    #[cfg(target_os = "emscripten")]
     player_animation_entity.add::<Local>();
 }

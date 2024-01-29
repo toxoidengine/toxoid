@@ -24,6 +24,7 @@
 #endif
 
 #ifdef TOXOID_IMGUI
+#define CIMGUI_DEFINE_ENUMS_AND_STRUCTS
 #include "cimgui/cimgui.h"
 #include "sokol_imgui.h"
 #endif
@@ -50,10 +51,10 @@ EMSCRIPTEN_RESULT toxoid_set_keyup_callback(const char *target, void *userData, 
 }
 #endif
 
-#ifdef TOXOID_STB
 /*
     Unlike most libraries out there, the STB headers are (usually) directly compiled within your project's source code; no linking required. Most other stb headers require you to define special macros before you include them. Read the documentation (at the top of the header files) to know which macro to define.
 */
+#ifdef TOXOID_STB
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 #endif

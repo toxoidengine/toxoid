@@ -1,6 +1,7 @@
 use toxoid_api::*;
 
 // TODO: Remove system, temporary to test multiplayer
+#[cfg(target_os = "emscripten")]
 pub fn input_system(query: &mut Query) {
     let query = query.iter();
     let mut keyboard_input = World::get_singleton::<KeyboardInput>();

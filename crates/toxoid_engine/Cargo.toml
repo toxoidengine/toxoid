@@ -11,5 +11,15 @@ toxoid_api = { path="../toxoid_api" }
 # toxoid_api_macro = { path="../toxoid_api_macro" }
 toxoid_render = { path="../toxoid_render" }
 toxoid_sokol = { path="../toxoid_sokol" }
-toxoid_net = { path="../toxoid_net" }
+toxoid_net = { path="../toxoid_net", optional=true }
 rand = "0.8.5"
+
+[features]
+default = ["renderer", "fetch", "audio", "imgui", "spine", "stb", "net"]
+renderer = ["toxoid_sokol/renderer"]
+fetch = ["toxoid_sokol/fetch"]
+audio = ["toxoid_sokol/audio"]
+imgui = ["toxoid_sokol/imgui"]
+spine = ["toxoid_sokol/spine"]
+stb = ["toxoid_sokol/stb"]
+net = ["toxoid_net"]

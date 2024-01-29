@@ -1,16 +1,15 @@
 // TODO: Make this file more crossplatform generic and less dependent on Emscripten
-use toxoid_ffi::emscripten::EmscriptenWebSocketCreateAttributes;
 use toxoid_api::*;
 use core::ffi::c_void;
 
 #[cfg(target_os = "emscripten")]
 pub fn init() {
     // WebSocket Networked Multiplayer Test
-    let mut attributes = EmscriptenWebSocketCreateAttributes {
+    let mut attributes = toxoid_ffi::emscripten::EmscriptenWebSocketCreateAttributes {
         url: "ws://127.0.0.1:8080\0".as_ptr() as *const i8, 
         protocol: std::ptr::null()
     };
-    let ws = unsafe { toxoid_ffi::emscripten::emscripten_websocket_new(&mut attributes as *mut EmscriptenWebSocketCreateAttributes) };
+    let ws = unsafe { toxoid_ffi::emscripten::emscripten_websocket_new(&mut attributes as *mut toxoid_ffi::emscripten::EmscriptenWebSocketCreateAttributes) };
     let user_data = ws as *mut ::core::ffi::c_void;
     unsafe {
         toxoid_ffi::emscripten::emscripten_websocket_set_onopen_callback_on_thread(ws, user_data, onopen_cb,  toxoid_ffi::emscripten::EM_CALLBACK_THREAD_CONTEXT_CALLING_THREAD as *mut c_void);
@@ -20,6 +19,10 @@ pub fn init() {
     World::add_singleton::<WebSocket>();
     let mut websocket = World::get_singleton::<WebSocket>();
     websocket.set_socket(Pointer{ ptr: ws });
+}
+
+#[cfg(not(target_os = "emscripten"))]
+pub fn init() {
 }
 
 #[cfg(target_os = "emscripten")]

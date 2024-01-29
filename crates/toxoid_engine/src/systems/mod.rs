@@ -23,6 +23,7 @@ pub unsafe extern "C" fn toxoid_add_system(
     render_systems.push(system);
 }
 
+#[cfg(target_os = "emscripten")]
 pub fn init() {
     // Loaders
     let mut load_sprite_system = System::new(load_sprite_system);
@@ -66,4 +67,9 @@ pub fn init() {
         .with::<(Position, BoneAnimation, SpineInstance, Local)>()
         .build();
     World::add_system(input_system);
+}
+
+#[cfg(not(target_os = "emscripten"))]
+pub fn init() {
+    
 }

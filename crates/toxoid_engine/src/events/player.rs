@@ -1,6 +1,7 @@
 use toxoid_api::{*, split_u64};
 use toxoid_net::NetworkMessageEntity;
 
+#[cfg(target_os = "emscripten")]
 pub extern "C" fn local_player_join(message: &NetworkMessageEntity) {
     println!("Local player ID received: {:?}", message.id);
     // Set local player ID
@@ -15,6 +16,8 @@ pub extern "C" fn local_player_join(message: &NetworkMessageEntity) {
     unsafe { toxoid_network_entity_cache_insert(split_u64(message.id), split_u64(render_entity.get_id())) };
 }
 
+
+#[cfg(target_os = "emscripten")]
 pub extern "C" fn player_join(message: &NetworkMessageEntity) {
     println!("Player ID received: {:?}", message.id);
     // Create entity
@@ -34,6 +37,8 @@ pub extern "C" fn player_join(message: &NetworkMessageEntity) {
     unsafe { toxoid_network_entity_cache_insert(split_u64(message.id), split_u64(player_animation_entity.get_id())) };
 }
 
+
+#[cfg(target_os = "emscripten")]
 pub extern "C" fn player_leave(message: &NetworkMessageEntity) {
     println!("Player ID {:?} disconnected from server.", message.id);
 }
