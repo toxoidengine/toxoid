@@ -15,9 +15,7 @@
 #include "sokol_gp.h"
 
 // Toxoid Sokol
-#ifdef TOXOID_FETCH
 #include "sokol_fetch.h"
-#endif
 
 #ifdef TOXOID_AUDIO
 #include "sokol_audio.h"
