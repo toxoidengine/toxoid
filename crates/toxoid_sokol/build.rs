@@ -11,8 +11,8 @@ fn main() {
     let sokol_headers_path = Path::new(&manifest_dir).join("lib");
     
     // Root Sokol wrapper
-    let sokol_gp_wrapper = sokol_headers_path.join("sokol_gp_wrapper.c");
-    let sokol_gp_wrapper = sokol_gp_wrapper.to_str().unwrap();
+    let sokol_wrapper = sokol_headers_path.join("sokol_wrapper.c");
+    let sokol_wrapper = sokol_wrapper.to_str().unwrap();
 
     // ImGui
     // Check if IMGUI feature is enabled
@@ -67,7 +67,7 @@ fn main() {
     
     // Rebuild on build.rs change
     println!("cargo:rerun-if-changed=build.rs");
-    println!("{}", format!("cargo:rerun-if-changed={}", sokol_gp_wrapper));
+    println!("{}", format!("cargo:rerun-if-changed={}", sokol_wrapper));
 
     // Check if we are building for Emscripten
     let target = var("TARGET").unwrap();
@@ -130,6 +130,8 @@ fn main() {
     // If fetch feature is enabled, define TOXOID_FETCH
     if var("CARGO_FEATURE_FETCH").is_ok() {
         build.define("TOXOID_FETCH", None);
+    } else {
+        println!("Skipping fetch files")
     }
     // If audio feature is enabled, define TOXOID_AUDIO
     if var("CARGO_FEATURE_AUDIO").is_ok() {
@@ -151,7 +153,7 @@ fn main() {
             .files(spine_files);
     }
     build
-        .file(sokol_gp_wrapper)
+        .file(sokol_wrapper)
         .compile("toxoid_sokol");
 }
 
