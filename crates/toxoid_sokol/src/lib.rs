@@ -83,7 +83,7 @@ extern "C" fn cleanup_cb() {
     sg::shutdown()
 }
 
-#[cfg(feature = "renderer")]
+#[cfg(feature = "render")]
 pub fn init(frame_cb: extern "C" fn()) {
     let game_config = World::get_singleton::<GameConfig>();
     let window_title = b"Toxoid Engine Demo\0".as_ptr() as _;
