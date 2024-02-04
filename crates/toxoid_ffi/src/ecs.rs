@@ -302,6 +302,7 @@ pub unsafe extern "C" fn toxoid_component_cache_get(type_hash: SplitU64) -> Spli
     split_u64(component_id)
 }
 
+#[cfg(target_arch="wasm32")]
 #[no_mangle]
 pub unsafe extern "C" fn toxoid_network_entity_cache_insert(
     entity_id: SplitU64,
@@ -313,12 +314,31 @@ pub unsafe extern "C" fn toxoid_network_entity_cache_insert(
     cache.insert(entity_id, network_id);
 }
 
+#[cfg(not(target_arch="wasm32"))]
+#[no_mangle]
+pub unsafe extern "C" fn toxoid_network_entity_cache_insert(
+    entity_id: u64,
+    network_id: u64
+) {
+    let mut cache = NETWORK_ENTITY_CACHE.lock().unwrap();
+    cache.insert(entity_id, network_id);
+}
+
+#[cfg(target_arch="wasm32")]
 #[no_mangle]
 pub unsafe extern "C" fn toxoid_network_entity_cache_get(entity_id: SplitU64) -> SplitU64 {
     let cache = NETWORK_ENTITY_CACHE.lock().unwrap();
     let entity_id = combine_u32(entity_id);
     let network_id = *cache.get(&entity_id).unwrap_or(&0);
     split_u64(network_id)
+}
+
+#[cfg(not(target_arch="wasm32"))]
+#[no_mangle]
+pub unsafe extern "C" fn toxoid_network_entity_cache_get(entity_id: u64) -> u64 {
+    let cache = NETWORK_ENTITY_CACHE.lock().unwrap();
+    let network_id = *cache.get(&entity_id).unwrap_or(&0);
+   network_id
 }
 
 #[no_mangle]
