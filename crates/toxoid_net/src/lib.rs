@@ -7,7 +7,7 @@ pub struct NetworkMessageComponent {
     pub object: Vec<u8>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Default)]
 pub struct NetworkMessageEntity {
     pub id: u64,
     pub event: String,
