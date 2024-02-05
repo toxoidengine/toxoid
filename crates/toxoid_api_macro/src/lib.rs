@@ -1,5 +1,4 @@
 extern crate proc_macro;
-use core::ffi::c_void;
 use proc_macro::TokenStream;
 use quote::quote;
 use syn::{

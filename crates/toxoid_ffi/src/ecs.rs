@@ -377,7 +377,7 @@ pub unsafe fn toxoid_query_field_list(
     iter: *mut flecs_core::ecs_iter_t,
     term_index: i32,
     count: u32,
-) -> &'static mut [*const c_void] {
+) -> *mut [*const c_void] {
     flecs_core::flecs_query_field_list(iter, term_index, count)
 }
 
@@ -722,13 +722,11 @@ pub unsafe fn toxoid_component_get_member_ptr(
 
 #[no_mangle]
 pub unsafe fn toxoid_system_init(
-    system_name: *const c_char,
-    ids: [ecs_id_t; 16],
     callback: unsafe extern "C" fn(*mut ecs_iter_t)
-) -> SplitU64 {
-    let entity = flecs_core::flecs_system_init(system_name, ids, callback);
-    split_u64(entity)
+) -> *mut flecs_core::ecs_system_desc_t {
+    flecs_core::flecs_system_init(callback)
 }
+
 
 #[no_mangle]
 pub unsafe fn toxoid_filter_create() -> *mut flecs_core::ecs_filter_desc_t {
@@ -788,7 +786,7 @@ pub unsafe fn toxoid_filter_field_list(
     iter: *mut flecs_core::ecs_iter_t,
     term_index: i32,
     count: u32
-) -> &'static mut [*const c_void] {
+) -> *mut [*const c_void] {
     flecs_core::flecs_filter_field_list(iter, term_index, count)
 }
 
