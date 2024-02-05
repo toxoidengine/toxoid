@@ -337,8 +337,8 @@ pub unsafe extern "C" fn toxoid_network_entity_cache_get(entity_id: SplitU64) ->
 #[no_mangle]
 pub unsafe extern "C" fn toxoid_network_entity_cache_get(entity_id: u64) -> u64 {
     let cache = NETWORK_ENTITY_CACHE.lock().unwrap();
-    let network_id = *cache.get(&entity_id).unwrap_or(&0);
-   network_id
+    let network_id = *cache.get(&entity_id).unwrap();
+    network_id
 }
 
 #[no_mangle]

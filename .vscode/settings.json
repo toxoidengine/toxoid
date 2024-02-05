@@ -4,5 +4,6 @@
         "./crates/toxoid_engine/Cargo.toml",
         "./examples/snake/snake_runner/Cargo.toml",
         "./libs/flecs-polyglot/rust/flecs_core/Cargo.toml",
-    ]
+    ],
+    "rust-analyzer.cargo.target": "wasm32-unknown-emscripten",
 }

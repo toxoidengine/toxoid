@@ -56,12 +56,10 @@ unsafe impl GlobalAlloc for HostAllocator {
 
 #[no_mangle]
 pub unsafe extern "C" fn host_alloc(layout: Layout) -> *mut u8 {
-    let allocator = HostAllocator;
-    allocator.alloc(layout)
+    HostAllocator.alloc(layout)
 }
 
 #[no_mangle]
 pub unsafe extern "C" fn host_dealloc(ptr: *mut u8, layout: Layout) {
-    let allocator = HostAllocator;
-    allocator.dealloc(ptr, layout)
+    HostAllocator.dealloc(ptr, layout)
 }
