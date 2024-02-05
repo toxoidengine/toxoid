@@ -2,7 +2,6 @@
 use crate::*;
 use core::ffi::c_void;
 use core::alloc::{GlobalAlloc, Layout};
-use core::any::TypeId;
 use serde::{Serialize, Deserialize};
 use bindings::*;
 
@@ -160,7 +159,7 @@ impl U32Array {
         }
     }
 
-    pub fn create_array(len: u32) -> *mut u32 {
+    pub fn create_array(_len: u32) -> *mut u32 {
         let mut arr = [0u32; MAX_ELEMENTS];
         arr.as_mut_ptr()
     }

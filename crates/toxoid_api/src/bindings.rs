@@ -82,7 +82,7 @@ extern "C" {
         iter: *mut c_void,
         term_index: i32,
         count: u32,
-    ) -> &'static mut [*const c_void];
+    ) -> *mut [*const c_void];
     pub fn toxoid_filter_create() -> *mut c_void;
     pub fn toxoid_filter_with(filter: *mut c_void, filter_index: u8, ids: *mut ecs_entity_t, components_count: i32) -> u8;
     pub fn toxoid_filter_without(filter: *mut c_void, filter_index: u8, ids: *mut ecs_entity_t, components_count: i32) -> u8;
