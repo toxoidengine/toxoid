@@ -51,7 +51,7 @@ component! {
         sprite: Pointer
     },
     Networked {
-        id: u64,
+        network_id: u64,
         entity_id: u64,
         messages: Pointer
     },

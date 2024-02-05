@@ -71,5 +71,4 @@ pub fn init() {
 
 #[cfg(not(target_os = "emscripten"))]
 pub fn init() {
-    
 }

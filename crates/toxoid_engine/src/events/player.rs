@@ -7,7 +7,7 @@ pub extern "C" fn local_player_join(message: &NetworkMessageEntity) {
     println!("Local player ID received: {:?}", message.id);
     // Set local player ID
     let mut local_player = World::get_singleton::<Networked>();
-    local_player.set_id(message.id);
+    local_player.set_network_id(message.id);
 
     // Create entity
     let render_entity = crate::utils::load::load_image("assets/character.png");
