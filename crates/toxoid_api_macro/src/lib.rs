@@ -2,11 +2,7 @@ extern crate proc_macro;
 use proc_macro::TokenStream;
 use quote::quote;
 use syn::{
-    parse::{Parse, ParseStream, Parser},
-    punctuated::Punctuated,
-    spanned::Spanned,
-    token::Comma,
-    FieldsNamed, Ident, Type,
+    parse::{Parse, ParseStream, Parser}, parse_macro_input, punctuated::Punctuated, spanned::Spanned, token::Comma, FieldsNamed, Ident, ItemFn, Type
 };
 
 #[repr(u8)]
@@ -609,4 +605,29 @@ fn get_type_size(ty: &Type) -> u32 {
             panic!("Unsupported field type")
         }
     }
+}
+
+
+#[proc_macro_attribute]
+pub fn system(attr: TokenStream, item: TokenStream) -> TokenStream {
+    let _ = parse_macro_input!(attr as syn::parse::Nothing); // ignore attributes for now
+    let input_fn = parse_macro_input!(item as ItemFn);
+
+    // Extract relevant information from the input function
+    let fn_name = input_fn.sig.ident.clone();
+    let extern_fn_name = syn::Ident::new(&format!("{}_extern_c", fn_name), fn_name.span());
+    let inputs = input_fn.sig.inputs.clone();
+    let block = input_fn.block.clone();
+
+    // Generate the extern "C" wrapper function
+    let expanded = quote! {
+        #input_fn
+    
+        #[no_mangle]
+        pub extern "C" fn #extern_fn_name(#inputs) {
+            #block
+        }
+    };
+
+    TokenStream::from(expanded)
 }
