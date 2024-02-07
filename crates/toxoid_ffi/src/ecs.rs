@@ -720,13 +720,6 @@ pub unsafe fn toxoid_component_get_member_ptr(
     flecs_core::flecs_component_get_member_ptr(component_ptr, offset)
 }
 
-#[no_mangle]
-pub unsafe fn toxoid_system_init(
-    callback: unsafe extern "C" fn(*mut ecs_iter_t)
-) -> *mut flecs_core::ecs_system_desc_t {
-    flecs_core::flecs_system_init(callback)
-}
-
 
 #[no_mangle]
 pub unsafe fn toxoid_filter_create() -> *mut flecs_core::ecs_filter_desc_t {
@@ -834,4 +827,34 @@ pub unsafe fn toxoid_run_network_event(
     } else {
         eprintln!("Event not found: {:?}", event_name);
     }
+}
+
+#[no_mangle]
+pub unsafe fn toxoid_system_create(
+    callback_closure: fn(*mut c_void)
+) -> *mut flecs_core::ecs_system_desc_t {
+    flecs_core::flecs_system_create(callback_closure)
+}
+
+#[cfg(target_arch="wasm32")]
+#[no_mangle]
+pub unsafe fn toxoid_system_build(
+    system_desc: *mut flecs_core::ecs_system_desc_t,
+) -> SplitU64 {
+    split_u64(flecs_core::flecs_system_build(system_desc))
+}
+
+#[cfg(target_arch="wasm32")]
+#[cfg(not(target_arch="wasm32"))]
+pub unsafe fn toxoid_system_build(
+    system_desc: *mut flecs_core::ecs_system_desc_t,
+) -> ecs_entity_t {
+    flecs_core::flecs_system_build(system_desc)
+}
+
+#[no_mangle]
+pub unsafe fn toxoid_query_from_system_desc(
+    system_desc: *mut flecs_core::ecs_system_desc_t
+) -> *mut flecs_core::ecs_query_desc_t {
+    flecs_core::flecs_query_from_system_desc(system_desc)
 }

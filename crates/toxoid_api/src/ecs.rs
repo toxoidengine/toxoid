@@ -425,6 +425,16 @@ impl Query {
         }
     }
 
+    pub fn from(iter: *mut c_void) -> Query {
+        Query {
+            query: core::ptr::null_mut(),
+            query_desc: core::ptr::null_mut(),
+            filter_index: 0,
+            iter,  
+            entities: &mut [],
+        }
+    }
+
     pub fn with<T: ComponentTuple + 'static>(&mut self) -> &mut Query {
         let type_ids = T::get_type_ids();
         let layout = Layout::array::<u64>(type_ids.len()).unwrap();
@@ -573,8 +583,9 @@ impl Query {
 #[allow(improper_ctypes_definitions)]
 #[repr(C)]
 pub struct System {
-    pub query: Query,
-    pub update_fn: fn(&mut Query)
+    system_desc: *mut c_void,
+    query_desc: *mut c_void,
+    filter_index: u8,
 }
 
 pub trait SystemTrait {
@@ -582,31 +593,71 @@ pub trait SystemTrait {
 }
 
 impl System {
-    pub fn new(update_fn: fn(&mut Query)) -> Self {
+    pub fn new(callback: fn(*mut c_void)) -> Self {        
+        let system_desc = unsafe { toxoid_system_create(callback) };
+        let query_desc = unsafe { toxoid_query_from_system_desc(system_desc) };
         System {
-            query: Query::new(),
-            update_fn
+            system_desc,
+            query_desc,
+            filter_index: 0
         }
     }
 
-
     pub fn with<T: ComponentTuple + 'static>(&mut self) -> &mut Self {
-        self.query.with::<T>();
+        let type_ids = T::get_type_ids();
+        let layout = Layout::array::<u64>(type_ids.len()).unwrap();
+        let ids_ptr = unsafe { ALLOCATOR.alloc(layout) as *mut ecs_entity_t };
+        type_ids
+            .iter()
+            .enumerate()
+            .for_each(|(i, type_id)| {
+                let type_id = split_u64(*type_id);
+                let id = unsafe { toxoid_component_cache_get(type_id) };
+                let id = combine_u32(id);
+                unsafe { ids_ptr.add(i).write(id) };
+            });
+        self.filter_index = unsafe { toxoid_query_with(self.query_desc, self.filter_index, ids_ptr, type_ids.len() as i32) };
         self
     }
 
     pub fn without<T: ComponentTuple + 'static>(&mut self) -> &mut Self {
-        self.query.without::<T>();
+        let type_ids = T::get_type_ids();
+        let layout = Layout::array::<u64>(type_ids.len()).unwrap();
+        let ids_ptr = unsafe { ALLOCATOR.alloc(layout) as *mut ecs_entity_t };
+        type_ids
+            .iter()
+            .enumerate()
+            .for_each(|(i, type_id)| {
+                let type_id = split_u64(*type_id);
+                let id = unsafe { toxoid_component_cache_get(type_id) };
+                let id = combine_u32(id);
+                unsafe { ids_ptr.add(i).write(id) };
+            });
+        
+        self.filter_index = unsafe { toxoid_query_without(self.query_desc, self.filter_index, ids_ptr, type_ids.len() as i32) };
         self
     }
 
     pub fn with_or<T: ComponentTuple + 'static>(&mut self) -> &mut Self {
-        self.query.with_or::<T>();
+        let type_ids = T::get_type_ids();
+        let layout = Layout::array::<u64>(type_ids.len()).unwrap();
+        let ids_ptr = unsafe { ALLOCATOR.alloc(layout) as *mut ecs_entity_t };
+        type_ids
+            .iter()
+            .enumerate()
+            .for_each(|(i, type_id)| {
+                let type_id = split_u64(*type_id);
+                let id = unsafe { toxoid_component_cache_get(type_id) };
+                let id = combine_u32(id);
+                unsafe { ids_ptr.add(i).write(id) };
+            });
+        
+        self.filter_index = unsafe { toxoid_query_with_or(self.query_desc, self.filter_index, ids_ptr, type_ids.len() as i32) };
         self
     }
 
     pub fn build(&mut self) -> &mut Self {
-        self.query.build();
+        unsafe { toxoid_system_build(self.system_desc) };
         self
     }
 }
@@ -615,12 +666,6 @@ impl System {
 pub struct World {}
 
 impl World {
-    pub fn add_system(system: System) {
-        unsafe {
-            toxoid_add_system(system);
-        }
-    }
-
     pub fn add_singleton<T: IsComponent + 'static>() {
         unsafe {
             let type_hash = split_u64(T::get_hash());
