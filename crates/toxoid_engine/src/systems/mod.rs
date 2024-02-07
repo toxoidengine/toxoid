@@ -10,11 +10,11 @@ pub use network::*;
 
 use toxoid_api::*;
 
-pub fn test_system(iter: *mut core::ffi::c_void) {
-    let mut iter = Iter::from(iter);
-    while iter.next() {
+pub fn test_system(query_iter: *mut core::ffi::c_void) {
+    let mut query_iter = Iter::from(query_iter);
+    while query_iter.next() {
         println!("Hello from system!");
-        let entities = iter.entities();
+        let entities = query_iter.entities();
         entities
             .iter_mut()
             .for_each(|entity| {
