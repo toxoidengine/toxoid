@@ -124,20 +124,20 @@ pub fn eat_system(query: &mut Query) {
 
 
 pub fn init() {
-    let mut movement_system = System::new(movement_system);
-    let mut input_system = System::new(input_system);
-    // let mut eat_system = System::new(eat_system);
-    movement_system
-        .with::<(Head, Player, Position, Direction)>()
-        .build();
-    input_system
-        .with::<(KeyboardInput,)>()
-        .build();
-    // eat_system
-    //     .with::<(Head, Player)>()
+    // let mut movement_system = System::new(movement_system);
+    // let mut input_system = System::new(input_system);
+    // // let mut eat_system = System::new(eat_system);
+    // movement_system
+    //     .with::<(Head, Player, Position, Direction)>()
     //     .build();
+    // input_system
+    //     .with::<(KeyboardInput,)>()
+    //     .build();
+    // // eat_system
+    // //     .with::<(Head, Player)>()
+    // //     .build();
 
-    World::add_system(movement_system);
-    World::add_system(input_system);
-    // World::add_system(eat_system);
+    // World::add_system(movement_system);
+    // World::add_system(input_system);
+    // // World::add_system(eat_system);
 }

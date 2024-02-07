@@ -285,14 +285,14 @@ pub fn eat_system_fn(query: &mut Query) {
 
 
 pub fn init() {
-    let input_system = System::new::<(KeyboardInput,)>(input_system_fn);
-    let movement_system = System::new::<(Head, Player)>(movement_system_fn);
-    let eat_system = System::new::<(Head, Player)>(eat_system_fn);
-    let despawn_system = System::new::<(Despawn,)>(despawn_system_fn);
-    unsafe {
-        toxoid_add_system(input_system);
-        toxoid_add_system(movement_system);
-        toxoid_add_system(eat_system);
-        toxoid_add_system(despawn_system);
-    }
+    // let input_system = System::new::<(KeyboardInput,)>(input_system_fn);
+    // let movement_system = System::new::<(Head, Player)>(movement_system_fn);
+    // let eat_system = System::new::<(Head, Player)>(eat_system_fn);
+    // let despawn_system = System::new::<(Despawn,)>(despawn_system_fn);
+    // unsafe {
+    //     toxoid_add_system(input_system);
+    //     toxoid_add_system(movement_system);
+    //     toxoid_add_system(eat_system);
+    //     toxoid_add_system(despawn_system);
+    // }
 }

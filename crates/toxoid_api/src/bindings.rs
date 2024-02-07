@@ -100,7 +100,6 @@ extern "C" {
     pub fn toxoid_component_cache_get(type_id: SplitU64) -> SplitU64;
     pub fn toxoid_network_entity_cache_insert(network_id: SplitU64, entity_id: SplitU64);
     pub fn toxoid_network_entity_cache_get(network_id: SplitU64) -> SplitU64;
-    pub fn toxoid_add_system(system: System);
     pub fn toxoid_component_get_member_u8(component_ptr: *mut c_void, offset: u32) -> u8;
     pub fn toxoid_component_get_member_u16(component_ptr: *mut c_void, offset: u32) -> u8;
     pub fn toxoid_component_get_member_u32(component_ptr: *mut c_void, offset: u32) -> u32;
@@ -169,5 +168,11 @@ extern "C" {
     ) -> ecs_entity_t;
     pub fn toxoid_prefab_create() -> SplitU64;
     pub fn toxoid_prefab_instance(prefab_high: u32, prefab_low: u32) -> SplitU64;
+    pub fn toxoid_system_create(callback_closure: fn(*mut c_void)) -> *mut c_void;
+    #[cfg(target_arch="wasm32")]
+    pub fn toxoid_system_build(system_desc: *mut c_void) -> SplitU64;
+    #[cfg(not(target_arch="wasm32"))]
+    pub fn toxoid_system_build(system_desc: *mut c_void) -> ecs_entity_t;
+    pub fn toxoid_query_from_system_desc(query_desc: *mut c_void) -> *mut c_void;
     pub fn make_c_string(string: &str) -> *mut i8;
 }
