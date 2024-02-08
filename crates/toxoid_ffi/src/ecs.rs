@@ -844,8 +844,8 @@ pub unsafe fn toxoid_system_build(
     split_u64(flecs_core::flecs_system_build(system_desc))
 }
 
-#[cfg(target_arch="wasm32")]
 #[cfg(not(target_arch="wasm32"))]
+#[no_mangle]
 pub unsafe fn toxoid_system_build(
     system_desc: *mut flecs_core::ecs_system_desc_t,
 ) -> ecs_entity_t {
