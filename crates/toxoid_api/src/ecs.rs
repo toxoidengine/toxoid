@@ -394,47 +394,63 @@ impl Iter {
         unsafe { toxoid_query_next(self.iter) }
     }
 
+    // TODO: FREE MEMORY
     pub fn entities(&mut self) -> &mut [Entity] {
         self.entities = unsafe { toxoid_query_entity_list(self.iter) };
         self.entities
     }
 
-        // TODO: FREE MEMORY
-    // pub fn field<T: Default + IsComponent + 'static>(&self) -> &'static [T] {
-    //     unsafe {
-    //         let count = toxoid_iter_count(self.iter);
-    //
-    //         // let component_id = toxoid_component_cache_get(T::get_hash());
-    //         // Get index of component type in query
-    //         let type_id = TypeId::of::<T>();
-    //         let mut term_index = 0;
-    //         self.indexes.iter().enumerate().for_each(|(i, &x)| {
-    //             if x == type_id {
-    //                 // + 1 because of 1-based indexing for term index
-    //                 term_index = i + 1;
-    //             }
-    //         });
-    //         // Get slice of pointers to components
-    //         let field_slice = toxoid_query_field_list(self.iter, term_index as i32, count as u32);
-    //         // Call allocator to create a slice of component structs
-    //         // TODO, look into making this Layout::array::<T>(count as usize).unwrap();
-    //         // Without Emscripten crashing
-    //         let layout = Layout::new::<T>();
-    //         let components_ptr = ALLOCATOR.alloc(layout) as *mut T;
-    //         field_slice
-    //             .iter()
-    //             .enumerate()
-    //             .for_each(|(i, &component_ptr)| { 
-    //                 let mut component = T::default();
-    //                 component.set_ptr(component_ptr as *mut c_void);
-    //                 components_ptr.add(i).write(component);
-    //             });
-    //         // Convert from pointer to slice
-    //         let components = core::slice::from_raw_parts(components_ptr, count as usize);
-    //         // Return slice of components
-    //         components
-    //     }
-    // }
+    // TODO: FREE MEMORY
+    pub fn field<T: Default + IsComponent + 'static>(&self, term_index: i32) -> &'static [T] {
+        unsafe {
+            // Get count of components
+            let count = toxoid_iter_count(self.iter);
+            // Get slice of pointers to components
+            let field_slice = toxoid_query_field_list(self.iter, term_index, count as u32) as *mut *const T;
+            let field_slice = core::slice::from_raw_parts(field_slice, count as usize);
+            // Correctly calculate the layout for an array of T
+            let layout = Layout::array::<T>(count as usize).expect("Failed to create layout");
+            let components_ptr = ALLOCATOR.alloc(layout) as *mut T;
+            field_slice
+                .iter()
+                .enumerate()
+                .for_each(|(i, &component_ptr)| { 
+                    let mut component = T::default();
+                    component.set_ptr(component_ptr as *mut c_void);
+                    components_ptr.add(i).write(component);
+                });
+            // Convert from pointer to slice
+            let components = core::slice::from_raw_parts(components_ptr, count as usize);
+            // Return slice of components
+            components
+        }
+    }
+
+    // TODO: FREE MEMORY
+    pub fn field_mut<T: Default + IsComponent + 'static>(&self, term_index: i32) -> &'static mut [T] {
+        unsafe {
+            // Get count of components
+            let count = toxoid_iter_count(self.iter);
+            // Get slice of pointers to components
+            let field_slice = toxoid_query_field_list(self.iter, term_index, count as u32) as *mut *mut T;
+            let field_slice = core::slice::from_raw_parts(field_slice, count as usize);
+            // Correctly calculate the layout for an array of T
+            let layout = Layout::array::<T>(count as usize).expect("Failed to create layout");
+            let components_ptr = ALLOCATOR.alloc(layout) as *mut T;
+            field_slice
+                .iter()
+                .enumerate()
+                .for_each(|(i, &component_ptr)| { 
+                    let mut component = T::default();
+                    component.set_ptr(component_ptr as *mut c_void);
+                    components_ptr.add(i).write(component);
+                });
+            // Convert from pointer to slice
+            let components = core::slice::from_raw_parts_mut(components_ptr, count as usize);
+            // Return slice of components
+            components
+        }
+    }
 
     // pub fn each_mut<T: ComponentTuple>(&mut self, mut _func: impl FnMut(T)) {
     //     // Ensure we start from the beginning
@@ -459,11 +475,11 @@ impl Iter {
     // }
 
     pub fn drop(&self) {
-        unsafe {
+        // unsafe {
             // ALLOCATOR.dealloc(self.iter as *mut u8, core::alloc::Layout::new::<c_void>()); 
             // ALLOCATOR.dealloc(self.entities.as_ptr() as *mut u8,core::alloc::Layout::array::<Entity>(self.entities.len()).unwrap());
             // ALLOCATOR.dealloc(self.indexes.as_ptr() as *mut u8, core::alloc::Layout::array::<Entity>(self.indexes.len()).unwrap()); 
-        }   
+        // }   
     }
 }
 
