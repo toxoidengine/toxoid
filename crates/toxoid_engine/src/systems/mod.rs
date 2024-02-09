@@ -43,7 +43,7 @@ pub fn init() {
     // System::new(test_system_2)
     //     .with::<(Position,)>()
     //     .build();
-
+    
     // Loaders
     System::new(load_sprite_system)
         .with::<(Loadable, Sprite, Size, Position)>()
