@@ -4,8 +4,7 @@ use toxoid_render::Renderer2D;
 use toxoid_sokol::SokolSprite;
 
 #[cfg(feature = "render")]
-pub fn render_rect_system(iter: *mut c_void) {
-    let mut iter = Iter::from(iter);
+pub fn render_rect_system(iter: &mut Iter) {
     let entities = iter.entities();
     entities
         .iter()
@@ -21,8 +20,7 @@ pub fn render_rect_system(iter: *mut c_void) {
 }
 
 #[cfg(feature = "render")]
-pub fn render_sprite_system(iter: *mut c_void) {
-    let mut iter = Iter::from(iter);
+pub fn render_sprite_system(iter: &mut Iter) {
     let entities = iter.entities();
     entities
         .iter()
@@ -39,8 +37,7 @@ pub fn render_sprite_system(iter: *mut c_void) {
 }
 
 #[cfg(all(feature = "render", feature = "spine"))]
-pub fn draw_bone_animation(iter: *mut c_void) {
-    let mut iter = Iter::from(iter);
+pub fn draw_bone_animation(iter: &mut Iter) {
     let entities = iter.entities();
     entities
         .iter_mut()

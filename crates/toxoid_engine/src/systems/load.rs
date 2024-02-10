@@ -1,8 +1,7 @@
 use toxoid_api::*;
 
 #[cfg(target_os = "emscripten")]
-pub fn load_sprite_system(iter: *mut c_void) {
-    let mut iter = Iter::from(iter);
+pub fn load_sprite_system(iter: &mut Iter) {
     let entities = iter.entities();
     entities
         .iter_mut()
@@ -21,8 +20,7 @@ pub fn load_sprite_system(iter: *mut c_void) {
 
 
 #[cfg(target_os = "emscripten")]
-pub fn load_bone_animation_system(iter: *mut c_void) {
-    let mut iter = Iter::from(iter);
+pub fn load_bone_animation_system(iter: &mut Iter) {
     let entities = iter.entities();
     entities
         .iter_mut()
