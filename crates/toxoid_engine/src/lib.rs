@@ -17,6 +17,12 @@ pub fn init() {
     // Initialize default components.
     toxoid_api::components::init();
 
+    // Initialize sokol
+    // TODO: Renderer backend feature flags
+    // Check if emscripten but also check if renderer feature is enabled
+    #[cfg(all(feature = "render", target_os = "emscripten"))]
+    toxoid_sokol::init(render_loop);
+
     // Initialize default entities.
     prefabs::init();
 
@@ -32,12 +38,6 @@ pub fn init() {
     // Initialize default engine systems. Such as rendering, input, etc.
     systems::init();
 
-    // Initialize renderer
-    // TODO: Renderer backend feature flags
-    // Check if emscripten but also check if renderer feature is enabled
-    #[cfg(all(feature = "render", target_os = "emscripten"))]
-    toxoid_sokol::init(render_loop);
-
     #[cfg(target_os = "emscripten")]
-    toxoid_ffi::emscripten::start_loop(gameplay_loop);
+    toxoid_ffi::emscripten::start_loop(game_loop);
 }

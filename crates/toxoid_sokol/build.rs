@@ -46,6 +46,7 @@ fn main() {
     // Spine
     // Check if spine feature is enabled
     let spine_files = if var("CARGO_FEATURE_SPINE").is_ok() {
+        eprintln!("Building spine files");
         let lib_c_spine = sokol_headers_path
             .join("spine-runtimes")
             .join("spine-c")

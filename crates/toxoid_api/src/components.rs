@@ -53,7 +53,7 @@ component! {
     Networked {
         network_id: u64,
         entity_id: u64,
-        messages: Pointer
+        message: Pointer
     },
     WebSocket {
         socket: Pointer

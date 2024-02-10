@@ -31,6 +31,7 @@ pub fn init() {
         .build();
 
     // Network
+    #[cfg(feature = "net")]
     System::new(network_event_system)
         .with::<(Updated, Networked, Local, Player)>()
         .build();

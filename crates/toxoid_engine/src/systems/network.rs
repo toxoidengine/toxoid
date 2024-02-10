@@ -1,6 +1,6 @@
 use toxoid_api::*;
 #[cfg(feature = "net")]
-use toxoid_net::NetworkMessages;
+use toxoid_net::NetworkMessageEntity;
 
 #[cfg(feature = "net")]
 pub fn network_event_system(iter: &mut Iter) {
@@ -9,19 +9,15 @@ pub fn network_event_system(iter: &mut Iter) {
         .iter_mut()
         .for_each(|entity| {
             let net = entity.get::<Networked>();
-            let messages = net.get_messages().ptr as *mut NetworkMessages;
+            let message = net.get_message().ptr as *mut NetworkMessageEntity;
             unsafe {
-                (*messages)
-                    .messages
-                    .iter()
-                    .for_each(|message| 
-                        toxoid_ffi::ecs::toxoid_run_network_event(message.event.as_str(), message)
-                    );
-                    // The drop function in Rust is used to free the memory that is owned by a value. However, raw pointers in Rust do not own the memory they point to. Instead, they are just a reference to a location in memory. Therefore, calling drop on a raw pointer does not deallocate the memory it points to.
-                    // Convert the raw pointer back into a Box using Box::from_raw. This will create a Box that takes ownership of the memory, and when the Box is dropped at the end of the scope, it will deallocate the memory.
-                    let _ = Box::from_raw(net.get_messages().ptr);
+                toxoid_ffi::ecs::toxoid_run_network_event((*message).event.as_str(), &*message);
+                // The drop function in Rust is used to free the memory that is owned by a value. However, raw pointers in Rust do not own the memory they point to. Instead, they are just a reference to a location in memory. Therefore, calling drop on a raw pointer does not deallocate the memory it points to.
+                // Convert the raw pointer back into a Box using Box::from_raw. This will create a Box that takes ownership of the memory, and when the Box is dropped at the end of the scope, it will deallocate the memory.
+                let _ = Box::from_raw(net.get_message().ptr);
             }
             entity.remove::<Updated>();
+            World::delete_entity_mut(entity);
         });
     // let network_messages = toxoid_net::deserialize(data);
     // network_messages
