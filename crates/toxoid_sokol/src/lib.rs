@@ -69,9 +69,9 @@ extern "C" fn init_cb() {
         sfetch_desc.num_channels = 1;
         sfetch_desc.num_lanes = 1;
         sfetch_desc.logger.func = Some(sokol::log::slog_func);     
-        // let sfetch_desc = Box::new(sfetch_desc);
-        // let sfetch_desc = Box::leak(sfetch_desc); 
-        sfetch_setup(&mut sfetch_desc);
+        let sfetch_desc = Box::into_raw(Box::new(sfetch_desc));
+        sfetch_setup(sfetch_desc); 
+        // sfetch_setup(&mut sfetch_desc);
         if !sfetch_valid() {
             panic!("sfetch is not valid");
         }
@@ -96,9 +96,9 @@ pub fn init(frame_cb: extern "C" fn()) {
 
     // Initialize renderer
     sapp::run(&sapp::Desc {
-        init_cb: Some(init_cb),
+        // init_cb: Some(init_cb),
         cleanup_cb: Some(cleanup_cb),
-        frame_cb: Some(frame_cb),
+        // frame_cb: Some(frame_cb),
         window_title,
         width: game_config.get_resolution_width() as i32,
         height: game_config.get_resolution_height() as i32,
@@ -109,4 +109,6 @@ pub fn init(frame_cb: extern "C" fn()) {
         },
         ..Default::default()
     });
+
+    init_cb();
 }

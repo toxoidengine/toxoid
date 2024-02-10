@@ -3,36 +3,36 @@ use toxoid_api::bindings::*;
 use toxoid_api::*;
 use serde::{Deserialize, Serialize};
 
-pub enum DirectionEnum {
-    Up = 0,
-    Down = 1,
-    Left = 2,
-    Right = 3,
-}
+// pub enum DirectionEnum {
+//     Up = 0,
+//     Down = 1,
+//     Left = 2,
+//     Right = 3,
+// }
 
-component! {
-    Direction {
-        direction: u8
-    },
-    Player {},
-    Food {},
-    Head {},
-    Tail {},
-    Stats {
-        score: u32,
-        high_score: u32,
-        tail_length: u32
-    }
-}
+// component! {
+//     Direction {
+//         direction: u8
+//     },
+//     Player {},
+//     Food {},
+//     Head {},
+//     Tail {},
+//     Stats {
+//         score: u32,
+//         high_score: u32,
+//         tail_length: u32
+//     }
+// }
 
 pub fn init() {    
     // Snake Specific
-    Direction::register();
-    Player::register();
-    Food::register();
-    Head::register();
-    Tail::register();
-    Stats::register();
+    // Direction::register();
+    // Player::register();
+    // Food::register();
+    // Head::register();
+    // Tail::register();
+    // Stats::register();
 
     // // Create a new entity.
     // let mut player = Entity::new();

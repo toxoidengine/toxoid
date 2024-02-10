@@ -4,11 +4,15 @@ use toxoid_api::toxoid_progress;
 
 // TODO: Rename to game loop
 #[cfg(target_os = "emscripten")]
-pub extern "C" fn gameplay_loop(_parg: *mut std::ffi::c_void) {
+pub extern "C" fn game_loop(_parg: *mut std::ffi::c_void) {
     // Begin render pass
     toxoid_sokol::SokolRenderer2D::begin();
+
+    // Update game
     unsafe { toxoid_progress(1.0) };
-    // unsafe { toxoid_sokol::bindings::sfetch_dowork() };
+    
+    #[cfg(feature = "fetch")]
+    unsafe { toxoid_sokol::bindings::sfetch_dowork() };
     
     // // Get gameplay systems
     // let gameplay_systems = unsafe { &mut *GAMEPLAY_SYSTEMS.lock().unwrap() };
@@ -48,7 +52,7 @@ pub extern "C" fn gameplay_loop(_parg: *mut std::ffi::c_void) {
 
 // TODO: Rename to game loop
 #[cfg(not(target_os = "emscripten"))]
-pub extern "C" fn gameplay_loop() {
+pub extern "C" fn game_loop() {
     unsafe { toxoid_progress(1.0) };
     // unsafe { toxoid_sokol::bindings::sfetch_dowork() };
 }

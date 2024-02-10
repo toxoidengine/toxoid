@@ -733,7 +733,8 @@ impl World {
     
     pub fn delete_entity_mut(entity: &mut Entity) {
         unsafe {
-            toxoid_delete_entity(entity.get_id());
+            let id = entity.get_id();
+            toxoid_delete_entity(id);
         }
     }
 }

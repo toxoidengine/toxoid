@@ -48,8 +48,9 @@ pub extern "C" fn onmessage_cb(
     let mut player_network_entity = Entity::from_id(local_player_id);
     let mut net = player_network_entity.get::<Networked>();
 
-    let network_messages = toxoid_net::deserialize(data);
-    net.set_messages(Pointer{ ptr: Box::into_raw(Box::new(network_messages)) as *mut c_void });
-
+    let network_messages = toxoid_net::deserialize(data).unwrap();
+    network_messages.messages.iter().for_each(|message| {
+        net.set_message(Pointer{ ptr: Box::into_raw(Box::new(message)) as *mut c_void });
+    });
     player_network_entity.add::<Updated>();
 }

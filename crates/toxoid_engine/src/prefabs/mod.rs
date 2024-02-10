@@ -1,5 +1,6 @@
 
 use toxoid_api::*;
+use toxoid_sokol::SokolRenderer2D;
 
 pub fn init() {
     // Game Config
@@ -25,8 +26,11 @@ pub fn init() {
     // TODO: Make this a child entity later
     
     #[cfg(target_os = "emscripten")]
-    let player_animation_entity = crate::utils::load::load_animation("assets/player_spine.atlas", "assets/player_spine.json");
+    // let player_animation_entity = crate::utils::load::load_animation("assets/player_spine.atlas", "assets/player_spine.json");
     // let mut position = player_animation_entity.get::<Position>();
     #[cfg(target_os = "emscripten")]
-    player_animation_entity.add::<Local>();
+    // player_animation_entity.add::<Local>();
+
+
+    crate::utils::load::load_image("assets/character.png");
 }
