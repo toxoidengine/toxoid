@@ -168,7 +168,7 @@ extern "C" {
     ) -> ecs_entity_t;
     pub fn toxoid_prefab_create() -> SplitU64;
     pub fn toxoid_prefab_instance(prefab_high: u32, prefab_low: u32) -> SplitU64;
-    pub fn toxoid_system_create(callback_closure: fn(*mut c_void)) -> *mut c_void;
+    pub fn toxoid_system_create(callback_closure: fn(&mut Iter)) -> *mut c_void;
     #[cfg(target_arch="wasm32")]
     pub fn toxoid_system_build(system_desc: *mut c_void) -> SplitU64;
     #[cfg(not(target_arch="wasm32"))]

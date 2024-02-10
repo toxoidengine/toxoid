@@ -151,96 +151,96 @@ pub unsafe extern "C" fn toxoid_register_component(
 
 #[cfg(target_arch="wasm32")]
 #[no_mangle]
-pub unsafe fn toxoid_entity_create() -> SplitU64 {
+pub unsafe extern "C" fn toxoid_entity_create() -> SplitU64 {
     let entity = flecs_core::flecs_entity_create();
     split_u64(entity)
 }
 
 #[cfg(not(target_arch="wasm32"))]
 #[no_mangle]
-pub unsafe fn toxoid_entity_create() -> u64 {
+pub unsafe extern "C" fn toxoid_entity_create() -> u64 {
     flecs_core::flecs_entity_create()
 }
 
 #[no_mangle]
-pub unsafe fn toxoid_entity_add_component(entity: ecs_entity_t, component: ecs_entity_t) {
+pub unsafe extern "C" fn toxoid_entity_add_component(entity: ecs_entity_t, component: ecs_entity_t) {
     flecs_core::flecs_entity_add_component(entity, component)
 }
 
 #[no_mangle]
-pub unsafe fn toxoid_entity_add_tag(entity: ecs_entity_t, tag: ecs_entity_t) {
+pub unsafe extern "C" fn toxoid_entity_add_tag(entity: ecs_entity_t, tag: ecs_entity_t) {
     flecs_core::flecs_entity_add_tag(entity, tag)
 }
 
 #[no_mangle]
-pub unsafe fn toxoid_entity_child_of(parent: ecs_entity_t, child: ecs_entity_t) {
+pub unsafe extern "C" fn toxoid_entity_child_of(parent: ecs_entity_t, child: ecs_entity_t) {
     flecs_core::flecs_entity_child_of(parent, child)
 }
 
 #[no_mangle]
-pub unsafe fn toxoid_entity_children(parent: ecs_entity_t) -> *mut ecs_iter_t {
+pub unsafe extern "C" fn toxoid_entity_children(parent: ecs_entity_t) -> *mut ecs_iter_t {
     flecs_core::flecs_entity_children(parent)
 }
 
 #[no_mangle]
-pub unsafe fn toxoid_child_entities(iter: *mut ecs_iter_t) -> *mut u64 {
+pub unsafe extern "C" fn toxoid_child_entities(iter: *mut ecs_iter_t) -> *mut u64 {
     flecs_core::flecs_child_entities(iter)
 }
 
 #[no_mangle]
-pub unsafe fn toxoid_term_next(iter: *mut flecs_core::ecs_iter_t) -> bool {
+pub unsafe extern "C" fn toxoid_term_next(iter: *mut flecs_core::ecs_iter_t) -> bool {
     flecs_core::flecs_term_next(iter)
 }
 
 #[no_mangle]
-pub unsafe fn toxoid_query_create() -> *mut flecs_core::ecs_query_desc_t {
+pub unsafe extern "C" fn toxoid_query_create() -> *mut flecs_core::ecs_query_desc_t {
     flecs_core::flecs_query_create()
 }
 
 #[no_mangle]
-pub unsafe fn toxoid_query_with(query_desc: *mut flecs_core::ecs_query_desc_t, filter_index: u8, ids: *mut ecs_entity_t, components_count: i32) -> u8 {
+pub unsafe extern "C" fn toxoid_query_with(query_desc: *mut flecs_core::ecs_query_desc_t, filter_index: u8, ids: *mut ecs_entity_t, components_count: i32) -> u8 {
     flecs_core::flecs_query_with(query_desc, filter_index, ids, components_count)
 }
 
 #[no_mangle]
-pub unsafe fn toxoid_query_without(query_desc: *mut flecs_core::ecs_query_desc_t, filter_index: u8, ids: *mut ecs_entity_t, components_count: i32) -> u8 {
+pub unsafe extern "C" fn toxoid_query_without(query_desc: *mut flecs_core::ecs_query_desc_t, filter_index: u8, ids: *mut ecs_entity_t, components_count: i32) -> u8 {
     flecs_core::flecs_query_without(query_desc, filter_index, ids, components_count)
 }
 
 #[no_mangle]
-pub unsafe fn toxoid_query_with_or(query_desc: *mut flecs_core::ecs_query_desc_t, filter_index: u8, ids: *mut ecs_entity_t, components_count: i32) -> u8 {
+pub unsafe extern "C" fn toxoid_query_with_or(query_desc: *mut flecs_core::ecs_query_desc_t, filter_index: u8, ids: *mut ecs_entity_t, components_count: i32) -> u8 {
     flecs_core::flecs_query_with_or(query_desc, filter_index, ids, components_count)
 }
 
 #[no_mangle]
-pub unsafe fn toxoid_query_build(query_desc: *mut flecs_core::ecs_query_desc_t) -> *mut flecs_core::ecs_query_t {
+pub unsafe extern "C" fn toxoid_query_build(query_desc: *mut flecs_core::ecs_query_desc_t) -> *mut flecs_core::ecs_query_t {
     flecs_core::flecs_query_build(query_desc)
 }
 
 #[no_mangle]
-pub unsafe fn toxoid_query_iter(
+pub unsafe extern "C" fn toxoid_query_iter(
     query: *mut flecs_core::ecs_query_t,
 ) -> *mut flecs_core::ecs_iter_t {
     flecs_core::flecs_query_iter(query)
 }
 
 #[no_mangle]
-pub unsafe fn toxoid_query_next(iter: *mut flecs_core::ecs_iter_t) -> bool {
+pub unsafe extern "C" fn toxoid_query_next(iter: *mut flecs_core::ecs_iter_t) -> bool {
     flecs_core::flecs_query_next(iter)
 }
 
 #[no_mangle]
-pub unsafe fn toxoid_iter_count(iter: *mut flecs_core::ecs_iter_t) -> i32 {
+pub unsafe extern "C" fn toxoid_iter_count(iter: *mut flecs_core::ecs_iter_t) -> i32 {
     flecs_core::flecs_iter_count(iter)
 }
 
 #[no_mangle]
-pub unsafe fn toxoid_iter_entity_id(iter: *mut flecs_core::ecs_iter_t) -> i32 {
+pub unsafe extern "C" fn toxoid_iter_entity_id(iter: *mut flecs_core::ecs_iter_t) -> i32 {
     flecs_core::flecs_iter_count(iter)
 }
 
 #[no_mangle]
-pub unsafe fn toxoid_query_field(
+pub unsafe extern "C" fn toxoid_query_field(
     iter: *mut flecs_core::ecs_iter_t,
     term_index: i32,
     count: u32,
@@ -250,7 +250,7 @@ pub unsafe fn toxoid_query_field(
 }
 
 // Function to convert your *mut u64 to a &[u64]
-pub unsafe fn to_u64_slice(ptr: *mut u64, len: usize) -> &'static [u64] {
+pub unsafe extern "C" fn to_u64_slice(ptr: *mut u64, len: usize) -> &'static [u64] {
     let slice = core::slice::from_raw_parts(ptr, len);
     slice
 }
@@ -262,7 +262,7 @@ pub struct EntityId {
 }
 
 #[no_mangle]
-pub unsafe fn toxoid_query_entity_list(iter: *mut flecs_core::ecs_iter_t) -> &'static [EntityId] {
+pub unsafe extern "C" fn toxoid_query_entity_list(iter: *mut flecs_core::ecs_iter_t) -> &'static [EntityId] {
     let count = toxoid_iter_count(iter) as usize;
     let ptr = flecs_core::flecs_query_entity_list(iter) as *mut ecs_entity_t;
     let slice: &[ecs_entity_t] = core::slice::from_raw_parts(ptr, count);
@@ -279,7 +279,7 @@ pub unsafe fn toxoid_query_entity_list(iter: *mut flecs_core::ecs_iter_t) -> &'s
 }
 
 #[no_mangle]
-pub unsafe fn toxoid_entity_get_component(entity: ecs_entity_t, component: ecs_entity_t) -> *mut c_void {
+pub unsafe extern "C" fn toxoid_entity_get_component(entity: ecs_entity_t, component: ecs_entity_t) -> *mut c_void {
     flecs_core::flecs_entity_get_component(entity, component)
 }
 
@@ -365,7 +365,7 @@ pub unsafe extern "C" fn toxoid_vec_as_slice(ptr: *mut c_void) -> (*const *mut c
 }
 
 #[no_mangle]
-pub unsafe fn toxoid_query_field_size(
+pub unsafe extern "C" fn toxoid_query_field_size(
     iter: *mut flecs_core::ecs_iter_t,
     term_index: i32
 ) -> usize {
@@ -373,7 +373,7 @@ pub unsafe fn toxoid_query_field_size(
 }
 
 #[no_mangle]
-pub unsafe fn toxoid_query_field_list(
+pub unsafe extern "C" fn toxoid_query_field_list(
     iter: *mut flecs_core::ecs_iter_t,
     term_index: i32,
     count: u32,
@@ -620,40 +620,40 @@ pub unsafe extern "C" fn toxoid_component_set_member_f32array(
 }
 
 #[no_mangle]
-pub unsafe fn toxoid_progress(delta_time: f32) -> bool {
+pub unsafe extern "C" fn toxoid_progress(delta_time: f32) -> bool {
     flecs_core::flecs_progress(delta_time)
 }
 
 #[no_mangle]
-pub unsafe fn toxoid_filter_children_init(
+pub unsafe extern "C" fn toxoid_filter_children_init(
     parent: ecs_entity_t
 ) -> *mut flecs_core::ecs_filter_t {
     flecs_core::flecs_filter_children_init(parent.into())
 }
 
 #[no_mangle]
-pub unsafe fn toxoid_filter_iter(
+pub unsafe extern "C" fn toxoid_filter_iter(
     filter: *mut flecs_core::ecs_filter_t
 ) -> *mut flecs_core::ecs_iter_t {
     flecs_core::flecs_filter_iter(filter)
 }
 
 #[no_mangle]
-pub unsafe fn toxoid_iter_entities(
+pub unsafe extern "C" fn toxoid_iter_entities(
     iter: *mut flecs_core::ecs_iter_t
 ) -> &'static [u64] {
     flecs_core::flecs_iter_entities(iter)
 }
 
 #[no_mangle]
-pub unsafe fn toxoid_delete_entity(
+pub unsafe extern "C" fn toxoid_delete_entity(
     entity: ecs_entity_t
 ) {
     flecs_core::flecs_delete_entity(entity)
 }
 
 #[no_mangle]
-pub unsafe fn toxoid_entity_remove_component(
+pub unsafe extern "C" fn toxoid_entity_remove_component(
     entity: ecs_entity_t,
     component: ecs_entity_t
 ) {
@@ -661,21 +661,21 @@ pub unsafe fn toxoid_entity_remove_component(
 }
 
 #[no_mangle]
-pub unsafe fn toxoid_filter_next(
+pub unsafe extern "C" fn toxoid_filter_next(
     iter: *mut flecs_core::ecs_iter_t
 ) -> bool {
     flecs_core::flecs_filter_next(iter)
 }
 
 #[no_mangle]
-pub unsafe fn toxoid_is_valid(
+pub unsafe extern "C" fn toxoid_is_valid(
     entity: ecs_entity_t
 ) -> bool {
     flecs_core::flecs_is_valid(entity)
 }
 
 #[no_mangle]
-pub unsafe fn toxoid_entity_has_component(
+pub unsafe extern "C" fn toxoid_entity_has_component(
     entity: ecs_entity_t,
     component: ecs_entity_t
 ) -> bool {
@@ -683,28 +683,28 @@ pub unsafe fn toxoid_entity_has_component(
 }
 
 #[no_mangle]
-pub unsafe fn toxoid_singleton_add(
+pub unsafe extern "C" fn toxoid_singleton_add(
     component: ecs_entity_t
 ) {
     flecs_core::flecs_singleton_add(component)
 }
 
 #[no_mangle]
-pub unsafe fn toxoid_singleton_get(
+pub unsafe extern "C" fn toxoid_singleton_get(
     component: ecs_entity_t
 ) -> *mut c_void {
     flecs_core::flecs_singleton_get(component)
 }
 
 #[no_mangle]
-pub unsafe fn toxoid_singleton_remove(
+pub unsafe extern "C" fn toxoid_singleton_remove(
     component: ecs_entity_t
 ) {
     flecs_core::flecs_singleton_remove(component)
 }
 
 #[no_mangle]
-pub unsafe fn toxoid_component_set_member_ptr(
+pub unsafe extern "C" fn toxoid_component_set_member_ptr(
     component_ptr: *mut c_void,
     offset: u32,
     value: *mut c_void,
@@ -713,7 +713,7 @@ pub unsafe fn toxoid_component_set_member_ptr(
 }
 
 #[no_mangle]
-pub unsafe fn toxoid_component_get_member_ptr(
+pub unsafe extern "C" fn toxoid_component_get_member_ptr(
     component_ptr: *mut c_void,
     offset: u32,
 ) -> *mut c_void {
@@ -722,32 +722,32 @@ pub unsafe fn toxoid_component_get_member_ptr(
 
 
 #[no_mangle]
-pub unsafe fn toxoid_filter_create() -> *mut flecs_core::ecs_filter_desc_t {
+pub unsafe extern "C" fn toxoid_filter_create() -> *mut flecs_core::ecs_filter_desc_t {
     flecs_core::flecs_filter_create()    
 }
 
 #[no_mangle]
-pub unsafe fn toxoid_filter_with(filter_desc: *mut flecs_core::ecs_filter_desc_t, filter_index: u8, ids: *mut ecs_entity_t, components_count: i32) -> u8 {
+pub unsafe extern "C" fn toxoid_filter_with(filter_desc: *mut flecs_core::ecs_filter_desc_t, filter_index: u8, ids: *mut ecs_entity_t, components_count: i32) -> u8 {
     flecs_core::flecs_filter_with(filter_desc, filter_index, ids, components_count)
 }
 
 #[no_mangle]
-pub unsafe fn toxoid_filter_without(filter_desc: *mut flecs_core::ecs_filter_desc_t, filter_index: u8, ids: *mut ecs_entity_t, components_count: i32) -> u8 {
+pub unsafe extern "C" fn toxoid_filter_without(filter_desc: *mut flecs_core::ecs_filter_desc_t, filter_index: u8, ids: *mut ecs_entity_t, components_count: i32) -> u8 {
     flecs_core::flecs_filter_without(filter_desc, filter_index, ids, components_count)
 }
 
 #[no_mangle]
-pub unsafe fn toxoid_filter_with_or(filter_desc: *mut flecs_core::ecs_filter_desc_t, filter_index: u8, ids: *mut ecs_entity_t, components_count: i32) -> u8 {
+pub unsafe extern "C" fn toxoid_filter_with_or(filter_desc: *mut flecs_core::ecs_filter_desc_t, filter_index: u8, ids: *mut ecs_entity_t, components_count: i32) -> u8 {
     flecs_core::flecs_filter_with_or(filter_desc, filter_index, ids, components_count)
 }
 
 #[no_mangle]
-pub unsafe fn toxoid_filter_build(desc: *mut flecs_core::ecs_filter_desc_t) -> *mut flecs_core::ecs_filter_t {
+pub unsafe extern "C" fn toxoid_filter_build(desc: *mut flecs_core::ecs_filter_desc_t) -> *mut flecs_core::ecs_filter_t {
     flecs_core::flecs_filter_build(desc)
 }
 
 #[no_mangle]
-pub unsafe fn toxoid_filter_iter_component(
+pub unsafe extern "C" fn toxoid_filter_iter_component(
     component_array_ptr: *mut u8,
     component_index: u32,
     count: u32,
@@ -757,7 +757,7 @@ pub unsafe fn toxoid_filter_iter_component(
 }
 
 #[no_mangle]
-pub unsafe fn toxoid_filter_field(
+pub unsafe extern "C" fn toxoid_filter_field(
     iter: *mut flecs_core::ecs_iter_t,
     term_index: i32,
     count: u32,
@@ -767,7 +767,7 @@ pub unsafe fn toxoid_filter_field(
 }
 
 #[no_mangle]
-pub unsafe fn toxoid_filter_field_size(
+pub unsafe extern "C" fn toxoid_filter_field_size(
     iter: *mut flecs_core::ecs_iter_t,
     term_index: i32,
 ) -> usize {
@@ -775,7 +775,7 @@ pub unsafe fn toxoid_filter_field_size(
 }
 
 #[no_mangle]
-pub unsafe fn toxoid_filter_field_list(
+pub unsafe extern "C" fn toxoid_filter_field_list(
     iter: *mut flecs_core::ecs_iter_t,
     term_index: i32,
     count: u32
@@ -784,17 +784,17 @@ pub unsafe fn toxoid_filter_field_list(
 }
 
 #[no_mangle]
-pub unsafe fn toxoid_filter_entity(iter: *mut flecs_core::ecs_iter_t, count: u32, index: u32) -> ecs_entity_t {
+pub unsafe extern "C" fn toxoid_filter_entity(iter: *mut flecs_core::ecs_iter_t, count: u32, index: u32) -> ecs_entity_t {
     flecs_core::flecs_filter_entity(iter, count, index)
 }
 
 #[no_mangle]
-pub unsafe fn toxoid_filter_entity_list(iter: *mut flecs_core::ecs_iter_t) -> *mut ecs_entity_t {
+pub unsafe extern "C" fn toxoid_filter_entity_list(iter: *mut flecs_core::ecs_iter_t) -> *mut ecs_entity_t {
     flecs_core::flecs_filter_entity_list(iter)
 }
 
 #[no_mangle]
-pub unsafe fn toxoid_prefab_create() -> SplitU64 {
+pub unsafe extern "C" fn toxoid_prefab_create() -> SplitU64 {
     split_u64(flecs_core::flecs_prefab_create())
 }
 
@@ -802,12 +802,12 @@ pub unsafe fn toxoid_prefab_create() -> SplitU64 {
 // Use tools like nm, objdump, or readelf to inspect the symbols and their signatures in the compiled object files.
 // Look at the generated WebAssembly text format (.wat file) or bytecode (.wasm file) to verify the exported function signatures.
 #[no_mangle]
-pub unsafe fn toxoid_prefab_instance(prefab_high: u32, prefab_low: u32) -> SplitU64 {
+pub unsafe extern "C" fn toxoid_prefab_instance(prefab_high: u32, prefab_low: u32) -> SplitU64 {
     split_u64(flecs_core::flecs_prefab_instance(combine_u32(SplitU64 { high: prefab_high, low: prefab_low })))
 }
 
 #[no_mangle]
-pub unsafe fn toxoid_add_network_event(
+pub unsafe extern "C" fn toxoid_add_network_event(
     event_name: &'static str,
     callback: extern "C" fn(message: &NetworkMessageEntity)
 ) {
@@ -816,7 +816,7 @@ pub unsafe fn toxoid_add_network_event(
 }
 
 #[no_mangle]
-pub unsafe fn toxoid_run_network_event(
+pub unsafe extern "C" fn toxoid_run_network_event(
     event_name: &'static str,
     message: &NetworkMessageEntity
 ) {
@@ -830,7 +830,7 @@ pub unsafe fn toxoid_run_network_event(
 }
 
 #[no_mangle]
-pub unsafe fn toxoid_system_create(
+pub unsafe extern "C" fn toxoid_system_create(
     callback_closure: fn(*mut c_void)
 ) -> *mut flecs_core::ecs_system_desc_t {
     flecs_core::flecs_system_create(callback_closure)
@@ -838,7 +838,7 @@ pub unsafe fn toxoid_system_create(
 
 #[cfg(target_arch="wasm32")]
 #[no_mangle]
-pub unsafe fn toxoid_system_build(
+pub unsafe extern "C" fn toxoid_system_build(
     system_desc: *mut flecs_core::ecs_system_desc_t,
 ) -> SplitU64 {
     split_u64(flecs_core::flecs_system_build(system_desc))
@@ -846,14 +846,14 @@ pub unsafe fn toxoid_system_build(
 
 #[cfg(not(target_arch="wasm32"))]
 #[no_mangle]
-pub unsafe fn toxoid_system_build(
+pub unsafe extern "C" fn toxoid_system_build(
     system_desc: *mut flecs_core::ecs_system_desc_t,
 ) -> ecs_entity_t {
     flecs_core::flecs_system_build(system_desc)
 }
 
 #[no_mangle]
-pub unsafe fn toxoid_query_from_system_desc(
+pub unsafe extern "C" fn toxoid_query_from_system_desc(
     system_desc: *mut flecs_core::ecs_system_desc_t
 ) -> *mut flecs_core::ecs_query_desc_t {
     flecs_core::flecs_query_from_system_desc(system_desc)
