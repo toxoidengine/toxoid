@@ -4,8 +4,7 @@ use toxoid_net::serialize;
 
 // TODO: Remove system, temporary to test multiplayer
 #[cfg(target_os = "emscripten")]
-pub fn input_system(iter: *mut c_void) {
-    let mut iter = Iter::from(iter);
+pub fn input_system(iter: &mut Iter) {
     let keyboard_input = World::get_singleton::<KeyboardInput>();
     let websocket = World::get_singleton::<WebSocket>();
     let entities = iter.entities();

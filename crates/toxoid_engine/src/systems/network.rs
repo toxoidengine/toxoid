@@ -3,8 +3,7 @@ use toxoid_api::*;
 use toxoid_net::NetworkMessages;
 
 #[cfg(feature = "net")]
-pub fn network_event_system(iter: *mut c_void) {
-    let mut iter = Iter::from(iter);
+pub fn network_event_system(iter: &mut Iter) {
     let entities = iter.entities();
     entities
         .iter_mut()

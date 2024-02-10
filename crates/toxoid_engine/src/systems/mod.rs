@@ -9,41 +9,8 @@ pub use render::*;
 pub use network::*;
 use toxoid_api::*;
 
-// pub fn test_system(query_iter: *mut core::ffi::c_void) {
-//     let mut query_iter = Iter::from(query_iter);
-//     while query_iter.next() {
-//         let entities = query_iter.entities();
-//         entities
-//             .iter_mut()
-//             .for_each(|entity| {
-//                 let mut position = entity.get::<Position>();
-//                 position.set_x(5);
-//                 position.set_y(5);
-//             });
-//     }
-// }
-
-// pub fn test_system_2(query_iter: *mut core::ffi::c_void) {
-//     let query_iter = Iter::from(query_iter);
-//     let positions = query_iter.field_mut::<Position>(1); 
-//     for i in 0..query_iter.count() {
-//         let p = positions.get_mut(i as usize).unwrap();
-//         p.set_x(99);
-//         p.get_x();
-//     }
-// }
-
 #[cfg(target_os = "emscripten")]
 pub fn init() {
-    // let mut player_entity = Entity::new();
-    // player_entity.add::<Position>();
-    // System::new(test_system)
-    //     .with::<(Position,)>()
-    //     .build();
-    // System::new(test_system_2)
-    //     .with::<(Position,)>()
-    //     .build();
-    
     // Loaders
     System::new(load_sprite_system)
         .with::<(Loadable, Sprite, Size, Position)>()
@@ -75,5 +42,4 @@ pub fn init() {
 }
 
 #[cfg(not(target_os = "emscripten"))]
-pub fn init() {
-}
+pub fn init() {}
