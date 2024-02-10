@@ -1,3 +1,6 @@
+submodules:
+	git submodule update --init --recursive
+
 fmt: 
 	cargo fmt
 

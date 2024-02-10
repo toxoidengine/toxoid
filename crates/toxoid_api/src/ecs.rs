@@ -473,13 +473,24 @@ impl Iter {
     //         // }
     //     }
     // }
+    
+    // #[cfg(target_arch="wasm32")]
+    // pub fn drop(&self) {
+    //     unsafe {
+    //         ALLOCATOR.dealloc(self.iter as *mut u8, core::alloc::Layout::new::<c_void>()); 
+    //         ALLOCATOR.dealloc(self.entities.as_ptr() as *mut u8,core::alloc::Layout::array::<Entity>(self.entities.len()).unwrap());
+    //     }   
+    // }
+}
 
-    pub fn drop(&self) {
-        // unsafe {
+// Not wasm targets
+#[cfg(not(target_arch="wasm32"))]
+impl Drop for Iter {
+    fn drop(&mut self) {
+        unsafe {
             // ALLOCATOR.dealloc(self.iter as *mut u8, core::alloc::Layout::new::<c_void>()); 
-            // ALLOCATOR.dealloc(self.entities.as_ptr() as *mut u8,core::alloc::Layout::array::<Entity>(self.entities.len()).unwrap());
-            // ALLOCATOR.dealloc(self.indexes.as_ptr() as *mut u8, core::alloc::Layout::array::<Entity>(self.indexes.len()).unwrap()); 
-        // }   
+            ALLOCATOR.dealloc(self.entities.as_ptr() as *mut u8,core::alloc::Layout::array::<Entity>(self.entities.len()).unwrap());
+        }
     }
 }
 
@@ -611,7 +622,7 @@ pub trait SystemTrait {
 }
 
 impl System {
-    pub fn new(callback: fn(*mut c_void)) -> Self {        
+    pub fn new(callback: fn(&mut Iter)) -> Self {        
         let system_desc = unsafe { toxoid_system_create(callback) };
         let query_desc = unsafe { toxoid_query_from_system_desc(system_desc) };
         System {
