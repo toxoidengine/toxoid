@@ -9,8 +9,32 @@ pub use render::*;
 pub use network::*;
 use toxoid_api::*;
 
+pub fn test_input_system(iter: &mut Iter) {
+    let keyboard_input = World::get_singleton::<KeyboardInput>();
+    let entities = iter.entities();
+    entities
+        .iter_mut()
+        .for_each(|entity| {
+            let mut pos = entity.get::<Position>();
+
+            if keyboard_input.get_up() {
+                pos.set_y(pos.get_y() - 1);
+            }
+            if keyboard_input.get_down() {
+                pos.set_y(pos.get_y() + 1);
+            }
+            if keyboard_input.get_left() {
+                pos.set_x(pos.get_x() - 1);
+            }
+            if keyboard_input.get_right() {
+                pos.set_x(pos.get_x() + 1);
+            }
+        });
+}
+
 #[cfg(target_os = "emscripten")]
 pub fn init() {
+
     // // Loaders
     // System::new(load_sprite_system)
     //     .with::<(Loadable, Sprite, Size, Position)>()
@@ -43,6 +67,11 @@ pub fn init() {
     System::new(input_system)
         .with::<(Position, BoneAnimation, SpineInstance, Local)>()
         .build();
+
+    System::new(test_input_system)
+        .with::<(Sprite, Renderable, Size, Position, Player)>()
+        .build();
+   
 }
 
 #[cfg(not(target_os = "emscripten"))]

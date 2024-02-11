@@ -21,7 +21,9 @@ pub fn fetch(filename: &str, callback: unsafe extern "C" fn(*const sfetch_respon
     sfetch_request.channel = 0;
     // PNG buffer - 4.00 KB
     // TODO: Figure out from server what the size of the file is
-    let file_size = 4_096;
+    // 123 KB
+    let file_size = 124_0000;
+    // let file_size = 4_096;
     let buffer = Box::into_raw(
         vec![0u8; file_size]
             .into_boxed_slice()
