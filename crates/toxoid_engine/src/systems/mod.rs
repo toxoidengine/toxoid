@@ -11,20 +11,20 @@ use toxoid_api::*;
 
 #[cfg(target_os = "emscripten")]
 pub fn init() {
-    // Loaders
-    System::new(load_sprite_system)
-        .with::<(Loadable, Sprite, Size, Position)>()
-        .build();
-    System::new(load_bone_animation_system)
-        .with::<(Loadable, Atlas, Skeleton, Images)>()
-        .build();
+    // // Loaders
+    // System::new(load_sprite_system)
+    //     .with::<(Loadable, Sprite, Size, Position)>()
+    //     .build();
+    // System::new(load_bone_animation_system)
+    //     .with::<(Loadable, Atlas, Skeleton, Images)>()
+    //     .build();
 
     // Renderers
     System::new(render_rect_system)
-        .with::<(Sprite, Renderable, Size, Position)>()
+        .with::<(Rect, Renderable, Color, Size, Position)>()
         .build();
     System::new(render_sprite_system)
-        .with::<(Rect, Renderable, Color, Size, Position)>()
+        .with::<(Sprite, Renderable, Size, Position)>()
         .build();
     System::new(draw_bone_animation)
         .with::<(Position, BoneAnimation, SpineInstance)>()

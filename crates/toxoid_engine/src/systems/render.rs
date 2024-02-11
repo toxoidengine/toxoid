@@ -20,6 +20,7 @@ pub fn render_rect_system(iter: &mut Iter) {
 }
 
 #[cfg(feature = "render")]
+// Rect, Renderable, Color, Size, Position
 pub fn render_sprite_system(iter: &mut Iter) {
     let entities = iter.entities();
     entities
