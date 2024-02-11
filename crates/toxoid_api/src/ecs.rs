@@ -360,6 +360,10 @@ impl Filter {
         self
     }
 
+    pub fn iter(&mut self) -> *mut c_void {
+        unsafe { toxoid_filter_iter(self.filter) }
+    }
+
     pub fn build(&mut self) -> &mut Filter {
         self.filter = unsafe { toxoid_filter_build(self.filter_desc) };
         self
@@ -392,6 +396,10 @@ impl Iter {
 
     pub fn next(&self) -> bool {
         unsafe { toxoid_query_next(self.iter) }
+    }
+
+    pub fn filter_next(&self) -> bool {
+        unsafe { toxoid_filter_next(self.iter) }
     }
 
     // TODO: FREE MEMORY

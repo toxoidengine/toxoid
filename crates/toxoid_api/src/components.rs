@@ -93,6 +93,7 @@ component! {
     Local {},
     Remote {},
     Player {},
+    Map {},
     Updated {},
 }
 
@@ -127,5 +128,6 @@ pub fn init() {
     Local::register();
     Remote::register();
     Player::register();
+    Map::register();
     Updated::register();
 }
