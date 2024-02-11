@@ -8,6 +8,11 @@ use core::ffi::CStr;
 use core::ffi::c_void;
 use std::mem::MaybeUninit;
 
+struct FetchUserData {
+    entity: *mut Entity,
+    callback: fn(&mut Entity)
+}
+
 pub fn fetch(filename: &str, callback: unsafe extern "C" fn(*const sfetch_response_t), user_data: *mut c_void, user_data_size: usize) {
     // Create fetch description
     let mut sfetch_request: sfetch_request_t = unsafe { core::mem::MaybeUninit::zeroed().assume_init() };
@@ -33,7 +38,7 @@ pub fn fetch(filename: &str, callback: unsafe extern "C" fn(*const sfetch_respon
     unsafe { sfetch_send(&sfetch_request) };
 }
 
-pub fn load_sprite(filename: &str) -> *mut Entity {
+pub fn load_sprite(filename: &str, callback: fn(&mut Entity)) -> *mut Entity {
     // println!("Loading image: {}", filename);
     // Create entity and pass it to fetch
     let mut entity = Entity::new();
@@ -41,10 +46,14 @@ pub fn load_sprite(filename: &str) -> *mut Entity {
     entity.add::<Position>();
     entity.add::<Size>();
 
-    let entity_box = Box::into_raw(Box::new(entity));
+    let entity_boxed = Box::into_raw(Box::new(entity));
     let size = core::mem::size_of::<Entity>();
-    fetch(filename, sprite_load_callback, entity_box as *mut _ as *mut c_void, size);
-    entity_box
+    let user_data = Box::into_raw(Box::new(FetchUserData {
+        entity: entity_boxed,
+        callback
+    })) as *mut c_void;
+    fetch(filename, sprite_load_callback, user_data, size);
+    entity_boxed
 }
 
 pub unsafe extern "C" fn sprite_load_callback(result: *const sfetch_response_t) {
@@ -56,10 +65,13 @@ pub unsafe extern "C" fn sprite_load_callback(result: *const sfetch_response_t) 
 
         // println!("Successfully loaded {}", CStr::from_ptr((*result).url).to_str().unwrap());
 
-        // Grab entity passed into fetch attributes
-        let entity_raw = (*result).user_data;
-        let mut entity: Box<Entity> = Box::from_raw(entity_raw as *mut Entity);
+        // Get user data
+        let user_data = Box::from_raw((*result).user_data as *mut FetchUserData);
 
+        // Grab entity from user data
+        let mut entity: Box<Entity> = Box::from_raw(user_data.entity);
+
+        // Get image data
         let data = (*result).data.ptr as *const u8;
         let size = (*result).data.size;
 
@@ -78,7 +90,10 @@ pub unsafe extern "C" fn sprite_load_callback(result: *const sfetch_response_t) 
         });
 
         // Flag as renderable for draw_sprite_system
-        entity.add::<Renderable>();
+        // entity.add::<Renderable>();
+
+        // Call load_sprite callback
+        (user_data.callback)(&mut *user_data.entity);
     }
 }
 
