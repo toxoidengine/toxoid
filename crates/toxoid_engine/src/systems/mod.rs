@@ -26,6 +26,9 @@ pub fn init() {
     System::new(render_sprite_system)
         .with::<(Sprite, Renderable, Size, Position)>()
         .build();
+    System::new(render_rt_system)
+        .with::<(RenderTarget, Renderable, Size, Position)>()
+        .build();
     System::new(draw_bone_animation)
         .with::<(Position, BoneAnimation, SpineInstance)>()
         .build();

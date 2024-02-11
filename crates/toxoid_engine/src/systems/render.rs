@@ -4,6 +4,7 @@ use toxoid_render::Renderer2D;
 use toxoid_sokol::SokolSprite;
 
 #[cfg(feature = "render")]
+// Rect, Renderable, Color, Size, Position
 pub fn render_rect_system(iter: &mut Iter) {
     let entities = iter.entities();
     entities
@@ -20,7 +21,7 @@ pub fn render_rect_system(iter: &mut Iter) {
 }
 
 #[cfg(feature = "render")]
-// Rect, Renderable, Color, Size, Position
+// Sprite, Renderable, Size, Position
 pub fn render_sprite_system(iter: &mut Iter) {
     let entities = iter.entities();
     entities
@@ -34,6 +35,26 @@ pub fn render_sprite_system(iter: &mut Iter) {
             // Draw Sprite
             // #[cfg(feature = "sokol")]
             toxoid_sokol::SokolRenderer2D::draw_sprite(sprite_trait_object, pos.get_x() as f32, pos.get_y() as f32);
+        });
+
+}
+#[cfg(feature = "render")]
+// RenderTarget, Renderable, Size, Position
+pub fn render_rt_system(iter: &mut Iter) {
+    println!("Rendering Render Target!");
+    let entities = iter.entities();
+    entities
+        .iter()
+        .for_each(|entity| {
+            let rt = entity.get::<RenderTarget>();
+            let pos = entity.get::<Position>();
+            // let rt_ptr = unsafe { &*(rt.get_render_target().ptr as *mut toxoid_sokol::SokolRenderTarget) };
+            let rt_boxed: Box<dyn toxoid_render::RenderTarget> = unsafe { Box::from_raw(rt.get_render_target().ptr as *mut toxoid_sokol::SokolRenderTarget) };
+            // Draw Sprite
+            // #[cfg(feature = "sokol")]
+            // toxoid_sokol::SokolRenderer2D::draw_sprite(sprite_trait_object, pos.get_x() as f32, pos.get_y() as f32);
+            toxoid_sokol::SokolRenderer2D::draw_render_target(&rt_boxed, pos.get_x() as f32, pos.get_y() as f32, 500., 500.);
+            std::mem::forget(rt_boxed);
         });
 }
 

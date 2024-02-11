@@ -118,8 +118,8 @@ impl Renderer2D for SokolRenderer2D {
             sspine_draw_layer(0, &layer_transform);
 
             // Render ImGui
-            #[cfg(feature = "imgui")]
-            simgui_render();
+            // #[cfg(feature = "imgui")]
+            // simgui_render();
         }
         // End render pass.
         sg::end_pass();
@@ -218,16 +218,37 @@ impl Renderer2D for SokolRenderer2D {
         });
         sprite_boxed
     }
-
-    fn blit_sprite(source: &Box<dyn Sprite>, sx: f32, sy: f32, sw: f32, sh: f32, destination: &Box<dyn RenderTarget>, dx: f32, dy: f32) {
-        unsafe {      
-            sgp_begin(sw as i32, sh as i32);
-            sgp_project(0., sw, sh, 0.);
+    
+    fn begin_rt(destination: &Box<dyn RenderTarget>, dw: f32, dh: f32) {
+        unsafe {
+            sgp_begin(dw as i32, dh as i32);
+            sgp_project(0., dw, dh, 0.);
             sgp_set_color(0., 0., 0., 0.);
             sgp_clear();
             sgp_reset_color();
             sgp_set_blend_mode(sgp_blend_mode_SGP_BLENDMODE_BLEND);
+
+            // Set the framebuffer as the current render target
+            let sokol_destination = destination.as_any().downcast_ref::<SokolRenderTarget>().unwrap();
+            let pass_action = sg::PassAction::default();
+            sg::begin_pass(sokol_destination.pass, &pass_action);
+        }
+    }
+
+    fn end_rt() {
+        unsafe {
+            sgp_flush();
+            sgp_end();
+        }
+
+        // End the pass to apply the drawing commands to the framebuffer
+        sg::end_pass();
+    }
+
+    fn blit_sprite(source: &Box<dyn Sprite>, sx: f32, sy: f32, sw: f32, sh: f32, destination: &Box<dyn RenderTarget>, dx: f32, dy: f32) {
+        unsafe {      
             let sokol_source = source.as_any().downcast_ref::<SokolSprite>().unwrap();
+           
             let sokol_destination = destination.as_any().downcast_ref::<SokolRenderTarget>().unwrap();
         
             // Set the source image
@@ -237,16 +258,6 @@ impl Renderer2D for SokolRenderer2D {
             let src_rect = sgp_rect { x: sx, y: sy, w: sw, h: sh };
             let dest_rect = sgp_rect { x: dx, y: dy, w: sw, h: sh };
             sgp_draw_textured_rect(0, dest_rect, src_rect);
-
-            // Set the framebuffer as the current render target
-            let pass_action = sg::PassAction::default();
-            sg::begin_pass(sokol_destination.pass, &pass_action);
-
-            sgp_flush();
-            sgp_end();
-        
-            // End the pass to apply the drawing commands to the framebuffer
-            sg::end_pass();
         }
     }
 
@@ -294,6 +305,26 @@ impl Renderer2D for SokolRenderer2D {
             };
             let sokol_sprite = sprite.as_any().downcast_ref::<SokolSprite>().unwrap();
             sgp_set_image(0, sg_image { id: sokol_sprite.image.id });
+            sgp_draw_textured_rect(0, dest_rect, src_rect);
+        }
+    }
+
+    fn draw_render_target(source: &Box<dyn RenderTarget>, dx: f32, dy: f32, dw: f32, dh: f32) {
+        unsafe {
+            let sokol_source = source.as_any().downcast_ref::<SokolRenderTarget>().unwrap();
+            let sprite = sokol_source.sprite.as_any().downcast_ref::<SokolSprite>().unwrap();
+            
+            // Reset the color and blend mode
+            sgp_reset_color();
+            sgp_set_blend_mode(sgp_blend_mode_SGP_BLENDMODE_BLEND);
+
+            // Set the source image for drawing, using the color attachment of the render target
+            sgp_set_image(0, sg_image { id: sprite.image.id }); // Assuming you want to draw the depth image. Use the appropriate image for color if needed.
+            // Define the source rectangle from the render target
+            let src_rect = sgp_rect { x: 0., y: 0., w: dw, h: dh }; // Assuming the entire render target is to be drawn
+            // Define the destination rectangle on the canvas
+            let dest_rect = sgp_rect { x: dx, y: dy, w: dw, h: dh };
+            // Draw the textured rectangle from the render target to the canvas
             sgp_draw_textured_rect(0, dest_rect, src_rect);
         }
     }

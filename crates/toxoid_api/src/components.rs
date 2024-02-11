@@ -50,6 +50,9 @@ component! {
         filename: StringPtr,
         sprite: Pointer
     },
+    RenderTarget {
+        render_target: Pointer
+    },
     Networked {
         network_id: u64,
         entity_id: u64,
@@ -106,6 +109,7 @@ pub fn init() {
     Size::register();
     Color::register();
     Sprite::register();
+    RenderTarget::register();
     Networked::register();
     Atlas::register();
     Skeleton::register();

@@ -27,7 +27,7 @@ extern "C" {
     fn emscripten_set_canvas_element_size(id: *const c_char, width: c_int, height: c_int) -> c_int;
 }
 
-extern "C" fn init_cb() {
+extern "C" fn sokol_init() {
     // Setup sokol app
     sg::setup(&sg::Desc {
         context: sokol::glue::context(),
@@ -78,13 +78,13 @@ extern "C" fn init_cb() {
     }
 }
 
-extern "C" fn cleanup_cb() {
+extern "C" fn sokol_cleanup() {
     unsafe { sgp_shutdown(); }
     sg::shutdown()
 }
 
 #[cfg(feature = "render")]
-pub fn init(frame_cb: extern "C" fn()) {
+pub fn init(sokol_frame: extern "C" fn()) {
     let game_config = World::get_singleton::<GameConfig>();
     let window_title = b"Toxoid Engine Demo\0".as_ptr() as _;
     let canvas_id = std::ffi::CString::new("canvas").unwrap();
@@ -96,9 +96,9 @@ pub fn init(frame_cb: extern "C" fn()) {
 
     // Initialize renderer
     sapp::run(&sapp::Desc {
-        // init_cb: Some(init_cb),
-        cleanup_cb: Some(cleanup_cb),
-        // frame_cb: Some(frame_cb),
+        // init_cb: Some(sokol_init),
+        cleanup_cb: Some(sokol_cleanup),
+        // frame_cb: Some(sokol_frame),
         window_title,
         width: game_config.get_resolution_width() as i32,
         height: game_config.get_resolution_height() as i32,
@@ -110,5 +110,5 @@ pub fn init(frame_cb: extern "C" fn()) {
         ..Default::default()
     });
 
-    init_cb();
+    sokol_init();
 }
