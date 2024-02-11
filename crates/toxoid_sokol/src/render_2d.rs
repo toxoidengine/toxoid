@@ -192,16 +192,31 @@ impl Renderer2D for SokolRenderer2D {
         })
     }
 
-    fn create_sprite(filename: &str) -> Box<dyn Sprite> {
-        // let desc = unsafe { sg_query_image_desc(image) };
-        // let (width, height) = (desc.width, desc.height);
-
-        // Box::new(SokolSprite {
-        //     width: width as u32,
-        //     height: height as u32,
-        //     image: sg::Image { id: image.id },
-        // })
-        unimplemented!()
+    fn create_sprite(data: *const u8, size: usize) -> Box<dyn Sprite> {
+        let mut width: i32 = 0;
+        let mut height: i32 = 0;
+        let mut channels: i32 = 0;
+        let image_data = unsafe {
+            // Converts from PNG format to RGBA8 format
+            stbi_load_from_memory(data as *const u8, size as core::ffi::c_int, &mut width, &mut height, &mut channels, 0)
+        };
+        let image_desc = sg::ImageDesc {
+            width,
+            height,
+            pixel_format: sg::PixelFormat::Rgba8,
+            data: sg::ImageData {
+                subimage: [[sg::Range { ptr: image_data as *const core::ffi::c_void, size: (width * height * 4) as usize }; 16]; 6],
+                ..Default::default()
+            },
+            ..Default::default()
+        };
+        let image = sg::make_image(&image_desc);
+        let sprite_boxed = Box::new(SokolSprite {
+                width: width as u32,
+                height: height as u32,
+                image
+        });
+        sprite_boxed
     }
 
     fn blit_sprite(source: &Box<dyn Sprite>, sx: f32, sy: f32, sw: f32, sh: f32, destination: &Box<dyn RenderTarget>, dx: f32, dy: f32) {

@@ -1,7 +1,9 @@
 // TODO: Make this file more crossplatform generic and less dependent on Emscripten (must fix sokol-fetch)
 use toxoid_api::*;
+use toxoid_render::Renderer2D;
 #[cfg(feature = "render")]
 use toxoid_sokol::bindings::*;
+use toxoid_sokol::SokolRenderer2D;
 use core::ffi::CStr;
 use core::ffi::c_void;
 use std::mem::MaybeUninit;
@@ -9,14 +11,19 @@ use std::mem::MaybeUninit;
 pub fn fetch(filename: &str, callback: unsafe extern "C" fn(*const sfetch_response_t), user_data: *mut c_void, user_data_size: usize) {
     // Create fetch description
     let mut sfetch_request: sfetch_request_t = unsafe { core::mem::MaybeUninit::zeroed().assume_init() };
-    sfetch_request.path = std::ffi::CString::new(filename).unwrap().as_ptr();
+    let filename = std::ffi::CString::new(filename).unwrap();
+    sfetch_request.path = filename.as_ptr();
     sfetch_request.channel = 0;
-    // Box buffer - 2000 kb
+    // PNG buffer - 4.00 KB
     // TODO: Figure out from server what the size of the file is
-    let buffer = Box::into_raw(Box::new(vec![0u8; 2000 * 1024]));
+    let file_size = 4_096;
+    let buffer = Box::into_raw(
+        vec![0u8; file_size]
+            .into_boxed_slice()
+    );
     sfetch_request.buffer = sfetch_range_t {
-        ptr: buffer as *const u8 as *const core::ffi::c_void,
-        size: 2000 * 1024
+        ptr: buffer as *const core::ffi::c_void,
+        size: file_size
     };
     sfetch_request.callback = Some(callback);
     sfetch_request.user_data = sfetch_range_t {
@@ -26,41 +33,52 @@ pub fn fetch(filename: &str, callback: unsafe extern "C" fn(*const sfetch_respon
     unsafe { sfetch_send(&sfetch_request) };
 }
 
-pub fn load_image(filename: &str) -> *mut Entity {
+pub fn load_sprite(filename: &str) -> *mut Entity {
     // println!("Loading image: {}", filename);
     // Create entity and pass it to fetch
     let mut entity = Entity::new();
-    entity.add::<Loadable>();
     entity.add::<Sprite>();
     entity.add::<Position>();
     entity.add::<Size>();
 
     let entity_box = Box::into_raw(Box::new(entity));
     let size = core::mem::size_of::<Entity>();
-    fetch(filename, image_load_cb, entity_box as *mut _ as *mut c_void, size);
-    
+    fetch(filename, sprite_load_callback, entity_box as *mut _ as *mut c_void, size);
     entity_box
 }
 
-pub unsafe extern "C" fn image_load_cb(result: *const sfetch_response_t) {
+pub unsafe extern "C" fn sprite_load_callback(result: *const sfetch_response_t) {
     unsafe {
         if (*result).failed {
-            println!("Failed to load image: {}", CStr::from_ptr((*result).path).to_str().unwrap());
+            eprintln!("Failed to load image: {}", CStr::from_ptr((*result).path).to_str().unwrap());
             return;
         }
+
         // println!("Successfully loaded {}", CStr::from_ptr((*result).url).to_str().unwrap());
+
         // Grab entity passed into fetch attributes
         let entity_raw = (*result).user_data;
-        let entity_box: Box<Entity> = Box::from_raw(entity_raw as *mut Entity);
+        let mut entity: Box<Entity> = Box::from_raw(entity_raw as *mut Entity);
 
-        // Get fetch data and size
-        let data = (*result).data.ptr as *mut u8;
+        let data = (*result).data.ptr as *const u8;
         let size = (*result).data.size;
 
-        println!("Data: {:?}, Size: {:?}", data, size);
+        // Create sprite
+        let sprite = SokolRenderer2D::create_sprite(data, size);
 
-        // Create image
-        create_image(data, size, entity_box);
+        // Set sprite size
+        let mut sprite_size = entity.get::<Size>();
+        sprite_size.set_width(sprite.width());
+        sprite_size.set_height(sprite.height());
+        
+        // Set sprite object
+        let mut sprite_component = entity.get::<Sprite>();
+        sprite_component.set_sprite(Pointer { 
+            ptr: Box::into_raw(sprite) as *mut c_void 
+        });
+
+        // Flag as renderable for draw_sprite_system
+        entity.add::<Renderable>();
     }
 }
 
@@ -269,60 +287,4 @@ pub fn load_animation(atlas_filename: &str, skeleton_filename: &str) -> &'static
 
     //     entity_box
     // }
-}
-
-pub fn create_image(data: *mut u8, size: usize, mut entity: Box<Entity>) {
-    // use toxoid_sokol::{SokolRenderer2D, SokolSprite};
-    // use toxoid_sokol::sokol::{app as sapp, gfx as sg};
-    // use *;
-    // use core::ffi::{c_void, c_int};
-    // use core::ptr;
-
-    // let mut width: i32 = 0;
-    // let mut height: i32 = 0;
-    // let mut channels: i32 = 0;
-    
-    // let image_data = unsafe {
-    //     // Converts from PNG format to RGBA8 format
-    //     stbi_load_from_memory(data as *const u8, size as c_int, &mut width, &mut height, &mut channels, 0)
-    // };
-
-    // // Create sg_image from data
-    // let mut image_desc = sg_image_desc {
-    //     _start_canary: 0,
-    //     type_: sg_image_type_SG_IMAGETYPE_2D,
-    //     render_target: false,
-    //     width: 100, // You need to provide the width
-    //     height: 100, // You need to provide the height
-    //     num_slices: 1,
-    //     num_mipmaps: 1,
-    //     usage: sg_usage_SG_USAGE_IMMUTABLE,
-    //     pixel_format: sg_pixel_format_SG_PIXELFORMAT_RGBA8,
-    //     sample_count: 1,
-    //     data: sg_image_data {
-    //         subimage: [[sg_range { ptr: image_data as *const c_void, size: (width * height * 4) as usize }; 16]; 6],
-    //     },
-    //     label: ptr::null(),
-    //     gl_textures: [0; 2usize],
-    //     gl_texture_target: 0,
-    //     mtl_textures: [ptr::null(); 2usize],
-    //     d3d11_texture: ptr::null(),
-    //     d3d11_shader_resource_view: ptr::null(),
-    //     wgpu_texture: ptr::null(),
-    //     wgpu_texture_view: ptr::null(),
-    //     _end_canary: 0,
-    // };
-
-    // let image = unsafe { sg_make_image(&mut image_desc) };
-    // let sprite_box = Box::new(SokolSprite {
-    //         width: width as u32,
-    //         height: height as u32,
-    //         image: sg::Image { id: image.id },
-    // });
-    // let sprite_box = Box::leak(sprite_box);
-
-    // let mut sprite = entity.get::<Sprite>();
-    // sprite.set_sprite(Pointer::new(sprite_box as *mut _ as *mut c_void));
-
-    // entity.add::<Renderable>();
 }
