@@ -114,6 +114,7 @@ fn build_packages() -> Result<(), Box<dyn std::error::Error>> {
                     "-sALLOW_MEMORY_GROWTH=1",
                     "-sMIN_WEBGL_VERSION=2",
                     "-sFETCH=1",
+                    "-sSTACK_SIZE=1mb",
                     "-Wno-unused-command-line-argument",
                     // "-sUSE_PTHREADS=1", 
                     // "-sPTHREAD_POOL_SIZE=4",
