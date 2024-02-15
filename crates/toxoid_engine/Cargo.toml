@@ -16,6 +16,8 @@ rand = "0.8.5"
 
 [features]
 default = ["render", "fetch", "audio", "imgui", "spine", "stb", "net"]
+client = []
+server = []
 render = ["toxoid_sokol/render"]
 fetch = ["toxoid_sokol/fetch"]
 audio = ["toxoid_sokol/audio"]

@@ -23,6 +23,7 @@ use std::sync::Mutex;
 
 pub static RENDERER_2D: Lazy<Mutex<SokolRenderer2D>> = Lazy::new(|| Mutex::new(SokolRenderer2D::new()));
 
+#[cfg(target_os = "emscripten")]
 extern "C" {
     fn emscripten_set_canvas_element_size(id: *const c_char, width: c_int, height: c_int) -> c_int;
 }
