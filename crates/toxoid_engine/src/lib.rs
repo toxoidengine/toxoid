@@ -20,7 +20,7 @@ pub fn init() {
     // Initialize sokol
     // TODO: Renderer backend feature flags
     // Check if emscripten but also check if renderer feature is enabled
-    #[cfg(all(feature = "render", target_os = "emscripten"))]
+    #[cfg(feature = "render")]
     toxoid_sokol::init(render_loop);
 
     // Initialize default entities.
