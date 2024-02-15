@@ -3,7 +3,7 @@ use toxoid_net::{NetworkMessageEntity, NetworkMessages};
 use toxoid_net::serialize;
 
 // TODO: Remove system, temporary to test multiplayer
-#[cfg(target_os = "emscripten")]
+#[cfg(feature="client")]
 pub fn input_system(iter: &mut Iter) {
     let keyboard_input = World::get_singleton::<KeyboardInput>();
     let websocket = World::get_singleton::<WebSocket>();
@@ -12,7 +12,6 @@ pub fn input_system(iter: &mut Iter) {
         .iter_mut()
         .for_each(|entity| {
             let mut pos = entity.get::<Position>();
-
             if keyboard_input.get_up() {
                 let network_messages = NetworkMessages {
                     messages: vec![
@@ -24,6 +23,7 @@ pub fn input_system(iter: &mut Iter) {
                     ],
                 };
                 let serialized = serialize(network_messages).unwrap();
+                #[cfg(target_os = "emscripten")]
                 unsafe { toxoid_ffi::emscripten::emscripten_websocket_send_binary(websocket.get_socket().ptr, serialized.as_ptr() as *const core::ffi::c_void, serialized.len() as i32) };
             }
             if keyboard_input.get_down() {
@@ -37,6 +37,7 @@ pub fn input_system(iter: &mut Iter) {
                     ],
                 };
                 let serialized = serialize(network_messages).unwrap();
+                #[cfg(target_os = "emscripten")]
                 unsafe { toxoid_ffi::emscripten::emscripten_websocket_send_binary(websocket.get_socket().ptr, serialized.as_ptr() as *const core::ffi::c_void, serialized.len() as i32) };
             }
             if keyboard_input.get_left() {
@@ -50,6 +51,7 @@ pub fn input_system(iter: &mut Iter) {
                     ],
                 };
                 let serialized = serialize(network_messages).unwrap();
+                #[cfg(target_os = "emscripten")]
                 unsafe { toxoid_ffi::emscripten::emscripten_websocket_send_binary(websocket.get_socket().ptr, serialized.as_ptr() as *const core::ffi::c_void, serialized.len() as i32) };
             }
             if keyboard_input.get_right() {
@@ -63,6 +65,7 @@ pub fn input_system(iter: &mut Iter) {
                     ],
                 };
                 let serialized = serialize(network_messages).unwrap();
+                #[cfg(target_os = "emscripten")]
                 unsafe { toxoid_ffi::emscripten::emscripten_websocket_send_binary(websocket.get_socket().ptr, serialized.as_ptr() as *const core::ffi::c_void, serialized.len() as i32) };
             }
         });

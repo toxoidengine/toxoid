@@ -1,7 +1,7 @@
 
 use toxoid_api::*;
+#[cfg(feature = "render")]
 use toxoid_sokol::SokolSprite;
-
 
 pub fn init() {
     // Game Config
@@ -24,13 +24,15 @@ pub fn init() {
     let mut local_player = World::get_singleton::<Networked>();
     local_player.set_entity_id(player_entity.get_id());
     // TODO: Make animation a child entity of player later
-    #[cfg(target_os = "emscripten")]
+    // #[cfg(feature = "render")]
     // let player_animation_entity = crate::utils::load::load_animation("assets/player_spine.atlas", "assets/player_spine.json");
     // let mut position = player_animation_entity.get::<Position>();
-    #[cfg(target_os = "emscripten")]
+    // #[cfg(feature = "render")]
     // player_animation_entity.add::<Local>();
 
+    #[cfg(feature = "render")]
     use toxoid_render::Renderer2D;
+    #[cfg(feature = "render")]
     use toxoid_sokol::SokolRenderer2D;
     
     // crate::utils::load::load_sprite("assets/character.png", |entity: &mut Entity| {
@@ -92,6 +94,7 @@ pub fn init() {
     //     });
     // });
 
+    #[cfg(feature = "render")]
     crate::utils::load::load_sprite("assets/map.png", |entity: &mut Entity| {
         entity.add::<Renderable>();
         crate::utils::load::load_sprite("assets/character.png", |entity: &mut Entity| {
