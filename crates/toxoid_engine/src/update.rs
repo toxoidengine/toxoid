@@ -2,10 +2,9 @@ use toxoid_api::{World, SpineInstance};
 use toxoid_render::Renderer2D;
 use toxoid_api::toxoid_progress;
 
-// TODO: Rename to game loop
-#[cfg(target_os = "emscripten")]
 pub extern "C" fn game_loop(_parg: *mut std::ffi::c_void) {
     // Begin render pass
+    #[cfg(feature = "render")]
     toxoid_sokol::SokolRenderer2D::begin();
 
     // Update game
@@ -45,16 +44,11 @@ pub extern "C" fn game_loop(_parg: *mut std::ffi::c_void) {
     // }
     
     // End render pass
-    let renderer_2d = &mut *toxoid_sokol::RENDERER_2D.lock().unwrap();
-    renderer_2d.end();
-}
-
-
-// TODO: Rename to game loop
-#[cfg(not(target_os = "emscripten"))]
-pub extern "C" fn game_loop() {
-    unsafe { toxoid_progress(1.0) };
-    // unsafe { toxoid_sokol::bindings::sfetch_dowork() };
+    #[cfg(feature = "render")] {
+        let renderer_2d = &mut *toxoid_sokol::RENDERER_2D.lock().unwrap();
+        renderer_2d.end();
+    }
+    
 }
 
 #[cfg(feature = "render")]
