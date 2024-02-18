@@ -25,6 +25,7 @@ pub fn input_system(iter: &mut Iter) {
                 let serialized = serialize(network_messages).unwrap();
                 #[cfg(target_os = "emscripten")]
                 unsafe { toxoid_ffi::emscripten::emscripten_websocket_send_binary(websocket.get_socket().ptr, serialized.as_ptr() as *const core::ffi::c_void, serialized.len() as i32) };
+                pos.set_y(pos.get_y() - 3);
             }
             if keyboard_input.get_down() {
                 let network_messages = NetworkMessages {
@@ -39,6 +40,7 @@ pub fn input_system(iter: &mut Iter) {
                 let serialized = serialize(network_messages).unwrap();
                 #[cfg(target_os = "emscripten")]
                 unsafe { toxoid_ffi::emscripten::emscripten_websocket_send_binary(websocket.get_socket().ptr, serialized.as_ptr() as *const core::ffi::c_void, serialized.len() as i32) };
+                pos.set_y(pos.get_y() + 3);
             }
             if keyboard_input.get_left() {
                 let network_messages = NetworkMessages {
@@ -53,6 +55,7 @@ pub fn input_system(iter: &mut Iter) {
                 let serialized = serialize(network_messages).unwrap();
                 #[cfg(target_os = "emscripten")]
                 unsafe { toxoid_ffi::emscripten::emscripten_websocket_send_binary(websocket.get_socket().ptr, serialized.as_ptr() as *const core::ffi::c_void, serialized.len() as i32) };
+                pos.set_x(pos.get_x() - 3);
             }
             if keyboard_input.get_right() {
                 let network_messages = NetworkMessages {
@@ -67,6 +70,7 @@ pub fn input_system(iter: &mut Iter) {
                 let serialized = serialize(network_messages).unwrap();
                 #[cfg(target_os = "emscripten")]
                 unsafe { toxoid_ffi::emscripten::emscripten_websocket_send_binary(websocket.get_socket().ptr, serialized.as_ptr() as *const core::ffi::c_void, serialized.len() as i32) };
+                pos.set_x(pos.get_x() + 3);
             }
         });
 }
