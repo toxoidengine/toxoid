@@ -1,4 +1,5 @@
 use toxoid_api::{World, SpineInstance};
+#[cfg(feature = "render")]
 use toxoid_render::Renderer2D;
 use toxoid_api::toxoid_progress;
 
@@ -48,7 +49,6 @@ pub extern "C" fn game_loop(_parg: *mut std::ffi::c_void) {
         let renderer_2d = &mut *toxoid_sokol::RENDERER_2D.lock().unwrap();
         renderer_2d.end();
     }
-    
 }
 
 #[cfg(feature = "render")]

@@ -13,7 +13,7 @@ use toxoid_net::NetworkMessageEntity;
 
 pub static COMPONENT_ID_CACHE: Lazy<Mutex<HashMap<u64, ecs_entity_t>>> = Lazy::new(|| Mutex::new(HashMap::new()));
 pub static NETWORK_ENTITY_CACHE: Lazy<Mutex<HashMap<u64, ecs_entity_t>>> = Lazy::new(|| Mutex::new(HashMap::new()));
-pub static NETWORK_EVENT_CACHE: Lazy<Mutex<HashMap<&str, extern "C" fn(message: &NetworkMessageEntity)>>> = Lazy::new(|| Mutex::new(HashMap::new()));
+pub static NETWORK_EVENT_CACHE: Lazy<Mutex<HashMap<String, extern "C" fn(message: &NetworkMessageEntity)>>> = Lazy::new(|| Mutex::new(HashMap::new()));
 
 #[no_mangle]
 pub unsafe extern "C" fn toxoid_print_i32(v: i32) {
@@ -808,7 +808,7 @@ pub unsafe extern "C" fn toxoid_prefab_instance(prefab_high: u32, prefab_low: u3
 
 #[no_mangle]
 pub unsafe extern "C" fn toxoid_add_network_event(
-    event_name: &'static str,
+    event_name: String,
     callback: extern "C" fn(message: &NetworkMessageEntity)
 ) {
     let mut cache = NETWORK_EVENT_CACHE.lock().unwrap();
@@ -817,13 +817,12 @@ pub unsafe extern "C" fn toxoid_add_network_event(
 
 #[no_mangle]
 pub unsafe extern "C" fn toxoid_run_network_event(
-    event_name: &'static str,
+    event_name: String,
     message: &NetworkMessageEntity
 ) {
     let cache = NETWORK_EVENT_CACHE.lock().unwrap();
-    let event_cb = cache.get(&event_name);
-    if event_cb.is_some() {
-        event_cb.unwrap()(message);
+    if let Some(event_cb) = cache.get(&event_name[..]) {
+        event_cb(message);
     } else {
         eprintln!("Event not found: {:?}", event_name);
     }

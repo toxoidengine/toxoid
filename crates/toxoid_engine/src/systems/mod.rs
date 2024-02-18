@@ -19,7 +19,7 @@ pub fn init() {
     //     .with::<(Loadable, Atlas, Skeleton, Images)>()
     //     .build();
 
-    #[cfg(all(feature = "client", feature = "render"))] {
+    #[cfg(feature = "render")] {
         // Renderers
         System::new(render_rect_system)
             .with::<(Rect, Renderable, Color, Size, Position)>()
@@ -49,6 +49,6 @@ pub fn init() {
     // TODO: Remove
     #[cfg(feature = "client")]
     System::new(input_system)
-        .with::<(Sprite, Renderable, Size, Position)>()
+        .with::<(Player, Sprite, Renderable, Size, Position)>()
         .build();
 }
