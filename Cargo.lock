@@ -765,7 +765,6 @@ version = "0.1.0"
 dependencies = [
  "flecs_core",
  "once_cell",
- "toxoid_net",
 ]
 
 [[package]]
@@ -773,7 +772,10 @@ name = "toxoid_net"
 version = "0.1.0"
 dependencies = [
  "flexbuffers",
+ "once_cell",
  "serde",
+ "toxoid_api",
+ "toxoid_ffi",
 ]
 
 [[package]]
