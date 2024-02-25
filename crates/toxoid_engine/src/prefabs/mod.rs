@@ -1,9 +1,17 @@
 
 use toxoid_api::*;
+use toxoid_ffi::flecs_core::flecs_serialize_entity;
 #[cfg(feature = "render")]
 use toxoid_sokol::SokolSprite;
 
 pub fn init() {
+    let mut entity = Entity::new();
+    entity.add::<Position>();
+    entity.add::<Size>();
+    entity.add::<Sprite>();
+    let components = unsafe { flecs_serialize_entity(entity.get_id()) };
+    println!("Components {:?}", components);
+    
     // Game Config
     World::add_singleton::<GameConfig>();
     let mut game_config = World::get_singleton::<GameConfig>();

@@ -3,5 +3,5 @@ use player::*;
 
 pub fn init() {
     #[cfg(feature = "client")]
-    unsafe { toxoid_ffi::ecs::toxoid_add_network_event("LocalPlayerJoin", local_player_join) };
+    unsafe { toxoid_net::toxoid_add_network_event("LocalPlayerJoin".to_string(), local_player_join) };
 }

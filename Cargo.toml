@@ -18,7 +18,7 @@ members = [
 		# Examples
 		"examples/snake/snake",
 		"examples/snake/snake_runner",
-		"examples/snake/snake_engine",
+		"examples/snake/snake_engine", "crates/toxoid_serialize",
 ]
 
 # Workspace ignore

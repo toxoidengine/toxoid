@@ -1,6 +1,6 @@
 use toxoid_api::{*, split_u64};
 #[cfg(feature = "client")]
-use toxoid_net::NetworkMessageEntity;
+use toxoid_serialize::NetworkMessageEntity;
 
 #[cfg(feature = "client")]
 pub extern "C" fn local_player_join(message: &NetworkMessageEntity) {

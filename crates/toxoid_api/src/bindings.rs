@@ -175,4 +175,5 @@ extern "C" {
     pub fn toxoid_system_build(system_desc: *mut c_void) -> ecs_entity_t;
     pub fn toxoid_query_from_system_desc(query_desc: *mut c_void) -> *mut c_void;
     pub fn make_c_string(string: &str) -> *mut i8;
+    pub fn toxoid_network_send(network_messages: *mut c_void);
 }
