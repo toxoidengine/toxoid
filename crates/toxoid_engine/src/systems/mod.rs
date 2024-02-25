@@ -40,15 +40,4 @@ pub fn init() {
     // System::new(network_event_system)
     //     .with::<(Updated, Networked, Local, Player)>()
     //     .build();
-
-    // TODO: Remove
-    // System::new(input_system)
-    //     .with::<(Position, BoneAnimation, SpineInstance, Local)>()
-    //     .build();
-
-    // TODO: Remove
-    #[cfg(feature = "client")]
-    System::new(input_system)
-        .with::<(Player, Sprite, Renderable, Size, Position)>()
-        .build();
 }

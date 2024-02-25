@@ -1,6 +1,6 @@
 use toxoid_api::*;
 #[cfg(feature = "net")]
-use toxoid_net::NetworkMessageEntity;
+use toxoid_serialize::NetworkMessageEntity;
 
 #[cfg(feature = "net")]
 pub fn network_event_system(iter: &mut Iter) {

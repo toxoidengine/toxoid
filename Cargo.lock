@@ -159,8 +159,10 @@ version = "0.1.0"
 dependencies = [
  "bindgen",
  "cc",
+ "flexbuffers",
  "once_cell",
  "toxoid_api",
+ "toxoid_serialize",
 ]
 
 [[package]]
@@ -756,6 +758,7 @@ dependencies = [
  "toxoid_ffi",
  "toxoid_net",
  "toxoid_render",
+ "toxoid_serialize",
  "toxoid_sokol",
 ]
 
@@ -771,11 +774,10 @@ dependencies = [
 name = "toxoid_net"
 version = "0.1.0"
 dependencies = [
- "flexbuffers",
  "once_cell",
- "serde",
  "toxoid_api",
  "toxoid_ffi",
+ "toxoid_serialize",
 ]
 
 [[package]]
@@ -783,6 +785,14 @@ name = "toxoid_render"
 version = "0.1.0"
 dependencies = [
  "toxoid_api",
+]
+
+[[package]]
+name = "toxoid_serialize"
+version = "0.1.0"
+dependencies = [
+ "flexbuffers",
+ "serde",
 ]
 
 [[package]]
