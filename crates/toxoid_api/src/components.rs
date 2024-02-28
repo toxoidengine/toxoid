@@ -2,6 +2,13 @@ use serde::{Deserialize, Serialize};
 use toxoid_api_macro::component;
 use crate::*;
 
+pub enum DirectionEnum {
+    Up = 0,
+    Down = 1,
+    Left = 2,
+    Right = 3,
+}
+
 pub enum KeyCode {
     Up = 38,
     Down = 40,
@@ -35,6 +42,9 @@ component! {
     Velocity {  
         dx: f32,
         dy: f32,
+    },
+    Direction {
+        direction: u8
     },
     Size {
         width: u32,
