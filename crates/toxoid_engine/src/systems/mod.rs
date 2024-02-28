@@ -10,6 +10,68 @@ pub use render::*;
 pub use network::*;
 use toxoid_api::*;
 
+pub fn network_input_system(iter: &mut Iter) {
+    let keyboard_input = World::get_singleton::<KeyboardInput>();
+    let websocket = World::get_singleton::<WebSocket>();
+    let entities = iter.entities();
+    entities
+        .iter_mut()
+        .for_each(|entity| {
+            let mut pos = entity.get::<Position>();
+            if keyboard_input.get_up() {
+                send_components(&[pos], "PlayerMove".to_string());
+
+                // let serialized = serialize(network_messages).unwrap();
+                // #[cfg(target_os = "emscripten")]
+                // unsafe { toxoid_ffi::emscripten::emscripten_websocket_send_binary(websocket.get_socket().ptr, serialized.as_ptr() as *const core::ffi::c_void, serialized.len() as i32) };
+
+                // toxoid_net::toxoid_network_send(serialized);
+            }
+            if keyboard_input.get_down() {
+                let network_messages = NetworkMessages {
+                    messages: vec![
+                        NetworkMessageEntity {
+                            id: 0,
+                            event: "PlayerMove".to_string(),
+                            components: vec![],
+                        }
+                    ],
+                };
+                // let serialized = serialize(network_messages).unwrap();
+                // #[cfg(target_os = "emscripten")]
+                // unsafe { toxoid_ffi::emscripten::emscripten_websocket_send_binary(websocket.get_socket().ptr, serialized.as_ptr() as *const core::ffi::c_void, serialized.len() as i32) };
+            }
+            if keyboard_input.get_left() {
+                let network_messages = NetworkMessages {
+                    messages: vec![
+                        NetworkMessageEntity {
+                            id: 0,
+                            event: "PlayerMove".to_string(),
+                            components: vec![],
+                        }
+                    ],
+                };
+                // let serialized = serialize(network_messages).unwrap();
+                // #[cfg(target_os = "emscripten")]
+                // unsafe { toxoid_ffi::emscripten::emscripten_websocket_send_binary(websocket.get_socket().ptr, serialized.as_ptr() as *const core::ffi::c_void, serialized.len() as i32) };
+            }
+            if keyboard_input.get_right() {
+                let network_messages = NetworkMessages {
+                    messages: vec![
+                        NetworkMessageEntity {
+                            id: 0,
+                            event: "PlayerMove".to_string(),
+                            components: vec![],
+                        }
+                    ],
+                };
+                let serialized = serialize(network_messages).unwrap();
+                #[cfg(target_os = "emscripten")]
+                unsafe { toxoid_ffi::emscripten::emscripten_websocket_send_binary(websocket.get_socket().ptr, serialized.as_ptr() as *const core::ffi::c_void, serialized.len() as i32) };
+            }
+        });
+}
+
 pub fn init() {
     // // Loaders
     // System::new(load_sprite_system)
@@ -40,4 +102,8 @@ pub fn init() {
     // System::new(network_event_system)
     //     .with::<(Updated, Networked, Local, Player)>()
     //     .build();
+
+    System::new(network_input_system)
+        .with::<(Player, Sprite, Renderable, Size, Position)>()
+        .build();
 }
