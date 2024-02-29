@@ -5,12 +5,12 @@ use toxoid_ffi::flecs_core::flecs_serialize_entity;
 use toxoid_sokol::SokolSprite;
 
 pub fn init() {
-    let mut entity = Entity::new();
-    entity.add::<Position>();
-    entity.add::<Size>();
-    entity.add::<Sprite>();
-    let components = unsafe { flecs_serialize_entity(entity.get_id()) };
-    println!("Components {:?}", components);
+    // let mut entity = Entity::new();
+    // entity.add::<Position>();
+    // entity.add::<Size>();
+    // entity.add::<Sprite>();
+    // let components = unsafe { flecs_serialize_entity(entity.get_id()) };
+    // println!("Components {:?}", components);
     
     // Game Config
     World::add_singleton::<GameConfig>();
@@ -29,8 +29,8 @@ pub fn init() {
     player_entity.add::<Local>();
     player_entity.add::<Player>();
     player_entity.add::<Networked>();
-    let mut local_player = World::get_singleton::<Networked>();
-    local_player.set_entity_id(player_entity.get_id());
+    // let mut local_player = World::get_singleton::<Networked>();
+    // local_player.set_entity_id(player_entity.get_id());
     // TODO: Make animation a child entity of player later
     // #[cfg(feature = "render")]
     // let player_animation_entity = crate::utils::load::load_animation("assets/player_spine.atlas", "assets/player_spine.json");
@@ -111,6 +111,12 @@ pub fn init() {
             position.set_y(100);
             entity.add::<Renderable>();
             entity.add::<Player>();
+            entity.add::<Direction>();
+
+             let mut local_player = World::get_singleton::<Networked>();
+             local_player.set_entity_id(entity.get_id());
+
+             crate::utils::network::init();
         });
     });
 }

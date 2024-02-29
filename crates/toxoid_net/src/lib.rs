@@ -38,37 +38,42 @@ pub extern "C" fn toxoid_network_receive(data: *const u8, len: usize) {
     receive(data.to_vec());
 }
 
-pub fn send_components(components: &[Component], event: String) {
-    let mut network_message_entity = NetworkMessageEntity {
-        id: id as u64,
+pub fn send_components(entity_id: ecs_entity_t, components: &[impl IsComponent], event: String) {
+    let network_entity_cache = toxoid_ffi::ecs::NETWORK_ENTITY_CACHE.lock().unwrap();
+    let network_id = network_entity_cache.get(&entity_id).unwrap();
+    let components_vec: Vec<NetworkMessageComponent> = components
+        .iter()
+        .map(|component| {
+            let component_id = component.get_id();
+            unsafe { toxoid_ffi::flecs_core::flecs_serialize_component(entity_id, component_id) }
+        })
+        .collect();
+
+    let network_message_entity = NetworkMessageEntity {
+        id: *network_id,
         event: event.clone(),
-        components: vec![]
+        components: components_vec,
     };
-    let mut network_messages = NetworkMessages {
+
+    let network_messages = NetworkMessages {
         messages: vec![network_message_entity]
     };
-    components
-        .iter()
-        .for_each(|component| {
-            // TODO: Implement get_id() for Component macro
-            let id = component.get_id();
-            let network_message_component = unsafe { toxoid_ffi::flecs_core::flecs_serialize_component(id) };
-            network_message_entity.components.push(network_message_component);
-        });
+
     send(network_messages);
 }
 
-pub fn send_entities(entities: &[Entity], event: String) {
+pub fn send_entities(entity_ids: &[ecs_entity_t], event: String) {
     let mut network_messages = NetworkMessages {
         messages: vec![]
     };
-    entities
+    entity_ids
         .iter()
-        .for_each(|entity| {
-            let id = entity.get_id();
-            let components = unsafe { toxoid_ffi::flecs_core::flecs_serialize_entity(id) };
+        .for_each(|entity_id| {
+            let components = unsafe { toxoid_ffi::flecs_core::flecs_serialize_entity(*entity_id) };
+            let network_entity_cache = toxoid_ffi::ecs::NETWORK_ENTITY_CACHE.lock().unwrap();
+            let network_id = network_entity_cache.get(&entity_id).unwrap();
             network_messages.messages.push(NetworkMessageEntity {
-                id: id as u64,
+                id: *network_id,
                 event: event.clone(),
                 components
             });
@@ -76,14 +81,15 @@ pub fn send_entities(entities: &[Entity], event: String) {
     send(network_messages);
 }
 
-pub fn send_entity(entity: Entity, event: String) {
-    // TODO: Make this the network ID, not the entity ID using hashmap
-    let id = entity.get_id();
-    let components = unsafe { toxoid_ffi::flecs_core::flecs_serialize_entity(id) };
+pub fn send_entity(entity_id: ecs_entity_t, event: String) {
+    // TODO: Make this the network ID, not the entity ID using 
+    let network_entity_cache = toxoid_ffi::ecs::NETWORK_ENTITY_CACHE.lock().unwrap();
+    let network_id = network_entity_cache.get(&entity_id).unwrap();
+    let components = unsafe { toxoid_ffi::flecs_core::flecs_serialize_entity(entity_id) };
     let network_messages = NetworkMessages {
         messages: vec![
             NetworkMessageEntity {
-                id: id as u64,
+                id: *network_id,
                 event,
                 components
             }

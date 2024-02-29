@@ -161,7 +161,6 @@ extern "C" {
     pub fn toxoid_singleton_get(component: ecs_entity_t) -> *mut c_void;
     pub fn toxoid_singleton_add(component: ecs_entity_t);
     pub fn toxoid_singleton_remove(component: ecs_entity_t);
-    pub fn gen_rng_grid_pos() -> (i32, i32);
     pub fn toxoid_systems_init(system_name: *const c_char,
         ids: [ecs_id_t; 16],
         callback: unsafe extern "C" fn(*mut c_void)
@@ -174,6 +173,8 @@ extern "C" {
     #[cfg(not(target_arch="wasm32"))]
     pub fn toxoid_system_build(system_desc: *mut c_void) -> ecs_entity_t;
     pub fn toxoid_query_from_system_desc(query_desc: *mut c_void) -> *mut c_void;
-    pub fn make_c_string(string: &str) -> *mut i8;
     pub fn toxoid_network_send(network_messages: *mut c_void);
+    pub fn toxoid_component_lookup(name: *mut i8) -> ecs_entity_t;
+    pub fn make_c_string(string: &str) -> *mut i8;
+    pub fn gen_rng_grid_pos() -> (i32, i32);
 }

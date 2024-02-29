@@ -43,14 +43,13 @@ pub extern "C" fn onmessage_cb(
     let data_len = unsafe{ (*websocket_event).numBytes };
     let data = unsafe { std::slice::from_raw_parts(data, data_len as usize) };
 
-    let local_player_data = World::get_singleton::<Networked>();
-    let local_player_id = local_player_data.get_entity_id();
-    let mut player_network_entity = Entity::from_id(local_player_id);
-    let mut net = player_network_entity.get::<Networked>();
+    // let local_player_data = World::get_singleton::<Networked>();
+    // let local_player_id = local_player_data.get_entity_id();
+    // let mut player_network_entity = Entity::from_id(local_player_id);
+    // let mut net = player_network_entity.get::<Networked>();
 
     let network_messages = toxoid_serialize::deserialize(data).unwrap();
     network_messages.messages.iter().for_each(|message| {
-        net.set_message(Pointer{ ptr: Box::into_raw(Box::new(message)) as *mut c_void });
+        unsafe { toxoid_net::toxoid_run_network_event(message.event.clone(), message) };
     });
-    player_network_entity.add::<Updated>();
 }

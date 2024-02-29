@@ -833,3 +833,9 @@ pub unsafe extern "C" fn toxoid_query_from_system_desc(
 ) -> *mut flecs_core::ecs_query_desc_t {
     flecs_core::flecs_query_from_system_desc(system_desc)
 }
+
+#[no_mangle]
+pub unsafe extern "C" fn toxoid_component_lookup(name: *mut c_char) -> ecs_entity_t {
+    flecs_core::flecs_component_lookup(name)
+}
+
