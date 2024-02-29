@@ -436,6 +436,7 @@ pub fn component(input: TokenStream) -> TokenStream {
                     fn default() -> Self {
                         Self {
                             ptr: ::std::ptr::null_mut(),
+                            id: 0,
                             #(#default_body)*
                         }
                     }
@@ -487,6 +488,7 @@ pub fn component(input: TokenStream) -> TokenStream {
                 pub struct #name {
                     #[serde(skip, default = "default_ptr")]
                     ptr: *mut core::ffi::c_void,
+                    id: ecs_entity_t,
                     #(#struct_fields)*
                 }
 
@@ -494,12 +496,6 @@ pub fn component(input: TokenStream) -> TokenStream {
 
                 impl #name {
                     #(#getters_and_setters)*
-                    // pub fn set_ptr(&mut self, ptr: *mut ::std::os::raw::c_void) {
-                    //     self.ptr = ptr;
-                    // }
-                    // pub fn get_ptr(&self) -> *mut ::std::os::raw::c_void {
-                    //     self.ptr
-                    // }
                 }
 
                 impl IsComponent for #name {
@@ -507,9 +503,15 @@ pub fn component(input: TokenStream) -> TokenStream {
                     #register_fn
                     #type_hash_fn
                     #type_name_fn
+                    
+                    fn get_id(&self) -> ecs_entity_t {
+                        unsafe { toxoid_component_lookup(make_c_string(#type_name)) }
+                    }
+
                     fn set_ptr(&mut self, ptr: *mut core::ffi::c_void) {
                         self.ptr = ptr;
                     }
+
                     fn get_ptr(&self) -> *mut core::ffi::c_void {
                         self.ptr
                     }

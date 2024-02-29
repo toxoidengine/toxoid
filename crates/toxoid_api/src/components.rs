@@ -126,6 +126,7 @@ pub fn init() {
     Skeleton::register();
     Images::register();
     BoneAnimation::register();
+    Direction::register();
 
     // Tags
     Rect::register();

@@ -280,6 +280,7 @@ pub trait ComponentTuple {
 pub trait IsComponent {
     fn register() -> ecs_entity_t;
     fn get_name() -> &'static str;
+    fn get_id(&self) -> ecs_id_t;
     fn get_hash() -> u64;
     fn set_ptr(&mut self, ptr: *mut c_void);
     fn get_ptr(&self) -> *mut c_void;
