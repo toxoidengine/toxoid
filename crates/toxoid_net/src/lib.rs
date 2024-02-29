@@ -117,7 +117,7 @@ pub fn receive_entity(entity: NetworkMessageEntity) {
     // TODO: Make this the network ID, not the entity ID using hashmap
     let id = entity.id;
     let components = entity.components;
-    unsafe { toxoid_ffi::flecs_core::flecs_deserialize_entity(id as ecs_entity_t, components) };
+    unsafe { toxoid_ffi::flecs_core::flecs_deserialize_entity(components) };
 }
 
 pub fn receive(data: Vec<u8>) {
