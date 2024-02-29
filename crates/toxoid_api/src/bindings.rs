@@ -98,8 +98,14 @@ extern "C" {
     pub fn toxoid_iter_count(iter: *mut c_void) -> i32;
     pub fn toxoid_component_cache_insert(type_id: SplitU64, component_id: SplitU64);
     pub fn toxoid_component_cache_get(type_id: SplitU64) -> SplitU64;
+    #[cfg(target_arch="wasm32")]
     pub fn toxoid_network_entity_cache_insert(network_id: SplitU64, entity_id: SplitU64);
+    #[cfg(not(target_arch="wasm32"))]
+    pub fn toxoid_network_entity_cache_insert(network_id: u64, entity_id: ecs_entity_t);
+    #[cfg(target_arch="wasm32")]
     pub fn toxoid_network_entity_cache_get(network_id: SplitU64) -> SplitU64;
+    #[cfg(not(target_arch="wasm32"))]
+    pub fn toxoid_network_entity_cache_get(network_id: u64) -> ecs_entity_t;
     pub fn toxoid_component_get_member_u8(component_ptr: *mut c_void, offset: u32) -> u8;
     pub fn toxoid_component_get_member_u16(component_ptr: *mut c_void, offset: u32) -> u8;
     pub fn toxoid_component_get_member_u32(component_ptr: *mut c_void, offset: u32) -> u32;
