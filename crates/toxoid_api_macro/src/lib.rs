@@ -436,6 +436,7 @@ pub fn component(input: TokenStream) -> TokenStream {
                     fn default() -> Self {
                         Self {
                             ptr: ::std::ptr::null_mut(),
+                            singleton: false,
                             id: 0,
                             #(#default_body)*
                         }
@@ -488,6 +489,7 @@ pub fn component(input: TokenStream) -> TokenStream {
                 pub struct #name {
                     #[serde(skip, default = "default_ptr")]
                     ptr: *mut core::ffi::c_void,
+                    singleton: bool,
                     id: ecs_entity_t,
                     #(#struct_fields)*
                 }
@@ -498,12 +500,15 @@ pub fn component(input: TokenStream) -> TokenStream {
                     #(#getters_and_setters)*
                 }
 
-                impl IsComponent for #name {
-                    // Add implementation details here.
+                impl ComponentType for #name {
+                    // Static methods
                     #register_fn
                     #type_hash_fn
                     #type_name_fn
-                    
+                }
+
+                impl Component for #name {
+                    // Object compatible trait methods
                     fn get_id(&self) -> ecs_entity_t {
                         unsafe { toxoid_component_lookup(make_c_string(#type_name)) }
                     }
@@ -514,6 +519,14 @@ pub fn component(input: TokenStream) -> TokenStream {
 
                     fn get_ptr(&self) -> *mut core::ffi::c_void {
                         self.ptr
+                    }
+
+                    fn set_singleton(&mut self, singleton: bool) {
+                        self.singleton = singleton;
+                    }
+
+                    fn get_singleton(&self) -> bool {
+                        self.singleton
                     }
                 }
             }

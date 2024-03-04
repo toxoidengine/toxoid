@@ -1,5 +1,6 @@
 use core::result::Result;
 use once_cell::sync::Lazy;
+use toxoid_ffi::flecs_core::EcsWorld;
 use std::sync::Mutex;
 use std::collections::HashMap;
 use toxoid_api::*;
@@ -38,14 +39,18 @@ pub extern "C" fn toxoid_network_receive(data: *const u8, len: usize) {
     receive(data.to_vec());
 }
 
-pub fn send_components(entity_id: ecs_entity_t, components: &[impl IsComponent], event: String) {
+pub fn send_components(entity_id: ecs_entity_t, components: &[&dyn Component], event: String) {
     let network_entity_cache = toxoid_ffi::ecs::NETWORK_ENTITY_CACHE.lock().unwrap();
     let network_id = network_entity_cache.get(&entity_id).unwrap();
     let components_vec: Vec<NetworkMessageComponent> = components
         .iter()
         .map(|component| {
             let component_id = component.get_id();
-            unsafe { toxoid_ffi::flecs_core::flecs_serialize_component(entity_id, component_id) }
+            if component.get_singleton() {
+                unsafe { toxoid_ffi::flecs_core::flecs_serialize_component(EcsWorld, component_id) }
+            } else {
+                unsafe { toxoid_ffi::flecs_core::flecs_serialize_component(entity_id, component_id) }
+            }
         })
         .collect();
 
