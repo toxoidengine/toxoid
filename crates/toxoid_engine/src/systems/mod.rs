@@ -10,28 +10,6 @@ pub use render::*;
 pub use network::*;
 use toxoid_api::*;
 
-pub fn network_input_system(iter: &mut Iter) {
-    let keyboard_input = World::get_singleton::<KeyboardInput>();
-    let entities = iter.entities();
-    entities
-        .iter_mut()
-        .for_each(|entity| {
-            let direction = entity.get::<Direction>();
-            if keyboard_input.get_up() {
-                toxoid_net::send_components(entity.get_id(), &[direction.clone()], "PlayerMove".to_string());
-            }
-            if keyboard_input.get_down() {
-                toxoid_net::send_components(entity.get_id(), &[direction.clone()], "PlayerMove".to_string());
-            }
-            if keyboard_input.get_left() {
-                toxoid_net::send_components(entity.get_id(), &[direction.clone()], "PlayerMove".to_string());
-            }
-            if keyboard_input.get_right() {
-                toxoid_net::send_components(entity.get_id(), &[direction], "PlayerMove".to_string());
-            }
-        });
-}
-
 pub fn init() {
     // // Loaders
     // System::new(load_sprite_system)

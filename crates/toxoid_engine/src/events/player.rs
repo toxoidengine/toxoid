@@ -20,7 +20,7 @@ pub extern "C" fn local_player_join(message: &NetworkMessageEntity) {
 
 #[cfg(feature = "client")]
 pub extern "C" fn player_join(message: &NetworkMessageEntity) {
-    // println!("Player ID received: {:?}", message.id);
+    println!("Player ID received: {:?}", message.id);
     // // Create entity
     // let player_animation_entity = crate::utils::load::load_animation("assets/player_spine.atlas", "assets/player_spine.json");
     // // let mut position = player_animation_entity.get::<Position>();

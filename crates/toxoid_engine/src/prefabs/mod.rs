@@ -107,8 +107,8 @@ pub fn init() {
         entity.add::<Renderable>();
         crate::utils::load::load_sprite("assets/character.png", |entity: &mut Entity| {
             let mut position = entity.get::<Position>();
-            position.set_x(350);
-            position.set_y(100);
+            position.set_x(0);
+            position.set_y(0);
             entity.add::<Renderable>();
             entity.add::<Player>();
             entity.add::<Direction>();

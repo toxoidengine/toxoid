@@ -277,13 +277,18 @@ pub trait ComponentTuple {
     fn get_type_ids() -> &'static [u64];
 }
 
-pub trait IsComponent {
-    fn register() -> ecs_entity_t;
-    fn get_name() -> &'static str;
+pub trait Component {
     fn get_id(&self) -> ecs_id_t;
-    fn get_hash() -> u64;
     fn set_ptr(&mut self, ptr: *mut c_void);
     fn get_ptr(&self) -> *mut c_void;
+    fn set_singleton(&mut self, singleton: bool);
+    fn get_singleton(&self) -> bool;
+}
+
+pub trait ComponentType {
+    fn register() -> ecs_entity_t;
+    fn get_name() -> &'static str;
+    fn get_hash() -> u64;
 }
 
 #[repr(C)]
@@ -410,7 +415,7 @@ impl Iter {
     }
 
     // TODO: FREE MEMORY
-    pub fn field<T: Default + IsComponent + 'static>(&self, term_index: i32) -> &'static [T] {
+    pub fn field<T: Default + Component + ComponentType + 'static>(&self, term_index: i32) -> &'static [T] {
         unsafe {
             // Get count of components
             let count = toxoid_iter_count(self.iter);
@@ -436,7 +441,7 @@ impl Iter {
     }
 
     // TODO: FREE MEMORY
-    pub fn field_mut<T: Default + IsComponent + 'static>(&self, term_index: i32) -> &'static mut [T] {
+    pub fn field_mut<T: Default + Component + ComponentType + 'static>(&self, term_index: i32) -> &'static mut [T] {
         unsafe {
             // Get count of components
             let count = toxoid_iter_count(self.iter);
@@ -704,7 +709,7 @@ impl System {
 pub struct World {}
 
 impl World {
-    pub fn add_singleton<T: IsComponent + 'static>() {
+    pub fn add_singleton<T: Component + ComponentType + 'static>() {
         unsafe {
             let type_hash = split_u64(T::get_hash());
             let component_id_split = toxoid_component_cache_get(type_hash);
@@ -713,7 +718,7 @@ impl World {
         }
     }
 
-    pub fn get_singleton<T: Default + IsComponent + 'static>() -> T {
+    pub fn get_singleton<T: Default + Component + ComponentType + 'static>() -> T {
         unsafe {
             let mut component = T::default();
             let type_hash = split_u64(T::get_hash());
@@ -721,11 +726,12 @@ impl World {
             let component_id = combine_u32(component_id_split);
             let ptr = toxoid_singleton_get(component_id);
             component.set_ptr(ptr);
+            component.set_singleton(true);
             component
         }
     }
 
-    pub fn remove_singleton<T: IsComponent + 'static>() {
+    pub fn remove_singleton<T: Component + ComponentType + 'static>() {
         unsafe {
             let type_hash = split_u64(T::get_hash());
             let component_id_split = toxoid_component_cache_get(type_hash);
@@ -764,7 +770,7 @@ impl Prefab {
         }
     }
 
-    pub fn add<T: IsComponent + 'static>(&mut self) {
+    pub fn add<T: Component + ComponentType + 'static>(&mut self) {
         unsafe {
             let type_hash = split_u64(T::get_hash());
             let component_id_split = toxoid_component_cache_get(type_hash);
@@ -773,7 +779,7 @@ impl Prefab {
         }
     }
 
-    pub fn remove<T: IsComponent + 'static>(&mut self) {
+    pub fn remove<T: Component + ComponentType + 'static>(&mut self) {
         unsafe {
             let type_hash = split_u64(T::get_hash());
             let component_id_split = toxoid_component_cache_get(type_hash);
@@ -798,7 +804,7 @@ impl Prefab {
         self.entity.id
     }
 
-    pub fn get<T: Default + IsComponent + 'static>(&self) -> T {
+    pub fn get<T: Default + Component + ComponentType + 'static>(&self) -> T {
         unsafe {
             let mut component = T::default();
             let type_hash = split_u64(T::get_hash());
@@ -810,7 +816,7 @@ impl Prefab {
         }
     }
 
-    pub fn has<T: IsComponent + 'static>(&self) -> bool {
+    pub fn has<T: Component + ComponentType + 'static>(&self) -> bool {
         unsafe {
             let type_hash = split_u64(T::get_hash());
             let component_id_split = toxoid_component_cache_get(type_hash);
@@ -888,7 +894,7 @@ impl Entity {
         }
     }
 
-    pub fn add<T: IsComponent + 'static>(&mut self) {
+    pub fn add<T: Component + ComponentType + 'static>(&mut self) {
         unsafe {
             let type_hash = split_u64(T::get_hash());
             let component_id_split = toxoid_component_cache_get(type_hash);
@@ -897,7 +903,7 @@ impl Entity {
         }
     }
 
-    pub fn remove<T: IsComponent + 'static>(&mut self) {
+    pub fn remove<T: Component + ComponentType + 'static>(&mut self) {
         unsafe {
             let type_hash = split_u64(T::get_hash());
             let component_id_split = toxoid_component_cache_get(type_hash);
@@ -923,7 +929,7 @@ impl Entity {
     }
 
     // TODO: FREE MEMORY
-    pub fn get<T: Default + IsComponent + 'static>(&self) -> T {
+    pub fn get<T: Default + Component + ComponentType + 'static>(&self) -> T {
         unsafe {
             let mut component = T::default();
             let type_hash = split_u64(T::get_hash());
@@ -935,7 +941,7 @@ impl Entity {
         }
     }
 
-    pub fn has<T: IsComponent + 'static>(&self) -> bool {
+    pub fn has<T: Component + ComponentType + 'static>(&self) -> bool {
         unsafe {
             let type_hash = split_u64(T::get_hash());
             let component_id_split = toxoid_component_cache_get(type_hash);
@@ -1083,7 +1089,7 @@ macro_rules! count_args {
 // Used to implement the ComponentTuple trait for tuples of different lengths, where each element of the tuple is a component.
 macro_rules! impl_component_tuple {
     ($($name:ident)+) => {
-        impl<$($name: Default + IsComponent + 'static),+> ComponentTuple for ($($name,)+) {
+        impl<$($name: Default + Component + ComponentType + 'static),+> ComponentTuple for ($($name,)+) {
             #[allow(unused_assignments)]
             fn get_type_ids() -> &'static [u64] { // Change return type to u64
                 unsafe {
