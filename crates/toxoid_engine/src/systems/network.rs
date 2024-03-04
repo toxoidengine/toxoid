@@ -1,4 +1,5 @@
 use toxoid_api::*;
+
 #[cfg(feature = "net")]
 use toxoid_serialize::NetworkMessageEntity;
 

@@ -1,4 +1,5 @@
 use toxoid_api::{*, split_u64};
+
 #[cfg(feature = "client")]
 use toxoid_serialize::NetworkMessageEntity;
 
@@ -21,21 +22,18 @@ pub extern "C" fn local_player_join(message: &NetworkMessageEntity) {
 #[cfg(feature = "client")]
 pub extern "C" fn player_join(message: &NetworkMessageEntity) {
     println!("Player ID received: {:?}", message.id);
-    // // Create entity
-    // let player_animation_entity = crate::utils::load::load_animation("assets/player_spine.atlas", "assets/player_spine.json");
-    // // let mut position = player_animation_entity.get::<Position>();
-    // // position.set_x(100);
-    // // position.set_y(100);
-    // // player_animation_entity.add::<Remote>();
-    
-    // // Update position
-    // // let deserialized_component = message.components[0].clone();
-    // // let mut position = player_animation_entity.get::<Position>();
-    // // position.set_x(deserialized_component.x);
-    // // position.set_y(deserialized_component.y);
-    
-    // // Add to network entity cache
-    // unsafe { toxoid_network_entity_cache_insert(split_u64(message.id), split_u64(player_animation_entity.get_id())) };
+
+    #[cfg(feature = "render")] {
+        let entity = crate::utils::load::load_sprite("assets/character.png", |entity: &mut Entity| {
+            let mut position = entity.get::<Position>();
+            position.set_x(0);
+            position.set_y(0);
+            entity.add::<Renderable>();
+            entity.add::<Player>();
+            entity.add::<Direction>();
+        });
+        unsafe { toxoid_network_entity_cache_insert(split_u64(message.id), split_u64((*entity).get_id())) };
+    }
 }
 
 
@@ -43,3 +41,10 @@ pub extern "C" fn player_join(message: &NetworkMessageEntity) {
 pub extern "C" fn player_leave(message: &NetworkMessageEntity) {
     println!("Player ID {:?} disconnected from server.", message.id);
 }
+
+#[cfg(feature = "client")]
+pub extern "C" fn player_move(message: &NetworkMessageEntity) {
+    let entity_id = combine_u32(unsafe { toxoid_network_entity_cache_get(split_u64(message.id)) });
+    unsafe { toxoid_ffi::flecs_core::flecs_deserialize_entity_sync(entity_id, message.components.clone()) };
+}
+
