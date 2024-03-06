@@ -5,6 +5,7 @@ extern "C" {
 }
 
 fn main() {
+    println!("Hello world!");
     // Initialize Toxoid ECS initializers + default components + default sy stems.
     toxoid_engine::init();
 }

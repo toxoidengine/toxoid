@@ -92,9 +92,13 @@ fn build_packages() -> Result<(), Box<dyn std::error::Error>> {
             .arg("--package")
             .arg(package)
             .arg("--target")
-            .arg(TARGET);
+            .arg(TARGET)
+            .arg("-vv");
+
         if !DEBUG || TARGET.contains("emscripten") {
             command.arg("--release");
+            command.arg("-Z");
+            command.arg("build-std=panic_abort,std");
         };
         if TARGET.contains("emscripten") {
             if package.contains("engine") {
@@ -102,7 +106,7 @@ fn build_packages() -> Result<(), Box<dyn std::error::Error>> {
                 let flags = [
                     // Dev / Debug
                     "-g",
-                    "-O0", 
+                    "-O3", 
                     // Nessecary for all profiles
                     "-sMAIN_MODULE=2", 
                     "-sFORCE_FILESYSTEM=1",
@@ -116,10 +120,14 @@ fn build_packages() -> Result<(), Box<dyn std::error::Error>> {
                     "-sFETCH=1",
                     "-sSTACK_SIZE=1mb",
                     "-Wno-unused-command-line-argument",
-                    // "-sUSE_PTHREADS=1", 
-                    // "-sPTHREAD_POOL_SIZE=4",
-                    // "-sWEBSOCKET_DEBUG",
+                    "-sUSE_PTHREADS=1", 
+                    "-sPTHREAD_POOL_SIZE=3",
+                    "-matomics",
+                    "-mbulk-memory",
                     "-lwebsocket.js",
+                    "-pthread",
+                    "-sPThreadWorkerFile=snake_engine.worker.js",
+                    // "-sWEBSOCKET_DEBUG",
                     // "-sUSE_SDL=2",
                     // "-sUSE_SDL_IMAGE=2",
                     // "-sEXCEPTION_CATCHING_ALLOWED",
@@ -129,6 +137,7 @@ fn build_packages() -> Result<(), Box<dyn std::error::Error>> {
                     ];
                 // command.env("RUSTFLAGS", "-C target-feature=+atomics,+bulk-memory");
                 command.env("EMCC_CFLAGS", flags.join(" "));
+                command.env("RUSTFLAGS", "-C target-feature=+atomics,+bulk-memory,+mutable-globals");
                 // command.env("EMCC_FORCE_STDLIBS", "1");
                 // command.env("EMCC_FORCE_STDLIBS", "libmalloc,libc++,libc++abi,libsockets,libfetch");
                 // command.env("EMCC_DEBUG", "1");
