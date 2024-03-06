@@ -11,9 +11,6 @@ pub use utils::rand::*;
 pub use toxoid_ffi;
 
 pub fn init() {
-    // Initialize FLECS ECS.
-    toxoid_ffi::flecs_core::init();
-
     // Initialize default components.
     toxoid_api::components::init();
 
