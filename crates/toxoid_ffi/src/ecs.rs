@@ -29,7 +29,7 @@ pub unsafe extern "C" fn toxoid_print_string(v: *const i8, v_len: usize) {
 #[no_mangle]
 pub fn toxoid_entity_get_name(id: i32) {
     unsafe {
-        let world = flecs_core::WORLD.lock().unwrap().world.as_mut().unwrap();
+        let world = *flecs_core::WORLD;
         let tag_name = flecs_core::bindings::ecs_get_name(world, id as u64);
 
         // Convert to Rust string
