@@ -8,7 +8,12 @@ pub use input::*;
 pub use load::*;
 pub use render::*;
 pub use network::*;
-use toxoid_api::*;
+use toxoid_api::*;z
+
+pub fn thread_test_system(iter: &mut Iter) {
+    println!("Hello system!");
+    println!("This system runs on this thread: {}", std::thread::ThreadId::as_u64(&std::thread::current().id()));
+}
 
 pub fn init() {
     // // Loaders
@@ -43,5 +48,8 @@ pub fn init() {
 
     System::new(network_input_system)
         .with::<(Player, Sprite, Renderable, Size, Position)>()
+        .build();
+    System::new(thread_test_system)
+        .with::<(Player,)>()
         .build();
 }
