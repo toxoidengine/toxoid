@@ -92,9 +92,7 @@ fn build_packages() -> Result<(), Box<dyn std::error::Error>> {
             .arg("--package")
             .arg(package)
             .arg("--target")
-            .arg(TARGET)
-            .arg("-vv");
-
+            .arg(TARGET);
         if !DEBUG || TARGET.contains("emscripten") {
             command.arg("--release");
             command.arg("-Z");
@@ -106,7 +104,7 @@ fn build_packages() -> Result<(), Box<dyn std::error::Error>> {
                 let flags = [
                     // Dev / Debug
                     "-g",
-                    "-O3", 
+                    "-O0", 
                     // Nessecary for all profiles
                     "-sMAIN_MODULE=2", 
                     "-sFORCE_FILESYSTEM=1",
@@ -121,12 +119,11 @@ fn build_packages() -> Result<(), Box<dyn std::error::Error>> {
                     "-sSTACK_SIZE=1mb",
                     "-Wno-unused-command-line-argument",
                     "-sUSE_PTHREADS=1", 
-                    "-sPTHREAD_POOL_SIZE=3",
+                    "-sPTHREAD_POOL_SIZE=12",
                     "-matomics",
                     "-mbulk-memory",
                     "-lwebsocket.js",
-                    "-pthread",
-                    "-sPThreadWorkerFile=snake_engine.worker.js",
+                    "-pthread"
                     // "-sWEBSOCKET_DEBUG",
                     // "-sUSE_SDL=2",
                     // "-sUSE_SDL_IMAGE=2",
