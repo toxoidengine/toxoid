@@ -1,6 +1,7 @@
 [package]
 name = "toxoid"
 version = "0.1.0"
+edition = "2021"
 # existing package info here
 build = "build.rs"
 
