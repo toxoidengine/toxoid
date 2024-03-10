@@ -11,6 +11,9 @@ pub use utils::rand::*;
 pub use toxoid_ffi;
 
 pub fn init() {
+    // Set up ECS (Currently just threads configuration)
+    toxoid_ffi::flecs_core::init();
+
     // Initialize default components.
     toxoid_api::components::init();
 
@@ -34,7 +37,7 @@ pub fn init() {
 
     // Initialize default engine systems. Such as rendering, input, etc.
     systems::init();
-
+    
     #[cfg(target_os = "emscripten")]
     toxoid_ffi::emscripten::start_loop(game_loop);
 }
