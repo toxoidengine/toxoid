@@ -95,8 +95,10 @@ fn build_packages() -> Result<(), Box<dyn std::error::Error>> {
             .arg(TARGET);
         if !DEBUG || TARGET.contains("emscripten") {
             command.arg("--release");
-            command.arg("-Z");
-            command.arg("build-std=panic_abort,std");
+            #[cfg(feature = "multithread")] {
+                command.arg("-Z");
+                command.arg("build-std=panic_abort,std");
+            }
         };
         if TARGET.contains("emscripten") {
             if package.contains("engine") {
@@ -118,12 +120,14 @@ fn build_packages() -> Result<(), Box<dyn std::error::Error>> {
                     "-sFETCH=1",
                     "-sSTACK_SIZE=1mb",
                     "-Wno-unused-command-line-argument",
-                    "-sUSE_PTHREADS=1", 
-                    "-sPTHREAD_POOL_SIZE=12",
-                    "-matomics",
-                    "-mbulk-memory",
-                    "-lwebsocket.js",
-                    "-pthread"
+                    #[cfg(feature = "multithread")] [
+                        "-pthread",
+                        "-sUSE_PTHREADS=1", 
+                        "-sPTHREAD_POOL_SIZE=12",
+                        "-matomics",
+                        "-mbulk-memory",
+                        "-lwebsocket.js",
+                    ]
                     // "-sWEBSOCKET_DEBUG",
                     // "-sUSE_SDL=2",
                     // "-sUSE_SDL_IMAGE=2",
@@ -132,12 +136,10 @@ fn build_packages() -> Result<(), Box<dyn std::error::Error>> {
                     // "-sDISABLE_EXCEPTION_CATCHING=0"
                     // "--preload-file assets",
                     ];
-                // command.env("RUSTFLAGS", "-C target-feature=+atomics,+bulk-memory");
                 command.env("EMCC_CFLAGS", flags.join(" "));
-                command.env("RUSTFLAGS", "-C target-feature=+atomics,+bulk-memory,+mutable-globals");
-                // command.env("EMCC_FORCE_STDLIBS", "1");
-                // command.env("EMCC_FORCE_STDLIBS", "libmalloc,libc++,libc++abi,libsockets,libfetch");
-                // command.env("EMCC_DEBUG", "1");
+                #[cfg(feature = "multithread")] {
+                    command.env("RUSTFLAGS", "-C target-feature=+atomics,+bulk-memory,+mutable-globals");
+                }
             } else {
                 // If emscripten target library, set Emscripten environment variables for library / side module
                 // That will be dynamically linked at runtime

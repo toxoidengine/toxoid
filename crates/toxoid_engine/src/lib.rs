@@ -1,4 +1,3 @@
-#![feature(thread_id_value)]
 pub mod prefabs;
 pub mod systems;
 pub mod update;
@@ -12,10 +11,8 @@ pub use utils::rand::*;
 pub use toxoid_ffi;
 
 pub fn init() {
-    println!("Hello world!");
-    
-    // Set ECS threads
-    unsafe { toxoid_ffi::flecs_core::ecs_set_threads(*toxoid_ffi::flecs_core::WORLD, 12) };
+    // Set up ECS (Currently just threads configuration)
+    toxoid_ffi::flecs_core::init();
 
     // Initialize default components.
     toxoid_api::components::init();
