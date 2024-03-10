@@ -120,13 +120,13 @@ fn build_packages() -> Result<(), Box<dyn std::error::Error>> {
                     "-sFETCH=1",
                     "-sSTACK_SIZE=1mb",
                     "-Wno-unused-command-line-argument",
+                    "-lwebsocket.js",
                     #[cfg(feature = "multithread")] [
                         "-pthread",
                         "-sUSE_PTHREADS=1", 
                         "-sPTHREAD_POOL_SIZE=12",
                         "-matomics",
                         "-mbulk-memory",
-                        "-lwebsocket.js",
                     ]
                     // "-sWEBSOCKET_DEBUG",
                     // "-sUSE_SDL=2",
