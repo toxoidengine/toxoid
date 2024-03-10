@@ -10,6 +10,7 @@ pub use render::*;
 pub use network::*;
 use toxoid_api::*;
 
+
 pub fn init() {
     // // Loaders
     // System::new(load_sprite_system)
