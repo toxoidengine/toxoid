@@ -12,6 +12,7 @@ toxoid_api = { path="../toxoid_api" }
 toxoid_render = { path="../toxoid_render" }
 toxoid_sokol = { path="../toxoid_sokol", default-features = false, optional = true }
 toxoid_serialize = { path="../toxoid_serialize" }
+toxoid_tiled = { path="../toxoid_tiled" }
 toxoid_net = { path="../toxoid_net", optional = true }
 rand = "0.8.5"
 

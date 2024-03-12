@@ -119,4 +119,10 @@ pub fn init() {
              crate::utils::network::init();
         });
     });
+
+    crate::utils::load::load_worldmap("assets/world_1.world");
+}
+
+pub extern "C" fn load_cell() {
+
 }
