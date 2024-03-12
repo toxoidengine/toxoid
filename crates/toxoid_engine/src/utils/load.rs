@@ -7,7 +7,6 @@ use toxoid_sokol::bindings::*;
 use toxoid_sokol::SokolRenderer2D;
 use core::ffi::CStr;
 use core::ffi::c_void;
-use std::mem::MaybeUninit;
 
 struct FetchUserData {
     entity: *mut Entity,
@@ -41,6 +40,21 @@ pub fn fetch(filename: &str, callback: unsafe extern "C" fn(*const sfetch_respon
     };
     unsafe { sfetch_send(&sfetch_request) };
 }
+
+#[cfg(feature = "fetch")]
+pub extern "C" fn worldmap_load_callback(result: *const sfetch_response_t) {
+    let data = unsafe { (*result).data.ptr as *const u8 };
+    let size = unsafe { (*result).data.size };
+    let data_string = unsafe { std::str::from_utf8(core::slice::from_raw_parts(data, size)).unwrap() };
+    println!("data_string: {}", data_string);
+    let world = toxoid_tiled::parse_world(data_string);
+    println!("{:?}", world);
+}
+
+#[cfg(feature = "fetch")]
+pub fn load_worldmap(filename: &str) {
+    fetch(filename, worldmap_load_callback, std::ptr::null_mut(), 0);
+} 
 
 #[cfg(all(feature = "fetch", feature = "render"))]
 pub fn load_sprite(filename: &str, callback: fn(&mut Entity)) -> *mut Entity {
