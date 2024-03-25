@@ -49,12 +49,39 @@ pub extern "C" fn worldmap_load_callback(result: *const sfetch_response_t) {
     println!("data_string: {}", data_string);
     let world = toxoid_tiled::parse_world(data_string);
     println!("{:?}", world);
+    // world
+    //     .maps
+    //     .unwrap()
+    //     .iter()
+    //     .for_each(|map| {
+    //         let future = crate::utils::futures::FetchFuture::new();
+    //         let map_filename = format!("assets/{}", map.file_name);
+    //         fetch(&map_filename, cell_load_callback_async, std::ptr::null_mut() as *mut c_void, 0);
+    //         let test = crate::utils::futures::block_on(future);
+    //         println!("Test: {:?}", test.unwrap().get_id());
+    //     });
 }
 
 #[cfg(feature = "fetch")]
 pub fn load_worldmap(filename: &str) {
     fetch(filename, worldmap_load_callback, std::ptr::null_mut(), 0);
+}
+
+// #[cfg(feature = "fetch")]
+// pub extern "C" fn cell_load_callback(result: *const sfetch_response_t) {
+//     let data = unsafe { (*result).data.ptr as *const u8 };
+//     let size = unsafe { (*result).data.size };
+//     let data_string = unsafe { std::str::from_utf8(core::slice::from_raw_parts(data, size)).unwrap() };
+//     println!("data_string: {}", data_string);
+//     let world = toxoid_tiled::parse_world(data_string);
+//     println!("{:?}", world);
+// }
+
+#[cfg(feature = "fetch")]
+pub fn load_cell(filename: &str) {
+    fetch(filename, worldmap_load_callback, std::ptr::null_mut(), 0);
 } 
+
 
 #[cfg(all(feature = "fetch", feature = "render"))]
 pub fn load_sprite(filename: &str, callback: fn(&mut Entity)) -> *mut Entity {
@@ -248,3 +275,17 @@ pub fn load_animation(atlas_filename: &str, skeleton_filename: &str) -> &'static
     //     entity_box
     // }
 }
+
+// #[cfg(feature = "fetch")]
+// #[no_mangle]
+// pub unsafe extern "C" fn cell_load_callback_async(result: *const sfetch_response_t) {
+//     println!("Cell loaded!");
+//     let data = (*result).user_data as u8;
+//     let shared_state = crate::utils::futures::LOADER_FUTURES_STATE.get_mut(&data).unwrap();
+//     // Process the result and update shared_state.response as needed
+//     shared_state.response = Some(Ok(Entity::new()));
+//     shared_state.completed = true;
+//     if let Some(waker) = shared_state.waker.take() {
+//         waker.wake();
+//     }
+// }
