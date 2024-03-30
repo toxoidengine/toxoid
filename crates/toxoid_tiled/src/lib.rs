@@ -2,19 +2,19 @@ use serde::{Serialize, Deserialize};
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Layer {
-    pub data: Vec<u32>,
-    pub height: u32,
+    pub data: Option<Vec<u32>>,
+    pub height: Option<u32>,
     pub id: u32,
     pub name: String,
     pub opacity: f32,
     #[serde(rename = "type")]
     pub layer_type: String,
     pub visible: bool,
-    pub width: u32,
-    pub layers: Vec<Layer>,
+    pub width: Option<u32>,
+    pub layers: Option<Vec<Layer>>,
     pub x: u32,
     pub y: u32,
-    pub properties: Vec<Property>,
+    pub properties: Option<Vec<Property>>,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -90,4 +90,9 @@ pub struct TiledWorld {
 pub fn parse_world(world: &str) -> TiledWorld {
     let world: TiledWorld = serde_json::from_str(world).unwrap();
     world
+}
+
+pub fn parse_cell(cell: &str) -> TiledCell {
+    let cell: TiledCell = serde_json::from_str(cell).unwrap();
+    cell
 }

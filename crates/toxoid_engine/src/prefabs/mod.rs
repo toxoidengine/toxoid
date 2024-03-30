@@ -103,11 +103,6 @@ pub fn init() {
     // });
 
     #[cfg(feature = "render")]
-    crate::utils::load::load_sprite("assets/map.png", |entity: &mut Entity| {
-        entity.add::<Renderable>();
-    });
-
-    #[cfg(feature = "render")]
     crate::utils::load::load_sprite("assets/character.png", |entity: &mut Entity| {
         let mut position = entity.get::<Position>();
         position.set_x(0);
@@ -127,10 +122,29 @@ pub fn init() {
         let world_entity: usize = world_entity.get_id() as usize;
         crate::utils::load::load_sprite("assets/default_tileset.png", move |tileset_entity: &mut Entity| {
             let world_entity = Entity::from_id(world_entity.try_into().unwrap());
-            println!("World Entity {:?}", world_entity.get_id());
             let world_ptr = world_entity.get::<TiledWorldComponent>().get_world().ptr as *mut toxoid_tiled::TiledWorld;
             let world: Box<toxoid_tiled::TiledWorld> = unsafe { Box::from_raw(world_ptr) };
-            println!("World {:?}", world.maps.unwrap());
+            world
+                .maps
+                .unwrap()
+                .iter()
+                .for_each(|map| {
+                    crate::utils::load::load_cell(format!("assets/{}", map.file_name).as_str());
+                    // let map_entity = Entity::new();
+                    // map_entity.add::<Map>();
+                    // map_entity.add::<Renderable>();
+                    // map_entity.add::<TiledMap>();
+                    // let mut tiled_map = map_entity.get::<TiledMap>();
+                    // tiled_map.set_map(map);
+                    // let mut position = map_entity.get::<Position>();
+                    // position.set_x(map.x);
+                    // position.set_y(map.y);
+                    // let mut size = map_entity.get::<Size>();
+                    // size.set_width(map.width);
+                    // size.set_height(map.height);
+                    // let mut renderable = map_entity.get::<Renderable>();
+                    // renderable.set_renderable(true);
+                });
         });
     });
 }
