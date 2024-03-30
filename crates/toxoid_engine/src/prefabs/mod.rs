@@ -105,22 +105,34 @@ pub fn init() {
     #[cfg(feature = "render")]
     crate::utils::load::load_sprite("assets/map.png", |entity: &mut Entity| {
         entity.add::<Renderable>();
-        crate::utils::load::load_sprite("assets/character.png", |entity: &mut Entity| {
-            let mut position = entity.get::<Position>();
-            position.set_x(0);
-            position.set_y(0);
-            entity.add::<Renderable>();
-            entity.add::<Player>();
-            entity.add::<Direction>();
-
-             let mut local_player = World::get_singleton::<Networked>();
-             local_player.set_entity_id(entity.get_id());
-
-             crate::utils::network::init();
-        });
     });
 
-    crate::utils::load::load_worldmap("assets/world_1.world");
+    #[cfg(feature = "render")]
+    crate::utils::load::load_sprite("assets/character.png", |entity: &mut Entity| {
+        let mut position = entity.get::<Position>();
+        position.set_x(0);
+        position.set_y(0);
+        entity.add::<Renderable>();
+        entity.add::<Player>();
+        entity.add::<Direction>();
+
+         let mut local_player = World::get_singleton::<Networked>();
+         local_player.set_entity_id(entity.get_id());
+
+         crate::utils::network::init();
+    });
+
+    #[cfg(feature = "client")]
+    crate::utils::load::load_worldmap("assets/world_1.world", |world_entity: &mut Entity| {
+        let world_entity: usize = world_entity.get_id() as usize;
+        crate::utils::load::load_sprite("assets/default_tileset.png", move |tileset_entity: &mut Entity| {
+            let world_entity = Entity::from_id(world_entity.try_into().unwrap());
+            println!("World Entity {:?}", world_entity.get_id());
+            let world_ptr = world_entity.get::<TiledWorldComponent>().get_world().ptr as *mut toxoid_tiled::TiledWorld;
+            let world: Box<toxoid_tiled::TiledWorld> = unsafe { Box::from_raw(world_ptr) };
+            println!("World {:?}", world.maps.unwrap());
+        });
+    });
 }
 
 pub extern "C" fn load_cell() {

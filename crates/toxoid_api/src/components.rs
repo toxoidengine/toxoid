@@ -91,6 +91,9 @@ component! {
         animation_state: StringPtr,
         animation: StringPtr
     },
+    TiledWorldComponent {
+        world: Pointer
+    },
 
     // Tags
     Rect {},
@@ -127,6 +130,7 @@ pub fn init() {
     Images::register();
     BoneAnimation::register();
     Direction::register();
+    TiledWorldComponent::register();
 
     // Tags
     Rect::register();

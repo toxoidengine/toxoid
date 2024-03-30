@@ -770,6 +770,7 @@ dependencies = [
 name = "toxoid_engine"
 version = "0.1.0"
 dependencies = [
+ "once_cell",
  "rand",
  "toxoid_api",
  "toxoid_ffi",
