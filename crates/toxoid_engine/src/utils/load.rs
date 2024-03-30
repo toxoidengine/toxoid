@@ -78,8 +78,33 @@ pub fn load_worldmap(filename: &str, callback: impl FnMut(&mut Entity) + 'static
 }
 
 #[cfg(feature = "fetch")]
+pub unsafe extern "C" fn cell_load_callback(result: *const sfetch_response_t) {
+    let data = unsafe { (*result).data.ptr as *const u8 };
+    let size = unsafe { (*result).data.size };
+    let data_string = unsafe { std::str::from_utf8(core::slice::from_raw_parts(data, size)).unwrap() };
+    let cell = toxoid_tiled::parse_cell(data_string);
+    println!("Cell struct: {:?}", cell);
+    
+    // let cell_ptr = Box::into_raw(Box::new(cell));
+    // Get user data
+    // let user_data: Box<FetchUserData> = Box::from_raw((*result).user_data as *mut FetchUserData);
+
+    // Grab entity from user data
+    // let mut entity: Box<Entity> = Box::from_raw(user_data.entity);
+
+    // // Add TiledWorldComponent to entity
+    // entity.add::<TiledWorldComponent>();
+    // let mut world_component = entity.get::<TiledWorldComponent>();
+    // world_component.set_world(Pointer { ptr: world_ptr as *mut c_void });
+    
+    // Get user data
+    // let mut user_data: Box<FetchUserData> = Box::from_raw((*result).user_data as *mut FetchUserData);
+    // (user_data.callback)(&mut *user_data.entity);
+}
+
+#[cfg(feature = "fetch")]
 pub fn load_cell(filename: &str) {
-    fetch(filename, worldmap_load_callback, std::ptr::null_mut(), 0);
+    fetch(filename, cell_load_callback, std::ptr::null_mut(), 0);
 } 
 
 
