@@ -10,7 +10,7 @@ use core::ffi::c_void;
 
 struct FetchUserData {
     entity: *mut Entity,
-    callback: fn(&mut Entity)
+    callback: Box<dyn FnMut(&mut Entity)>
 }
 
 #[cfg(feature = "fetch")]
@@ -42,40 +42,40 @@ pub fn fetch(filename: &str, callback: unsafe extern "C" fn(*const sfetch_respon
 }
 
 #[cfg(feature = "fetch")]
-pub extern "C" fn worldmap_load_callback(result: *const sfetch_response_t) {
+pub unsafe extern "C" fn worldmap_load_callback(result: *const sfetch_response_t) {
     let data = unsafe { (*result).data.ptr as *const u8 };
     let size = unsafe { (*result).data.size };
     let data_string = unsafe { std::str::from_utf8(core::slice::from_raw_parts(data, size)).unwrap() };
-    println!("data_string: {}", data_string);
     let world = toxoid_tiled::parse_world(data_string);
-    println!("{:?}", world);
-    // world
-    //     .maps
-    //     .unwrap()
-    //     .iter()
-    //     .for_each(|map| {
-    //         let future = crate::utils::futures::FetchFuture::new();
-    //         let map_filename = format!("assets/{}", map.file_name);
-    //         fetch(&map_filename, cell_load_callback_async, std::ptr::null_mut() as *mut c_void, 0);
-    //         let test = crate::utils::futures::block_on(future);
-    //         println!("Test: {:?}", test.unwrap().get_id());
-    //     });
+    let world_ptr = Box::into_raw(Box::new(world));
+    // Get user data
+    let user_data: Box<FetchUserData> = Box::from_raw((*result).user_data as *mut FetchUserData);
+
+    // Grab entity from user data
+    let mut entity: Box<Entity> = Box::from_raw(user_data.entity);
+
+    // Add TiledWorldComponent to entity
+    entity.add::<TiledWorldComponent>();
+    let mut world_component = entity.get::<TiledWorldComponent>();
+    world_component.set_world(Pointer { ptr: world_ptr as *mut c_void });
+    
+    // Get user data
+    let mut user_data: Box<FetchUserData> = Box::from_raw((*result).user_data as *mut FetchUserData);
+    (user_data.callback)(&mut *user_data.entity);
 }
 
 #[cfg(feature = "fetch")]
-pub fn load_worldmap(filename: &str) {
-    fetch(filename, worldmap_load_callback, std::ptr::null_mut(), 0);
+pub fn load_worldmap(filename: &str, callback: impl FnMut(&mut Entity) + 'static) -> *mut Entity {
+    let entity = Entity::new();
+    let entity_boxed = Box::into_raw(Box::new(entity));
+    let user_data = Box::into_raw(Box::new(FetchUserData {
+        entity: entity_boxed,
+        callback: Box::new(callback)
+    })) as *mut c_void;
+    let size = core::mem::size_of::<FetchUserData>();
+    fetch(filename, worldmap_load_callback, user_data, size);
+    entity_boxed
 }
-
-// #[cfg(feature = "fetch")]
-// pub extern "C" fn cell_load_callback(result: *const sfetch_response_t) {
-//     let data = unsafe { (*result).data.ptr as *const u8 };
-//     let size = unsafe { (*result).data.size };
-//     let data_string = unsafe { std::str::from_utf8(core::slice::from_raw_parts(data, size)).unwrap() };
-//     println!("data_string: {}", data_string);
-//     let world = toxoid_tiled::parse_world(data_string);
-//     println!("{:?}", world);
-// }
 
 #[cfg(feature = "fetch")]
 pub fn load_cell(filename: &str) {
@@ -84,7 +84,7 @@ pub fn load_cell(filename: &str) {
 
 
 #[cfg(all(feature = "fetch", feature = "render"))]
-pub fn load_sprite(filename: &str, callback: fn(&mut Entity)) -> *mut Entity {
+pub fn load_sprite(filename: &str, callback: impl FnMut(&mut Entity) + 'static) -> *mut Entity {
     // println!("Loading image: {}", filename);
     // Create entity and pass it to fetch
     let mut entity = Entity::new();
@@ -93,11 +93,11 @@ pub fn load_sprite(filename: &str, callback: fn(&mut Entity)) -> *mut Entity {
     entity.add::<Size>();
 
     let entity_boxed = Box::into_raw(Box::new(entity));
-    let size = core::mem::size_of::<Entity>();
     let user_data = Box::into_raw(Box::new(FetchUserData {
         entity: entity_boxed,
-        callback
+        callback: Box::new(callback)
     })) as *mut c_void;
+    let size = core::mem::size_of::<FetchUserData>();
     fetch(filename, sprite_load_callback, user_data, size);
     entity_boxed
 }
@@ -113,7 +113,7 @@ pub unsafe extern "C" fn sprite_load_callback(result: *const sfetch_response_t) 
         // println!("Successfully loaded {}", CStr::from_ptr((*result).url).to_str().unwrap());
 
         // Get user data
-        let user_data: Box<FetchUserData> = Box::from_raw((*result).user_data as *mut FetchUserData);
+        let mut user_data: Box<FetchUserData> = Box::from_raw((*result).user_data as *mut FetchUserData);
 
         // Grab entity from user data
         let mut entity: Box<Entity> = Box::from_raw(user_data.entity);
@@ -275,17 +275,3 @@ pub fn load_animation(atlas_filename: &str, skeleton_filename: &str) -> &'static
     //     entity_box
     // }
 }
-
-// #[cfg(feature = "fetch")]
-// #[no_mangle]
-// pub unsafe extern "C" fn cell_load_callback_async(result: *const sfetch_response_t) {
-//     println!("Cell loaded!");
-//     let data = (*result).user_data as u8;
-//     let shared_state = crate::utils::futures::LOADER_FUTURES_STATE.get_mut(&data).unwrap();
-//     // Process the result and update shared_state.response as needed
-//     shared_state.response = Some(Ok(Entity::new()));
-//     shared_state.completed = true;
-//     if let Some(waker) = shared_state.waker.take() {
-//         waker.wake();
-//     }
-// }
