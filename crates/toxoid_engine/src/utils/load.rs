@@ -83,30 +83,36 @@ pub unsafe extern "C" fn cell_load_callback(result: *const sfetch_response_t) {
     let size = unsafe { (*result).data.size };
     let data_string = unsafe { std::str::from_utf8(core::slice::from_raw_parts(data, size)).unwrap() };
     let cell = toxoid_tiled::parse_cell(data_string);
-    println!("Cell struct: {:?}", cell);
-    
-    // let cell_ptr = Box::into_raw(Box::new(cell));
+    let cell_ptr = Box::into_raw(Box::new(cell));
     // Get user data
-    // let user_data: Box<FetchUserData> = Box::from_raw((*result).user_data as *mut FetchUserData);
+    let user_data: Box<FetchUserData> = Box::from_raw((*result).user_data as *mut FetchUserData);
 
     // Grab entity from user data
-    // let mut entity: Box<Entity> = Box::from_raw(user_data.entity);
+    let mut entity: Box<Entity> = Box::from_raw(user_data.entity);
 
     // // Add TiledWorldComponent to entity
-    // entity.add::<TiledWorldComponent>();
-    // let mut world_component = entity.get::<TiledWorldComponent>();
-    // world_component.set_world(Pointer { ptr: world_ptr as *mut c_void });
+    entity.add::<TiledCellComponent>();
+    let mut cell_component = entity.get::<TiledCellComponent>();
+    cell_component.set_cell(Pointer { ptr: cell_ptr as *mut c_void });
     
     // Get user data
-    // let mut user_data: Box<FetchUserData> = Box::from_raw((*result).user_data as *mut FetchUserData);
-    // (user_data.callback)(&mut *user_data.entity);
+    let mut user_data: Box<FetchUserData> = Box::from_raw((*result).user_data as *mut FetchUserData);
+    (user_data.callback)(&mut *user_data.entity);
 }
 
 #[cfg(feature = "fetch")]
-pub fn load_cell(filename: &str) {
-    fetch(filename, cell_load_callback, std::ptr::null_mut(), 0);
+pub fn load_cell(filename: &str, callback: impl FnMut(&mut Entity) + 'static) -> *mut Entity {
+    let entity = Entity::new();
+    let entity_boxed = Box::into_raw(Box::new(entity));
+    let user_data = Box::into_raw(Box::new(FetchUserData {
+        entity: entity_boxed,
+        callback: Box::new(callback)
+    })) as *mut c_void;
+    let size = core::mem::size_of::<FetchUserData>();
+    
+    fetch(filename, cell_load_callback, user_data, size);
+    entity_boxed
 } 
-
 
 #[cfg(all(feature = "fetch", feature = "render"))]
 pub fn load_sprite(filename: &str, callback: impl FnMut(&mut Entity) + 'static) -> *mut Entity {

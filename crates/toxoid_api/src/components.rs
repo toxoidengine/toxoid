@@ -94,6 +94,9 @@ component! {
     TiledWorldComponent {
         world: Pointer
     },
+    TiledCellComponent {
+        cell: Pointer
+    },
 
     // Tags
     Rect {},
@@ -131,6 +134,7 @@ pub fn init() {
     BoneAnimation::register();
     Direction::register();
     TiledWorldComponent::register();
+    TiledCellComponent::register();
 
     // Tags
     Rect::register();
