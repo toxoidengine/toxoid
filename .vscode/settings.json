@@ -6,4 +6,15 @@
         "./libs/flecs-polyglot/rust/flecs_core/Cargo.toml",
     ],
     "rust-analyzer.cargo.target": "wasm32-unknown-emscripten",
+    "files.associations": {
+        "sokol_app.h": "c",
+        "sokol_log.h": "c",
+        "sokol_glue.h": "c",
+        "sokol_gfx.h": "c",
+        "sokol_gp.h": "c",
+        "sokol_imgui.h": "c",
+        "cimgui.h": "c",
+        "sokol_spine.h": "c",
+        "sokol_fetch.h": "c"
+    },
 }

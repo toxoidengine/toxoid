@@ -6,7 +6,7 @@ build = "build.rs"
 
 [dependencies]
 #sokol = { git="https://github.com/floooh/sokol-rust.git" }
-sokol = { rev="c9e9a83", git="https://github.com/troyedwardsjr/sokol-rust" }
+sokol = { git="https://github.com/floooh/sokol-rust" }
 toxoid_render = { version="*", path="../toxoid_render" }
 toxoid_api = { version="*", path="../toxoid_api" }
 once_cell = "1.19.0"

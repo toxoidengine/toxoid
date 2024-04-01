@@ -121,18 +121,56 @@ pub fn init() {
     crate::utils::load::load_worldmap("assets/world_1.world", |world_entity: &mut Entity| {
         let world_entity: usize = world_entity.get_id() as usize;
         crate::utils::load::load_sprite("assets/default_tileset.png", move |tileset_entity: &mut Entity| {
+            // let image_width = 4800;
+            // let image_height = 720;
+            // let tile_width = 16;
+            // let tile_height = 16;
+
+            // let mut position = tileset_entity.get::<Position>();
+            // position.set_x(100);
+            // position.set_y(100);
+            // let rt = SokolRenderer2D::create_render_target(500, 500);
+            // let tileset_ptr = tileset_entity.get::<Sprite>().get_sprite().ptr as *mut SokolSprite;
+            // let tileset_sprite: Box<dyn toxoid_render::Sprite> = unsafe { Box::from_raw(tileset_ptr) };
+
+            // // Blit two sprites on render target at different locations
+            // SokolRenderer2D::begin_rt(&rt, 500., 500.);
+            // SokolRenderer2D::blit_sprite(&tileset_sprite, 0., 0., 100., 100., &rt, 0., 0.);
+            
+            // // Create render target entity
+            // {
+            //     let mut entity = Entity::new();
+            //     entity.add::<Position>();
+            //     entity.add::<Size>();
+            //     entity.add::<RenderTarget>();
+
+            //     let mut position = entity.get::<Position>();
+            //     position.set_x(100);
+            //     position.set_y(100);
+            //     let mut size = entity.get::<Size>();
+            //     size.set_width(500);
+            //     size.set_height(500);
+            //     let mut render_target = entity.get::<RenderTarget>();
+            //     render_target.set_render_target(Pointer{ ptr: Box::into_raw(rt) as *mut c_void });
+
+            //     entity.add::<Renderable>();
+            // }
+
+            // Get world entity
             let world_entity = Entity::from_id(world_entity.try_into().unwrap());
             let world_ptr = world_entity.get::<TiledWorldComponent>().get_world().ptr as *mut toxoid_tiled::TiledWorld;
             let world: Box<toxoid_tiled::TiledWorld> = unsafe { Box::from_raw(world_ptr) };
+            // Iterate over world data to load cells
             world
                 .maps
                 .unwrap()
                 .iter()
                 .for_each(|map| {
+                    // Load cell
                     crate::utils::load::load_cell(format!("assets/{}", map.file_name).as_str(), move |cell_entity: &mut Entity| {
-                       let cell_ptr = cell_entity.get::<TiledCellComponent>().get_cell().ptr as *mut toxoid_tiled::TiledCell;
-                          let cell: Box<toxoid_tiled::TiledCell> = unsafe { Box::from_raw(cell_ptr) };
-                          cell
+                        let cell_ptr = cell_entity.get::<TiledCellComponent>().get_cell().ptr as *mut toxoid_tiled::TiledCell;
+                        let cell: Box<toxoid_tiled::TiledCell> = unsafe { Box::from_raw(cell_ptr) };
+                        cell
                             .layers
                             .iter()
                             .for_each(|layer| {
@@ -145,7 +183,7 @@ pub fn init() {
                                         .for_each(|layer| {
                                             println!("Layer type: {:?}", layer.layer_type);
                                             if layer.layer_type == "tilelayer" {
-                                              layer
+                                                layer
                                                 .data
                                                 .as_ref()
                                                 .unwrap()
@@ -173,7 +211,7 @@ pub fn init() {
                             //       let mut renderable = tile_entity.get::<Renderable>();
                             //       renderable.set_renderable(true);
                             //   });
-                          });
+                            });
                     });
                     // let map_entity = Entity::new();
                     // map_entity.add::<Map>();

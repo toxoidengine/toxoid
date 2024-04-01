@@ -12,3 +12,13 @@
 	path = crates/toxoid_sokol/lib/spine-runtimes
 	url = https://github.com/EsotericSoftware/spine-runtimes.git
 	branch = 4.1
+
+[submodule "sokol"]
+	path = crates/toxoid_sokol/lib/sokol
+	url = https://github.com/floooh/sokol.git
+	branch = master
+
+[submodule "sokol_gp"]
+	path = crates/toxoid_sokol/lib/sokol_gp
+	url = https://github.com/edubart/sokol_gp.git
+	branch = master

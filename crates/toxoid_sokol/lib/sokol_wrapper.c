@@ -6,32 +6,32 @@
 #endif
 
 // Sokol
-#include "sokol_app.h"
-#include "sokol_glue.h"
-#include "sokol_log.h"
-#include "sokol_time.h"
+#include "sokol/sokol_app.h"
+#include "sokol/sokol_log.h"
+#include "sokol/sokol_time.h"
 #define SOKOL_IMPL
-#include "sokol_gfx.h"
-#include "sokol_gp.h"
+#include "sokol/sokol_gfx.h"
+#include "sokol/sokol_glue.h"
+#include "sokol_gp/sokol_gp.h"
 
 // Toxoid Sokol
 #ifdef TOXOID_FETCH
-#include "sokol_fetch.h"
+#include "sokol/sokol_fetch.h"
 #endif
 
 #ifdef TOXOID_AUDIO
-#include "sokol_audio.h"
+#include "sokol/sokol_audio.h"
 #endif
 
 #ifdef TOXOID_IMGUI
 #define CIMGUI_DEFINE_ENUMS_AND_STRUCTS
 #include "cimgui/cimgui.h"
-#include "sokol_imgui.h"
+#include "sokol/util/sokol_imgui.h"
 #endif
 
 #ifdef TOXOID_SPINE
 #include "spine-runtimes/spine-c/spine-c/include/spine/spine.h"
-#include "sokol_spine.h"
+#include "sokol/util/sokol_spine.h"
 #endif
 
 #ifdef __EMSCRIPTEN__
