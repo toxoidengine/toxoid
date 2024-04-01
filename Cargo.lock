@@ -679,7 +679,7 @@ dependencies = [
 [[package]]
 name = "sokol"
 version = "0.1.0"
-source = "git+https://github.com/troyedwardsjr/sokol-rust?rev=c9e9a83#c9e9a83c45fb230a8ebd04d0bdfed450634c2972"
+source = "git+https://github.com/floooh/sokol-rust#9aa76d36c8c50ae31a353e6a7568f336de9d0f8a"
 dependencies = [
  "cc",
 ]

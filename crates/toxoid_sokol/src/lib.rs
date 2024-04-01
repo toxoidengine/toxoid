@@ -15,7 +15,7 @@ use toxoid_api::components::GameConfig;
 use toxoid_api::World;
 use toxoid_render::Renderer2D;
 use bindings::*;
-use sokol::{app as sapp, gfx as sg};
+use sokol::{app as sapp, gfx as sg, glue as sglue};
 use core::ffi::c_int;
 use core::ffi::c_char;
 use once_cell::sync::Lazy;
@@ -31,7 +31,7 @@ extern "C" {
 extern "C" fn sokol_init() {
     // Setup sokol app
     sg::setup(&sg::Desc {
-        context: sokol::glue::context(),
+        environment: sglue::environment(),
         logger: sg::Logger { func: Some(sokol::log::slog_func), ..Default::default() },
         ..Default::default()
     });

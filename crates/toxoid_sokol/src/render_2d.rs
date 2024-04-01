@@ -1,5 +1,5 @@
 use crate::bindings::*;
-use sokol::{app as sapp, gfx as sg};
+use sokol::{app as sapp, gfx as sg, glue as sglue};
 use toxoid_render::{Renderer2D, RenderTarget, Sprite};
 use toxoid_api::components::{Position, Size, Color, GameConfig};
 use toxoid_api::World;
@@ -92,7 +92,11 @@ impl Renderer2D for SokolRenderer2D {
         // Get the size of the window
         let (window_width, window_height) = (sapp::width(), sapp::height());
         // Begin a render pass.
-        sg::begin_default_pass(&self.pass_action, window_width, window_height);
+        sg::begin_pass(&sg::Pass {
+            action: self.pass_action,
+            swapchain: sglue::swapchain(),
+            ..Default::default()
+        });
 
         unsafe { 
             // Dispatch all draw commands to Sokol GFX.
@@ -164,10 +168,14 @@ impl Renderer2D for SokolRenderer2D {
         // Create framebuffer pass
         // This is the framebuffer pass. It's used to render onto the framebuffer. You can only render onto a framebuffer using a framebuffer pass.
         // This is the rendering pass that uses image and depth_image as its color and depth-stencil attachments, respectively. When you want to render to the framebuffer, you'll start this pass, issue your rendering commands, and then end the pass.
-        let mut pass_desc = sg::PassDesc::default();
+        /* let mut pass_desc = sg::PassDesc::default();
         pass_desc.color_attachments[0].image = image;
         pass_desc.depth_stencil_attachment.image = depth_image;
-        let fb_pass = sg::make_pass(&pass_desc);
+        let fb_pass = sg::make_pass(&pass_desc); */
+        let mut fb_pass = sg::Pass {
+            swapchain: sglue::swapchain(),
+            ..Default::default()
+        };
 
         // TODO: Error handling
         // let state_1 = sg::query_image_state(image);
@@ -188,7 +196,7 @@ impl Renderer2D for SokolRenderer2D {
             }),
             depth_image: sg::Image { id: depth_image.id },
             sampler: sg::Sampler { id: sampler.id },
-            pass: sg::Pass { id: fb_pass.id },
+            pass: fb_pass,
         })
     }
 
@@ -231,7 +239,7 @@ impl Renderer2D for SokolRenderer2D {
             // Set the framebuffer as the current render target
             let sokol_destination = destination.as_any().downcast_ref::<SokolRenderTarget>().unwrap();
             let pass_action = sg::PassAction::default();
-            sg::begin_pass(sokol_destination.pass, &pass_action);
+            sg::begin_pass(&sokol_destination.pass);
         }
     }
 
@@ -378,7 +386,7 @@ impl Renderer2D for SokolRenderer2D {
                 },
                 ..Default::default()
             };
-            sg::begin_pass(sokol_render_target.pass, &pass_action);
+            sg::begin_pass(&sokol_render_target.pass);
     
             // Set a scissor rectangle to the desired area
             sgp_scissor(x, y, width, height);
