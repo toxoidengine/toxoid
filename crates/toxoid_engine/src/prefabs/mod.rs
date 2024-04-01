@@ -129,7 +129,52 @@ pub fn init() {
                 .unwrap()
                 .iter()
                 .for_each(|map| {
-                    crate::utils::load::load_cell(format!("assets/{}", map.file_name).as_str());
+                    crate::utils::load::load_cell(format!("assets/{}", map.file_name).as_str(), move |cell_entity: &mut Entity| {
+                       let cell_ptr = cell_entity.get::<TiledCellComponent>().get_cell().ptr as *mut toxoid_tiled::TiledCell;
+                          let cell: Box<toxoid_tiled::TiledCell> = unsafe { Box::from_raw(cell_ptr) };
+                          cell
+                            .layers
+                            .iter()
+                            .for_each(|layer| {
+                                if layer.layer_type == "group" {
+                                    layer
+                                        .layers
+                                        .as_ref()
+                                        .unwrap()
+                                        .iter()
+                                        .for_each(|layer| {
+                                            println!("Layer type: {:?}", layer.layer_type);
+                                            if layer.layer_type == "tilelayer" {
+                                              layer
+                                                .data
+                                                .as_ref()
+                                                .unwrap()
+                                                .iter()
+                                                .for_each(|tile| {
+                                                    println!("Tile {:?}", tile);
+                                                });
+                                            }
+                                        });
+                                    }
+                            //   layer.tiles.iter().for_each(|tile| {
+                            //       let mut tile_entity = Entity::new();
+                            //       tile_entity.add::<Position>();
+                            //       tile_entity.add::<Size>();
+                            //       tile_entity.add::<Sprite>();
+                            //       let mut position = tile_entity.get::<Position>();
+                            //       position.set_x(tile.x);
+                            //       position.set_y(tile.y);
+                            //       let mut size = tile_entity.get::<Size>();
+                            //       size.set_width(tile.width);
+                            //       size.set_height(tile.height);
+                            //       let mut sprite = tile_entity.get::<Sprite>();
+                            //       sprite.set_filename("assets/default_tileset.png");
+                            //       sprite.set_sprite(tile.sprite);
+                            //       let mut renderable = tile_entity.get::<Renderable>();
+                            //       renderable.set_renderable(true);
+                            //   });
+                          });
+                    });
                     // let map_entity = Entity::new();
                     // map_entity.add::<Map>();
                     // map_entity.add::<Renderable>();
