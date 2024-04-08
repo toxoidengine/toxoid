@@ -168,25 +168,23 @@ impl Renderer2D for SokolRenderer2D {
         // Create framebuffer pass
         // This is the framebuffer pass. It's used to render onto the framebuffer. You can only render onto a framebuffer using a framebuffer pass.
         // This is the rendering pass that uses image and depth_image as its color and depth-stencil attachments, respectively. When you want to render to the framebuffer, you'll start this pass, issue your rendering commands, and then end the pass.
-        /* let mut pass_desc = sg::PassDesc::default();
-        pass_desc.color_attachments[0].image = image;
-        pass_desc.depth_stencil_attachment.image = depth_image;
-        let fb_pass = sg::make_pass(&pass_desc); */
-        let mut fb_pass = sg::Pass {
-            swapchain: sglue::swapchain(),
+        let mut attachments_desc = sg::AttachmentsDesc::default();
+        attachments_desc.colors[0].image = image;
+        attachments_desc.depth_stencil.image = depth_image;
+        let attachments = sg::make_attachments(&attachments_desc);
+        let fb_pass = sg::Pass {
+            attachments,
             ..Default::default()
         };
 
         // TODO: Error handling
         // let state_1 = sg::query_image_state(image);
         // let state_2 = sg::query_image_state(depth_image);
-        // let state_3 = sg::query_pass_state(fb_pass);
-        // let state_4 = sg::query_sampler_state(sampler);
+        // let state_3 = sg::query_sampler_state(sampler);
 
         // println!("Image state: {:?}", state_1);
         // println!("Depth image state: {:?}", state_2);
-        // println!("Pass state: {:?}", state_3);
-        // println!("Sampler state: {:?}", state_4);
+        // println!("Sampler state: {:?}", state_3);
         
         Box::new(SokolRenderTarget {
             sprite: Box::new(SokolSprite {
@@ -238,7 +236,6 @@ impl Renderer2D for SokolRenderer2D {
 
             // Set the framebuffer as the current render target
             let sokol_destination = destination.as_any().downcast_ref::<SokolRenderTarget>().unwrap();
-            let pass_action = sg::PassAction::default();
             sg::begin_pass(&sokol_destination.pass);
         }
     }

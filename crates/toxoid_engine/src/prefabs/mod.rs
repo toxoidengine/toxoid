@@ -1,7 +1,4 @@
-
 use toxoid_api::*;
-use toxoid_ffi::flecs_core::flecs_serialize_entity;
-#[cfg(feature = "render")]
 use toxoid_sokol::SokolSprite;
 
 pub fn init() {
@@ -48,7 +45,7 @@ pub fn init() {
     //     let mut position = entity.get::<Position>();
     //     position.set_x(100);
     //     position.set_y(100);
-
+        
     //     let rt = SokolRenderer2D::create_render_target(500, 500);
     //     let sprite_component = entity.get::<Sprite>();
     //     let sprite_ptr = sprite_component.get_sprite().ptr as *mut SokolSprite;
@@ -57,10 +54,9 @@ pub fn init() {
     //     // Blit two sprites on render target at different locations
     //     SokolRenderer2D::begin_rt(&rt, 500., 500.);
     //     SokolRenderer2D::blit_sprite(&sprite, 0., 0., 100., 100., &rt, 0., 0.);
-        
     //     SokolRenderer2D::blit_sprite(&sprite, 0., 0., 100., 100., &rt, 50., 50.);
     //     SokolRenderer2D::end_rt();
-        
+
     //     // Create render target entity
     //     {
     //         let mut entity = Entity::new();
@@ -121,40 +117,42 @@ pub fn init() {
     crate::utils::load::load_worldmap("assets/world_1.world", |world_entity: &mut Entity| {
         let world_entity: usize = world_entity.get_id() as usize;
         crate::utils::load::load_sprite("assets/default_tileset.png", move |tileset_entity: &mut Entity| {
-            // let image_width = 4800;
-            // let image_height = 720;
-            // let tile_width = 16;
-            // let tile_height = 16;
+            let image_width = 4800;
+            let image_height = 720;
+            let tile_width = 16;
+            let tile_height = 16;
 
-            // let mut position = tileset_entity.get::<Position>();
-            // position.set_x(100);
-            // position.set_y(100);
-            // let rt = SokolRenderer2D::create_render_target(500, 500);
-            // let tileset_ptr = tileset_entity.get::<Sprite>().get_sprite().ptr as *mut SokolSprite;
-            // let tileset_sprite: Box<dyn toxoid_render::Sprite> = unsafe { Box::from_raw(tileset_ptr) };
+            let mut position = tileset_entity.get::<Position>();
+            position.set_x(100);
+            position.set_y(100);
 
-            // // Blit two sprites on render target at different locations
-            // SokolRenderer2D::begin_rt(&rt, 500., 500.);
-            // SokolRenderer2D::blit_sprite(&tileset_sprite, 0., 0., 100., 100., &rt, 0., 0.);
+            let rt = SokolRenderer2D::create_render_target(500, 500);
+            let tileset_ptr = tileset_entity.get::<Sprite>().get_sprite().ptr as *mut SokolSprite;
+            let tileset_sprite: Box<dyn toxoid_render::Sprite> = unsafe { Box::from_raw(tileset_ptr) };
+
+            // Blit two sprites on render target at different locations
+            SokolRenderer2D::begin_rt(&rt, 500., 500.);
+            SokolRenderer2D::blit_sprite(&tileset_sprite, 0., 0., 16., 16., &rt, 0., 0.);
+            SokolRenderer2D::end_rt();
             
-            // // Create render target entity
-            // {
-            //     let mut entity = Entity::new();
-            //     entity.add::<Position>();
-            //     entity.add::<Size>();
-            //     entity.add::<RenderTarget>();
+            // Create render target entity
+            {
+                let mut entity = Entity::new();
+                entity.add::<Position>();
+                entity.add::<Size>();
+                entity.add::<RenderTarget>();
 
-            //     let mut position = entity.get::<Position>();
-            //     position.set_x(100);
-            //     position.set_y(100);
-            //     let mut size = entity.get::<Size>();
-            //     size.set_width(500);
-            //     size.set_height(500);
-            //     let mut render_target = entity.get::<RenderTarget>();
-            //     render_target.set_render_target(Pointer{ ptr: Box::into_raw(rt) as *mut c_void });
+                let mut position = entity.get::<Position>();
+                position.set_x(100);
+                position.set_y(100);
+                let mut size = entity.get::<Size>();
+                size.set_width(500);
+                size.set_height(500);
+                let mut render_target = entity.get::<RenderTarget>();
+                render_target.set_render_target(Pointer{ ptr: Box::leak(rt) as *mut _ as *mut c_void });
 
-            //     entity.add::<Renderable>();
-            // }
+                entity.add::<Renderable>();
+            }
 
             // Get world entity
             let world_entity = Entity::from_id(world_entity.try_into().unwrap());
@@ -181,7 +179,7 @@ pub fn init() {
                                         .unwrap()
                                         .iter()
                                         .for_each(|layer| {
-                                            println!("Layer type: {:?}", layer.layer_type);
+                                            // println!("Layer type: {:?}", layer.layer_type);
                                             if layer.layer_type == "tilelayer" {
                                                 layer
                                                 .data
@@ -189,7 +187,7 @@ pub fn init() {
                                                 .unwrap()
                                                 .iter()
                                                 .for_each(|tile| {
-                                                    println!("Tile {:?}", tile);
+                                                    // println!("Tile {:?}", tile);
                                                 });
                                             }
                                         });
