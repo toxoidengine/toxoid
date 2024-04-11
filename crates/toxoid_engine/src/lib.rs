@@ -3,6 +3,7 @@ pub mod systems;
 pub mod update;
 pub mod utils;
 pub mod events;
+pub mod bootstrap;
 
 pub use systems::*;
 pub use update::*;
@@ -22,6 +23,9 @@ pub fn init() {
     // Check if emscripten but also check if renderer feature is enabled
     #[cfg(feature = "render")]
     toxoid_sokol::init(render_loop);
+
+    // Bootstrap game engine logic
+    bootstrap::init();
 
     // Initialize default entities.
     prefabs::init();
