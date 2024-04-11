@@ -3,6 +3,7 @@ use toxoid_api::*;
 use toxoid_render::Renderer2D;
 #[cfg(feature = "render")]
 use toxoid_sokol::SokolRenderer2D;
+#[cfg(feature = "render")]
 use toxoid_sokol::SokolSprite;
 
 pub fn init() {
@@ -80,11 +81,13 @@ pub fn init() {
                                                         // Create an entity for each tile
                                                         let mut tile_entity = Entity::new();
                                                         tile_entity.add::<Position>();
-                                                        tile_entity.get::<Position>().set_x(dest_x as u32);
-                                                        tile_entity.get::<Position>().set_y(dest_y as u32);
+                                                        let mut position = tile_entity.get::<Position>();
+                                                        position.set_x(dest_x as u32);
+                                                        position.set_y(dest_y as u32);
                                                         tile_entity.add::<Size>();
-                                                        tile_entity.get::<Size>().set_width(tile_width);
-                                                        tile_entity.get::<Size>().set_height(tile_height);
+                                                        let mut size = tile_entity.get::<Size>();
+                                                        size.set_width(tile_width);
+                                                        size.set_height(tile_height);
                                                         // Add other components as needed, e.g., for collision checks
                                                     }
                                                 }
