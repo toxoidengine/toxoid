@@ -41,15 +41,15 @@ pub fn render_sprite_system(iter: &mut Iter) {
 #[cfg(feature = "render")]
 // RenderTarget, Renderable, Size, Position
 pub fn render_rt_system(iter: &mut Iter) {
-    // println!("Rendering Render Target!");
     let entities = iter.entities();
     entities
         .iter()
         .for_each(|entity| {
             let rt = entity.get::<RenderTarget>();
             let pos = entity.get::<Position>();
+            let size = entity.get::<Size>();
             let rt_boxed: Box<dyn toxoid_render::RenderTarget> = unsafe { Box::from_raw(rt.get_render_target().ptr as *mut toxoid_sokol::SokolRenderTarget) };
-            toxoid_sokol::SokolRenderer2D::draw_render_target(&rt_boxed, pos.get_x() as f32, pos.get_y() as f32, 500., 500.);
+            toxoid_sokol::SokolRenderer2D::draw_render_target(&rt_boxed, pos.get_x() as f32, pos.get_y() as f32, size.get_width() as f32, size.get_height() as f32);
             std::mem::forget(rt_boxed);
         });
 }
