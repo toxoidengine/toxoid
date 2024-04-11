@@ -316,6 +316,11 @@ impl Renderer2D for SokolRenderer2D {
 
     fn draw_render_target(source: &Box<dyn RenderTarget>, dx: f32, dy: f32, dw: f32, dh: f32) {
         unsafe {
+            // Get scale factor for resolution
+            let game_config = World::get_singleton::<GameConfig>();
+            let (window_width, _) = SokolRenderer2D::window_size();
+            let scale_factor = window_width as f32 / game_config.get_resolution_width() as f32;
+
             let sokol_source = source.as_any().downcast_ref::<SokolRenderTarget>().unwrap();
             let sprite = sokol_source.sprite.as_any().downcast_ref::<SokolSprite>().unwrap();
             
@@ -328,7 +333,12 @@ impl Renderer2D for SokolRenderer2D {
             // Define the source rectangle from the render target
             let src_rect = sgp_rect { x: 0., y: 0., w: dw, h: dh }; // Assuming the entire render target is to be drawn
             // Define the destination rectangle on the canvas
-            let dest_rect = sgp_rect { x: dx, y: dy, w: dw, h: dh };
+            let dest_rect = sgp_rect { 
+                x: (dx * scale_factor).round(), 
+                y: (dy * scale_factor).round(), 
+                w: (dw * scale_factor).round(), 
+                h: (dh * scale_factor).round()
+            };
             // Draw the textured rectangle from the render target to the canvas
             sgp_draw_textured_rect(0, dest_rect, src_rect);
         }
