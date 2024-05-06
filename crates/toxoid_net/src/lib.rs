@@ -51,9 +51,9 @@ pub fn send_components(entity_id: ecs_entity_t, components: &[&dyn Component], e
         .map(|component| {
             let component_id = component.get_id();
             if component.get_singleton() {
-                unsafe { toxoid_ffi::flecs_core::flecs_serialize_component(EcsWorld, component_id) }
+                unsafe { toxoid_ffi::flecs_core::flecs_serialize_component(EcsWorld, combine_u32(component_id)) }
             } else {
-                unsafe { toxoid_ffi::flecs_core::flecs_serialize_component(entity_id, component_id) }
+                unsafe { toxoid_ffi::flecs_core::flecs_serialize_component(entity_id, combine_u32(component_id)) }
             }
         })
         .collect();
@@ -163,3 +163,14 @@ pub unsafe extern "C" fn toxoid_run_network_event(
         eprintln!("Event not found: {:?}", event_name); 
     }
 }
+
+#[no_mangle]
+#[allow(improper_ctypes_definitions)]
+pub unsafe extern "C" fn toxoid_net_send_components(
+    entity_id: SplitU64, 
+    components: &[&dyn Component], 
+    event: &str
+) {
+    send_components(combine_u32(entity_id), components, event.to_string());
+}
+

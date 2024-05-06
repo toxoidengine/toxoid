@@ -180,7 +180,12 @@ extern "C" {
     pub fn toxoid_system_build(system_desc: *mut c_void) -> ecs_entity_t;
     pub fn toxoid_query_from_system_desc(query_desc: *mut c_void) -> *mut c_void;
     pub fn toxoid_network_send(network_messages: *mut c_void);
-    pub fn toxoid_component_lookup(name: *mut i8) -> ecs_entity_t;
+    pub fn toxoid_net_send_components(
+        entity_id: SplitU64,
+        components: &[&dyn Component], 
+        event: &str
+    );
+    pub fn toxoid_component_lookup(name: *mut i8) -> SplitU64;
     pub fn make_c_string(string: &str) -> *mut i8;
     pub fn gen_rng_grid_pos() -> (i32, i32);
 }

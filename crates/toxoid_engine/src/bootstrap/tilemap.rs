@@ -27,6 +27,10 @@ pub fn init() {
                 .unwrap()
                 .iter()
                 .for_each(|map| {
+                    // println!("Loading map: {}", map.file_name);
+                    // if map.file_name != "cell_3.json" {
+                    //     return;
+                    // }
                     // Load cell
                     crate::utils::load::load_cell(format!("assets/{}", map.file_name).as_str(), move |cell_entity: &mut Entity| {
                         let cell_ptr = cell_entity.get::<TiledCellComponent>().get_cell().ptr as *mut toxoid_tiled::TiledCell;
