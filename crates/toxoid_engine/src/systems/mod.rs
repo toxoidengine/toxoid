@@ -40,8 +40,4 @@ pub fn init() {
     // System::new(network_event_system)
     //     .with::<(Updated, Networked, Local, Player)>()
     //     .build();
-
-    System::new(network_input_system)
-        .with::<(Player, Sprite, Renderable, Size, Position)>()
-        .build();
 }
