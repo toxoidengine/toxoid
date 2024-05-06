@@ -103,18 +103,18 @@ pub fn init() {
     //     });
     // });
 
-    // #[cfg(feature = "render")]
-    // crate::utils::load::load_sprite("assets/character.png", |entity: &mut Entity| {
-    //     let mut position = entity.get::<Position>();
-    //     position.set_x(0);
-    //     position.set_y(0);
-    //     entity.add::<Renderable>();
-    //     entity.add::<Player>();
-    //     entity.add::<Direction>();
+    #[cfg(feature = "render")]
+    crate::utils::load::load_sprite("assets/character.png", |entity: &mut Entity| {
+        let mut position = entity.get::<Position>();
+        position.set_x(0);
+        position.set_y(0);
+        entity.add::<Renderable>();
+        entity.add::<Player>();
+        entity.add::<Direction>();
 
-    //      let mut local_player = World::get_singleton::<Networked>();
-    //      local_player.set_entity_id(entity.get_id());
+         let mut local_player = World::get_singleton::<Networked>();
+         local_player.set_entity_id(entity.get_id());
 
-    //      crate::utils::network::init();
-    // });    
+         crate::utils::network::init();
+    });    
 }

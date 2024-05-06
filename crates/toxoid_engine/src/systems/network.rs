@@ -86,16 +86,3 @@ pub fn network_event_system(iter: &mut Iter) {
     //         }
     //     });
 }
-
-
-pub fn network_input_system(iter: &mut Iter) {
-    let keyboard_input = World::get_singleton::<KeyboardInput>();
-    let entities = iter.entities();
-    entities
-        .iter_mut()
-        .for_each(|entity| {
-            if keyboard_input.get_up() || keyboard_input.get_down() || keyboard_input.get_left() || keyboard_input.get_right() {
-                toxoid_net::send_components(entity.get_id(), &[&keyboard_input], "PlayerMove".to_string());
-            }
-        });
-}

@@ -509,7 +509,7 @@ pub fn component(input: TokenStream) -> TokenStream {
 
                 impl Component for #name {
                     // Object compatible trait methods
-                    fn get_id(&self) -> ecs_entity_t {
+                    fn get_id(&self) -> SplitU64 {
                         unsafe { toxoid_component_lookup(make_c_string(#type_name)) }
                     }
 

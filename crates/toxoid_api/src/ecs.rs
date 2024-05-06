@@ -278,7 +278,7 @@ pub trait ComponentTuple {
 }
 
 pub trait Component {
-    fn get_id(&self) -> ecs_id_t;
+    fn get_id(&self) -> SplitU64;
     fn set_ptr(&mut self, ptr: *mut c_void);
     fn get_ptr(&self) -> *mut c_void;
     fn set_singleton(&mut self, singleton: bool);
@@ -1081,12 +1081,59 @@ pub fn cache_component_ecs(type_id: SplitU64, component_id: SplitU64) {
 }
 
 // Used to count the number of arguments passed to it.
+#[macro_export]
 macro_rules! count_args {
     ($($args:ident),*) => { <[()]>::len(&[$(count_args!(@substitute $args)),*]) };
     (@substitute $_t:tt) => { () };
 }
 
+// Convenience macro to convert a slice of `Component` objects into a slice of their IDs, ie: pass in &[keyboard_input] instead of &[keyboard_input.get_id()]
+// #[macro_export]
+// macro_rules! component_ids {
+//     ($($components:expr),*) => {{
+//         &[$(combine_u32($components.get_id())),*]
+//     }}
+// }
+// macro_rules! component_ids {
+//     // Match a single component without a comma
+//     ($component:expr) => {{
+//         unsafe {
+//             let layout = std::alloc::Layout::array::<u64>(1).unwrap();
+//             let ids_ptr = std::alloc::alloc(layout) as *mut u64;
+//             *ids_ptr = combine_u32($component.get_id());
+//             ids_ptr as *const u32
+
+//             let layout = Layout::array::<u64>(1).unwrap();
+//             let entities_ptr = ALLOCATOR.alloc(layout) as *mut u64;
+//             entities
+//                 .iter()
+//                 .enumerate()
+//                 .for_each(|(i, entity_id)| {
+//                     entities_ptr.add(i).write(Entity { 
+//                         id: *entity_id, 
+//                         children: &mut []
+//                     });
+//                 });
+//         }
+//     }};
+//     // Match multiple components with commas
+//     ($($components:expr),+ $(,)?) => {{
+//         unsafe {
+//             let count = count_args!($($components),*);
+//             let layout = std::alloc::Layout::array::<u64>(count).unwrap();
+//             let ids_ptr = std::alloc::alloc(layout) as *mut u64;
+//             let mut temp_ptr = ids_ptr;
+//             $(
+//                 std::ptr::write(temp_ptr, $components.get_id());
+//                 temp_ptr = temp_ptr.add(1);
+//             )*
+//             ids_ptr as *const u32
+//         }
+//     }};
+// }
+
 // Used to implement the ComponentTuple trait for tuples of different lengths, where each element of the tuple is a component.
+#[macro_export]
 macro_rules! impl_component_tuple {
     ($($name:ident)+) => {
         impl<$($name: Default + Component + ComponentType + 'static),+> ComponentTuple for ($($name,)+) {

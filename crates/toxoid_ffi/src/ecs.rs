@@ -835,7 +835,7 @@ pub unsafe extern "C" fn toxoid_query_from_system_desc(
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn toxoid_component_lookup(name: *mut c_char) -> ecs_entity_t {
-    flecs_core::flecs_component_lookup(name)
+pub unsafe extern "C" fn toxoid_component_lookup(name: *mut c_char) -> SplitU64 {
+    split_u64(flecs_core::flecs_component_lookup(name))
 }
 
