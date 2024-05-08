@@ -1,10 +1,11 @@
 pub mod player;
 use player::*;
+use toxoid_api::*;
 
 pub fn init() {
     #[cfg(feature = "client")] {
-        unsafe { toxoid_net::toxoid_add_network_event("LocalPlayerJoin".to_string(), local_player_join) };
-        unsafe { toxoid_net::toxoid_add_network_event("PlayerJoin".to_string(), player_join) };
-        unsafe { toxoid_net::toxoid_add_network_event("PlayerMove".to_string(), player_move) };
+        add_network_event("LocalPlayerJoin", local_player_join);
+        add_network_event("PlayerJoin", player_join);
+        add_network_event("PlayerMove", player_move);
     }
 }

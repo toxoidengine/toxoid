@@ -186,6 +186,10 @@ extern "C" {
         event: &str
     );
     pub fn toxoid_component_lookup(name: *mut i8) -> SplitU64;
+    pub fn toxoid_net_add_event(
+        event_name: &str,
+        callback: extern "C" fn(message: &crate::net::MessageEntity)
+    );
     pub fn make_c_string(string: &str) -> *mut i8;
     pub fn gen_rng_grid_pos() -> (i32, i32);
 }

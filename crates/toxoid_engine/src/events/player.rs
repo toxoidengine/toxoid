@@ -1,10 +1,7 @@
 use toxoid_api::{*, split_u64};
 
 #[cfg(feature = "client")]
-use toxoid_serialize::NetworkMessageEntity;
-
-#[cfg(feature = "client")]
-pub extern "C" fn local_player_join(message: &NetworkMessageEntity) {
+pub extern "C" fn local_player_join(message: &MessageEntity) {
     println!("Local player ID received: {:?}", message.id);
     // Set local player ID
     let mut local_player = World::get_singleton::<Networked>();
@@ -20,7 +17,7 @@ pub extern "C" fn local_player_join(message: &NetworkMessageEntity) {
 
 
 #[cfg(feature = "client")]
-pub extern "C" fn player_join(message: &NetworkMessageEntity) {
+pub extern "C" fn player_join(message: &MessageEntity) {
     println!("Player ID received: {:?}", message.id);
 
     #[cfg(feature = "render")] {
@@ -36,14 +33,13 @@ pub extern "C" fn player_join(message: &NetworkMessageEntity) {
     }
 }
 
-
 #[cfg(feature = "client")]
-pub extern "C" fn player_leave(message: &NetworkMessageEntity) {
+pub extern "C" fn player_leave(message: &MessageEntity) {
     println!("Player ID {:?} disconnected from server.", message.id);
 }
 
 #[cfg(feature = "client")]
-pub extern "C" fn player_move(message: &NetworkMessageEntity) {
+pub extern "C" fn player_move(message: &MessageEntity) {
     let entity_id = combine_u32(unsafe { toxoid_network_entity_cache_get(split_u64(message.id)) });
     unsafe { toxoid_ffi::flecs_core::flecs_deserialize_entity_sync(entity_id, message.components.clone()) };
 }
