@@ -6,7 +6,7 @@ use std::collections::HashMap;
 use toxoid_api::*;
 use toxoid_serialize::*;
 
-pub static NETWORK_EVENT_CACHE: Lazy<Mutex<HashMap<String, extern "C" fn(message: &NetworkMessageEntity)>>> = Lazy::new(|| Mutex::new(HashMap::new()));
+pub static NETWORK_EVENT_CACHE: Lazy<Mutex<HashMap<String, extern "C" fn(message: &MessageEntity)>>> = Lazy::new(|| Mutex::new(HashMap::new()));
 
 pub fn init() {}
 
@@ -122,12 +122,12 @@ pub fn send(network_messages: NetworkMessages) {
     unimplemented!();
 }
 
-pub fn receive_entity(entity: NetworkMessageEntity) {
-    // TODO: Make this the network ID, not the entity ID using hashmap
-    let id = entity.id;
-    let components = entity.components;
-    unsafe { toxoid_ffi::flecs_core::flecs_deserialize_entity(components) };
-}
+// pub fn receive_entity(entity: NetworkMessageEntity) {
+//     // TODO: Make this the network ID, not the entity ID using hashmap
+//     let id = entity.id;
+//     let components = entity.components;
+//     unsafe { toxoid_ffi::flecs_core::flecs_deserialize_entity(components) };
+// }
 
 pub fn receive(data: Vec<u8>) {
     let network_messages = deserialize(&data)
@@ -137,30 +137,56 @@ pub fn receive(data: Vec<u8>) {
         .iter()
         .for_each(|message| {
             unsafe {
-                toxoid_run_network_event(message.event.clone(), &message);
+                toxoid_net_run_event(message.event.clone(), &message);
             }
         });
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn toxoid_add_network_event(
-    event_name: String,
-    callback: extern "C" fn(message: &NetworkMessageEntity)
+pub unsafe extern "C" fn toxoid_net_add_event(
+    event_name: &'static str,
+    callback: extern "C" fn(message: &MessageEntity)
 ) {
     let mut cache = NETWORK_EVENT_CACHE.lock().unwrap();
-    cache.insert(event_name, callback);
+    cache.insert(event_name.to_string(), callback);
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn toxoid_run_network_event(
+pub unsafe extern "C" fn toxoid_net_run_event(
     event_name: String,
     message: &NetworkMessageEntity
 ) {
     let cache = NETWORK_EVENT_CACHE.lock().unwrap();
     if let Some(event_cb) = cache.get(&event_name[..]) {
-        event_cb(message);
+        let event_name = Box::leak(event_name.into_boxed_str());
+        let components: Vec<MessageComponent> = message
+            .components
+            .iter()
+            .map(|component| {
+                let name = Box::leak(component.name.clone().into_boxed_str());
+                let data = Box::leak(component.data.to_vec().into_boxed_slice());
+
+                MessageComponent {
+                    name: name,
+                    data: data
+                }
+            })
+            .collect();
+        let message = MessageEntity {
+            id: message.id,
+            event: event_name,
+            components: Box::leak(components.into_boxed_slice())
+        };
+
+        event_cb(&message);
+
+        // // Convert the `&'static MessageEntity` back into a `Box<MessageEntity>`
+        // let message_boxed = unsafe { Box::from_raw(&message as *const MessageEntity as *mut MessageEntity) };
+
+        // // Dropping the box will also drop `components` and `event` inside `MessageEntity`
+        // drop(message_boxed)
     } else {
-        eprintln!("Event not found: {:?}", event_name); 
+        eprintln!("Event not found: {:?}", event_name)
     }
 }
 

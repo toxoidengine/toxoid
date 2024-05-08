@@ -23,7 +23,7 @@ pub fn init() {
     World::add_singleton::<Networked>();
 
     // Initialize tilemap
-    tilemap::init();
+    // tilemap::init();
 
     // Parent entity
     // let mut player_entity = Entity::new();
