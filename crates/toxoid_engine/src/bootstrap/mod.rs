@@ -111,6 +111,7 @@ pub fn init() {
         entity.add::<Renderable>();
         entity.add::<Player>();
         entity.add::<Direction>();
+        entity.add::<Local>();
 
          let mut local_player = World::get_singleton::<Networked>();
          local_player.set_entity_id(entity.get_id());
