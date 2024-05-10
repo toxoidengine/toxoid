@@ -2,11 +2,10 @@ use toxoid_api::{*, split_u64};
 
 #[cfg(feature = "client")]
 pub extern "C" fn local_player_join(message: &MessageEntity) {
-    println!("Local player ID received: {:?}", message.id);
     // Set local player ID
     let mut local_player = World::get_singleton::<Networked>();
     local_player.set_network_id(message.id);
-
+    
     // Create entity
     // let render_entity = crate::utils::load::load_image("assets/character.png");
     // render_entity.add::<Local>();
@@ -18,8 +17,6 @@ pub extern "C" fn local_player_join(message: &MessageEntity) {
 
 #[cfg(feature = "client")]
 pub extern "C" fn player_join(message: &MessageEntity) {
-    println!("Player ID received: {:?}", message.id);
-
     #[cfg(feature = "render")] {
         let entity = crate::utils::load::load_sprite("assets/character.png", |entity: &mut Entity| {
             let mut position = entity.get::<Position>();
@@ -41,6 +38,8 @@ pub extern "C" fn player_leave(message: &MessageEntity) {
 #[cfg(feature = "client")]
 pub extern "C" fn player_move(message: &MessageEntity) {
     let entity_id = combine_u32(unsafe { toxoid_network_entity_cache_get(split_u64(message.id)) });
-    unsafe { toxoid_ffi::flecs_core::flecs_deserialize_entity_sync(entity_id, message.components.clone()) };
+    if entity_id != 0 {
+        unsafe { toxoid_ffi::flecs_core::flecs_deserialize_entity_sync(entity_id, message.components.clone()) };
+    }
 }
 
