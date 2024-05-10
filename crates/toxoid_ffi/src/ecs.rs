@@ -327,7 +327,11 @@ pub unsafe extern "C" fn toxoid_network_entity_cache_insert(
 pub unsafe extern "C" fn toxoid_network_entity_cache_get(entity_id: SplitU64) -> SplitU64 {
     let cache = NETWORK_ENTITY_CACHE.lock().unwrap();
     let entity_id = combine_u32(entity_id);
-    let network_id = *cache.get(&entity_id).unwrap_or(&0);
+    let network_id = *cache.get(&entity_id).unwrap_or_else(|| {
+        println!("Entity ID not found in network entity cache: {:?}", entity_id);
+        println!("Cache contents: {:?}", cache);
+        &0
+    });
     split_u64(network_id)
 }
 
@@ -335,7 +339,10 @@ pub unsafe extern "C" fn toxoid_network_entity_cache_get(entity_id: SplitU64) ->
 #[no_mangle]
 pub unsafe extern "C" fn toxoid_network_entity_cache_get(entity_id: u64) -> u64 {
     let cache = NETWORK_ENTITY_CACHE.lock().unwrap();
-    let network_id = *cache.get(&entity_id).unwrap();
+    let network_id = *cache.get(&entity_id).unwrap_or_else(|| {
+        println!("Entity ID not found in network entity cache: {:?}", entity_id);
+        &0
+    });
     network_id
 }
 
