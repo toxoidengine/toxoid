@@ -140,12 +140,12 @@ pub fn component(input: TokenStream) -> TokenStream {
                                 quote! {
                                     pub fn #getter_name(&self) -> #field_type {
                                         unsafe {
-                                            toxoid_component_get_member_u64(self.ptr, #field_offset)
+                                            combine_u32(toxoid_component_get_member_u64(self.ptr, #field_offset))
                                         }
                                     }
                                     pub fn #setter_name(&mut self, value: u64) {
                                         unsafe {
-                                            toxoid_component_set_member_u64(self.ptr, #field_offset, value);
+                                            toxoid_component_set_member_u64(self.ptr, #field_offset, split_u64(value));
                                         }
                                     }
                                 }

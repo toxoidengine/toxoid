@@ -109,7 +109,7 @@ extern "C" {
     pub fn toxoid_component_get_member_u8(component_ptr: *mut c_void, offset: u32) -> u8;
     pub fn toxoid_component_get_member_u16(component_ptr: *mut c_void, offset: u32) -> u8;
     pub fn toxoid_component_get_member_u32(component_ptr: *mut c_void, offset: u32) -> u32;
-    pub fn toxoid_component_get_member_u64(component_ptr: *mut c_void, offset: u32) -> u64;
+    pub fn toxoid_component_get_member_u64(component_ptr: *mut c_void, offset: u32) -> SplitU64;
     pub fn toxoid_component_get_member_i8(component_ptr: *mut c_void, offset: u8) -> i8;
     pub fn toxoid_component_get_member_i16(component_ptr: *mut c_void, offset: u8) -> i16;
     pub fn toxoid_component_get_member_i32(component_ptr: *mut c_void, offset: u32) -> i32;
@@ -127,7 +127,7 @@ extern "C" {
     pub fn toxoid_component_set_member_u8(component_ptr: *mut c_void, offset: u32, value: u8);
     pub fn toxoid_component_set_member_u16(component_ptr: *mut c_void, offset: u32, value: u16);
     pub fn toxoid_component_set_member_u32(component_ptr: *mut c_void, offset: u32, value: u32);
-    pub fn toxoid_component_set_member_u64(component_ptr: *mut c_void, offset: u32, value: u64);
+    pub fn toxoid_component_set_member_u64(component_ptr: *mut c_void, offset: u32, value: SplitU64);
     pub fn toxoid_component_set_member_i8(component_ptr: *mut c_void, offset: u32, value: i8);
     pub fn toxoid_component_set_member_i16(component_ptr: *mut c_void, offset: u32, value: i16);
     pub fn toxoid_component_set_member_i32(component_ptr: *mut c_void, offset: u32, value: i32);
@@ -190,6 +190,8 @@ extern "C" {
         event_name: &str,
         callback: extern "C" fn(message: &crate::net::MessageEntity)
     );
+    pub fn toxoid_engine_load_sprite(filename: &str, callback: extern "C" fn(&mut Entity)) -> *mut Entity;
+    pub fn toxoid_engine_load_worldmap(filename: &str, callback: extern "C" fn(&mut Entity)) -> *mut Entity;
     pub fn make_c_string(string: &str) -> *mut i8;
     pub fn gen_rng_grid_pos() -> (i32, i32);
 }

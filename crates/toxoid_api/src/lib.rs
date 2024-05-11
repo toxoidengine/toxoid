@@ -6,6 +6,7 @@ pub mod components;
 // pub mod collections;
 pub mod utils;
 pub mod net;
+pub mod load;
 
 pub use bindings::*;
 pub use ecs::*;
@@ -17,3 +18,4 @@ pub use serde;
 pub use utils::*;
 pub use core::ffi::c_void;
 pub use net::*;
+pub use load::*;

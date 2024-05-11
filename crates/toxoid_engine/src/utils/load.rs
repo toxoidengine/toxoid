@@ -65,7 +65,7 @@ pub unsafe extern "C" fn worldmap_load_callback(result: *const sfetch_response_t
 }
 
 #[cfg(feature = "fetch")]
-pub fn load_worldmap(filename: &str, callback: impl FnMut(&mut Entity) + 'static) -> *mut Entity {
+pub extern "C" fn load_worldmap(filename: &str, callback: impl FnMut(&mut Entity) + 'static) -> *mut Entity {
     let entity = Entity::new();
     let entity_boxed = Box::into_raw(Box::new(entity));
     let user_data = Box::into_raw(Box::new(FetchUserData {
@@ -75,6 +75,14 @@ pub fn load_worldmap(filename: &str, callback: impl FnMut(&mut Entity) + 'static
     let size = core::mem::size_of::<FetchUserData>();
     fetch(filename, worldmap_load_callback, user_data, size);
     entity_boxed
+}
+
+#[cfg(feature = "fetch")]
+#[no_mangle]
+pub extern "C" fn toxoid_engine_load_worldmap(filename: &str,  callback: extern "C" fn(*mut Entity)) -> *mut Entity {
+    load_worldmap(filename, move |entity: &mut Entity| {
+        callback(entity)
+    })
 }
 
 #[cfg(feature = "fetch")]
@@ -131,6 +139,14 @@ pub fn load_sprite(filename: &str, callback: impl FnMut(&mut Entity) + 'static) 
     let size = core::mem::size_of::<FetchUserData>();
     fetch(filename, sprite_load_callback, user_data, size);
     entity_boxed
+}
+
+#[cfg(all(feature = "fetch", feature = "render"))]
+#[no_mangle]
+pub extern "C" fn toxoid_engine_load_sprite(filename: &str,  callback: extern "C" fn(*mut Entity)) -> *mut Entity {
+    load_sprite(filename, move |entity: &mut Entity| {
+        callback(entity)
+    })
 }
 
 #[cfg(all(feature = "fetch", feature = "render"))]
