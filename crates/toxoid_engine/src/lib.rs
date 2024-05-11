@@ -34,7 +34,7 @@ pub fn init() {
     events::init();
     
     // Initialize network functionality.
-    // utils::network::init();
+    utils::network::init();
 
     // Initialize input functionality.
     utils::input::init();

@@ -414,8 +414,8 @@ pub unsafe extern "C" fn toxoid_component_get_member_u32(
 pub unsafe extern "C" fn toxoid_component_get_member_u64(
     component_ptr: *mut c_void,
     offset: u32
-) -> u64 {
-    flecs_core::flecs_component_get_member_u64(component_ptr, offset)
+) -> SplitU64 {
+    split_u64(flecs_core::flecs_component_get_member_u64(component_ptr, offset))
 }
 
 #[no_mangle]
@@ -529,9 +529,9 @@ pub unsafe extern "C" fn toxoid_component_set_member_u32(
 pub unsafe extern "C" fn toxoid_component_set_member_u64(
     component_ptr: *mut c_void,
     offset: u32,
-    value: u64,
+    value: SplitU64,
 ) {
-    flecs_core::flecs_component_set_member_u64(component_ptr, offset, value);
+    flecs_core::flecs_component_set_member_u64(component_ptr, offset, combine_u32(value));
 }
 
 #[no_mangle]

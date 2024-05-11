@@ -11,7 +11,12 @@ pub extern "C" fn local_player_join(message: &MessageEntity) {
     // render_entity.add::<Local>();
 
     // Add to network entity cache
-    unsafe { toxoid_network_entity_cache_insert(split_u64(local_player.get_entity_id()), split_u64(message.id)) };
+    unsafe { 
+        toxoid_network_entity_cache_insert(
+            split_u64(local_player.get_entity_id()), 
+            split_u64(message.id)
+        )
+    };
 }
 
 
@@ -26,7 +31,12 @@ pub extern "C" fn player_join(message: &MessageEntity) {
             entity.add::<Player>();
             entity.add::<Direction>();
         });
-        unsafe { toxoid_network_entity_cache_insert(split_u64(message.id), split_u64((*entity).get_id())) };
+        unsafe { 
+            toxoid_network_entity_cache_insert(
+                split_u64(message.id), 
+                split_u64((*entity).get_id())
+            ) 
+        };
     }
 }
 
@@ -37,9 +47,13 @@ pub extern "C" fn player_leave(message: &MessageEntity) {
 
 #[cfg(feature = "client")]
 pub extern "C" fn player_move(message: &MessageEntity) {
-    let entity_id = combine_u32(unsafe { toxoid_network_entity_cache_get(split_u64(message.id)) });
+    let entity_id = combine_u32(unsafe { 
+        toxoid_network_entity_cache_get(split_u64(message.id)) 
+    });
     if entity_id != 0 {
-        unsafe { toxoid_ffi::flecs_core::flecs_deserialize_entity_sync(entity_id, message.components.clone()) };
+        unsafe { 
+            toxoid_ffi::flecs_core::flecs_deserialize_entity_sync(entity_id, message.components) 
+        };
     }
 }
 
