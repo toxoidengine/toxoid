@@ -361,6 +361,21 @@ pub unsafe extern "C" fn toxoid_network_entity_cache_get(entity_id: u64) -> u64 
     network_id
 }
 
+#[cfg(target_arch="wasm32")]
+#[no_mangle]
+pub unsafe extern "C" fn toxoid_network_entity_cache_remove(entity_id: SplitU64) {
+    let mut cache = NETWORK_ENTITY_CACHE.lock().unwrap();
+    let entity_id = combine_u32(entity_id);
+    cache.remove(&entity_id);
+}
+
+#[cfg(not(target_arch="wasm32"))]
+#[no_mangle]
+pub unsafe extern "C" fn toxoid_network_entity_cache_remove(entity_id: u64) {
+    let mut cache = NETWORK_ENTITY_CACHE.lock().unwrap();
+    cache.remove(&entity_id);
+}
+
 #[no_mangle]
 pub unsafe extern "C" fn toxoid_create_vec() -> *mut c_void {
     Box::into_raw(Box::new(Vec::<*mut c_void>::new())) as *mut c_void

@@ -14,14 +14,6 @@ pub struct Messages {
     pub messages: &'static [MessageEntity]
 }
 
-pub extern "C" fn event_sync_components(_message: &MessageEntity) {
-    println!("SyncComponents");
-}
-
-pub fn init() {
-    add_network_event("SyncComponents", event_sync_components);
-}
-
 pub fn send_components(entity: &mut Entity, components: &[&dyn Component], event: &str) {
     unsafe { toxoid_net_send_components(split_u64(entity.get_id()), components, event); }
 }
@@ -48,6 +40,16 @@ pub fn network_entity_cache_get(local_id: u64) -> u64 {
 #[cfg(not(target_arch="wasm32"))]
 pub fn network_entity_cache_get(local_id: u64) -> u64 {
     unsafe { toxoid_network_entity_cache_get(local_id) }
+}
+
+#[cfg(target_arch="wasm32")]
+pub fn network_entity_cache_remove(local_id: u64) {
+    unsafe { toxoid_network_entity_cache_remove(split_u64(local_id)) }
+}
+
+#[cfg(not(target_arch="wasm32"))]
+pub fn network_entity_cache_remove(local_id: u64) {
+    unsafe { toxoid_network_entity_cache_remove(local_id) }
 }
 
 pub fn deserialize_entity_sync(entity_id: ecs_entity_t, components_serialized: &[crate::net::MessageComponent]) {

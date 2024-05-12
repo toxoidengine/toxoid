@@ -499,10 +499,10 @@ impl Iter {
 #[cfg(not(target_arch="wasm32"))]
 impl Drop for Iter {
     fn drop(&mut self) {
-        unsafe {
+        // unsafe {
             // ALLOCATOR.dealloc(self.iter as *mut u8, core::alloc::Layout::new::<c_void>()); 
             // ALLOCATOR.dealloc(self.entities.as_ptr() as *mut u8,core::alloc::Layout::array::<Entity>(self.entities.len()).unwrap());
-        }
+        // }
     }
 }
 

@@ -106,6 +106,10 @@ extern "C" {
     pub fn toxoid_network_entity_cache_get(network_id: SplitU64) -> SplitU64;
     #[cfg(not(target_arch="wasm32"))]
     pub fn toxoid_network_entity_cache_get(network_id: u64) -> ecs_entity_t;
+    #[cfg(target_arch="wasm32")]
+    pub fn toxoid_network_entity_cache_remove(network_id: SplitU64);
+    #[cfg(not(target_arch="wasm32"))]
+    pub fn toxoid_network_entity_cache_remove(network_id: u64);
     pub fn toxoid_component_get_member_u8(component_ptr: *mut c_void, offset: u32) -> u8;
     pub fn toxoid_component_get_member_u16(component_ptr: *mut c_void, offset: u32) -> u8;
     pub fn toxoid_component_get_member_u32(component_ptr: *mut c_void, offset: u32) -> u32;

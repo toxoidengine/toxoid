@@ -21,3 +21,8 @@ pub use utils::*;
 pub use core::ffi::c_void;
 pub use net::*;
 pub use load::*;
+
+pub fn init() {
+    // Initialize events
+    events::init();
+}
