@@ -159,10 +159,7 @@ version = "0.1.0"
 dependencies = [
  "bindgen",
  "cc",
- "flexbuffers",
  "once_cell",
- "toxoid_api",
- "toxoid_serialize",
 ]
 
 [[package]]
@@ -786,7 +783,10 @@ name = "toxoid_ffi"
 version = "0.1.0"
 dependencies = [
  "flecs_core",
+ "flexbuffers",
  "once_cell",
+ "toxoid_api",
+ "toxoid_serialize",
 ]
 
 [[package]]

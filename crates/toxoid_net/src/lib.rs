@@ -51,9 +51,9 @@ pub fn send_components(entity_id: ecs_entity_t, components: &[&dyn Component], e
         .map(|component| {
             let component_id = component.get_id();
             if component.get_singleton() {
-                unsafe { toxoid_ffi::flecs_core::flecs_serialize_component(EcsWorld, combine_u32(component_id)) }
+                unsafe { toxoid_ffi::ecs::toxoid_serialize_component(EcsWorld, combine_u32(component_id)) }
             } else {
-                unsafe { toxoid_ffi::flecs_core::flecs_serialize_component(entity_id, combine_u32(component_id)) }
+                unsafe { toxoid_ffi::ecs::toxoid_serialize_component(entity_id, combine_u32(component_id)) }
             }
         })
         .collect();
@@ -78,7 +78,7 @@ pub fn send_entities(entity_ids: &[ecs_entity_t], event: String) {
     entity_ids
         .iter()
         .for_each(|entity_id| {
-            let components = unsafe { toxoid_ffi::flecs_core::flecs_serialize_entity(*entity_id) };
+            let components = unsafe { toxoid_ffi::ecs::toxoid_serialize_entity(*entity_id) };
             let network_entity_cache = toxoid_ffi::ecs::NETWORK_ENTITY_CACHE.lock().unwrap();
             let network_id = network_entity_cache.get(&entity_id).unwrap();
             network_messages.messages.push(NetworkMessageEntity {
@@ -94,7 +94,7 @@ pub fn send_entity(entity_id: ecs_entity_t, event: String) {
     // TODO: Make this the network ID, not the entity ID using 
     let network_entity_cache = toxoid_ffi::ecs::NETWORK_ENTITY_CACHE.lock().unwrap();
     let network_id = network_entity_cache.get(&entity_id).unwrap();
-    let components = unsafe { toxoid_ffi::flecs_core::flecs_serialize_entity(entity_id) };
+    let components = unsafe { toxoid_ffi::ecs::toxoid_serialize_entity(entity_id) };
     let network_messages = NetworkMessages {
         messages: vec![
             NetworkMessageEntity {

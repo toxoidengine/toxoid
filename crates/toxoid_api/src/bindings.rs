@@ -192,6 +192,11 @@ extern "C" {
     );
     pub fn toxoid_engine_load_sprite(filename: &str, callback: extern "C" fn(&mut Entity)) -> *mut Entity;
     pub fn toxoid_engine_load_worldmap(filename: &str, callback: extern "C" fn(&mut Entity)) -> *mut Entity;
+    // pub fn toxoid_deserialize_entity(components_serialized: &[MessageComponent]) -> HashMap<String, HashMap<String, DynamicType>>;
+    pub fn toxoid_deserialize_entity_sync(entity_id: ecs_entity_t, components_serialized: &[crate::net::MessageComponent]);
+    // pub fn toxoid_serialize_entity(entity_id: ecs_entity_t) -> Vec<crate::net::NetworkMessageComponent>;
+    // pub fn toxoid_serialize_component(entity_id: ecs_entity_t, component_id: ecs_entity_t) -> crate::net::NetworkMessageComponent;
     pub fn make_c_string(string: &str) -> *mut i8;
+    // TODO: Replace this function with a generic abstraction for rand
     pub fn gen_rng_grid_pos() -> (i32, i32);
 }
