@@ -40,12 +40,14 @@ pub extern "C" fn toxoid_network_receive(data: *const u8, len: usize) {
 }
 
 pub fn send_components(entity_id: ecs_entity_t, components: &[&dyn Component], event: String) {
-    let network_entity_cache = toxoid_ffi::ecs::NETWORK_ENTITY_CACHE.lock().unwrap();
-    let network_id = network_entity_cache.get(&entity_id).map_or_else(|| {
-        eprintln!("Network ID not found for entity: {:?}", entity_id);
-        // Provide a default value or handle the error appropriately
-        0 // Assuming 0 is a safe default
-    }, |id| *id);
+    // Server does not need to know about network ids as the server
+    // is authoritative
+    // let network_entity_cache = toxoid_ffi::ecs::NETWORK_ENTITY_CACHE.lock().unwrap();
+    // let network_id = network_entity_cache.get(&entity_id).map_or_else(|| {
+    //     eprintln!("Network ID not found for entity: {:?}", entity_id);
+    //     // Provide a default value or handle the error appropriately
+    //     0 // Assuming 0 is a safe default
+    // }, |id| *id);
     let components_vec: Vec<NetworkMessageComponent> = components
         .iter()
         .map(|component| {
@@ -59,7 +61,10 @@ pub fn send_components(entity_id: ecs_entity_t, components: &[&dyn Component], e
         .collect();
 
     let network_message_entity = NetworkMessageEntity {
-        id: network_id,
+        // Server does not need to know about network ids as the server
+        // is authoritative
+        // id: network_id,
+        id: 0,
         event: event.clone(),
         components: components_vec,
     };
