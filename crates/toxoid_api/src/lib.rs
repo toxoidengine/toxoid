@@ -7,6 +7,8 @@ pub mod components;
 pub mod utils;
 pub mod net;
 pub mod load;
+pub mod events;
+pub mod bootstrap;
 
 pub use bindings::*;
 pub use ecs::*;
