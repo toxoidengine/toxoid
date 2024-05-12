@@ -509,8 +509,8 @@ pub fn component(input: TokenStream) -> TokenStream {
 
                 impl Component for #name {
                     // Object compatible trait methods
-                    fn get_id(&self) -> SplitU64 {
-                        unsafe { toxoid_component_lookup(make_c_string(#type_name)) }
+                    fn get_id(&self) -> u64 {
+                        combine_u32(unsafe { toxoid_component_lookup(make_c_string(#type_name)) }) 
                     }
 
                     fn set_ptr(&mut self, ptr: *mut core::ffi::c_void) {

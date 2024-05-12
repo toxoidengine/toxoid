@@ -53,9 +53,9 @@ pub fn send_components(entity_id: ecs_entity_t, components: &[&dyn Component], e
         .map(|component| {
             let component_id = component.get_id();
             if component.get_singleton() {
-                unsafe { toxoid_ffi::ecs::toxoid_serialize_component(EcsWorld, combine_u32(component_id)) }
+                unsafe { toxoid_ffi::ecs::toxoid_serialize_component(EcsWorld, component_id) }
             } else {
-                unsafe { toxoid_ffi::ecs::toxoid_serialize_component(entity_id, combine_u32(component_id)) }
+                unsafe { toxoid_ffi::ecs::toxoid_serialize_component(entity_id, component_id) }
             }
         })
         .collect();
