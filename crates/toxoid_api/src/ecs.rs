@@ -278,7 +278,7 @@ pub trait ComponentTuple {
 }
 
 pub trait Component {
-    fn get_id(&self) -> SplitU64;
+    fn get_id(&self) -> u64;
     fn set_ptr(&mut self, ptr: *mut c_void);
     fn get_ptr(&self) -> *mut c_void;
     fn set_singleton(&mut self, singleton: bool);
@@ -296,24 +296,22 @@ pub struct Filter {
     pub filter: *mut c_void,
     pub filter_desc: *mut c_void,
     pub filter_index: u8,
-    // For self reference and deallocating the iterator on drop
     iter: *mut c_void,
-    // For deallocating all entities returned from query.entities() on drop
     entities: &'static mut [Entity],
 }
 
 impl Filter {
-    pub fn new() -> Filter  {
+    pub fn new() -> Filter {
         Filter {
             filter: core::ptr::null_mut(),
             filter_desc: unsafe { toxoid_filter_create() },
             filter_index: 0,
-            iter: core::ptr::null_mut(),  
+            iter: core::ptr::null_mut(),
             entities: &mut [],
         }
     }
 
-    pub fn with<T: ComponentTuple + 'static>(&mut self) -> &mut Filter {
+    pub fn with<T: ComponentTuple + 'static>(mut self) -> Self {
         let type_ids = T::get_type_ids();
         let layout = Layout::array::<u64>(type_ids.len()).unwrap();
         let ids_ptr = unsafe { ALLOCATOR.alloc(layout) as *mut ecs_entity_t };
@@ -330,7 +328,7 @@ impl Filter {
         self
     }
 
-    pub fn without<T: ComponentTuple + 'static>(&mut self) -> &mut Filter {
+    pub fn without<T: ComponentTuple + 'static>(mut self) -> Self {
         let type_ids = T::get_type_ids();
         let layout = Layout::array::<u64>(type_ids.len()).unwrap();
         let ids_ptr = unsafe { ALLOCATOR.alloc(layout) as *mut ecs_entity_t };
@@ -348,7 +346,7 @@ impl Filter {
         self
     }
 
-    pub fn with_or<T: ComponentTuple + 'static>(&mut self) -> &mut Filter {
+    pub fn with_or<T: ComponentTuple + 'static>(mut self) -> Self {
         let type_ids = T::get_type_ids();
         let layout = Layout::array::<u64>(type_ids.len()).unwrap();
         let ids_ptr = unsafe { ALLOCATOR.alloc(layout) as *mut ecs_entity_t };
@@ -370,7 +368,7 @@ impl Filter {
         unsafe { toxoid_filter_iter(self.filter) }
     }
 
-    pub fn build(&mut self) -> &mut Filter {
+    pub fn build(mut self) -> Self {
         self.filter = unsafe { toxoid_filter_build(self.filter_desc) };
         self
     }
@@ -503,7 +501,7 @@ impl Drop for Iter {
     fn drop(&mut self) {
         unsafe {
             // ALLOCATOR.dealloc(self.iter as *mut u8, core::alloc::Layout::new::<c_void>()); 
-            ALLOCATOR.dealloc(self.entities.as_ptr() as *mut u8,core::alloc::Layout::array::<Entity>(self.entities.len()).unwrap());
+            // ALLOCATOR.dealloc(self.entities.as_ptr() as *mut u8,core::alloc::Layout::array::<Entity>(self.entities.len()).unwrap());
         }
     }
 }
