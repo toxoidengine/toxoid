@@ -49,3 +49,7 @@ pub fn network_entity_cache_get(local_id: u64) -> u64 {
 pub fn network_entity_cache_get(local_id: u64) -> u64 {
     unsafe { toxoid_network_entity_cache_get(local_id) }
 }
+
+pub fn deserialize_entity_sync(entity_id: ecs_entity_t, components_serialized: &[crate::net::MessageComponent]) {
+    unsafe { toxoid_deserialize_entity_sync(entity_id, components_serialized) }
+}
