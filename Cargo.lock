@@ -160,6 +160,7 @@ dependencies = [
  "bindgen",
  "cc",
  "once_cell",
+ "toxoid_api",
 ]
 
 [[package]]
