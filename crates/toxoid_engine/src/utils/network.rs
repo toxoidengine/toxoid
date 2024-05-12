@@ -1,6 +1,7 @@
 // TODO: Make this file more crossplatform generic and less dependent on Emscripten
 use toxoid_api::*;
 use core::ffi::c_void;
+use std::collections::HashMap;
 
 #[cfg(target_os = "emscripten")]
 pub fn init() {
@@ -46,4 +47,20 @@ pub extern "C" fn onmessage_cb(
     network_messages.messages.iter().for_each(|message| {
         unsafe { toxoid_net::toxoid_net_run_event(message.event.clone(), message) };
     });
+}
+
+pub fn serialize_entity(entity_id: ecs_entity_t) -> Vec<toxoid_serialize::NetworkMessageComponent> {
+    unsafe { toxoid_ffi::ecs::toxoid_serialize_entity(entity_id) }
+}
+
+pub fn serialize_component(entity_id: ecs_entity_t, component_id: ecs_entity_t) -> toxoid_serialize::NetworkMessageComponent {
+    unsafe { toxoid_ffi::ecs::toxoid_serialize_component(entity_id, component_id) }
+}
+
+pub fn deserialize_entity(components_serialized: &[toxoid_api::MessageComponent]) -> HashMap<std::string::String, HashMap<std::string::String, toxoid_ffi::ecs::DynamicType>> {
+    unsafe { toxoid_ffi::ecs::toxoid_deserialize_entity(components_serialized) }
+}
+
+pub fn deserialize_entity_sync(entity_id: ecs_entity_t, components_serialized: &[MessageComponent]) {
+    unsafe { toxoid_ffi::ecs::toxoid_deserialize_entity_sync(entity_id, components_serialized) }
 }

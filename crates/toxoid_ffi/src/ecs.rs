@@ -2,13 +2,28 @@
 #![allow(improper_ctypes_definitions)]
 
 use core::ffi::{c_char, c_void};
-use std::{collections::HashMap, cell::RefCell};
+use std::collections::HashMap;
 use core::alloc::Layout;
-use flecs_core::{ecs_entity_t, ecs_iter_t, ecs_id_t};
+use flecs_core::*;
 use once_cell::sync::Lazy;
 use std::sync::Mutex;
 use crate::utils::{SplitU64, split_u64, combine_u32};
 use crate::allocator::*;
+
+#[derive(Debug)]
+pub enum DynamicType {
+    U8(u8),
+    U16(u16),
+    U32(u32),
+    U64(u64),
+    I8(i8),
+    I16(i16),
+    I32(i32),
+    I64(i64),
+    F32(f32),
+    F64(f64),
+    Bool(bool),
+}
 
 pub static COMPONENT_ID_CACHE: Lazy<Mutex<HashMap<u64, ecs_entity_t>>> = Lazy::new(|| Mutex::new(HashMap::new()));
 pub static NETWORK_ENTITY_CACHE: Lazy<Mutex<HashMap<u64, ecs_entity_t>>> = Lazy::new(|| Mutex::new(HashMap::new()));
@@ -846,3 +861,251 @@ pub unsafe extern "C" fn toxoid_component_lookup(name: *mut c_char) -> SplitU64 
     split_u64(flecs_core::flecs_component_lookup(name))
 }
 
+// Map deserialized entities to local entity component system and synchronize entities
+#[no_mangle]
+pub unsafe extern "C" fn toxoid_deserialize_entity_sync(entity_id: ecs_entity_t, components_serialized: &[toxoid_api::MessageComponent]) {
+    let world = *WORLD;
+    components_serialized
+        .iter()
+        .for_each(|component_serialized| {
+            let component_name = std::ffi::CString::new(component_serialized.name).unwrap();
+            let component_id: ecs_entity_t = ecs_lookup(world, component_name.as_ptr());
+            let component_struct_ptr = ecs_get_mut_id(world, FLECS_IDEcsStructID_, component_id);
+            let ecs_struct = ecs_get_id(world, component_id, FLECS_IDEcsStructID_) as *const EcsStruct;
+            let members = (*ecs_struct).members;
+            let component_data = component_serialized.data;
+            let component_deserialized = flexbuffers::Reader::get_root(component_data).unwrap();
+            let component_map = component_deserialized.as_map();
+            let keys: Vec<&str> = component_map.iter_keys().collect();
+            let component_ptr = ecs_get_mut_id(world, entity_id, component_id);
+            ecs_vector_each::<ecs_member_t, _>(&members, |item| {
+                let name = core::ffi::CStr::from_ptr(item.name as *const i8).to_str().unwrap();
+                let value = component_map.idx(name);
+                match item.type_ {
+                    type_id if type_id == FLECS_IDecs_u8_tID_ => {
+                        let value = value.as_u8();
+                        // TODO: This is wrong, component_ptr is not the right pointer
+                        // It needs to point to entity, not the component struct type
+                        flecs_component_set_member_u8(component_ptr, item.offset as u32, value);
+                    },
+                    type_id if type_id == FLECS_IDecs_u16_tID_ => {
+                        let value = value.as_u16();
+                        flecs_component_set_member_u16(component_ptr, item.offset as u32, value);
+                    },
+                    type_id if type_id == FLECS_IDecs_u32_tID_ => {
+                        let value = value.as_u32();
+                        flecs_component_set_member_u32(component_ptr, item.offset as u32, value);
+                    },
+                    type_id if type_id == FLECS_IDecs_u64_tID_ => {
+                        let value = value.as_u64();
+                        flecs_component_set_member_u64(component_ptr, item.offset as u32, value);
+                    },
+                    type_id if type_id == FLECS_IDecs_i8_tID_ => {
+                        let value = value.as_i8();
+                        flecs_component_set_member_i8(component_ptr, item.offset as u32, value);
+                    },
+                    type_id if type_id == FLECS_IDecs_i16_tID_ => {
+                        let value = value.as_i16();
+                        flecs_component_set_member_i16(component_ptr, item.offset as u32, value);
+                    },
+                    type_id if type_id == FLECS_IDecs_i32_tID_ => {
+                        let value = value.as_i32();
+                        flecs_component_set_member_i32(component_ptr, item.offset as u32, value);
+                    },
+                    type_id if type_id == FLECS_IDecs_i64_tID_ => {
+                        let value = value.as_i64();
+                        flecs_component_set_member_i64(component_ptr, item.offset as u32, value);
+                    },
+                    type_id if type_id == FLECS_IDecs_f32_tID_ => {
+                        let value = value.as_f32();
+                        flecs_component_set_member_f32(component_ptr, item.offset as u32, value);
+                    },
+                    type_id if type_id == FLECS_IDecs_f64_tID_ => {
+                        let value = value.as_f64();
+                        flecs_component_set_member_f64(component_ptr, item.offset as u32, value);
+                    },
+                    type_id if type_id == FLECS_IDecs_bool_tID_ => {
+                        let value = value.as_bool();
+                        flecs_component_set_member_bool(component_ptr, item.offset as u32, value);
+                    },
+                    _ => eprintln!("Type not supported {:?}", item.type_),
+                }
+            });
+        });
+}
+
+// Deserialize entities and return a hashmap of entities and components
+#[no_mangle]
+pub unsafe extern "C" fn toxoid_deserialize_entity(components_serialized: &[toxoid_api::MessageComponent]) -> HashMap<std::string::String, HashMap<std::string::String, DynamicType>> {
+    let world = *WORLD;
+    let mut components_hashmap: HashMap<String, HashMap<String, DynamicType>> = HashMap::new();
+    components_serialized
+        .iter()
+        .for_each(|component_serialized| {
+            let component_name = std::ffi::CString::new(component_serialized.name.clone()).unwrap();
+            let component_id: ecs_entity_t = ecs_lookup(world, component_name.as_ptr());
+            let component_struct_ptr = ecs_get_mut_id(world, FLECS_IDEcsStructID_, component_id);
+            let ecs_struct = ecs_get_id(world, component_id, FLECS_IDEcsStructID_) as *const EcsStruct;
+            let members = (*ecs_struct).members;
+            let component_data = component_serialized.data.clone();
+            let component_deserialized = flexbuffers::Reader::get_root(component_data).unwrap();
+            let component_map = component_deserialized.as_map();
+            let keys: Vec<&str> = component_map.iter_keys().collect();
+            let mut component_hashmap: HashMap<String, DynamicType> = HashMap::new();
+            ecs_vector_each::<ecs_member_t, _>(&members, |item| {
+                let name = core::ffi::CStr::from_ptr(item.name as *const i8).to_str().unwrap();
+                let value = component_map.idx(name);
+                let name = name.to_string();
+                match item.type_ {
+                    type_id if type_id == FLECS_IDecs_u8_tID_ => {
+                        let value = DynamicType::U8(value.as_u8());
+                        component_hashmap.insert(name, value);
+                    },
+                    type_id if type_id == FLECS_IDecs_u16_tID_ => {
+                        let value = DynamicType::U16(value.as_u16());
+                        component_hashmap.insert(name, value);
+                    },
+                    type_id if type_id == FLECS_IDecs_u32_tID_ => {
+                        let value = DynamicType::U32(value.as_u32());
+                        component_hashmap.insert(name, value);
+                    },
+                    type_id if type_id == FLECS_IDecs_u64_tID_ => {
+                        let value = DynamicType::U64(value.as_u64());
+                        component_hashmap.insert(name, value);
+                    },
+                    type_id if type_id == FLECS_IDecs_i8_tID_ => {
+                        let value = DynamicType::I8(value.as_i8());
+                        component_hashmap.insert(name, value);
+                    },
+                    type_id if type_id == FLECS_IDecs_i16_tID_ => {
+                        let value = DynamicType::I16(value.as_i16());
+                        component_hashmap.insert(name, value);
+                    },
+                    type_id if type_id == FLECS_IDecs_i32_tID_ => {
+                        let value = DynamicType::I32(value.as_i32());
+                        component_hashmap.insert(name, value);
+                    },
+                    type_id if type_id == FLECS_IDecs_i64_tID_ => {
+                        let value = DynamicType::I64(value.as_i64());
+                        component_hashmap.insert(name, value);
+                    },
+                    type_id if type_id == FLECS_IDecs_f32_tID_ => {
+                        let value = DynamicType::F32(value.as_f32());
+                        component_hashmap.insert(name, value);
+                    },
+                    type_id if type_id == FLECS_IDecs_f64_tID_ => {
+                        let value = DynamicType::F64(value.as_f64());
+                        component_hashmap.insert(name, value);
+                    },
+                    type_id if type_id == FLECS_IDecs_bool_tID_ => {
+                        let value = DynamicType::Bool(value.as_bool());
+                        component_hashmap.insert(name, value);
+                    },
+                    _ => eprintln!("Type not supported {:?}", item.type_),
+                }
+            });
+            components_hashmap.insert(component_serialized.name.to_string(), component_hashmap);
+        });
+    components_hashmap
+}
+
+#[no_mangle]
+pub unsafe fn toxoid_serialize_component(entity_id: ecs_entity_t, component_id: ecs_entity_t) -> toxoid_serialize::NetworkMessageComponent {
+    let world = *WORLD;
+    // Get the component name
+    let component_name = ecs_get_name(world, component_id);
+    let component_name = core::ffi::CStr::from_ptr(component_name).to_str().unwrap();
+    // Get the component struct pointer
+    let component_struct_ptr = ecs_get_mut_id(world, FLECS_IDEcsStructID_, component_id);
+    // Get the component type
+    let ecs_struct = ecs_get_id(world, component_id, FLECS_IDEcsStructID_) as *const EcsStruct;
+    // Get the members of the component type
+    let members = (*ecs_struct).members;
+    // Create a new Flexbuffer builder.
+    let mut builder = flexbuffers::Builder::default();
+    // Start a map
+    let mut component_serialized = builder.start_map();
+    let component_ptr = ecs_get_mut_id(world, entity_id, component_id);
+    ecs_vector_each::<ecs_member_t, _>(&members, |item| {
+        // Convert from *const i8 to &str
+        let name = core::ffi::CStr::from_ptr(item.name as *const i8).to_str().unwrap();
+        match item.type_ {
+            type_id if type_id == FLECS_IDecs_u8_tID_ => {
+                let value = flecs_component_get_member_u8(component_ptr, item.offset as u32);
+                component_serialized.push(name, value);
+            },
+            type_id if type_id == FLECS_IDecs_u16_tID_ => {
+                let value = flecs_component_get_member_u16(component_ptr, item.offset as u32);
+                component_serialized.push(name, value);
+            },
+            type_id if type_id == FLECS_IDecs_u32_tID_ => {
+                let value = flecs_component_get_member_u32(component_ptr, item.offset as u32);
+                component_serialized.push(name, value);
+            },
+            type_id if type_id == FLECS_IDecs_u64_tID_ => {
+                let value = flecs_component_get_member_u64(component_ptr, item.offset as u32);
+                component_serialized.push(name, value);
+            },
+            type_id if type_id == FLECS_IDecs_i8_tID_ => {
+                let value = flecs_component_get_member_i8(component_ptr, item.offset as u32);
+                component_serialized.push(name, value);
+            },
+            type_id if type_id == FLECS_IDecs_i16_tID_ => {
+                let value = flecs_component_get_member_i16(component_ptr, item.offset as u32);
+                component_serialized.push(name, value);
+            },
+            type_id if type_id == FLECS_IDecs_i32_tID_ => {
+                let value = flecs_component_get_member_i32(component_ptr, item.offset as u32);
+                component_serialized.push(name, value);
+            },
+            type_id if type_id == FLECS_IDecs_i64_tID_ => {
+                let value = flecs_component_get_member_i64(component_ptr, item.offset as u32);
+                component_serialized.push(name, value);
+            },
+            type_id if type_id == FLECS_IDecs_f32_tID_ => {
+                let value = flecs_component_get_member_f32(component_ptr, item.offset as u32);
+                component_serialized.push(name, value);
+            },
+            type_id if type_id == FLECS_IDecs_f64_tID_ => {
+                let value = flecs_component_get_member_f64(component_ptr, item.offset as u32);
+                component_serialized.push(name, value);
+            },
+            type_id if type_id == FLECS_IDecs_bool_tID_ => {
+                let value = flecs_component_get_member_bool(component_ptr, item.offset as u32);
+                component_serialized.push(name, value);
+            },
+            _ => eprintln!("Type not supported {:?}", item.type_),
+        }
+    });
+    component_serialized.end_map();
+    let component_data = builder.view().to_vec();
+    toxoid_serialize::NetworkMessageComponent {
+        name: component_name.to_string(),
+        data: component_data,
+    }
+}
+
+#[no_mangle]
+pub unsafe fn toxoid_serialize_entity(entity_id: ecs_entity_t) -> Vec<toxoid_serialize::NetworkMessageComponent> {
+    let world = *WORLD;
+    // Network components
+    let mut network_components = Vec::new();
+    // Get the entity type
+    let entity_type: *const ecs_type_t  = ecs_get_type(world, entity_id);
+    // Get the type ids
+    let type_ids = (*entity_type).array;
+    let type_ids = std::slice::from_raw_parts(type_ids, (*entity_type).count as usize);
+    // Iterate over the type ids
+    for i in 0..(*entity_type).count {
+        // Create a new Flexbuffer builder.
+        let mut builder = flexbuffers::Builder::default();
+        // Start a map
+        let component_serialized = builder.start_map();
+
+        // Get the component id
+        let component_id = type_ids[i as usize];
+        let network_message_component = toxoid_serialize_component(entity_id, component_id);
+        network_components.push(network_message_component);
+    }
+    network_components
+}
