@@ -81,7 +81,7 @@ pub struct StringPtr {
 impl StringPtr {
     pub fn new(rust_str: &str) -> Self {
         Self {
-            ptr: unsafe { make_c_string(rust_str) }
+            ptr: unsafe { toxoid_make_c_string(rust_str) }
         }
     }
 }
