@@ -50,6 +50,9 @@ pub fn combine_f32(split_f64: SplitF64) -> f64 {
 
 extern "C" {
     pub fn toxoid_print_i32(v: i32);
+    pub fn toxoid_print_u64(v: SplitU64);
+    pub fn toxoid_print_f32(v: f32);
+    pub fn toxoid_print_f64(v: SplitF64);
     pub fn toxoid_print_string(v: *const i8, v_len: usize);
     pub fn toxoid_create_vec() -> *mut c_void;
     pub fn toxoid_vec_push(ptr: *mut c_void, value: *mut c_void);
