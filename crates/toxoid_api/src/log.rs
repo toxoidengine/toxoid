@@ -6,11 +6,23 @@ pub fn print_i32(v: i32) {
     }
 }
 
-// pub fn print_u64(v: u64) {
-//     unsafe {
-//         toxoid_print_u64(v);
-//     }
-// }
+pub fn print_u64(v: u64) {
+    unsafe {
+        toxoid_print_u64(split_u64(v));
+    }
+}
+
+pub fn print_f32(v: f32) {
+    unsafe {
+        toxoid_print_f32(v);
+    }
+}
+
+pub fn print_f64(v: f64) {
+    unsafe {
+        toxoid_print_f64(split_f64(v));
+    }
+}
 
 pub fn print_string(v: &str) {
     unsafe {

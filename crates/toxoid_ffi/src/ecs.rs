@@ -7,7 +7,7 @@ use core::alloc::Layout;
 use flecs_core::*;
 use once_cell::sync::Lazy;
 use std::sync::Mutex;
-use crate::utils::{SplitU64, split_u64, combine_u32};
+use crate::utils::*;
 use crate::allocator::*;
 
 #[derive(Debug)]
@@ -31,6 +31,21 @@ pub static NETWORK_ENTITY_CACHE: Lazy<Mutex<HashMap<u64, ecs_entity_t>>> = Lazy:
 #[no_mangle]
 pub unsafe extern "C" fn toxoid_print_i32(v: i32) {
     println!("Printing from Toxoid Engine: {}", v);
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn toxoid_print_u64(v: SplitU64) {
+    println!("Printing from Toxoid Engine: {}", combine_u32(v));
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn toxoid_print_f32(v: f32) {
+    println!("Printing from Toxoid Engine: {}", v);
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn toxoid_print_f64(v: SplitF64) {
+    println!("Printing from Toxoid Engine: {}", combine_f32(v));
 }
 
 #[no_mangle]
