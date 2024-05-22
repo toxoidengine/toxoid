@@ -56,6 +56,7 @@ pub fn render_rt_system(iter: &mut Iter) {
 
 #[cfg(all(feature = "render", feature = "spine"))]
 pub fn draw_bone_animation(iter: &mut Iter) {
+    println!("Hello?");
     let entities = iter.entities();
     entities
         .iter_mut()

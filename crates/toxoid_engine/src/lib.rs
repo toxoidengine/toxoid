@@ -8,7 +8,6 @@ pub use systems::*;
 pub use update::*;
 pub use utils::*;
 pub use utils::rand::*;
-pub use toxoid_ffi;
 
 pub fn init() {
     // Set up ECS (Currently just threads configuration)
@@ -22,9 +21,6 @@ pub fn init() {
     // Check if emscripten but also check if renderer feature is enabled
     #[cfg(feature = "render")]
     toxoid_sokol::init(render_loop);
-
-    // Bootstrap game engine logic
-    // bootstrap::init();
 
     // Initialize default entities.
     prefabs::init();
