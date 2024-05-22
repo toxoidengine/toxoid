@@ -55,9 +55,11 @@ pub extern "C" fn toxoid_make_c_string(string: &str) -> *mut i8 {
 }
 
 extern "C" {
+    #[cfg(target_arch = "wasm32")]
     fn emscripten_performance_now() -> f64;
 }
 
+#[cfg(target_arch = "wasm32")]
 #[no_mangle]
 pub extern "C" fn toxoid_get_timestamp() -> SplitF64 {
     split_f64(unsafe { emscripten_performance_now() })

@@ -1,5 +1,4 @@
 pub mod input;
-pub mod load;
 pub mod render;
 pub mod network;
 
@@ -11,14 +10,6 @@ pub use network::*;
 use toxoid_api::*;
 
 pub fn init() {
-    // // Loaders
-    // System::new(load_sprite_system)
-    //     .with::<(Loadable, Sprite, Size, Position)>()
-    //     .build();
-    // System::new(load_bone_animation_system)
-    //     .with::<(Loadable, Atlas, Skeleton, Images)>()
-    //     .build();
-
     #[cfg(feature = "render")] {
         // Renderers
         System::new(render_rect_system)

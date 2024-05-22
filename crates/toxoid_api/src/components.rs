@@ -73,13 +73,13 @@ component! {
     Atlas {
         atlas_filename: StringPtr,
         atlas: Pointer,
-        data_size: u64,
+        data_size: i32,
         loaded: bool,
     },
     Skeleton {
         skeleton_filename: StringPtr,
         skeleton: Pointer,
-        data_size: u64,
+        data_size: i32,
         loaded: bool,
     },
     Images {
