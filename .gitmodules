@@ -16,9 +16,9 @@
 [submodule "sokol"]
 	path = crates/toxoid_sokol/lib/sokol
 	url = https://github.com/floooh/sokol.git
-	branch = master
+	branch = 56e98211a2fbd906d37a1051475e04b22a4b62ee
 
 [submodule "sokol_gp"]
 	path = crates/toxoid_sokol/lib/sokol_gp
 	url = https://github.com/edubart/sokol_gp.git
-	branch = master
+	branch = a6ce39f93fb2da2c47b70cdd4d1c0a35c0e756ef
