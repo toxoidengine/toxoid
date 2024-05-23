@@ -1,12 +1,17 @@
 // TODO: Make this file more crossplatform generic and less dependent on Emscripten (must fix sokol-fetch)
 use toxoid_api::*;
+#[cfg(feature = "render")]
 use toxoid_render::Renderer2D;
 #[cfg(any(feature = "fetch", feature = "audio", feature = "render"))]
 use toxoid_sokol::bindings::*;
 #[cfg(feature = "render")]
 use toxoid_sokol::SokolRenderer2D;
+#[cfg(feature = "fetch")]
 use core::ffi::CStr;
+#[cfg(feature = "fetch")]
 use core::ffi::c_void;
+
+#[cfg(feature = "fetch")]
 struct FetchUserData {
     entity: *mut Entity,
     callback: Box<dyn FnMut(&mut Entity)>
@@ -203,7 +208,7 @@ pub fn load_sprite(filename: &str, callback: impl FnMut(&mut Entity) + 'static) 
 //
 #[cfg(all(feature = "fetch", feature = "render"))]
 pub unsafe extern "C" fn image_load_callback(result: *const sfetch_response_t) {
-    use toxoid_sokol::bindings::*;
+    // Check for errors
     if (*result).failed {
         eprintln!("Failed to load image: {}", CStr::from_ptr((*result).path).to_str().unwrap());
         return;
@@ -212,65 +217,22 @@ pub unsafe extern "C" fn image_load_callback(result: *const sfetch_response_t) {
     }
 
     // Get image data
+    let img_info = *((*result).user_data as *mut sspine_image_info);
     let data = (*result).data.ptr as *const u8;
     let size = (*result).data.size as usize;
-    let img_info_ptr = (*result).user_data as *mut sspine_image_info;
-    let img_info = *img_info_ptr;
-    let filename_c_str = core::ffi::CStr::from_ptr(img_info.filename.cstr.as_ptr());
-    println!("Successfully loaded images {}", filename_c_str.to_str().unwrap());
 
-    // get the image data from the fetch result
-    let desired_channels = 4;
-    let mut img_width: i32 = 0;
-    let mut img_height: i32 = 0;
-    let mut num_channels: i32 = 0;
-    let pixels = stbi_load_from_memory(
-        data as *const u8,
-        size as i32,
-        &mut img_width,
-        &mut img_height,
-        &mut num_channels,
-        desired_channels
+    // Initialize sokol-gfx image object
+    SokolRenderer2D::init_image(img_info.sgimage, data, size);
+    // Initialize sokol-gfx sampler object
+    SokolRenderer2D::init_sampler(
+        img_info.sgsampler,
+        img_info.min_filter,
+        img_info.mag_filter,
+        img_info.mipmap_filter,
+        img_info.wrap_u,
+        img_info.wrap_v,
+        &img_info.filename.cstr as *const _ as *const i8
     );
-    // sokol-spine has already allocated an image and sampler handle,
-    // just need to call sg_init_image() and sg_init_sampler() to complete setup
-    let mut image_desc = sg_image_desc {
-        _start_canary: 0,
-        type_: sg_image_type_SG_IMAGETYPE_2D,
-        render_target: false,
-        width: img_width as i32,
-        height: img_height as i32,
-        num_slices: 1,
-        num_mipmaps: 1,
-        usage: sg_usage_SG_USAGE_IMMUTABLE,
-        pixel_format: sg_pixel_format_SG_PIXELFORMAT_RGBA8,
-        sample_count: 1,
-        data: sg_image_data {
-            subimage: [[sg_range { ptr: pixels as *const c_void, size: (img_width * img_height * 4) as usize }; 16]; 6],
-        },
-        label: std::ptr::null(),
-        gl_textures: [0; 2usize],
-        gl_texture_target: 0,
-        mtl_textures: [std::ptr::null(); 2usize],
-        d3d11_texture: std::ptr::null(),
-        d3d11_shader_resource_view: std::ptr::null(),
-        wgpu_texture: std::ptr::null(),
-        wgpu_texture_view: std::ptr::null(),
-        _end_canary: 0,
-    };
-    sg_init_image(img_info.sgimage, &mut image_desc);
-    let mut sampler_desc: sg_sampler_desc = std::mem::MaybeUninit::zeroed().assume_init();
-    sampler_desc.min_filter = img_info.min_filter;
-    sampler_desc.mag_filter = img_info.mag_filter;
-    sampler_desc.mipmap_filter = img_info.mipmap_filter;
-    sampler_desc.wrap_u = img_info.wrap_u;
-    sampler_desc.wrap_v = img_info.wrap_v;
-    sampler_desc.label = &img_info.filename.cstr as *const _ as *const i8;
-    sg_init_sampler(img_info.sgsampler, &mut sampler_desc);
-    stbi_image_free(pixels as *mut c_void);
-
-    // Create image
-    // SokolRenderer2D::create_image((*result).user_data, data, size);
 }
 
 // this function is called when both the spine atlas and skeleton file has been loaded,
@@ -353,7 +315,7 @@ pub extern "C" fn animation_load_callback(result: *const sfetch_response_t) {
             // that's passed to the sspine_draw_layer() during rendering (in our
             // case it's simply framebuffer pixels, with the origin in the
             // center)
-            sspine_set_position(instance, sspine_vec2 { x: 200., y: 200. });
+            sspine_set_position(instance, sspine_vec2 { x: 400., y: 400. });
 
             // configure a simple animation sequence
             let anim_c_string = std::ffi::CString::new("idle_down").unwrap();
