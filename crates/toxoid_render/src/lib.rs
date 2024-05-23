@@ -1,4 +1,5 @@
 use std::any::Any;
+use std::ffi::c_void;
 use toxoid_api::components::{Position, Size, Color};
 
 pub trait Sprite: Any {
@@ -32,6 +33,8 @@ pub trait Renderer2D {
     fn create_render_target(width: u32, height: u32) -> Box<dyn RenderTarget>;
     // Create sprite
     fn create_sprite(data: *const u8, size: usize) -> Box<dyn Sprite>;
+    // Create image
+    fn create_image(image: *mut c_void, data: *const u8, size: usize);
     // Blit sprite (draw sprite on another base sprite)
     fn blit_sprite(source: &Box<dyn Sprite>, sx: f32, sy: f32, sw: f32, sh: f32, destination: &Box<dyn RenderTarget>, dx: f32, dy: f32);
     // Resize sprite

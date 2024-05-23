@@ -85,7 +85,6 @@ impl Renderer2D for SokolRenderer2D {
             sgp_set_color(0.1, 0.1, 0.1, 1.0);
             sgp_clear();
         }
-        
     }
 
     fn end(&self) {
@@ -224,6 +223,83 @@ impl Renderer2D for SokolRenderer2D {
         });
         sprite_boxed
     }
+
+    fn create_image(img_info_ptr: *mut core::ffi::c_void, data: *const u8, size: usize) {
+        // // get the image data from the fetch result
+        // let desired_channels = 4;
+        // let mut img_width: i32 = 0;
+        // let mut img_height: i32 = 0;
+        // let mut num_channels: i32 = 0;
+        // let pixels = unsafe { stbi_load_from_memory(
+        //     data as *const u8,
+        //     size as i32,
+        //     &mut img_width,
+        //     &mut img_height,
+        //     &mut num_channels,
+        //     desired_channels
+        // ) };
+        // // sokol-spine has already allocated an image and sampler handle,
+        // // just need to call sg_init_image() and sg_init_sampler() to complete setup
+        // let mut image_desc = sg_image_desc {
+        //     _start_canary: 0,
+        //     type_: sg_image_type_SG_IMAGETYPE_2D,
+        //     render_target: false,
+        //     width: img_width as i32,
+        //     height: img_height as i32,
+        //     num_slices: 1,
+        //     num_mipmaps: 1,
+        //     usage: sg_usage_SG_USAGE_IMMUTABLE,
+        //     pixel_format: sg_pixel_format_SG_PIXELFORMAT_RGBA8,
+        //     sample_count: 1,
+        //     data: sg_image_data {
+        //         subimage: [[sg_range { ptr: pixels as *const core::ffi::c_void, size: (img_width * img_height * 4) as usize }; 16]; 6],
+        //     },
+        //     label: std::ptr::null(),
+        //     gl_textures: [0; 2usize],
+        //     gl_texture_target: 0,
+        //     mtl_textures: [std::ptr::null(); 2usize],
+        //     d3d11_texture: std::ptr::null(),
+        //     d3d11_shader_resource_view: std::ptr::null(),
+        //     wgpu_texture: std::ptr::null(),
+        //     wgpu_texture_view: std::ptr::null(),
+        //     _end_canary: 0,
+        // };
+        // unsafe {
+        //     let img_info = *(img_info_ptr as *mut _ as *mut sspine_image_info);
+        //     sg_init_image(img_info.sgimage, &mut image_desc);
+        //     let mut sampler_desc: sg_sampler_desc = core::mem::MaybeUninit::zeroed().assume_init();
+        //     sampler_desc.min_filter = img_info.min_filter;
+        //     sampler_desc.mag_filter = img_info.mag_filter;
+        //     sampler_desc.mipmap_filter = img_info.mipmap_filter;
+        //     sampler_desc.wrap_u = img_info.wrap_u;
+        //     sampler_desc.wrap_v = img_info.wrap_v;
+        //     sampler_desc.label = &img_info.filename.cstr as *const _ as *const i8;
+        //     sg_init_sampler(img_info.sgsampler, &mut sampler_desc);
+        //     stbi_image_free(pixels as *mut core::ffi::c_void);
+        // }
+    }
+
+    // fn create_image(sgimage: *mut core::ffi::c_void, data: *const u8, size: usize) {
+    //     let mut width: i32 = 0;
+    //     let mut height: i32 = 0;
+    //     let mut channels: i32 = 0;
+    //     let image_data = unsafe {
+    //         // Converts from PNG format to RGBA8 format
+    //         stbi_load_from_memory(data as *const u8, size as core::ffi::c_int, &mut width, &mut height, &mut channels, 0)
+    //     };
+    //     let image_desc = sg::ImageDesc {
+    //         width,
+    //         height,
+    //         pixel_format: sg::PixelFormat::Rgba8,
+    //         data: sg::ImageData {
+    //             subimage: [[sg::Range { ptr: image_data as *const core::ffi::c_void, size: (width * height * 4) as usize }; 16]; 6],
+    //             ..Default::default()
+    //         },
+    //         ..Default::default()
+    //     };
+
+    //     sg::init_image(unsafe { *(sgimage as *mut _ as *mut sg::Image) }, &image_desc);
+    // }
     
     fn begin_rt(destination: &Box<dyn RenderTarget>, dw: f32, dh: f32) {
         unsafe {

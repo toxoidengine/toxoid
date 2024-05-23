@@ -7,7 +7,6 @@ use toxoid_sokol::bindings::*;
 use toxoid_sokol::SokolRenderer2D;
 use core::ffi::CStr;
 use core::ffi::c_void;
-
 struct FetchUserData {
     entity: *mut Entity,
     callback: Box<dyn FnMut(&mut Entity)>
@@ -123,25 +122,6 @@ pub fn load_cell(filename: &str, callback: impl FnMut(&mut Entity) + 'static) ->
 } 
 
 #[cfg(all(feature = "fetch", feature = "render"))]
-pub fn load_sprite(filename: &str, callback: impl FnMut(&mut Entity) + 'static) -> *mut Entity {
-    // println!("Loading image: {}", filename);
-    // Create entity and pass it to fetch
-    let mut entity = Entity::new();
-    entity.add::<Sprite>();
-    entity.add::<Position>();
-    entity.add::<Size>();
-
-    let entity_boxed = Box::into_raw(Box::new(entity));
-    let user_data = Box::into_raw(Box::new(FetchUserData {
-        entity: entity_boxed,
-        callback: Box::new(callback)
-    })) as *mut c_void;
-    let size = core::mem::size_of::<FetchUserData>();
-    fetch(filename, sprite_load_callback, user_data, size);
-    entity_boxed
-}
-
-#[cfg(all(feature = "fetch", feature = "render"))]
 #[no_mangle]
 pub extern "C" fn toxoid_engine_load_sprite(filename: &str,  callback: extern "C" fn(*mut Entity)) -> *mut Entity {
     load_sprite(filename, move |entity: &mut Entity| {
@@ -191,6 +171,108 @@ pub unsafe extern "C" fn sprite_load_callback(result: *const sfetch_response_t) 
     }
 }
 
+#[cfg(all(feature = "fetch", feature = "render"))]
+pub fn load_sprite(filename: &str, callback: impl FnMut(&mut Entity) + 'static) -> *mut Entity {
+    // println!("Loading image: {}", filename);
+    // Create entity and pass it to fetch
+    let mut entity = Entity::new();
+    entity.add::<Sprite>();
+    entity.add::<Position>();
+    entity.add::<Size>();
+
+    let entity_boxed = Box::into_raw(Box::new(entity));
+    let user_data = Box::into_raw(Box::new(FetchUserData {
+        entity: entity_boxed,
+        callback: Box::new(callback)
+    })) as *mut c_void;
+    let size = core::mem::size_of::<FetchUserData>();
+    fetch(filename, sprite_load_callback, user_data, size);
+    entity_boxed
+}
+
+// This is the image-data fetch callback. The loaded image data will be decoded
+// via stb_image.h and a sokol-gfx image object will be created.
+//
+// What's interesting here is that we're using sokol-gfx's multi-step
+// image setup. sokol-spine has already allocated an image handle
+// for each atlas image in sspine_make_atlas() via sg_alloc_image().
+//
+// The fetch callback just needs to finish the image setup by
+// calling sg_init_image(), or if loading has failed, put the
+// image object into the 'failed' resource state.
+//
+#[cfg(all(feature = "fetch", feature = "render"))]
+pub unsafe extern "C" fn image_load_callback(result: *const sfetch_response_t) {
+    use toxoid_sokol::bindings::*;
+    if (*result).failed {
+        eprintln!("Failed to load image: {}", CStr::from_ptr((*result).path).to_str().unwrap());
+        return;
+    } else {
+        println!("Successfully loaded {}", CStr::from_ptr((*result).path).to_str().unwrap());
+    }
+
+    // Get image data
+    let data = (*result).data.ptr as *const u8;
+    let size = (*result).data.size as usize;
+    let img_info_ptr = (*result).user_data as *mut sspine_image_info;
+    let img_info = *img_info_ptr;
+    let filename_c_str = core::ffi::CStr::from_ptr(img_info.filename.cstr.as_ptr());
+    println!("Successfully loaded images {}", filename_c_str.to_str().unwrap());
+
+    // get the image data from the fetch result
+    let desired_channels = 4;
+    let mut img_width: i32 = 0;
+    let mut img_height: i32 = 0;
+    let mut num_channels: i32 = 0;
+    let pixels = stbi_load_from_memory(
+        data as *const u8,
+        size as i32,
+        &mut img_width,
+        &mut img_height,
+        &mut num_channels,
+        desired_channels
+    );
+    // sokol-spine has already allocated an image and sampler handle,
+    // just need to call sg_init_image() and sg_init_sampler() to complete setup
+    let mut image_desc = sg_image_desc {
+        _start_canary: 0,
+        type_: sg_image_type_SG_IMAGETYPE_2D,
+        render_target: false,
+        width: img_width as i32,
+        height: img_height as i32,
+        num_slices: 1,
+        num_mipmaps: 1,
+        usage: sg_usage_SG_USAGE_IMMUTABLE,
+        pixel_format: sg_pixel_format_SG_PIXELFORMAT_RGBA8,
+        sample_count: 1,
+        data: sg_image_data {
+            subimage: [[sg_range { ptr: pixels as *const c_void, size: (img_width * img_height * 4) as usize }; 16]; 6],
+        },
+        label: std::ptr::null(),
+        gl_textures: [0; 2usize],
+        gl_texture_target: 0,
+        mtl_textures: [std::ptr::null(); 2usize],
+        d3d11_texture: std::ptr::null(),
+        d3d11_shader_resource_view: std::ptr::null(),
+        wgpu_texture: std::ptr::null(),
+        wgpu_texture_view: std::ptr::null(),
+        _end_canary: 0,
+    };
+    sg_init_image(img_info.sgimage, &mut image_desc);
+    let mut sampler_desc: sg_sampler_desc = std::mem::MaybeUninit::zeroed().assume_init();
+    sampler_desc.min_filter = img_info.min_filter;
+    sampler_desc.mag_filter = img_info.mag_filter;
+    sampler_desc.mipmap_filter = img_info.mipmap_filter;
+    sampler_desc.wrap_u = img_info.wrap_u;
+    sampler_desc.wrap_v = img_info.wrap_v;
+    sampler_desc.label = &img_info.filename.cstr as *const _ as *const i8;
+    sg_init_sampler(img_info.sgsampler, &mut sampler_desc);
+    stbi_image_free(pixels as *mut c_void);
+
+    // Create image
+    // SokolRenderer2D::create_image((*result).user_data, data, size);
+}
+
 // this function is called when both the spine atlas and skeleton file has been loaded,
 // first an atlas object is created from the loaded atlas data, and then a skeleton
 // object (which requires an atlas object as dependency), then a spine instance object.
@@ -225,7 +307,6 @@ pub extern "C" fn animation_load_callback(result: *const sfetch_response_t) {
         }
         
         if (*entity).get::<Atlas>().get_loaded() && (*entity).get::<Skeleton>().get_loaded() {
-
             // Create spine atlas object from loaded atlas data.
             let mut atlas_desc: sspine_atlas_desc = core::mem::MaybeUninit::zeroed().assume_init();
             let atlas = (*entity).get::<Atlas>();
@@ -261,25 +342,27 @@ pub extern "C" fn animation_load_callback(result: *const sfetch_response_t) {
 
             // Store Spine instance in singleton for now
             (*entity).add::<SpineInstance>();
-            let mut instance_singleton = (*entity).get::<SpineInstance>();
+            let mut instance_component = (*entity).get::<SpineInstance>();
             let instance_ptr = Box::new(instance);
             let instance_ptr = Box::into_raw(instance_ptr) as *mut c_void;
-            instance_singleton.set_instance(Pointer::new(instance_ptr));
-            instance_singleton.set_instantiated(true);
+            instance_component.set_instance(Pointer::new(instance_ptr));
+            instance_component.set_instantiated(true);
 
             // Since the spine instance doesn't move, its position can be set once,
             // the coordinate units depends on the sspine_layer_transform struct
             // that's passed to the sspine_draw_layer() during rendering (in our
             // case it's simply framebuffer pixels, with the origin in the
             // center)
-            sspine_set_position(instance, sspine_vec2 { x: 0., y: 0. });
+            sspine_set_position(instance, sspine_vec2 { x: 200., y: 200. });
 
             // configure a simple animation sequence
-            let anim_c_string = std::ffi::CString::new("idle_down_weapon").unwrap();
+            let anim_c_string = std::ffi::CString::new("idle_down").unwrap();
             let anim_c_string = anim_c_string.as_ptr();
             sspine_add_animation(instance, sspine_anim_by_name(spine_skeleton, anim_c_string), 0, true, 0.);
             
             let atlas_images_num = sspine_num_images(spine_atlas);
+
+            // load all atlas images
             for img_index in 0..atlas_images_num {
                 let img = sspine_image_by_index(spine_atlas, img_index);
                 let img_info = sspine_get_image_info(img);
@@ -296,10 +379,10 @@ pub extern "C" fn animation_load_callback(result: *const sfetch_response_t) {
                 // The downside is that loading multiple images would take longer.
                 let file_path = format!("assets/{}", filename_c_str.to_str().unwrap());
                 let file_path = file_path.as_str();
-                let img_ptr = Box::new(img);
+                let img_ptr = Box::new(img_info);
                 let img_ptr = Box::into_raw(img_ptr) as *mut c_void;
-               
-                // fetch(file_path, img_ptr as *mut c_void, images_load_success, images_load_fail);
+
+                fetch(file_path, image_load_callback, img_ptr as *mut c_void, std::mem::size_of::<sspine_image_info>());
             }
         }
     }
