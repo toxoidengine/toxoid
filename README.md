@@ -20,6 +20,9 @@ Multiplayer Spine Bone Animation and ImGui:
 
 https://github.com/toxoidengine/toxoid/assets/16667416/4474e276-3675-462e-909a-7d9a5b1e649b
 
+# Notes
+- Supported Spine Version - 4.1.24 ESS
+
 # Related Projects
 - Powers my UGC game / multiplayer online sandbox RPG [Legend of Worlds](http://legendofworlds.com/).
 - Also maintain [flecs-polyglot](https://github.com/flecs-hub/flecs-polyglot) - A universal scripting API for flecs on all languages that compile to WebAssembly.
