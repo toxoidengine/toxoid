@@ -15,7 +15,6 @@ pub fn init() {
       unsafe {
          let mut position = (*player_animation_entity).get::<Position>();
          (*player_animation_entity).add::<Local>();
-         println!("Player Animation Entity {:?}", (*player_animation_entity).get_id());
       }
    }
 }
