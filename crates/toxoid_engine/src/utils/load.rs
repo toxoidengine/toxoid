@@ -291,7 +291,7 @@ pub extern "C" fn animation_load_callback(result: *const sfetch_response_t) {
             let ptr = ptr.as_ptr();
             skeleton_desc.atlas = spine_atlas;
             skeleton_desc.json_data = ptr as *const i8;
-            skeleton_desc.prescale = 5.0;
+            skeleton_desc.prescale = 4.0;
             skeleton_desc.anim_default_mix = 0.2;
 
             let spine_skeleton = sspine_make_skeleton(&skeleton_desc);
@@ -318,7 +318,7 @@ pub extern "C" fn animation_load_callback(result: *const sfetch_response_t) {
             sspine_set_position(instance, sspine_vec2 { x: 400., y: 400. });
 
             // configure a simple animation sequence
-            let anim_c_string = std::ffi::CString::new("idle_down_weapon").unwrap();
+            let anim_c_string = std::ffi::CString::new("walk_down").unwrap();
             let anim_c_string = anim_c_string.as_ptr();
             sspine_add_animation(instance, sspine_anim_by_name(spine_skeleton, anim_c_string), 0, true, 0.);
             

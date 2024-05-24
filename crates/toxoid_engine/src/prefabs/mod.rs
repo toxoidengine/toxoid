@@ -11,7 +11,7 @@ pub fn init() {
    // local_player.set_entity_id(player_entity.get_id());
    // TODO: Make animation a child entity of player later
    #[cfg(feature = "render")] {
-      let player_animation_entity = crate::utils::load::load_animation("assets/player_spine.atlas", "assets/player_spine.json", |entity| {});
+      let player_animation_entity = crate::utils::load::load_animation("assets/player.atlas", "assets/player.json", |entity| {});
       unsafe {
          let mut position = (*player_animation_entity).get::<Position>();
          (*player_animation_entity).add::<Local>();
