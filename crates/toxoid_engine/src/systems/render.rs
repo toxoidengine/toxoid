@@ -62,12 +62,10 @@ pub fn render_bone_animation(iter: &mut Iter) {
         .for_each(|entity| {
             use toxoid_sokol::bindings::*;
             let spine_instance = entity.get::<SpineInstance>();
-            // let pos = entity.get::<Position>();
             let instance = spine_instance.get_instance().ptr as *mut sspine_instance;
             let instantiated = spine_instance.get_instantiated();
             if instantiated {
                 unsafe { 
-                    // sspine_set_position(*instance, sspine_vec2 { x: pos.get_x() as f32, y: pos.get_y() as f32 });
                     // Advance the instance animation and draw the instance.
                     // Important to note here is that no actual sokol-gfx rendering happens yet,
                     // instead sokol-spine will only record vertices, indices and draw commands.
@@ -77,6 +75,10 @@ pub fn render_bone_animation(iter: &mut Iter) {
                     let delta_time = sapp_frame_duration();
                     sspine_update_instance(*instance, delta_time as f32);
                     sspine_draw_instance_in_layer(*instance, 0);
+
+                    // Set position
+                    let pos = entity.get::<Position>();
+                    sspine_set_position(*instance, sspine_vec2 { x: pos.get_x() as f32, y: pos.get_y() as f32 });
                 }
             }
         });

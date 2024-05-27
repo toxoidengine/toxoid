@@ -71,14 +71,16 @@ component! {
         socket: Pointer
     },
     Atlas {
-        atlas_filename: StringPtr,
         atlas: Pointer,
+        filename: StringPtr,
+        data: Pointer,
         data_size: i32,
         loaded: bool,
     },
     Skeleton {
-        skeleton_filename: StringPtr,
         skeleton: Pointer,
+        filename: StringPtr,
+        data: Pointer,
         data_size: i32,
         loaded: bool,
     },

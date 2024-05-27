@@ -12,3 +12,7 @@ pub fn fnv1a_hash(bytes: &[u8]) -> u64 {
 pub fn get_timestamp() -> f64 {
     unsafe { combine_f32(toxoid_get_timestamp()) }
 }
+
+pub fn make_c_string(string: &str) -> *mut i8 {
+    unsafe { toxoid_make_c_string(string) }
+}
