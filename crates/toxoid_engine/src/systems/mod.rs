@@ -31,28 +31,21 @@ pub fn animation_input_system(iter: &mut Iter) {
 
                 if !keyboard_input.get_up() && !keyboard_input.get_down() && !keyboard_input.get_left() && !keyboard_input.get_right() {
                     let mut direction = entity.get::<Direction>();
-
-                    if direction.get_direction() == DirectionEnum::Up as u8 {
-                        // configure a simple animation sequence
-                        unsafe {
+                    unsafe {
+                        if direction.get_direction() == DirectionEnum::Up as u8 && CURRENT_ANIMATION != "idle_up" {
+                            // configure a simple animation sequence
                             sspine_set_animation(*instance, sspine_anim_by_name(*spine_skeleton, make_c_string("idle_up")), 0, true);
                             CURRENT_ANIMATION = "idle_up";
                         }
-                    }
-                    if direction.get_direction() == DirectionEnum::Down as u8 {
-                        unsafe {
+                        if direction.get_direction() == DirectionEnum::Down as u8 && CURRENT_ANIMATION != "idle_down"{
                             sspine_set_animation(*instance, sspine_anim_by_name(*spine_skeleton, make_c_string("idle_down")), 0, true);
                             CURRENT_ANIMATION = "idle_down";
                         }
-                    }
-                    if direction.get_direction() == DirectionEnum::Left as u8 {
-                        unsafe {
+                        if direction.get_direction() == DirectionEnum::Left as u8 && CURRENT_ANIMATION != "idle_left" {
                             sspine_set_animation(*instance, sspine_anim_by_name(*spine_skeleton, make_c_string("idle_left")), 0, true);
                             CURRENT_ANIMATION = "idle_left";
                         }
-                    }
-                    if direction.get_direction() == DirectionEnum::Right as u8 {
-                        unsafe {
+                        if direction.get_direction() == DirectionEnum::Right as u8 && CURRENT_ANIMATION != "idle_right" {
                             sspine_set_animation(*instance, sspine_anim_by_name(*spine_skeleton, make_c_string("idle_right")), 0, true);
                             CURRENT_ANIMATION = "idle_right";
                         }
@@ -68,7 +61,7 @@ pub fn animation_input_system(iter: &mut Iter) {
                         CURRENT_ANIMATION = "walk_down";
                     }
                     if keyboard_input.get_left() && CURRENT_ANIMATION != "walk_left" {
-                        sspine_set_animation(*instance, sspine_anim_by_name(*spine_skeleton, make_c_string("idle_left")), 0, true);
+                        sspine_set_animation(*instance, sspine_anim_by_name(*spine_skeleton, make_c_string("walk_left")), 0, true);
                         CURRENT_ANIMATION = "walk_left";
                     }
                     if keyboard_input.get_right() && CURRENT_ANIMATION != "walk_right" {
