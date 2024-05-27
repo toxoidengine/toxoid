@@ -14,6 +14,8 @@ pub fn init() {
       let player_animation_entity = crate::utils::load::load_animation("assets/player.atlas", "assets/player.json", |entity| {});
       unsafe {
          let mut position = (*player_animation_entity).get::<Position>();
+         position.set_x(100);
+         position.set_y(100);
          (*player_animation_entity).add::<Local>();
       }
    }

@@ -259,42 +259,44 @@ pub extern "C" fn animation_load_callback(result: *const sfetch_response_t) {
             let mut atlas = (*entity).get::<Atlas>();
             atlas.set_loaded(true);
             atlas.set_data_size(size as i32);
-            atlas.set_atlas(Pointer::new(data as *mut c_void));
+            atlas.set_data(Pointer::new(data as *mut c_void));
         } else if url.contains("json") {
             // println!("Successfully loaded skeleton {}", url);
             let mut skeleton = (*entity).get::<Skeleton>();
             skeleton.set_loaded(true);
             skeleton.set_data_size(size as i32);
-            skeleton.set_skeleton(Pointer::new(data as *mut c_void));
+            skeleton.set_data(Pointer::new(data as *mut c_void));
         }
         
         if (*entity).get::<Atlas>().get_loaded() && (*entity).get::<Skeleton>().get_loaded() {
             // Create spine atlas object from loaded atlas data.
             let mut atlas_desc: sspine_atlas_desc = core::mem::MaybeUninit::zeroed().assume_init();
-            let atlas = (*entity).get::<Atlas>();
-            let ptr = atlas.get_atlas().ptr;
+            let mut atlas = (*entity).get::<Atlas>();
+            let data_ptr = atlas.get_data().ptr;
             atlas_desc.data = sspine_range {
-                ptr,
+                ptr: data_ptr,
                 size: size as usize
             };
             let spine_atlas = sspine_make_atlas(&atlas_desc);
+            atlas.set_atlas(Pointer::new(Box::into_raw(Box::new(spine_atlas)) as *mut c_void));
 
             // Next create a spine skeleton object, skeleton data files can be either
             // text (JSON) or binary (in our case, 'raptor-pro.skel' is a binary skeleton file).
             // In case of JSON data, make sure that the data is 0-terminated!
             let mut skeleton_desc: sspine_skeleton_desc = core::mem::MaybeUninit::zeroed().assume_init();
-            let skeleton = (*entity).get::<Skeleton>();
-            let ptr = skeleton.get_skeleton().ptr;
+            let mut skeleton = (*entity).get::<Skeleton>();
+            let data_ptr = skeleton.get_data().ptr;
             let size = skeleton.get_data_size() as usize;
-            let ptr = core::slice::from_raw_parts(ptr, size + 1).as_ptr() as *const i8;
-            let ptr = std::ffi::CString::from_raw(ptr as *mut i8);
-            let ptr = ptr.as_ptr();
+            let data_ptr = core::slice::from_raw_parts(data_ptr, size + 1).as_ptr() as *const i8;
+            let data_ptr = std::ffi::CString::from_raw(data_ptr as *mut i8);
+            let data_ptr = data_ptr.as_ptr();
             skeleton_desc.atlas = spine_atlas;
-            skeleton_desc.json_data = ptr as *const i8;
-            skeleton_desc.prescale = 4.0;
+            skeleton_desc.json_data = data_ptr as *const i8;
+            skeleton_desc.prescale = 2.0;
             skeleton_desc.anim_default_mix = 0.2;
 
             let spine_skeleton = sspine_make_skeleton(&skeleton_desc);
+            skeleton.set_skeleton(Pointer::new(Box::into_raw(Box::new(spine_skeleton)) as *mut c_void));
 
             let mut spine_instance_desc: sspine_instance_desc = core::mem::MaybeUninit::zeroed().assume_init();
             spine_instance_desc.skeleton = spine_skeleton;
@@ -309,18 +311,9 @@ pub extern "C" fn animation_load_callback(result: *const sfetch_response_t) {
             let instance_ptr = Box::into_raw(instance_ptr) as *mut c_void;
             instance_component.set_instance(Pointer::new(instance_ptr));
             instance_component.set_instantiated(true);
-
-            // Since the spine instance doesn't move, its position can be set once,
-            // the coordinate units depends on the sspine_layer_transform struct
-            // that's passed to the sspine_draw_layer() during rendering (in our
-            // case it's simply framebuffer pixels, with the origin in the
-            // center)
-            sspine_set_position(instance, sspine_vec2 { x: 400., y: 400. });
-
+            
             // configure a simple animation sequence
-            let anim_c_string = std::ffi::CString::new("walk_down").unwrap();
-            let anim_c_string = anim_c_string.as_ptr();
-            sspine_add_animation(instance, sspine_anim_by_name(spine_skeleton, anim_c_string), 0, true, 0.);
+            sspine_add_animation(instance, sspine_anim_by_name(spine_skeleton, make_c_string("idle_down")), 0, true, 0.);
             
             let atlas_images_num = sspine_num_images(spine_atlas);
 
@@ -364,9 +357,9 @@ pub fn load_animation(atlas_filename: &str, skeleton_filename: &str, callback: i
         entity.add::<Images>();
 
         let mut atlas = entity.get::<Atlas>();
-        atlas.set_atlas_filename(StringPtr::new(atlas_filename));
+        atlas.set_filename(StringPtr::new(atlas_filename));
         let mut skeleton = entity.get::<Skeleton>();
-        skeleton.set_skeleton_filename(StringPtr::new(skeleton_filename));
+        skeleton.set_filename(StringPtr::new(skeleton_filename));
 
         let entity_boxed = Box::into_raw(Box::new(entity));
         let user_data = Box::into_raw(Box::new(FetchUserData {
