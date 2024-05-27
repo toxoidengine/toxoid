@@ -13,6 +13,7 @@ use toxoid_api::*;
 #[cfg(feature = "render")]
 static mut CURRENT_ANIMATION: &str = "idle_down";
 
+
 // TODO: Remove from engine, and make animation name and position update through flecs Observables (To be implemented)
 #[cfg(feature = "render")]
 pub fn animation_input_system(iter: &mut Iter) {
@@ -53,7 +54,7 @@ pub fn animation_input_system(iter: &mut Iter) {
                 }
                 unsafe {
                     if keyboard_input.get_up() && CURRENT_ANIMATION != "walk_up" { 
-                        sspine_set_animation(*instance, sspine_anim_by_name(*spine_skeleton, make_c_string("idle_up")), 0, true);
+                        sspine_set_animation(*instance, sspine_anim_by_name(*spine_skeleton, make_c_string("walk_up")), 0, true);
                         CURRENT_ANIMATION = "walk_up";
                     }
                     if keyboard_input.get_down() && CURRENT_ANIMATION != "walk_down" {
@@ -65,7 +66,7 @@ pub fn animation_input_system(iter: &mut Iter) {
                         CURRENT_ANIMATION = "walk_left";
                     }
                     if keyboard_input.get_right() && CURRENT_ANIMATION != "walk_right" {
-                        sspine_set_animation(*instance, sspine_anim_by_name(*spine_skeleton, make_c_string("idle_right")), 0, true);
+                        sspine_set_animation(*instance, sspine_anim_by_name(*spine_skeleton, make_c_string("walk_right")), 0, true);
                         CURRENT_ANIMATION = "walk_right";
                     }
                 }

@@ -405,7 +405,7 @@ impl Renderer2D for SokolRenderer2D {
         }
     }
 
-    fn draw_filled_rect(pos: Position, size: Size, color: Color) {
+    fn draw_filled_rect(pos: &Position, size: &Size, color: &Color) {
         unsafe {
             let game_config = World::get_singleton::<GameConfig>();
             let (window_width, _) = SokolRenderer2D::window_size();

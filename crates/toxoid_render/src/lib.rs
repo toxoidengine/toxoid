@@ -42,7 +42,7 @@ pub trait Renderer2D {
     // Draw render target
     fn draw_render_target(source: &Box<dyn RenderTarget>, dx: f32, dy: f32, dw: f32, dh: f32);
     // Draw a filled rect
-    fn draw_filled_rect(pos: Position, size: Size, color: Color);
+    fn draw_filled_rect(pos: &Position, size: &Size, color: &Color);
     // Draw a line
     fn draw_line(ax: f32, ay: f32, bx: f32, by: f32);
     // Clear sprite

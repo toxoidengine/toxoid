@@ -394,8 +394,8 @@ impl Iter {
         }
     }
 
-    pub fn count(&self) -> i32 {
-        unsafe { toxoid_iter_count(self.iter) }
+    pub fn count(&self) -> usize {
+        unsafe { toxoid_iter_count(self.iter) as usize }
     }
 
     pub fn next(&self) -> bool {
