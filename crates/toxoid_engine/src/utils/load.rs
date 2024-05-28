@@ -62,6 +62,9 @@ pub unsafe extern "C" fn worldmap_load_callback(result: *const sfetch_response_t
     entity.add::<TiledWorldComponent>();
     let mut world_component = entity.get::<TiledWorldComponent>();
     world_component.set_world(Pointer { ptr: world_ptr as *mut c_void });
+
+    // Make loadable
+    entity.add::<Loadable>();
     
     // Get user data
     let mut user_data: Box<FetchUserData> = Box::from_raw((*result).user_data as *mut FetchUserData);
@@ -102,10 +105,13 @@ pub unsafe extern "C" fn cell_load_callback(result: *const sfetch_response_t) {
     // Grab entity from user data
     let mut entity: Box<Entity> = Box::from_raw(user_data.entity);
 
-    // // Add TiledWorldComponent to entity
+    // Add TiledWorldComponent to entity
     entity.add::<TiledCellComponent>();
     let mut cell_component = entity.get::<TiledCellComponent>();
     cell_component.set_cell(Pointer { ptr: cell_ptr as *mut c_void });
+
+    // Add Loadable
+    entity.add::<Loadable>();
     
     // Get user data
     let mut user_data: Box<FetchUserData> = Box::from_raw((*result).user_data as *mut FetchUserData);

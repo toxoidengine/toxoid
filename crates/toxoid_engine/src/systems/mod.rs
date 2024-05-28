@@ -13,7 +13,6 @@ use toxoid_api::*;
 #[cfg(feature = "render")]
 static mut CURRENT_ANIMATION: &str = "idle_down";
 
-
 // TODO: Remove from engine, and make animation name and position update through flecs Observables (To be implemented)
 #[cfg(feature = "render")]
 pub fn animation_input_system(iter: &mut Iter) {
@@ -93,6 +92,11 @@ pub fn init() {
             .with::<(SpineInstance, Position)>()
             .build();
     }
+    
+    #[cfg(feature = "render")]
+    System::new(load_tilemap_system)
+        .with::<(TiledWorldComponent, Loadable)>()
+        .build();
     
     // Network
     // #[cfg(feature = "net")]
