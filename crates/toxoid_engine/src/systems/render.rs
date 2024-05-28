@@ -189,7 +189,25 @@ pub fn render_bone_animation(iter: &mut Iter) {
 //         }
 // }
 
-pub fn load_cell_system() {
+pub fn load_cell_system(iter: &mut Iter) {
+    println!("Loading cell!");
+    let cells = iter.field::<TiledCellComponent>(1);
+    let count = iter.count();
+    let entities = iter.entities();
+    for i in 0..count {
+        let cell = cells
+        .get(i)
+        .unwrap()
+        .get_cell()
+        .ptr as *mut toxoid_tiled::TiledCell;
+        unsafe {
+            (*cell).tilesets.iter().for_each(|tileset| {
+                println!("Loading tileset: {}", tileset.name);
+                // crate::utils::load::load_cell(format!("assets/{}", tileset.file_name).as_str(), |_| {});
+            });   
+        }
+        entities[i].remove::<Loadable>();
+    }
     // crate::utils::load::load_cell(format!("assets/{}", map.file_name).as_str());
 }
 

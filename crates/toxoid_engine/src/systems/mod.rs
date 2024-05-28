@@ -94,6 +94,10 @@ pub fn init() {
     }
     
     #[cfg(feature = "render")]
+    System::new(load_cell_system)
+        .with::<(TiledCellComponent, Loadable)>()
+        .build();
+    #[cfg(feature = "render")]
     System::new(load_tilemap_system)
         .with::<(TiledWorldComponent, Loadable)>()
         .build();
