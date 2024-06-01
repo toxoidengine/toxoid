@@ -673,28 +673,49 @@ impl Parse for ComponentTuple {
     }
 }
 
+
 #[proc_macro_attribute]
 pub fn each(args: TokenStream, input: TokenStream) -> TokenStream {
     let ComponentTuple(types) = parse_macro_input!(args as ComponentTuple);
     let mut func = parse_macro_input!(input as ItemFn);
 
-    let new_stmts: Vec<Stmt> = types.iter().enumerate().filter_map(|(index, typ)| {
+    let component_vars: Vec<_> = types.iter().enumerate().filter_map(|(index, typ)| {
         typ.as_ref().map(|t| {
             let ident = make_variable_name(t);
-            let term_index = index as i32 + 1; // 1-based indexing
+            let term_index = index as i32 + 1; // 1-based indexing in FLecs
             let stmt: Stmt = syn::parse_quote! {
-                let #ident = iter.field::<#t>(#term_index);
+                let #ident = iter.field_mut::<#t>(#term_index);
             };
-            stmt
+            (stmt, ident)
         })
     }).collect();
 
-    // Inject these statements at the start of the function's block
+    let iter_name = format_ident!("entities");
+    let mut zip_expr = quote! {};
+    let mut first = true;
+
+    for (stmt, ident) in &component_vars {
+        if first {
+            zip_expr = quote! { #ident.iter_mut() };
+            first = false;
+        } else {
+            zip_expr = quote! { #zip_expr.zip(#ident.iter_mut()) };
+        }
+    }
+
+    let tuple_idents: Vec<_> = component_vars.iter().map(|(_, ident)| ident).collect();
+    let iter_statement = syn::parse_quote! {
+        let #iter_name = #zip_expr.map(|(#(#tuple_idents),*)| (#(#tuple_idents),*));
+    };
+
+    // Inject component retrieval and iterator creation at the start of the function's block
     let mut stmts = std::mem::take(&mut func.block.stmts);
-    stmts.splice(0..0, new_stmts.iter().cloned());
+    for (stmt, _) in component_vars.clone().into_iter().rev() {
+        stmts.insert(0, stmt);
+    }
+    stmts.insert(component_vars.len(), iter_statement);
     func.block.stmts = stmts;
 
-    // Generate the final token stream
     let output = quote! {
         #func
     };

@@ -212,17 +212,17 @@ pub fn load_cell_system(iter: &mut Iter) {
 }
 
 use toxoid_api_macro::*;
-#[each(Position, Velocity)]
-pub fn update(iter: &mut Iter) {
-    println!("Updating entities with Position and Velocity components");
-    // let tiledworldcomponent = iter.field::<TiledWorldComponent>(1i32);
-            // let loadable = iter.field::<Loadable>(2i32);
-    // println!("Component0: {:?}", tiledworldcomponent[0].get_id());
-    // println!("Component2: {:?}", loadable[0].get_id());
-    // `component0` is for `Position` at index 0
-    // `component2` is for `Velocity` at index 2 (index 1 is skipped with `()`)
-    // You can use `component0` and `component2` in your function
 
+#[each(Position, Velocity)]
+pub fn update_player_system(iter: &mut Iter) {
+    entities.for_each(|(position, velocity)| {
+        let x = position.get_x();
+        let y = position.get_y();
+        let dx = velocity.get_dx();
+        let dy = velocity.get_dy();
+        position.set_x(x + dx as u32);
+        position.set_y(y + dy as u32);
+    });
 }
 
 #[each(TiledWorldComponent, _)]
@@ -231,7 +231,6 @@ pub fn load_tilemap_system(iter: &mut Iter) {
     // let worlds = iter.field::<TiledWorldComponent>(1i32);
     // let loadable = iter.field::<Loadable>(2i32);
     // update(iter);
-    println!("Component0: {:?}", tiled_world_component[0].get_id());
     let worlds = iter.field::<TiledWorldComponent>(1);
     let count = iter.count();
     let entities = iter.entities();
