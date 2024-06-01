@@ -215,7 +215,7 @@ use toxoid_api_macro::*;
 
 #[each(Position, Velocity)]
 pub fn update_player_system(iter: &mut Iter) {
-    entities.for_each(|(position, velocity)| {
+    components.for_each(|(position, velocity)| {
         let x = position.get_x();
         let y = position.get_y();
         let dx = velocity.get_dx();
