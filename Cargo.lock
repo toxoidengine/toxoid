@@ -771,6 +771,7 @@ dependencies = [
  "once_cell",
  "rand",
  "toxoid_api",
+ "toxoid_api_macro",
  "toxoid_ffi",
  "toxoid_net",
  "toxoid_render",

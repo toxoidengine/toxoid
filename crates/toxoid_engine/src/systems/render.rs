@@ -211,7 +211,27 @@ pub fn load_cell_system(iter: &mut Iter) {
     // crate::utils::load::load_cell(format!("assets/{}", map.file_name).as_str());
 }
 
+use toxoid_api_macro::*;
+#[each(Position, Velocity)]
+pub fn update(iter: &mut Iter) {
+    println!("Updating entities with Position and Velocity components");
+    // let tiledworldcomponent = iter.field::<TiledWorldComponent>(1i32);
+            // let loadable = iter.field::<Loadable>(2i32);
+    // println!("Component0: {:?}", tiledworldcomponent[0].get_id());
+    // println!("Component2: {:?}", loadable[0].get_id());
+    // `component0` is for `Position` at index 0
+    // `component2` is for `Velocity` at index 2 (index 1 is skipped with `()`)
+    // You can use `component0` and `component2` in your function
+
+}
+
+#[each(TiledWorldComponent, _)]
 pub fn load_tilemap_system(iter: &mut Iter) {
+    println!("Testing macro");
+    // let worlds = iter.field::<TiledWorldComponent>(1i32);
+    // let loadable = iter.field::<Loadable>(2i32);
+    // update(iter);
+    println!("Component0: {:?}", tiled_world_component[0].get_id());
     let worlds = iter.field::<TiledWorldComponent>(1);
     let count = iter.count();
     let entities = iter.entities();
@@ -229,6 +249,7 @@ pub fn load_tilemap_system(iter: &mut Iter) {
                 .iter()
                 .for_each(|map| {
                     println!("Loading map: {}", map.file_name);
+                    #[cfg(feature = "fetch")]
                     crate::utils::load::load_cell(format!("assets/{}", map.file_name).as_str(), |_| {});
                 });
         }

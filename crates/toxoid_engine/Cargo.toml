@@ -6,6 +6,7 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+toxoid_api_macro = { path = "../toxoid_api_macro" }
 toxoid_ffi = { path="../toxoid_ffi" }
 toxoid_api = { path="../toxoid_api" }
 # toxoid_api_macro = { path="../toxoid_api_macro" }

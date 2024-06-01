@@ -15,6 +15,9 @@ pub fn init() {
     unsafe {
         toxoid_ffi::emscripten::emscripten_websocket_set_onopen_callback_on_thread(ws, user_data, onopen_cb,  toxoid_ffi::emscripten::EM_CALLBACK_THREAD_CONTEXT_CALLING_THREAD as *mut c_void);
         toxoid_ffi::emscripten::emscripten_websocket_set_onmessage_callback_on_thread(ws, user_data, onmessage_cb, toxoid_ffi::emscripten::EM_CALLBACK_THREAD_CONTEXT_CALLING_THREAD);
+        toxoid_ffi::emscripten::emscripten_websocket_set_onerror_callback_on_thread(ws, user_data, onerror_cb, toxoid_ffi::emscripten::EM_CALLBACK_THREAD_CONTEXT_CALLING_THREAD);
+        toxoid_ffi::emscripten::emscripten_websocket_set_onclose_callback_on_thread(ws, user_data, onclose_cb, toxoid_ffi::emscripten::EM_CALLBACK_THREAD_CONTEXT_CALLING_THREAD);
+        println!("Hello Emscripten WebSocket!");
     }
 
     World::add_singleton::<WebSocket>();
@@ -32,6 +35,8 @@ pub extern "C" fn onopen_cb(
     _user_data: *mut ::std::os::raw::c_void
 ) {
     println!("Connection opened.");
+    let mut websocket = World::get_singleton::<WebSocket>();
+    websocket.set_connected(true);
 }
 
 #[cfg(target_os = "emscripten")]
@@ -47,6 +52,24 @@ pub extern "C" fn onmessage_cb(
     network_messages.messages.iter().for_each(|message| {
         unsafe { toxoid_net::toxoid_net_run_event(message.event.clone(), message) };
     });
+}
+
+#[cfg(target_os = "emscripten")]
+pub extern "C" fn onerror_cb(
+    _event_type: *mut ::std::os::raw::c_void,
+    _user_data: *mut ::std::os::raw::c_void
+) {
+    println!("Connection error.");
+}
+
+#[cfg(target_os = "emscripten")]
+pub extern "C" fn onclose_cb(
+    _event_type: *mut ::std::os::raw::c_void,
+    _user_data: *mut ::std::os::raw::c_void
+) {
+    let mut websocket = World::get_singleton::<WebSocket>();
+    websocket.set_connected(false);
+    println!("Connection closed.");
 }
 
 pub fn serialize_entity(entity_id: ecs_entity_t) -> Vec<toxoid_serialize::NetworkMessageComponent> {

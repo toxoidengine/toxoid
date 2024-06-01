@@ -68,7 +68,8 @@ component! {
         entity_id: u64
     },
     WebSocket {
-        socket: Pointer
+        socket: Pointer,
+        connected: bool
     },
     Atlas {
         atlas: Pointer,

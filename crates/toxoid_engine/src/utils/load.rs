@@ -219,7 +219,7 @@ pub unsafe extern "C" fn image_load_callback(result: *const sfetch_response_t) {
         eprintln!("Failed to load image: {}", CStr::from_ptr((*result).path).to_str().unwrap());
         return;
     } else {
-        println!("Successfully loaded {}", CStr::from_ptr((*result).path).to_str().unwrap());
+        // println!("Successfully loaded {}", CStr::from_ptr((*result).path).to_str().unwrap());
     }
 
     // Get image data

@@ -646,3 +646,79 @@ pub fn system(attr: TokenStream, item: TokenStream) -> TokenStream {
 
     TokenStream::from(expanded)
 }
+
+use syn::{Token, Result};
+use quote::format_ident;
+use syn::Stmt;
+
+// Parsing utility for component types, handles empty tuples as skip with `()`
+struct ComponentTuple(Punctuated<Option<Type>, Token![,]>);
+
+impl Parse for ComponentTuple {
+    fn parse(input: ParseStream) -> syn::Result<Self> {
+        let mut components = Punctuated::new();
+        while !input.is_empty() {
+            if input.peek(Token![_]) {
+                input.parse::<Token![_]>()?;
+                components.push_value(None);
+            } else {
+                let typ: Type = input.parse()?;
+                components.push_value(Some(typ));
+            }
+            if !input.is_empty() {
+                components.push_punct(input.parse()?);
+            }
+        }
+        Ok(ComponentTuple(components))
+    }
+}
+
+#[proc_macro_attribute]
+pub fn each(args: TokenStream, input: TokenStream) -> TokenStream {
+    let ComponentTuple(types) = parse_macro_input!(args as ComponentTuple);
+    let mut func = parse_macro_input!(input as ItemFn);
+
+    let new_stmts: Vec<Stmt> = types.iter().enumerate().filter_map(|(index, typ)| {
+        typ.as_ref().map(|t| {
+            let ident = make_variable_name(t);
+            let term_index = index as i32 + 1; // 1-based indexing
+            let stmt: Stmt = syn::parse_quote! {
+                let #ident = iter.field::<#t>(#term_index);
+            };
+            stmt
+        })
+    }).collect();
+
+    // Inject these statements at the start of the function's block
+    let mut stmts = std::mem::take(&mut func.block.stmts);
+    stmts.splice(0..0, new_stmts.iter().cloned());
+    func.block.stmts = stmts;
+
+    // Generate the final token stream
+    let output = quote! {
+        #func
+    };
+
+    TokenStream::from(output)
+}
+
+fn make_variable_name(t: &Type) -> Ident {
+    let type_str = match t {
+        Type::Path(type_path) if type_path.qself.is_none() => {
+            // Extract the last segment as the type name
+            type_path.path.segments.last().unwrap().ident.to_string()
+        },
+        _ => panic!("Unsupported type in `each` macro")
+    };
+
+    // Convert CamelCase to snake_case
+    let mut snake_case = String::new();
+    for (i, ch) in type_str.chars().enumerate() {
+        if ch.is_uppercase() && i != 0 {
+            snake_case.push('_');
+        }
+        snake_case.push(ch.to_lowercase().next().unwrap());
+    }
+
+    format_ident!("{}", snake_case)
+}
