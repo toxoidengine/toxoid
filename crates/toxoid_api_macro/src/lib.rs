@@ -690,7 +690,7 @@ pub fn each(args: TokenStream, input: TokenStream) -> TokenStream {
         })
     }).collect();
 
-    let iter_name = format_ident!("entities");
+    let iter_name = format_ident!("components");
     let mut zip_expr = quote! {};
     let mut first = true;
 
