@@ -115,14 +115,20 @@ pub fn send_entity(entity_id: ecs_entity_t, event: String) {
 pub fn send(network_messages: NetworkMessages) {
     let data = serialize(network_messages).unwrap();
     let websocket = World::get_singleton::<WebSocket>();
+    println!("Connected: {:?}", websocket.get_connected());
+    // Check if the WebSocket is in a ready state
+    if !websocket.get_connected() {
+        return;
+    }
     #[cfg(target_os = "emscripten")]
     unsafe {
-        toxoid_ffi::emscripten::emscripten_websocket_send_binary(
+        let result = toxoid_ffi::emscripten::emscripten_websocket_send_binary(
             websocket.get_socket().ptr, 
             data.as_ptr() as *const core::ffi::c_void, 
             data.len() as i32
-        )
+        );
     };
+
     #[cfg(not(target_os = "emscripten"))]
     unimplemented!();
 }
