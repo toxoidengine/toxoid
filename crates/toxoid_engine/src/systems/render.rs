@@ -189,7 +189,6 @@ pub fn render_bone_animation(iter: &mut Iter) {
 #[cfg(feature = "render")]
 #[components(TiledCellComponent)]
 pub fn blit_cell_system(iter: &mut Iter) {
-    println!("Hello, blittable cell!");
     let entities = iter.entities();
     entities
         .iter_mut()
@@ -277,25 +276,26 @@ pub fn blit_cell_system(iter: &mut Iter) {
                             });
                         }
                 });
-                SokolRenderer2D::end_rt();
-                // Create render target entity
-                {
-                    let mut entity = Entity::new();
-                    entity.add::<Position>();
-                    entity.add::<Size>();
-                    entity.add::<RenderTarget>();
+            SokolRenderer2D::end_rt();
+            // Create render target entity
+            {
+                let mut entity = Entity::new();
+                entity.add::<Position>();
+                entity.add::<Size>();
+                entity.add::<RenderTarget>();
 
-                    let mut position = entity.get::<Position>();
-                    position.set_x(0);
-                    position.set_y(0);
-                    let mut size = entity.get::<Size>();
-                    size.set_width(pixel_width);
-                    size.set_height(pixel_height);
-                    let mut render_target = entity.get::<RenderTarget>();
-                    render_target.set_render_target(Pointer{ ptr: Box::leak(rt) as *mut _ as *mut c_void });
+                let mut position = entity.get::<Position>();
+                position.set_x(0);
+                position.set_y(0);
+                let mut size = entity.get::<Size>();
+                size.set_width(pixel_width);
+                size.set_height(pixel_height);
+                let mut render_target = entity.get::<RenderTarget>();
+                render_target.set_render_target(Pointer{ ptr: Box::leak(rt) as *mut _ as *mut c_void });
 
-                    entity.add::<Renderable>();
-                }
+                entity.add::<Renderable>();
+            }
+            cell_entity.remove::<Blittable>();
         });
 }
 
@@ -360,34 +360,34 @@ pub fn load_world_system(iter: &mut Iter) {
 }
 
 pub fn init() {
-    #[cfg(feature = "render")] {
-        // Renderers
-        // System::new(render_rect_system)
-        //     .with::<(Rect, Renderable, Color, Size, Position)>()
-        //     .build();
-        // System::new(render_sprite_system)
-        //     .with::<(Sprite, Renderable, Size, Position)>()
-        //     .build();
-        System::new(render_rt_system)
-            .with::<(RenderTarget, Renderable, Size, Position)>()
-            .build();
-        // System::new(render_bone_animation)
-        //     .with::<(SpineInstance, Position, BoneAnimation)>()
-        //     .build();
+    // #[cfg(feature = "render")] {
+    //     // Renderers
+    //     System::new(render_rect_system)
+    //         .with::<(Rect, Renderable, Color, Size, Position)>()
+    //         .build();
+    //     System::new(render_sprite_system)
+    //         .with::<(Sprite, Renderable, Size, Position)>()
+    //         .build();
+    //     System::new(render_rt_system)
+    //         .with::<(RenderTarget, Renderable, Size, Position)>()
+    //         .build();
+    //     System::new(render_bone_animation)
+    //         .with::<(SpineInstance, Position, BoneAnimation)>()
+    //         .build();
         
-    }
-    #[cfg(feature = "render")]
-    System::new(load_world_system)
-        .with::<(TiledWorldComponent, Loadable)>()
-        .build();
-    #[cfg(feature = "render")]
-    System::new(load_cell_system)
-        .with::<(TiledCellComponent, Loadable)>()
-        .build();
-    #[cfg(feature = "render")]
-    System::new(blit_cell_system)
-        .with::<(TiledCellComponent, Blittable)>()
-        .build();
+    // }
+    // #[cfg(feature = "render")]
+    // System::new(load_world_system)
+    //     .with::<(TiledWorldComponent, Loadable)>()
+    //     .build();
+    // #[cfg(feature = "render")]
+    // System::new(load_cell_system)
+    //     .with::<(TiledCellComponent, Loadable)>()
+    //     .build();
+    // #[cfg(feature = "render")]
+    // System::new(blit_cell_system)
+    //     .with::<(TiledCellComponent, Blittable)>()
+    //     .build();
     // #[cfg(feature = "render")]
     // System::new(render_cell_system)
     //     .with::<(TiledCellComponent, Renderable)>()
