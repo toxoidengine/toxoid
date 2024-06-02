@@ -38,6 +38,8 @@ pub struct Tileset {
     pub tilecount: u32,
     pub tileheight: u32,
     pub tilewidth: u32,
+    #[serde(skip)]
+    pub sprite: Option<*mut std::ffi::c_void>
 }
 
 #[derive(Serialize, Deserialize, Debug)]

@@ -30,7 +30,7 @@ pub fn animation_input_system(iter: &mut Iter) {
                 let keyboard_input = World::get_singleton::<KeyboardInput>();
 
                 if !keyboard_input.get_up() && !keyboard_input.get_down() && !keyboard_input.get_left() && !keyboard_input.get_right() {
-                    let mut direction = entity.get::<Direction>();
+                    let direction = entity.get::<Direction>();
                     unsafe {
                         if direction.get_direction() == DirectionEnum::Up as u8 && CURRENT_ANIMATION != "idle_up" {
                             // configure a simple animation sequence
@@ -74,34 +74,13 @@ pub fn animation_input_system(iter: &mut Iter) {
 }
 
 pub fn init() {
-    #[cfg(feature = "render")] {
-        // Renderers
-        System::new(render_rect_system)
-            .with::<(Rect, Renderable, Color, Size, Position)>()
-            .build();
-        System::new(render_sprite_system)
-            .with::<(Sprite, Renderable, Size, Position)>()
-            .build();
-        System::new(render_rt_system)
-            .with::<(RenderTarget, Renderable, Size, Position)>()
-            .build();
-        System::new(render_bone_animation)
-            .with::<(SpineInstance, Position, BoneAnimation)>()
-            .build();
-        System::new(animation_input_system)
+    render::init();
+
+    #[cfg(feature = "render")]
+    System::new(animation_input_system)
             .with::<(SpineInstance, Position)>()
             .build();
-    }
-    
-    #[cfg(feature = "render")]
-    System::new(load_cell_system)
-        .with::<(TiledCellComponent, Loadable)>()
-        .build();
-    #[cfg(feature = "render")]
-    System::new(load_tilemap_system)
-        .with::<(TiledWorldComponent, Loadable)>()
-        .build();
-    
+
     // Network
     // #[cfg(feature = "net")]
     // System::new(network_event_system)

@@ -17,7 +17,6 @@ pub fn init() {
         toxoid_ffi::emscripten::emscripten_websocket_set_onmessage_callback_on_thread(ws, user_data, onmessage_cb, toxoid_ffi::emscripten::EM_CALLBACK_THREAD_CONTEXT_CALLING_THREAD);
         toxoid_ffi::emscripten::emscripten_websocket_set_onerror_callback_on_thread(ws, user_data, onerror_cb, toxoid_ffi::emscripten::EM_CALLBACK_THREAD_CONTEXT_CALLING_THREAD);
         toxoid_ffi::emscripten::emscripten_websocket_set_onclose_callback_on_thread(ws, user_data, onclose_cb, toxoid_ffi::emscripten::EM_CALLBACK_THREAD_CONTEXT_CALLING_THREAD);
-        println!("Hello Emscripten WebSocket!");
     }
 
     World::add_singleton::<WebSocket>();

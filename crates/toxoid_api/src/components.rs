@@ -99,13 +99,13 @@ component! {
     TiledCellComponent {
         cell: Pointer
     },
+    TilesetComponent {},
 
     // Tags
     Rect {},
     Loadable {},
+    Blittable {},
     Renderable {},
-    Initializable {},
-    Constructable {},
     Connected {},
     Disconnected {},
     Local {},
@@ -137,13 +137,13 @@ pub fn init() {
     Direction::register();
     TiledWorldComponent::register();
     TiledCellComponent::register();
+    TilesetComponent::register();
 
     // Tags
     Rect::register();
     Loadable::register();
+    Blittable::register();
     Renderable::register();
-    Initializable::register();
-    Constructable::register();
     Connected::register();
     Disconnected::register();
     Local::register();
