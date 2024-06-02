@@ -651,7 +651,6 @@ use syn::{Token, Result};
 use quote::format_ident;
 use syn::Stmt;
 
-// Parsing utility for component types, handles empty tuples as skip with `()`
 struct ComponentTuple(Punctuated<Option<Type>, Token![,]>);
 
 impl Parse for ComponentTuple {
@@ -673,7 +672,6 @@ impl Parse for ComponentTuple {
     }
 }
 
-
 #[proc_macro_attribute]
 pub fn components(args: TokenStream, input: TokenStream) -> TokenStream {
     let ComponentTuple(types) = parse_macro_input!(args as ComponentTuple);
@@ -691,21 +689,39 @@ pub fn components(args: TokenStream, input: TokenStream) -> TokenStream {
     }).collect();
 
     let iter_name = format_ident!("components");
-    let mut zip_expr = quote! {};
-    let mut first = true;
-
-    for (stmt, ident) in &component_vars {
-        if first {
-            zip_expr = quote! { #ident.iter_mut() };
-            first = false;
-        } else {
-            zip_expr = quote! { #zip_expr.zip(#ident.iter_mut()) };
-        }
-    }
+    let zip_expr = component_vars.iter()
+        .map(|(_, ident)| quote! { #ident.iter_mut() })
+        .reduce(|acc, next| quote! { #acc.zip(#next) })
+        .unwrap_or_else(|| quote! { std::iter::empty() });
 
     let tuple_idents: Vec<_> = component_vars.iter().map(|(_, ident)| ident).collect();
+
+    let map_expr = match tuple_idents.len() {
+        1 => quote! { |#(#tuple_idents),*| (#(#tuple_idents),*) },
+        2 => quote! { |((a, b))| (a, b) },
+        3 => quote! { |(((a, b), c))| (a, b, c) },
+        4 => quote! { |((((a, b), c), d))| (a, b, c, d) },
+        // 5 => quote! { |(((((a, b), c), d), e))| (a, b, c, d, e) },
+        // 6 => quote! { |((((((a, b), c), d), e), f))| (a, b, c, d, e, f) },
+        // 7 => quote! { |(((((((a, b), c), d), e), f), g))| (a, b, c, d, e, f, g) },
+        // 8 => quote! { |((((((((a, b), c), d), e), f), g), h))| (a, b, c, d, e, f, g, h) },
+        // 9 => quote! { |(((((((((a, b), c), d), e), f), g), h), i))| (a, b, c, d, e, f, g, h, i) },
+        // 10 => quote! { |((((((((((a, b), c), d), e), f), g), h), i), j)| (a, b, c, d, e, f, g, h, i, j) },
+        // 11 => quote! { |(((((((((((a, b), c), d), e), f), g), h), i), j), k)| (a, b, c, d, e, f, g, h, i, j, k) },
+        // 12 => quote! { |((((((((((((a, b), c), d), e), f), g), h), i), j), k), l)| (a, b, c, d, e, f, g, h, i, j, k, l) },
+        // 13 => quote! { |((((((((((((((a, b), c), d), e), f), g), h), i), j), k), l), m)| (a, b, c, d, e, f, g, h, i, j, k, l, m) },
+        // 14 => quote! { |(((((((((((((((a, b), c), d), e), f), g), h), i), j), k), l), m), n)| (a, b, c, d, e, f, g, h, i, j, k, l, m, n) },
+        // 15 => quote! { |((((((((((((((((a, b), c), d), e), f), g), h), i), j), k), l), m), n), o)| (a, b, c, d, e, f, g, h, i, j, k, l, m, n, o) },
+        // 16 => quote! { |((((((((((((((((((a, b), c), d), e), f), g), h), i), j), k), l), m), n), o), p)| (a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p) },
+        // 17 => quote! { |(((((((((((((((((((a, b), c), d), e), f), g), h), i), j), k), l), m), n), o), p), q)| (a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q) },
+        // 18 => quote! { |((((((((((((((((((((a, b), c), d), e), f), g), h), i), j), k), l), m), n), o), p), q), r)| (a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r) },
+        // 19 => quote! { |(((((((((((((((((((((a, b), c), d), e), f), g), h), i), j), k), l), m), n), o), p), q), r), s)| (a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s) },
+        // 20 => quote! { |((((((((((((((((((((((a, b), c), d), e), f), g), h), i), j), k), l), m), n), o), p), q), r), s), t)| (a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t) },
+        _ => panic!("Unsupported number of components"),
+    };
+
     let iter_statement = syn::parse_quote! {
-        let #iter_name = #zip_expr.map(|(#(#tuple_idents),*)| (#(#tuple_idents),*));
+        let #iter_name = #zip_expr.map(#map_expr);
     };
 
     // Inject component retrieval and iterator creation at the start of the function's block
