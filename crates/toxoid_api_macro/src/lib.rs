@@ -675,7 +675,7 @@ impl Parse for ComponentTuple {
 
 
 #[proc_macro_attribute]
-pub fn each(args: TokenStream, input: TokenStream) -> TokenStream {
+pub fn components(args: TokenStream, input: TokenStream) -> TokenStream {
     let ComponentTuple(types) = parse_macro_input!(args as ComponentTuple);
     let mut func = parse_macro_input!(input as ItemFn);
 

@@ -910,9 +910,15 @@ impl Entity {
         }
     }
 
-    pub fn add_id(&mut self, component: ecs_id_t) {
+    pub fn add_by_id(&mut self, component_id: ecs_entity_t) {
         unsafe {
-            toxoid_entity_add_component(self.id, component);
+            toxoid_entity_add_component(self.id, component_id);
+        }
+    }
+
+    pub fn remove_by_id(&mut self, component_id: ecs_entity_t) {
+        unsafe {
+            toxoid_entity_remove_component(self.id, component_id);
         }
     }
 
@@ -957,6 +963,18 @@ impl Entity {
     pub fn parent_of(&mut self, child: Entity) {
         unsafe {
             toxoid_entity_child_of(child.get_id(), self.id);
+        }
+    }
+
+    pub fn child_of_by_id(&mut self, parent: ecs_entity_t) {
+        unsafe {
+            toxoid_entity_child_of(self.id, parent);
+        }
+    }
+
+    pub fn parent_of_by_id(&mut self, child: ecs_entity_t) {
+        unsafe {
+            toxoid_entity_child_of(child, self.id);
         }
     }
 

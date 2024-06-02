@@ -65,6 +65,7 @@ pub unsafe extern "C" fn worldmap_load_callback(result: *const sfetch_response_t
 
     // Make loadable
     entity.add::<Loadable>();
+    entity.add::<Position>();
     
     // Get user data
     let mut user_data: Box<FetchUserData> = Box::from_raw((*result).user_data as *mut FetchUserData);
@@ -154,7 +155,7 @@ pub unsafe extern "C" fn sprite_load_callback(result: *const sfetch_response_t) 
         let mut user_data: Box<FetchUserData> = Box::from_raw((*result).user_data as *mut FetchUserData);
 
         // Grab entity from user data
-        let mut entity: Box<Entity> = Box::from_raw(user_data.entity);
+        let entity: Box<Entity> = Box::from_raw(user_data.entity);
 
         // Get image data
         let data = (*result).data.ptr as *const u8;
@@ -249,7 +250,7 @@ pub unsafe extern "C" fn image_load_callback(result: *const sfetch_response_t) {
 pub extern "C" fn animation_load_callback(result: *const sfetch_response_t) {
     unsafe {
         // Get user data
-        let mut user_data: Box<FetchUserData> = Box::from_raw((*result).user_data as *mut FetchUserData);
+        let user_data: Box<FetchUserData> = Box::from_raw((*result).user_data as *mut FetchUserData);
 
         // Grab entity from user data
         let mut entity: Box<Entity> = Box::from_raw(user_data.entity);
