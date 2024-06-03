@@ -13924,13 +13924,17 @@ fn bindgen_test_layout_sgp_state() {
         )
     );
 }
-#[repr(C)]
+
 #[derive(Debug, Copy, Clone)]
+#[repr(C)]
 pub struct sgp_desc {
     pub max_vertices: u32,
     pub max_commands: u32,
     pub pixel_format: sg_pixel_format,
+    pub depth_format: sg_pixel_format,
+    pub sample_count: i32,
 }
+
 #[test]
 fn bindgen_test_layout_sgp_desc() {
     const UNINIT: ::std::mem::MaybeUninit<sgp_desc> = ::std::mem::MaybeUninit::uninit();

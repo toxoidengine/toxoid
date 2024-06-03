@@ -56,7 +56,7 @@ pub fn render_rt_system(iter: &mut Iter) {
             let rt_trait_object: &Box<dyn toxoid_render::RenderTarget> = Box::leak(Box::new(rt_box as Box<dyn toxoid_render::RenderTarget>));
             // Draw Render Target
             // #[cfg(feature = "sokol")]
-            // SokolRenderer2D::draw_render_target(rt_trait_object, pos.get_x() as f32, pos.get_y() as f32, size.get_width() as f32, size.get_height() as f32);
+            SokolRenderer2D::draw_render_target(rt_trait_object, pos.get_x() as f32, pos.get_y() as f32, size.get_width() as f32, size.get_height() as f32);
         });
 }
 
@@ -360,22 +360,22 @@ pub fn load_world_system(iter: &mut Iter) {
 }
 
 pub fn init() {
-    // #[cfg(feature = "render")] {
-    //     // Renderers
-    //     System::new(render_rect_system)
-    //         .with::<(Rect, Renderable, Color, Size, Position)>()
-    //         .build();
-    //     System::new(render_sprite_system)
-    //         .with::<(Sprite, Renderable, Size, Position)>()
-    //         .build();
-    //     System::new(render_rt_system)
-    //         .with::<(RenderTarget, Renderable, Size, Position)>()
-    //         .build();
-    //     System::new(render_bone_animation)
-    //         .with::<(SpineInstance, Position, BoneAnimation)>()
-    //         .build();
+    #[cfg(feature = "render")] {
+        // Renderers
+        System::new(render_rect_system)
+            .with::<(Rect, Renderable, Color, Size, Position)>()
+            .build();
+        System::new(render_sprite_system)
+            .with::<(Sprite, Renderable, Size, Position)>()
+            .build();
+        System::new(render_rt_system)
+            .with::<(RenderTarget, Renderable, Size, Position)>()
+            .build();
+        System::new(render_bone_animation)
+            .with::<(SpineInstance, Position, BoneAnimation)>()
+            .build();
         
-    // }
+    }
     // #[cfg(feature = "render")]
     // System::new(load_world_system)
     //     .with::<(TiledWorldComponent, Loadable)>()
