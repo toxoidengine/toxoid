@@ -28,6 +28,24 @@ extern "C" {
     fn emscripten_set_canvas_element_size(id: *const c_char, width: c_int, height: c_int) -> c_int;
 }
 
+/*
+typedef struct sgp_desc {
+    uint32_t max_vertices;
+    uint32_t max_commands;
+    sg_pixel_format color_format; /* Color format for creating pipelines, defaults to the same as the Sokol GFX context. */
+    sg_pixel_format depth_format; /* Depth format for creating pipelines, defaults to the same as the Sokol GFX context. */
+    int sample_count;             /* Sample count for creating pipelines, defaults to the same as the Sokol GFX context. */
+} sgp_desc;
+ */
+// #[repr(C)]
+// pub struct sgp_desc {
+//     max_vertices: u32,
+//     max_commands: u32,
+//     pixel_format: u32,
+//     depth_format: u32,
+//     sample_count: i32,
+// }
+
 extern "C" fn sokol_init() {
     // Setup sokol app
     sg::setup(&sg::Desc {
@@ -42,6 +60,8 @@ extern "C" fn sokol_init() {
             max_commands: 0,
             max_vertices: 0,
             pixel_format: 0,
+            depth_format: 0,
+            sample_count: 0,
         };
         sgp_setup(&mut desc);
 
