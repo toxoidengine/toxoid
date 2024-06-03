@@ -97,7 +97,8 @@ component! {
         world: Pointer
     },
     TiledCellComponent {
-        cell: Pointer
+        cell: Pointer,
+        index: u32
     },
     TilesetComponent {},
 

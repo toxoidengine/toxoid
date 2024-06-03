@@ -1,6 +1,7 @@
 pub mod input;
 pub mod render;
 pub mod network;
+pub mod load;
 
 #[cfg(feature = "client")]
 pub use input::*;
@@ -75,6 +76,7 @@ pub fn animation_input_system(iter: &mut Iter) {
 
 pub fn init() {
     render::init();
+    load::init();
 
     #[cfg(feature = "render")]
     System::new(animation_input_system)

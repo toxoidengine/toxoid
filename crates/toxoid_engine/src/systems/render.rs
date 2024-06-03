@@ -190,9 +190,11 @@ pub fn render_bone_animation(iter: &mut Iter) {
 #[components(TiledCellComponent)]
 pub fn blit_cell_system(iter: &mut Iter) {
     let entities = iter.entities();
+    entities.sort_by(|a, b| a.get::<TiledCellComponent>().get_index().cmp(&b.get::<TiledCellComponent>().get_index()));
     entities
         .iter_mut()
-        .for_each(|cell_entity| unsafe {
+        .enumerate()
+        .for_each(|(i, cell_entity)| unsafe {
             let cell = cell_entity
                 .get::<TiledCellComponent>()
                 .get_cell()
@@ -278,116 +280,65 @@ pub fn blit_cell_system(iter: &mut Iter) {
                 });
             SokolRenderer2D::end_rt();
             // Create render target entity
-            {
-                let mut entity = Entity::new();
-                entity.add::<Position>();
-                entity.add::<Size>();
-                entity.add::<RenderTarget>();
+            let mut entity = Entity::new();
+            entity.add::<Position>();
+            entity.add::<Size>();
+            entity.add::<RenderTarget>();
 
-                let mut position = entity.get::<Position>();
-                position.set_x(0);
-                position.set_y(0);
-                let mut size = entity.get::<Size>();
-                size.set_width(pixel_width);
-                size.set_height(pixel_height);
-                let mut render_target = entity.get::<RenderTarget>();
-                render_target.set_render_target(Pointer{ ptr: Box::leak(rt) as *mut _ as *mut c_void });
+            let mut position = entity.get::<Position>();
+            // Assuming grid dimensions are known
+            let grid_width = 2; // Number of cells horizontally
+            let index = cell_entity.get::<TiledCellComponent>().get_index();
+            // Calculate grid positions based on the index
+            let grid_x = index % grid_width; // Calculate x position in the grid
+            let grid_y = index / grid_width; // Calculate y position in the grid
+            let position_x = grid_x as u32 * pixel_width; // Position x for the cell
+            let position_y = grid_y as u32 * pixel_height; // Position y for the cell
+            position.set_x(position_x);
+            position.set_y(position_y);
+            // println!("i: {}, pixel_width: {}, pixel_height: {}", index, pixel_width, pixel_height);
+            // println!("Position: {}, {}", position_x, position_y);
 
-                entity.add::<Renderable>();
-            }
+            // Set the position of the cell entity
+            let mut position = cell_entity.get::<Position>();
+            position.set_x(position_x);
+            position.set_y(position_y);
+            let mut size = entity.get::<Size>();
+            size.set_width(pixel_width);
+            size.set_height(pixel_height);
+            let mut render_target = entity.get::<RenderTarget>();
+            render_target.set_render_target(Pointer{ ptr: Box::leak(rt) as *mut _ as *mut c_void });
+
+            entity.add::<Renderable>();
+
+            // Remove the blittable component
             cell_entity.remove::<Blittable>();
         });
 }
 
-#[cfg(feature = "fetch")]
-#[components(TiledCellComponent)]
-pub fn load_cell_system(iter: &mut Iter) {
-    let entities = iter.entities();
-    components
-        .enumerate()
-        .for_each(|(i, cell)| {
-            let mut cell_entity = &mut entities[i];
-            let cell = cell
-                .get_cell()
-                .ptr as *mut toxoid_tiled::TiledCell;
-            unsafe {
-                (*cell)
-                    .tilesets
-                    .iter()
-                    // Filter for duplicate tileset.name
-                    .for_each(|tileset| {
-                        println!("Loading tileset: {}", tileset.name);
-                        let tileset_entity = crate::utils::load::load_sprite("assets/default_tileset.png", |tileset_entity| {
-                            tileset_entity.add::<Blittable>();
-                        });
-                        (*tileset_entity).add::<TilesetComponent>();
-                        (*tileset_entity).child_of_by_id(cell_entity.get_id());
-                    });
-                // TODO: Avoid hashmap lookup
-                cell_entity.remove::<Loadable>();
-                cell_entity.add::<Blittable>();
-            }
-        });
-}
-
-#[cfg(feature = "fetch")]
-#[components(TiledWorldComponent)]
-pub fn load_world_system(iter: &mut Iter) {
-    let entities = iter.entities();
-    components
-        .enumerate()
-        .for_each(|(i, world)| {
-            let mut world_entity = &mut entities[i];
-            let world = world
-                .get_world()
-                .ptr as *mut toxoid_tiled::TiledWorld;
-            unsafe {
-                (*world)
-                    .maps
-                    .as_ref()
-                    .unwrap()
-                    .iter()
-                    .for_each(|map| {
-                        let world_id = world_entity.get_id();
-                        let cell_entity = crate::utils::load::load_cell(format!("assets/{}", map.file_name).as_str(), move |cell_entity: &mut Entity| {
-                            cell_entity.child_of_by_id(world_id);
-                        });
-                    });
-            }
-            // TODO: Avoid hashmap lookup
-            world_entity.remove::<Loadable>();
-        });
-}
 
 pub fn init() {
     #[cfg(feature = "render")] {
         // Renderers
-        System::new(render_rect_system)
-            .with::<(Rect, Renderable, Color, Size, Position)>()
+        System::new(render_rt_system)
+            .with::<(RenderTarget, Renderable, Size, Position)>()
             .build();
         System::new(render_sprite_system)
             .with::<(Sprite, Renderable, Size, Position)>()
             .build();
-        System::new(render_rt_system)
-            .with::<(RenderTarget, Renderable, Size, Position)>()
-            .build();
         System::new(render_bone_animation)
             .with::<(SpineInstance, Position, BoneAnimation)>()
             .build();
+        System::new(render_rect_system)
+            .with::<(Rect, Renderable, Color, Size, Position)>()
+            .build();
         
+        // Blitting
+        System::new(blit_cell_system)
+            .with::<(TiledCellComponent, Blittable)>()
+            .build();
     }
-    // #[cfg(feature = "render")]
-    // System::new(load_world_system)
-    //     .with::<(TiledWorldComponent, Loadable)>()
-    //     .build();
-    // #[cfg(feature = "render")]
-    // System::new(load_cell_system)
-    //     .with::<(TiledCellComponent, Loadable)>()
-    //     .build();
-    // #[cfg(feature = "render")]
-    // System::new(blit_cell_system)
-    //     .with::<(TiledCellComponent, Blittable)>()
-    //     .build();
+    
     // #[cfg(feature = "render")]
     // System::new(render_cell_system)
     //     .with::<(TiledCellComponent, Renderable)>()
