@@ -15,6 +15,7 @@ toxoid_sokol = { path="../toxoid_sokol", default-features = false, optional = tr
 toxoid_serialize = { path="../toxoid_serialize" }
 toxoid_tiled = { path="../toxoid_tiled" }
 toxoid_net = { path="../toxoid_net", optional = true }
+toxoid_wasm = { path="../toxoid_wasm" }
 rand = "0.8.5"
 once_cell = "1.19.0"
 

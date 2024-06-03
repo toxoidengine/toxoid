@@ -32,6 +32,9 @@ pub fn init() {
 
     // Initialize default engine systems. Such as rendering, input, etc.
     systems::init();
+
+    // Test WASM runtime
+    toxoid_wasm::wasm_init();
     
     #[cfg(target_os = "emscripten")]
     toxoid_ffi::emscripten::start_loop(game_loop);
