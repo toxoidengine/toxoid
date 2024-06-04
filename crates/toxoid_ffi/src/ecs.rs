@@ -1139,3 +1139,13 @@ pub unsafe fn toxoid_serialize_entity(entity_id: ecs_entity_t) -> Vec<toxoid_ser
     }
     network_components
 }
+
+#[no_mangle]
+pub unsafe extern "C" fn toxoid_entity_to_json(entity: ecs_entity_t) -> *mut c_char {
+    flecs_entity_to_json(entity)
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn toxoid_json_to_entity(json: *mut c_char) {
+    flecs_json_to_entity(json)
+}

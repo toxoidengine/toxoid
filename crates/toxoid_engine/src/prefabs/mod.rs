@@ -88,6 +88,12 @@ pub fn init() {
    player_entity.add::<Player>();
    player_entity.add::<Networked>();
 
+   player_entity.add::<Position>();
+   player_entity.get::<Position>().set_x(100);
+   player_entity.get::<Position>().set_y(100);
+
+   let _json = unsafe { toxoid_ffi::ecs::toxoid_entity_to_json(player_entity.get_id()) }; 
+   
    // let mut local_player = World::get_singleton::<Networked>();
    // local_player.set_entity_id(player_entity.get_id());
    // TODO: Make animation a child entity of player later
