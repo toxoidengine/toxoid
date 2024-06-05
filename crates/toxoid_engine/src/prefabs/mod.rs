@@ -89,13 +89,16 @@ pub fn init() {
    player_entity.add::<Player>();
    player_entity.add::<Networked>();
    
-   let mut child_entity = Entity::new();
-   child_entity.add::<Position>();
-   child_entity.get::<Position>().set_x(100);
-   child_entity.get::<Position>().set_y(777);
-   child_entity.child_of_by_id(player_entity.get_id());
+   // let mut child_entity = Entity::new();
+   // child_entity.add::<Position>();
+   // child_entity.get::<Position>().set_x(100);
+   // child_entity.get::<Position>().set_y(777);
+   // child_entity.child_of_by_id(player_entity.get_id());
 
-   let _json = unsafe { toxoid_ffi::ecs::toxoid_entity_to_json(player_entity.get_id()) }; 
+   let json = unsafe { toxoid_ffi::ecs::toxoid_entity_to_json(player_entity.get_id()) }; 
+   // cstring to string
+   let json = unsafe { std::ffi::CStr::from_ptr(json).to_str().unwrap() };
+   println!("Entity JSON: {}", json);
    
    // let mut local_player = World::get_singleton::<Networked>();
    // local_player.set_entity_id(player_entity.get_id());

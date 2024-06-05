@@ -1,6 +1,22 @@
 use serde::{Serialize, Deserialize};
 
 #[derive(Serialize, Deserialize, Debug)]
+pub struct Object {
+    pub id: u32,
+    pub name: String,
+    #[serde(rename = "type")] 
+    pub object_type: String,
+    pub x: f32,
+    pub y: f32,
+    pub width: f32,
+    pub height: f32,
+    pub rotation: f32,
+    pub gid: Option<u32>,
+    pub visible: bool,
+    pub properties: Option<Vec<Property>>,
+}
+
+#[derive(Serialize, Deserialize, Debug)]
 pub struct Layer {
     pub data: Option<Vec<u32>>,
     pub height: Option<u32>,
@@ -15,6 +31,7 @@ pub struct Layer {
     pub x: u32,
     pub y: u32,
     pub properties: Option<Vec<Property>>,
+    pub objects: Option<Vec<Object>>,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -22,7 +39,7 @@ pub struct Property {
     pub name: String,
     #[serde(rename = "type")]
     pub property_type: String,
-    pub value: serde_json::Value,
+    pub value: String,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -45,7 +62,6 @@ pub struct Tileset {
 #[derive(Serialize, Deserialize, Debug)]
 pub struct TiledCell {
     pub compressionlevel: i32,
-    pub editorsettings: EditorSettings,
     pub height: u32,
     pub infinite: bool,
     pub layers: Vec<Layer>,
@@ -62,7 +78,7 @@ pub struct TiledCell {
     pub tilewidth: u32,
     #[serde(rename = "type")]
     pub cell_type: String,
-    pub version: f32,
+    pub version: String,
     pub width: u32,
 }
 

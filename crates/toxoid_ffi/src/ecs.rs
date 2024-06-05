@@ -24,8 +24,9 @@ pub enum DynamicType {
     F64(f64),
     Bool(bool),
 }
-
+// TODO: Replace this with ecs_lookup
 pub static COMPONENT_ID_CACHE: Lazy<Mutex<HashMap<u64, ecs_entity_t>>> = Lazy::new(|| Mutex::new(HashMap::new()));
+// TODO: Maybe we can replace this with something in the ECS as well?
 pub static NETWORK_ENTITY_CACHE: Lazy<Mutex<HashMap<u64, ecs_entity_t>>> = Lazy::new(|| Mutex::new(HashMap::new()));
 
 #[no_mangle]
@@ -900,13 +901,13 @@ pub unsafe extern "C" fn toxoid_deserialize_entity_sync(entity_id: ecs_entity_t,
         .for_each(|component_serialized| {
             let component_name = std::ffi::CString::new(component_serialized.name).unwrap();
             let component_id: ecs_entity_t = ecs_lookup(world, component_name.as_ptr());
-            let component_struct_ptr = ecs_get_mut_id(world, FLECS_IDEcsStructID_, component_id);
+            // let component_struct_ptr = ecs_get_mut_id(world, FLECS_IDEcsStructID_, component_id);
             let ecs_struct = ecs_get_id(world, component_id, FLECS_IDEcsStructID_) as *const EcsStruct;
             let members = (*ecs_struct).members;
             let component_data = component_serialized.data;
             let component_deserialized = flexbuffers::Reader::get_root(component_data).unwrap();
             let component_map = component_deserialized.as_map();
-            let keys: Vec<&str> = component_map.iter_keys().collect();
+            // let keys: Vec<&str> = component_map.iter_keys().collect();
             let component_ptr = ecs_get_mut_id(world, entity_id, component_id);
             ecs_vector_each::<ecs_member_t, _>(&members, |item| {
                 let name = core::ffi::CStr::from_ptr(item.name as *const i8).to_str().unwrap();
@@ -974,13 +975,13 @@ pub unsafe extern "C" fn toxoid_deserialize_entity(components_serialized: &[toxo
         .for_each(|component_serialized| {
             let component_name = std::ffi::CString::new(component_serialized.name.clone()).unwrap();
             let component_id: ecs_entity_t = ecs_lookup(world, component_name.as_ptr());
-            let component_struct_ptr = ecs_get_mut_id(world, FLECS_IDEcsStructID_, component_id);
+            // let component_struct_ptr = ecs_get_mut_id(world, FLECS_IDEcsStructID_, component_id);
             let ecs_struct = ecs_get_id(world, component_id, FLECS_IDEcsStructID_) as *const EcsStruct;
             let members = (*ecs_struct).members;
             let component_data = component_serialized.data.clone();
             let component_deserialized = flexbuffers::Reader::get_root(component_data).unwrap();
             let component_map = component_deserialized.as_map();
-            let keys: Vec<&str> = component_map.iter_keys().collect();
+            // let keys: Vec<&str> = component_map.iter_keys().collect();
             let mut component_hashmap: HashMap<String, DynamicType> = HashMap::new();
             ecs_vector_each::<ecs_member_t, _>(&members, |item| {
                 let name = core::ffi::CStr::from_ptr(item.name as *const i8).to_str().unwrap();
@@ -1046,7 +1047,7 @@ pub unsafe fn toxoid_serialize_component(entity_id: ecs_entity_t, component_id: 
     let component_name = ecs_get_name(world, component_id);
     let component_name = core::ffi::CStr::from_ptr(component_name).to_str().unwrap();
     // Get the component struct pointer
-    let component_struct_ptr = ecs_get_mut_id(world, FLECS_IDEcsStructID_, component_id);
+    // let component_struct_ptr = ecs_get_mut_id(world, FLECS_IDEcsStructID_, component_id);
     // Get the component type
     let ecs_struct = ecs_get_id(world, component_id, FLECS_IDEcsStructID_) as *const EcsStruct;
     // Get the members of the component type
@@ -1130,7 +1131,7 @@ pub unsafe fn toxoid_serialize_entity(entity_id: ecs_entity_t) -> Vec<toxoid_ser
         // Create a new Flexbuffer builder.
         let mut builder = flexbuffers::Builder::default();
         // Start a map
-        let component_serialized = builder.start_map();
+        builder.start_map();
 
         // Get the component id
         let component_id = type_ids[i as usize];
@@ -1147,7 +1148,34 @@ pub unsafe extern "C" fn toxoid_entity_to_json(entity: ecs_entity_t) -> *mut c_c
 
 #[no_mangle]
 pub unsafe extern "C" fn toxoid_json_to_entity(json: *mut c_char) {
-    flecs_json_to_entity(json)
+    // flecs_json_to_entity(json)
+    let world = *flecs_core::WORLD;
+    let json = core::ffi::CStr::from_ptr(json).to_str().unwrap();
+    let json_entity = toxoid_json::parse_entity(json);
+    json_entity
+        .ids
+        .iter()
+        .zip(json_entity.values)
+        .for_each(|(id, value)| {
+            println!("id: {:?}", id);
+            println!("value: {:?}", value);
+            let id = id.get(0).unwrap();
+            let component_name = std::ffi::CString::new(id.clone()).unwrap();
+            let component: ecs_entity_t = ecs_lookup(world, component_name.as_ptr());
+            let ecs_struct = ecs_get_id(world, component, FLECS_IDEcsStructID_) as *const EcsStruct;
+            let members = (*ecs_struct).members;
+            let mut entity = toxoid_api::Entity::new();
+            println!("entity: {:?}, component: {:?}", entity.get_id(), component);
+            entity.add::<toxoid_api::Updated>();
+
+            let updated = entity.get::<toxoid_api::Updated>();
+            
+            // ecs_add_id(world, entity, component);
+            // let component_ptr = ecs_get_mut_id(world, entity, component);
+            // ecs_vector_each::<ecs_member_t, _>(&members, |item| {
+            //     println!("Member name: {:?}", item.name);
+            // });
+        });
 }
 
  #[no_mangle]

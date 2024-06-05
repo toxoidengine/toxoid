@@ -10,6 +10,7 @@ flecs_core = { path="../../libs/flecs-polyglot/rust/flecs_core" }
 once_cell = "1.19.0"
 toxoid_api = { path="../toxoid_api" }
 toxoid_serialize = { path="../toxoid_serialize" }
+toxoid_json = { path="../toxoid_json" }
 flexbuffers = "2.0.0"
 
 [dependencies.uuid]

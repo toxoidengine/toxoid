@@ -901,8 +901,17 @@ dependencies = [
  "flexbuffers",
  "once_cell",
  "toxoid_api",
+ "toxoid_json",
  "toxoid_serialize",
  "uuid",
+]
+
+[[package]]
+name = "toxoid_json"
+version = "0.1.0"
+dependencies = [
+ "serde",
+ "serde_json",
 ]
 
 [[package]]

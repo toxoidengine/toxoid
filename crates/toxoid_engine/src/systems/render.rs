@@ -189,6 +189,8 @@ pub fn render_bone_animation(iter: &mut Iter) {
 #[cfg(feature = "render")]
 #[components(TiledCellComponent)]
 pub fn blit_cell_system(iter: &mut Iter) {
+    use toxoid_ffi::ecs::toxoid_json_to_entity;
+
     let entities = iter.entities();
     entities.sort_by(|a, b| a.get::<TiledCellComponent>().get_index().cmp(&b.get::<TiledCellComponent>().get_index()));
     entities
@@ -274,6 +276,56 @@ pub fn blit_cell_system(iter: &mut Iter) {
                                             // Add other components as needed, e.g., for collision checks
                                         }
                                     }
+                                } else if layer.layer_type == "objectgroup" {
+                                    layer
+                                        .objects
+                                        .as_ref()
+                                        .unwrap()
+                                        .iter()
+                                        .for_each(|object| {
+                                            object
+                                                .properties
+                                                .as_ref()
+                                                .unwrap()
+                                                .iter()
+                                                .for_each(|property| {
+                                                    if property.name == "entity" {
+                                                        println!("Entity: {}", property.value.as_str());
+                                                        // toxoid_json_to_entity(
+                                                        //     make_c_string(
+                                                        //         crate::utils::json::escape_json_string(
+                                                        //             property.value.as_str()
+                                                        //         )
+                                                        //         .as_str()
+                                                        //     )
+                                                        // );
+                                                        // let json_entity = toxoid_json::parse_entity(
+                                                        //     property.value.as_str()
+                                                        // );
+                                                        // println!("Entity: {:?}", json_entity);
+                                                        toxoid_json_to_entity(
+                                                            make_c_string(
+                                                                property.value.as_str()
+                                                            )
+                                                        );
+                                                    }
+                                                    // if property.name == "filename" {
+
+                                                    // }
+
+                                                    // Create an entity for each object
+                                                    // let mut object_entity = Entity::new();
+                                                    // object_entity.add::<Position>();
+                                                    // let mut position = object_entity.get::<Position>();
+                                                    // position.set_x(object.x as u32);
+                                                    // position.set_y(object.y as u32);
+                                                    // object_entity.add::<Size>();
+                                                    // let mut size = object_entity.get::<Size>();
+                                                    // size.set_width(object.width as u32);
+                                                    // size.set_height(object.height as u32);
+                                                    // Add other components as needed, e.g., for collision checks
+                                                });
+                                        });
                                 }
                             });
                         }
