@@ -88,7 +88,7 @@ pub fn init() {
             .build();
 
     System::new(test_system)
-        .with::<(Updated, Player)>()
+        .with::<(Updated, Position)>()
         .build();
 
     // Network
