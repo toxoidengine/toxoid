@@ -74,6 +74,10 @@ pub fn animation_input_system(iter: &mut Iter) {
         });
 }
 
+pub fn test_system(iter: &mut Iter) {
+    println!("Hello test system!");
+}
+
 pub fn init() {
     render::init();
     load::init();
@@ -82,6 +86,10 @@ pub fn init() {
     System::new(animation_input_system)
             .with::<(SpineInstance, Position)>()
             .build();
+
+    System::new(test_system)
+        .with::<(Updated, Player)>()
+        .build();
 
     // Network
     // #[cfg(feature = "net")]
