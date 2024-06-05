@@ -84,13 +84,16 @@ pub fn init() {
     
    // Parent entity
    let mut player_entity = Entity::new();
+   player_entity.set_name("player");
    player_entity.add::<Local>();
    player_entity.add::<Player>();
    player_entity.add::<Networked>();
-
-   player_entity.add::<Position>();
-   player_entity.get::<Position>().set_x(100);
-   player_entity.get::<Position>().set_y(100);
+   
+   let mut child_entity = Entity::new();
+   child_entity.add::<Position>();
+   child_entity.get::<Position>().set_x(100);
+   child_entity.get::<Position>().set_y(777);
+   child_entity.child_of_by_id(player_entity.get_id());
 
    let _json = unsafe { toxoid_ffi::ecs::toxoid_entity_to_json(player_entity.get_id()) }; 
    

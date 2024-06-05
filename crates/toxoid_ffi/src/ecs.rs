@@ -1149,3 +1149,27 @@ pub unsafe extern "C" fn toxoid_entity_to_json(entity: ecs_entity_t) -> *mut c_c
 pub unsafe extern "C" fn toxoid_json_to_entity(json: *mut c_char) {
     flecs_json_to_entity(json)
 }
+
+ #[no_mangle]
+ pub unsafe extern "C" fn toxoid_entity_set_name(entity: ecs_entity_t, name: *mut c_char) {
+    // Convert name to string
+    let name = core::ffi::CStr::from_ptr(name).to_str().unwrap();
+    // String interpolate uuid after name
+    if name.is_empty() {
+        let name = format!("{}", uuid::Uuid::new_v4());
+        let name = std::ffi::CString::new(name).unwrap();
+        flecs_entity_set_name(entity, name.as_ptr() as *mut i8);
+    } else {
+        let name = format!("{}-{}", name, uuid::Uuid::new_v4());
+        let name = std::ffi::CString::new(name).unwrap();
+        flecs_entity_set_name(entity, name.as_ptr() as *mut i8);
+    }
+ }
+
+#[no_mangle]
+pub extern "C" fn gen_uuid() -> *mut c_char {
+    let uuid = uuid::Uuid::new_v4();
+    let uuid_str = uuid.to_string();
+    let c_str = std::ffi::CString::new(uuid_str).unwrap();
+    c_str.into_raw()
+}

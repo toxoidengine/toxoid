@@ -869,9 +869,16 @@ impl Entity {
         let entity = unsafe { toxoid_entity_create() };
         #[cfg(target_arch="wasm32")]
         let entity = combine_u32(entity);
+        unsafe { toxoid_entity_set_name(entity, make_c_string("")); }
         Entity {
             id: entity,
             children: &mut []
+        }
+    }
+
+    pub fn set_name(&self, name: &str) {
+        unsafe {
+           toxoid_entity_set_name(self.id, make_c_string(name));
         }
     }
 
