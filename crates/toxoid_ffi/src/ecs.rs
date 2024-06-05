@@ -1148,10 +1148,11 @@ pub unsafe extern "C" fn toxoid_entity_to_json(entity: ecs_entity_t) -> *mut c_c
 
 #[no_mangle]
 pub unsafe extern "C" fn toxoid_json_to_entity(json: *mut c_char) {
-    // flecs_json_to_entity(json)
     let world = *flecs_core::WORLD;
     let json = core::ffi::CStr::from_ptr(json).to_str().unwrap();
     let json_entity = toxoid_json::parse_entity(json);
+    let entity = toxoid_api::Entity::new();
+    entity.set_name(json_entity.label.as_str());
     json_entity
         .ids
         .iter()
@@ -1164,17 +1165,18 @@ pub unsafe extern "C" fn toxoid_json_to_entity(json: *mut c_char) {
             let component: ecs_entity_t = ecs_lookup(world, component_name.as_ptr());
             let ecs_struct = ecs_get_id(world, component, FLECS_IDEcsStructID_) as *const EcsStruct;
             let members = (*ecs_struct).members;
-            let mut entity = toxoid_api::Entity::new();
-            println!("entity: {:?}, component: {:?}", entity.get_id(), component);
-            entity.add::<toxoid_api::Updated>();
-
-            let updated = entity.get::<toxoid_api::Updated>();
-            
-            // ecs_add_id(world, entity, component);
-            // let component_ptr = ecs_get_mut_id(world, entity, component);
-            // ecs_vector_each::<ecs_member_t, _>(&members, |item| {
-            //     println!("Member name: {:?}", item.name);
-            // });
+            ecs_add_id(world, entity.get_id(), component);
+            if value.is_number() {
+                return
+            } else {
+                let component_ptr = ecs_get_mut_id(world, entity.get_id(), component);
+                ecs_vector_each::<ecs_member_t, _>(&members, |item| {
+                    println!("Member name: {:?}", core::ffi::CStr::from_ptr(item.name).to_str().unwrap());
+                    let member_name = core::ffi::CStr::from_ptr(item.name).to_str().unwrap();
+                    let value = value.get(member_name).unwrap();
+                    println!("Member value from JSON {:?}", value);
+                });
+            }
         });
 }
 
