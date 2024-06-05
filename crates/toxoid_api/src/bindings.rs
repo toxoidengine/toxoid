@@ -79,6 +79,7 @@ extern "C" {
     pub fn toxoid_entity_create() -> SplitU64;
     #[cfg(not(target_arch="wasm32"))]
     pub fn toxoid_entity_create() -> ecs_entity_t;
+    pub fn toxoid_entity_set_name(entity_id: ecs_entity_t, name: *const c_char);
     pub fn toxoid_entity_add_component(entity: ecs_entity_t, component: ecs_entity_t);
     pub fn toxoid_entity_add_tag(entity: ecs_entity_t, tag: ecs_entity_t);
     pub fn toxoid_entity_get_component(entity: ecs_entity_t, component: ecs_entity_t) -> *mut c_void;
@@ -231,4 +232,5 @@ extern "C" {
     // TODO: Replace this function with a generic abstraction for rand
     // pub fn gen_rng_grid_pos() -> (i32, i32);
     pub fn toxoid_get_timestamp() -> SplitF64;
+    pub fn gen_uuid() -> *mut c_char;
 }
