@@ -1158,8 +1158,6 @@ pub unsafe extern "C" fn toxoid_json_to_entity(json: *mut c_char) {
         .iter()
         .zip(json_entity.values)
         .for_each(|(id, value)| {
-            println!("id: {:?}", id);
-            println!("value: {:?}", value);
             let id = id.get(0).unwrap();
             let component_name = std::ffi::CString::new(id.clone()).unwrap();
             let component: ecs_entity_t = ecs_lookup(world, component_name.as_ptr());
@@ -1174,6 +1172,58 @@ pub unsafe extern "C" fn toxoid_json_to_entity(json: *mut c_char) {
                     println!("Member name: {:?}", core::ffi::CStr::from_ptr(item.name).to_str().unwrap());
                     let member_name = core::ffi::CStr::from_ptr(item.name).to_str().unwrap();
                     let value = value.get(member_name).unwrap();
+                    match item.type_ {
+                        type_id if type_id == FLECS_IDecs_u8_tID_ => {
+                            let value = value.as_u64().unwrap() as u8;
+                            flecs_component_set_member_u8(component_ptr, item.offset as u32, value);
+                        },
+                        type_id if type_id == FLECS_IDecs_u16_tID_ => {
+                            let value = value.as_u64().unwrap() as u16;
+                            flecs_component_set_member_u16(component_ptr, item.offset as u32, value);
+                        },
+                        type_id if type_id == FLECS_IDecs_u32_tID_ => {
+                            let value = value.as_u64().unwrap() as u32;
+                            flecs_component_set_member_u32(component_ptr, item.offset as u32, value);
+                        },
+                        type_id if type_id == FLECS_IDecs_u64_tID_ => {
+                            let value = value.as_u64().unwrap();
+                            flecs_component_set_member_u64(component_ptr, item.offset as u32, value);
+                        },
+                        type_id if type_id == FLECS_IDecs_i8_tID_ => {
+                            let value = value.as_i64().unwrap() as i8;
+                            flecs_component_set_member_i8(component_ptr, item.offset as u32, value);
+                        },
+                        type_id if type_id == FLECS_IDecs_i16_tID_ => {
+                            let value = value.as_i64().unwrap() as i16;
+                            flecs_component_set_member_i16(component_ptr, item.offset as u32, value);
+                        },
+                        type_id if type_id == FLECS_IDecs_i32_tID_ => {
+                            let value = value.as_i64().unwrap() as i32;
+                            flecs_component_set_member_i32(component_ptr, item.offset as u32, value);
+                        },
+                        type_id if type_id == FLECS_IDecs_i64_tID_ => {
+                            let value = value.as_i64().unwrap();
+                            flecs_component_set_member_i64(component_ptr, item.offset as u32, value);
+                        },
+                        type_id if type_id == FLECS_IDecs_f32_tID_ => {
+                            let value = value.as_f64().unwrap() as f32;
+                            flecs_component_set_member_f32(component_ptr, item.offset as u32, value);
+                        },
+                        type_id if type_id == FLECS_IDecs_f64_tID_ => {
+                            let value = value.as_f64().unwrap();
+                            flecs_component_set_member_f64(component_ptr, item.offset as u32, value);
+                        },
+                        type_id if type_id == FLECS_IDecs_bool_tID_ => {
+                            let value = value.as_bool().unwrap();
+                            flecs_component_set_member_bool(component_ptr, item.offset as u32, value);
+                        },
+                        type_id if type_id == FLECS_IDecs_string_tID_ => {
+                            let value = value.as_str().unwrap();
+                            let value = std::ffi::CString::new(value).unwrap();
+                            flecs_component_set_member_string(component_ptr, item.offset as u32, value.as_ptr() as *mut i8);
+                        },
+                        _ => eprintln!("Type not supported {:?}", item.type_),
+                    }
                     println!("Member value from JSON {:?}", value);
                 });
             }

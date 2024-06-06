@@ -18,12 +18,17 @@ pub fn load_cell_system(iter: &mut Iter) {
                     .iter()
                     // Filter for duplicate tileset.name
                     .for_each(|tileset| {
-                        println!("Loading tileset: {}", tileset.name);
-                        let tileset_entity = crate::utils::load::load_sprite("assets/default_tileset.png", |tileset_entity| {
-                            tileset_entity.add::<Blittable>();
-                        });
-                        (*tileset_entity).add::<TilesetComponent>();
-                        (*tileset_entity).child_of_by_id(cell_entity.get_id());
+                        let mut tileset_entity = Entity::new();
+                        tileset_entity.set_name("sprite");
+                        tileset_entity.add::<Sprite>();
+                        tileset_entity.add::<Position>();
+                        tileset_entity.add::<Size>();
+                        tileset_entity.add::<Loadable>();
+                        tileset_entity.get::<Sprite>()
+                           .set_filename(StringPtr::new("assets/default_tileset.png"));
+
+                        tileset_entity.add::<TilesetComponent>();
+                        tileset_entity.child_of_by_id(cell_entity.get_id());
                     });
                 // TODO: Avoid hashmap lookup
                 cell_entity.remove::<Loadable>();
@@ -64,13 +69,29 @@ pub fn load_world_system(iter: &mut Iter) {
         });
 }
 
+#[cfg(feature = "fetch")]
+#[components(Sprite, _)]
+pub fn load_sprite_system(iter: &mut Iter)  {
+    let entities = iter.entities();
+    components
+        .enumerate()
+        .for_each(|(i, sprite)| {
+            let entity = &entities[i];
+            crate::utils::load::load_sprite(sprite.get_filename(), entity);
+            entities[i].remove::<Loadable>();
+        });
+}
+
 pub fn init() {
     #[cfg(feature = "fetch")] {
         System::new(load_world_system)
-        .with::<(TiledWorldComponent, Loadable)>()
-        .build();
-        System::new(load_cell_system)
-            .with::<(TiledCellComponent, Loadable)>()
+            .with::<(TiledWorldComponent, Loadable)>()
+            .build();
+        // System::new(load_cell_system)
+        //     .with::<(TiledCellComponent, Loadable)>()
+        //     .build();
+        System::new(load_sprite_system)
+            .with::<(Sprite, Loadable)>()
             .build();
     }
 }

@@ -222,8 +222,8 @@ extern "C" {
         event_name: &str,
         callback: extern "C" fn(message: &crate::net::MessageEntity)
     );
-    pub fn toxoid_engine_load_sprite(filename: &str, callback: extern "C" fn(&mut Entity)) -> *mut Entity;
-    pub fn toxoid_engine_load_worldmap(filename: &str, callback: extern "C" fn(&mut Entity)) -> *mut Entity;
+    // pub fn toxoid_engine_load_sprite(filename: &str, callback: extern "C" fn(&mut Entity)) -> *mut Entity;
+    // pub fn toxoid_engine_load_worldmap(filename: &str, callback: extern "C" fn(&mut Entity)) -> *mut Entity;
     // pub fn toxoid_deserialize_entity(components_serialized: &[MessageComponent]) -> HashMap<String, HashMap<String, DynamicType>>;
     pub fn toxoid_deserialize_entity_sync(entity_id: ecs_entity_t, components_serialized: &[crate::net::MessageComponent]);
     // pub fn toxoid_serialize_entity(entity_id: ecs_entity_t) -> Vec<crate::net::NetworkMessageComponent>;
