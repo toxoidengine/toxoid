@@ -21,8 +21,7 @@ enum FieldType {
     String,
     U32Array,
     F32Array,
-    Pointer,
-    StringPtr,
+    Pointer
 }
 
 // Constants for FNV-1a hashing
@@ -555,7 +554,7 @@ fn get_type_code(ty: &Type) -> u8 {
         Type::Path(tp) if tp.path.is_ident("U32Array") => FieldType::U32Array as u8,
         Type::Path(tp) if tp.path.is_ident("F32Array") => FieldType::U32Array as u8,
         Type::Path(tp) if tp.path.is_ident("Pointer") => FieldType::Pointer as u8,
-        Type::Path(tp) if tp.path.is_ident("StringPtr") => FieldType::StringPtr as u8,
+        Type::Path(tp) if tp.path.is_ident("StringPtr") => FieldType::String as u8,
         Type::Ptr(ptr) => {
             match *ptr.elem {
                 Type::Path(ref tp) if tp.path.is_ident("u32") => {

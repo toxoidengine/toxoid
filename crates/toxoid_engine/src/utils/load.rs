@@ -133,13 +133,13 @@ pub fn load_cell(filename: &str, callback: impl FnMut(&mut Entity) + 'static) ->
     entity_boxed
 } 
 
-#[cfg(all(feature = "fetch", feature = "render"))]
-#[no_mangle]
-pub extern "C" fn toxoid_engine_load_sprite(filename: &str,  callback: extern "C" fn(*mut Entity)) -> *mut Entity {
-    load_sprite(filename, move |entity: &mut Entity| {
-        callback(entity)
-    })
-}
+// #[cfg(all(feature = "fetch", feature = "render"))]
+// #[no_mangle]
+// pub extern "C" fn toxoid_engine_load_sprite(filename: &str,  callback: extern "C" fn(*mut Entity)) -> *mut Entity {
+//     load_sprite(filename, move |entity: &mut Entity| {
+//         callback(entity)
+//     })
+// }
 
 #[cfg(all(feature = "fetch", feature = "render"))]
 pub unsafe extern "C" fn sprite_load_callback(result: *const sfetch_response_t) {
@@ -149,57 +149,27 @@ pub unsafe extern "C" fn sprite_load_callback(result: *const sfetch_response_t) 
             return;
         }
 
-        // println!("Successfully loaded {}", CStr::from_ptr((*result).url).to_str().unwrap());
-
         // Get user data
-        let mut user_data: Box<FetchUserData> = Box::from_raw((*result).user_data as *mut FetchUserData);
+        let user_data = Box::from_raw((*result).user_data as *mut u64);
 
         // Grab entity from user data
-        let entity: Box<Entity> = Box::from_raw(user_data.entity);
+        let mut entity = Entity::from_id(*user_data as u64);
 
-        // Get image data
-        let data = (*result).data.ptr as *const u8;
-        let size = (*result).data.size;
+        // Set image data
+        let mut sprite = entity.get::<Sprite>();
+        sprite.set_data(Pointer::new((*result).data.ptr as *mut c_void));
+        sprite.set_data_size((*result).data.size as i32);
 
-        // Create sprite
-        let sprite = SokolRenderer2D::create_sprite(data, size);
-
-        // Set sprite size
-        let mut sprite_size = entity.get::<Size>();
-        sprite_size.set_width(sprite.width());
-        sprite_size.set_height(sprite.height());
-        
-        // Set sprite object
-        let mut sprite_component = entity.get::<Sprite>();
-        sprite_component.set_sprite(Pointer { 
-            ptr: Box::into_raw(sprite) as *mut c_void 
-        });
-
-        // Flag as renderable for draw_sprite_system
-        // entity.add::<Renderable>();
-
-        // Call load_sprite callback
-        (user_data.callback)(&mut *user_data.entity);
+        // Make blittable
+        entity.add::<Blittable>();
     }
 }
 
 #[cfg(all(feature = "fetch", feature = "render"))]
-pub fn load_sprite(filename: &str, callback: impl FnMut(&mut Entity) + 'static) -> *mut Entity {
-    // println!("Loading image: {}", filename);
-    // Create entity and pass it to fetch
-    let mut entity = Entity::new();
-    entity.add::<Sprite>();
-    entity.add::<Position>();
-    entity.add::<Size>();
-
-    let entity_boxed = Box::into_raw(Box::new(entity));
-    let user_data = Box::into_raw(Box::new(FetchUserData {
-        entity: entity_boxed,
-        callback: Box::new(callback)
-    })) as *mut c_void;
-    let size = core::mem::size_of::<FetchUserData>();
-    fetch(filename, sprite_load_callback, user_data, size);
-    entity_boxed
+pub fn load_sprite(filename: &str, entity: &Entity) {
+    let entity = Box::into_raw(Box::new(entity.get_id()));
+    let size = core::mem::size_of::<u64>();
+    fetch(filename, sprite_load_callback, entity as *mut c_void, size);
 }
 
 // This is the image-data fetch callback. The loaded image data will be decoded

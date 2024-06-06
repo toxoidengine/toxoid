@@ -58,7 +58,9 @@ component! {
     },
     Sprite {
         filename: StringPtr,
-        sprite: Pointer
+        sprite: Pointer,
+        data: Pointer,
+        data_size: i32, 
     },
     RenderTarget {
         render_target: Pointer
@@ -101,19 +103,22 @@ component! {
         index: u32
     },
     TilesetComponent {},
+    Callback {
+        callback: Pointer
+    },
 
     // Tags
     Rect {},
+    Local {},
+    Remote {},
+    Player {},
+
+    // States
     Loadable {},
     Blittable {},
     Renderable {},
     Connected {},
     Disconnected {},
-    Local {},
-    Remote {},
-    Player {},
-    Map {},
-    Updated {},
 }
 
 pub fn init() {    
@@ -121,7 +126,7 @@ pub fn init() {
     GameConfig::register();
     KeyboardInput::register();
     WebSocket::register();
-    SpineInstance::register();
+    
     
     // Components
     Position::register();
@@ -139,6 +144,8 @@ pub fn init() {
     TiledWorldComponent::register();
     TiledCellComponent::register();
     TilesetComponent::register();
+    SpineInstance::register();
+    Callback::register();
 
     // Tags
     Rect::register();
@@ -150,6 +157,4 @@ pub fn init() {
     Local::register();
     Remote::register();
     Player::register();
-    Map::register();
-    Updated::register();
 }
