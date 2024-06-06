@@ -12,6 +12,34 @@ pub struct CallbackFn {
    pub callback: Box<dyn FnMut(&mut Entity)>
 }
 
+pub fn create_sprite(filename: &str, callback: impl FnMut(&mut Entity) + 'static) -> Entity {
+   // Create sprite entity
+   let mut sprite_entity = Entity::new();
+   sprite_entity.set_name("sprite");
+   sprite_entity.add::<Sprite>();
+   sprite_entity.add::<Position>();
+   sprite_entity.add::<Size>();
+   sprite_entity.add::<Loadable>();
+   sprite_entity.add::<Callback>();
+   
+   // Set sprite filename
+   sprite_entity.get::<Sprite>()
+      .set_filename(StringPtr::new(filename));
+
+   // Set callback
+   let callback = Box::new(callback);
+   let callback = Box::into_raw(Box::new(CallbackFn { callback })) as *mut c_void;
+   sprite_entity.get::<Callback>()
+      .set_callback(
+         Pointer::new(
+            callback
+         )
+      );
+
+   // Return sprite entity
+   sprite_entity
+}
+
 pub fn init() {
    // Player entity
    let mut player_entity = Entity::new();
@@ -20,27 +48,9 @@ pub fn init() {
    player_entity.add::<Player>();
    player_entity.add::<Networked>();
 
-   // Sprite entity
-   let mut sprite_entity = Entity::new();
-   sprite_entity.set_name("sprite");
-   sprite_entity.add::<Sprite>();
-   sprite_entity.add::<Position>();
-   sprite_entity.add::<Size>();
-   sprite_entity.add::<Loadable>();
-   sprite_entity.add::<Callback>();
-   sprite_entity.get::<Sprite>()
-      .set_filename(StringPtr::new("assets/character.png"));
-   let callback = Box::new(|entity: &mut Entity| {
+   let _sprite_entity = create_sprite("assets/character.png", |entity: &mut Entity| {
       entity.add::<Renderable>();
    });
-   let callback = Box::into_raw(Box::new(CallbackFn { callback })) as *mut c_void;
-   sprite_entity.get::<Callback>()
-      .set_callback(
-         Pointer::new(
-            callback
-         )
-      );
-   sprite_entity.child_of_by_id(player_entity.get_id());
 
    #[cfg(feature = "render")] {
       let animation_entity = crate::utils::load::load_animation("assets/player.atlas", "assets/player.json", |entity| {
@@ -50,7 +60,6 @@ pub fn init() {
          position.set_x(100);
          position.set_y(100);
          (*animation_entity).add::<Local>();
-         (*animation_entity).child_of_by_id(player_entity.get_id());
       }
    }
 

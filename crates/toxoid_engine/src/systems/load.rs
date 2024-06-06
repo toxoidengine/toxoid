@@ -4,6 +4,8 @@ use toxoid_api_macro::*;
 #[cfg(feature = "fetch")]
 #[components(TiledCellComponent)]
 pub fn load_cell_system(iter: &mut Iter) {
+    use crate::prefabs::create_sprite;
+
     let entities = iter.entities();
     components
         .enumerate()
@@ -18,17 +20,11 @@ pub fn load_cell_system(iter: &mut Iter) {
                     .iter()
                     // Filter for duplicate tileset.name
                     .for_each(|tileset| {
-                        let mut tileset_entity = Entity::new();
-                        tileset_entity.set_name("sprite");
-                        tileset_entity.add::<Sprite>();
-                        tileset_entity.add::<Position>();
-                        tileset_entity.add::<Size>();
-                        tileset_entity.add::<Loadable>();
-                        tileset_entity.get::<Sprite>()
-                           .set_filename(StringPtr::new("assets/default_tileset.png"));
-
-                        tileset_entity.add::<TilesetComponent>();
-                        tileset_entity.child_of_by_id(cell_entity.get_id());
+                        let cell_id = cell_entity.get_id();
+                        let tileset_entity = create_sprite("assets/default_tileset.png", move |tileset_entity: &mut Entity| {
+                            tileset_entity.add::<TilesetComponent>();
+                            tileset_entity.child_of_by_id(cell_id);
+                        });
                     });
                 // TODO: Avoid hashmap lookup
                 cell_entity.remove::<Loadable>();
@@ -87,9 +83,9 @@ pub fn init() {
         System::new(load_world_system)
             .with::<(TiledWorldComponent, Loadable)>()
             .build();
-        // System::new(load_cell_system)
-        //     .with::<(TiledCellComponent, Loadable)>()
-        //     .build();
+        System::new(load_cell_system)
+            .with::<(TiledCellComponent, Loadable)>()
+            .build();
         System::new(load_sprite_system)
             .with::<(Sprite, Loadable)>()
             .build();
