@@ -112,8 +112,9 @@ pub fn blit_cell_system(iter: &mut Iter) {
             // filter / query builder.
             let tileset_children = children
                 .iter()
-                .filter(|child| child.has::<Sprite>() && child.has::<TilesetComponent>() && child.has::<Blittable>())
+                .filter(|child| child.has::<Sprite>() && child.has::<TilesetComponent>())
                 .collect::<Vec<&Entity>>();
+            
             if tileset_children.len() == 0 {
                 return;
             }
@@ -276,7 +277,13 @@ pub fn blit_sprite_system(iter: &mut Iter) {
                 ptr: Box::into_raw(sokol_sprite) as *mut c_void 
             });
 
+            // Remove blittable component
             entities[i].remove::<Blittable>();
+
+            // Add renderable component if sprite is renderable
+            if sprite.get_renderable() {
+                entities[i].add::<Renderable>();
+            }
 
             // Callback
             let callback_ptr = callback.get_callback().ptr as *mut c_void;
@@ -302,10 +309,10 @@ pub fn init() {
             .with::<(Rect, Renderable, Color, Size, Position)>()
             .build();
         
-        // // Blitting
-        // System::new(blit_cell_system)
-        //     .with::<(TiledCellComponent, Blittable)>()
-        //     .build();
+        // Blitting
+        System::new(blit_cell_system)
+            .with::<(TiledCellComponent, Blittable)>()
+            .build();
         System::new(blit_sprite_system)
             .with::<(Sprite, Callback, Blittable)>()
             .build();

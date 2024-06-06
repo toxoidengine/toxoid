@@ -61,6 +61,7 @@ component! {
         sprite: Pointer,
         data: Pointer,
         data_size: i32, 
+        renderable: bool
     },
     RenderTarget {
         render_target: Pointer

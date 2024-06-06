@@ -1169,7 +1169,8 @@ pub unsafe extern "C" fn toxoid_json_to_entity(json: *mut c_char) {
             } else {
                 let component_ptr = ecs_get_mut_id(world, entity.get_id(), component);
                 ecs_vector_each::<ecs_member_t, _>(&members, |item| {
-                    println!("Member name: {:?}", core::ffi::CStr::from_ptr(item.name).to_str().unwrap());
+                    // println!("Member name: {:?}", core::ffi::CStr::from_ptr(item.name).to_str().unwrap());
+                    // println!("Member value from JSON {:?}", value);
                     let member_name = core::ffi::CStr::from_ptr(item.name).to_str().unwrap();
                     let value = value.get(member_name).unwrap();
                     match item.type_ {
@@ -1224,7 +1225,6 @@ pub unsafe extern "C" fn toxoid_json_to_entity(json: *mut c_char) {
                         },
                         _ => eprintln!("Type not supported {:?}", item.type_),
                     }
-                    println!("Member value from JSON {:?}", value);
                 });
             }
         });
