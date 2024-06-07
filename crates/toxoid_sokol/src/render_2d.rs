@@ -161,7 +161,7 @@ impl SokolRenderer2D {
         unsafe {
             let mut desc: sspine_context_desc = MaybeUninit::zeroed().assume_init(); 
             desc.color_format = sg::PixelFormat::Rgba8 as i32;
-            desc.depth_format = sg::PixelFormat::None as i32;
+            desc.depth_format = sg::PixelFormat::DepthStencil as i32;
             desc.sample_count = 1;
             let ctx = sspine_make_context(&desc);
             Box::new(SpineOffscreenCtx {
