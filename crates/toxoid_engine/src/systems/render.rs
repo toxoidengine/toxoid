@@ -65,10 +65,24 @@ pub fn render_rt_system(iter: &mut Iter) {
     });
 }
 
+// #[cfg(feature = "render")]
+// #[components(RenderTarget, _, Size, Position)]
+// pub fn render_bone_animation_rt_system(iter: &mut Iter) {
+//     components
+//         .for_each(|(rt, size, pos)| {
+//             let rt_ptr = rt.get_render_target();
+//             let rt_box = unsafe { Box::from_raw(rt_ptr.ptr as *mut SokolRenderTarget) };
+//             let rt_trait_object: &Box<dyn toxoid_render::RenderTarget> = Box::leak(Box::new(rt_box as Box<dyn toxoid_render::RenderTarget>));
+//             // Draw Render Target
+//             // #[cfg(feature = "sokol")]
+//             SokolRenderer2D::draw_render_target(rt_trait_object, pos.get_x() as f32, pos.get_y() as f32, size.get_width() as f32, size.get_height() as f32);
+//         });
+// }
+
+
 // SpineInstance, Position, BoneAnimation
 #[cfg(all(feature = "render", feature = "spine"))]
 pub fn render_bone_animation(iter: &mut Iter) {
-    println!("Rendering!");
     let spine_instances = iter.field::<SpineInstance>(1);
     let positions = iter.field::<Position>(2);
     let count = iter.count();
@@ -81,7 +95,7 @@ pub fn render_bone_animation(iter: &mut Iter) {
         if instantiated {
             unsafe {
                 let instance = spine_instance.get_instance().ptr as *mut sspine_instance;
-                let ctx = spine_instance.get_ctx().ptr as *mut sspine_context;
+                let spine_offscreen_ctx = spine_instance.get_ctx().ptr as *mut SpineOffscreenCtx;
                 
                 // Advance the instance animation and draw the instance.
                 // Important to note here is that no actual sokol-gfx rendering happens yet,
@@ -92,7 +106,7 @@ pub fn render_bone_animation(iter: &mut Iter) {
                 
                 let delta_time = sapp_frame_duration();
                 sspine_update_instance(*instance, delta_time as f32);
-                // sspine_set_context(*ctx);
+                sspine_set_context((*spine_offscreen_ctx).ctx);
                 sspine_draw_instance_in_layer(*instance, 0);
                 
                 // Set position
@@ -105,6 +119,7 @@ pub fn render_bone_animation(iter: &mut Iter) {
                 
                 let (window_width, window_height) = (sapp::width(), sapp::height());
                 let window_width = 500;
+                let window_width = 500;
                 let layer_transform = sspine_layer_transform {
                     size: sspine_vec2 { 
                         x: window_width as f32, 
@@ -115,16 +130,28 @@ pub fn render_bone_animation(iter: &mut Iter) {
                         y: 0. 
                     }
                 };
-
-                let window_height = 500;
+                sgp_set_image(0, sg_image { id: (*spine_offscreen_ctx).img.id });
+                sgp_draw_textured_rect(0, sgp_rect {x: 0., y: 0., w: 500., h: 500. }, sgp_rect {x: 0., y:0., w: 500., h: -500. });
+                rt_entity.add::<Renderable>();
                 
-                sg::begin_pass(&(*rt).pass);
-                unsafe { 
-                    // sspine_set_context(*ctx);
-                    sspine_draw_layer(0, &layer_transform); 
+                // sg::begin_pass(&(*rt).pass);
+                sg::begin_pass(&sg::Pass {
+                    action: (*spine_offscreen_ctx).pass_action,
+                    attachments: (*spine_offscreen_ctx).attachments,
+                    ..Default::default()
+                });
+                unsafe {
+                    sgl::matrix_mode_projection();
+                    sgl::load_identity();
+                    sgl::ortho(1.0, 1.0, window_width as f32, window_height as f32, -1.0, 1.0);
+                    sspine_set_context((*spine_offscreen_ctx).ctx);
+                    sspine_draw_layer(0, &layer_transform);
+                    // sspine_context_draw_layer((*spine_offscreen_ctx).ctx, 0, &layer_transform); 
+                    sgl::matrix_mode_projection();
+                    sgl::load_identity();
+                    sgl::ortho(1.0, 1.0, window_width as f32, window_height as f32, -1.0, 1.0);
                 }
                 sg::end_pass();
-                rt_entity.add::<Renderable>();
             }
         }
     }
