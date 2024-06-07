@@ -269,7 +269,7 @@ pub extern "C" fn animation_load_callback(result: *const sfetch_response_t) {
             let data_ptr = data_ptr.as_ptr();
             skeleton_desc.atlas = spine_atlas;
             skeleton_desc.json_data = data_ptr as *const i8;
-            skeleton_desc.prescale = 1.5;
+            skeleton_desc.prescale = 1.0;
             skeleton_desc.anim_default_mix = 0.2;
 
             let spine_skeleton = sspine_make_skeleton(&skeleton_desc);
@@ -316,6 +316,8 @@ pub extern "C" fn animation_load_callback(result: *const sfetch_response_t) {
 
                 fetch(file_path, image_load_callback, img_ptr as *mut c_void, std::mem::size_of::<sspine_image_info>());
             }
+
+            (*entity).add::<Blittable>();
         }
     }
 }
