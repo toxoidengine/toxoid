@@ -16,6 +16,21 @@ pub enum KeyCode {
     Right = 39
 }
 
+/*
+pub const sgp_blend_mode_SGP_BLENDMODE_NONE: sgp_blend_mode = 0;
+pub const sgp_blend_mode_SGP_BLENDMODE_BLEND: sgp_blend_mode = 1;
+pub const sgp_blend_mode_SGP_BLENDMODE_ADD: sgp_blend_mode = 2;
+pub const sgp_blend_mode_SGP_BLENDMODE_MOD: sgp_blend_mode = 3;
+pub const sgp_blend_mode_SGP_BLENDMODE_MUL: sgp_blend_mode = 4;
+pub const sgp_blend_mode__SGP_BLENDMODE_NUM: sgp_blend_mode = 5; */
+pub enum BlendModes {
+    None = 0,
+    Blend = 1,
+    Add = 2,
+    Mod = 3,
+    Multiply = 4,
+}
+
 component! {
     // Singletons
     GameConfig {
@@ -31,6 +46,7 @@ component! {
     },
     SpineInstance {
         instance: Pointer,
+        ctx: Pointer,
         instantiated: bool
     },
 
@@ -62,6 +78,9 @@ component! {
         data: Pointer,
         data_size: i32, 
         renderable: bool
+    },
+    BlendMode {
+        mode: u8
     },
     RenderTarget {
         render_target: Pointer
@@ -135,6 +154,7 @@ pub fn init() {
     Size::register();
     Color::register();
     Sprite::register();
+    BlendMode::register();
     RenderTarget::register();
     Networked::register();
     Atlas::register();
