@@ -141,9 +141,6 @@ pub fn render_bone_animation(iter: &mut Iter) {
                     ..Default::default()
                 });
                 unsafe {
-                    sgl::matrix_mode_projection();
-                    sgl::load_identity();
-                    sgl::ortho(1.0, 1.0, window_width as f32, window_height as f32, -1.0, 1.0);
                     sspine_set_context((*spine_offscreen_ctx).ctx);
                     sspine_draw_layer(0, &layer_transform);
                     // sspine_context_draw_layer((*spine_offscreen_ctx).ctx, 0, &layer_transform); 
