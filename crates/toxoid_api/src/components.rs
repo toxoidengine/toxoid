@@ -63,8 +63,8 @@ component! {
         direction: u8
     },
     Size {
-        width: u32,
-        height: u32,
+        width: i32,
+        height: i32,
     },
     Color {
         r: u8,
@@ -83,7 +83,8 @@ component! {
         mode: u8
     },
     RenderTarget {
-        render_target: Pointer
+        render_target: Pointer,
+        flip_y: bool
     },
     Networked {
         network_id: u64,

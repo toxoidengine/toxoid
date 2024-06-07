@@ -432,38 +432,13 @@ impl Renderer2D for SokolRenderer2D {
                 w: sprite.width() as f32, 
                 h: sprite.height() as f32 
             };
-
             let sokol_sprite = sprite.as_any().downcast_ref::<SokolSprite>().unwrap();
-
-            // let sampler_desc = sg::SamplerDesc {
-            //     min_filter: sokol::gfx::Filter::Nearest,  // Minification filter
-            //     mag_filter: sokol::gfx::Filter::Nearest,  // Magnification filter
-            //     mipmap_filter: sokol::gfx::Filter::None,  // No mipmapping
-            //     wrap_u: sokol::gfx::Wrap::ClampToEdge,    // Clamp to edge in U direction
-            //     wrap_v: sokol::gfx::Wrap::ClampToEdge,    // Clamp to edge in V direction
-            //     wrap_w: sokol::gfx::Wrap::ClampToEdge,    // Clamp to edge in W direction (relevant for 3D textures)
-            //     min_lod: 0.0,                 // Minimum level of detail
-            //     max_lod: 0.0,                 // Maximum level of detail
-            //     border_color: sokol::gfx::BorderColor::TransparentBlack, // Border color if needed
-            //     compare: sokol::gfx::CompareFunc::Never, // No comparison function
-            //     max_anisotropy: 1,            // No anisotropic filtering
-            //     label: std::ptr::null(),      // No label
-            //     gl_sampler: 0,                // OpenGL specific handle
-            //     mtl_sampler: std::ptr::null(),// Metal specific handle
-            //     d3d11_sampler: std::ptr::null(),// Direct3D 11 specific handle
-            //     wgpu_sampler: std::ptr::null(),// WebGPU specific handle
-            //     _start_canary: 0,
-            //     _end_canary: 0,
-            // };
-            // let sampler = sg::make_sampler(&sampler_desc);
-            // sgp_set_sampler(0, sg_sampler { id: sampler.id });
-            
             sgp_set_image(0, sg_image { id: sokol_sprite.image.id });
             sgp_draw_textured_rect(0, dest_rect, src_rect);
         }
     }
 
-    fn draw_render_target(source: &Box<dyn RenderTarget>, dx: f32, dy: f32, dw: f32, dh: f32) {
+    fn draw_render_target(source: &Box<dyn RenderTarget>, sx: f32, sy: f32, sw: f32, sh: f32, dx: f32, dy: f32, dw: f32, dh: f32) {
         unsafe {
             // Get scale factor for resolution
             let game_config = World::get_singleton::<GameConfig>();
@@ -480,7 +455,7 @@ impl Renderer2D for SokolRenderer2D {
             // Set the source image for drawing, using the color attachment of the render target
             sgp_set_image(0, sg_image { id: sprite.image.id }); // Assuming you want to draw the depth image. Use the appropriate image for color if needed.
             // Define the source rectangle from the render target
-            let src_rect = sgp_rect { x: 0., y: 0., w: dw, h: dh }; // Assuming the entire render target is to be drawn
+            let src_rect = sgp_rect { x: sx, y: sy, w: sw, h: sh }; // Assuming the entire render target is to be drawn
             // Define the destination rectangle on the canvas
             let dest_rect = sgp_rect { 
                 x: (dx * scale_factor).round(), 
