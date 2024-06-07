@@ -21,6 +21,7 @@ pub fn create_sprite(filename: &str, callback: impl FnMut(&mut Entity) + 'static
    sprite_entity.add::<Size>();
    sprite_entity.add::<Loadable>();
    sprite_entity.add::<Callback>();
+   sprite_entity.add::<BlendMode>();
    
    // Set sprite filename
    sprite_entity.get::<Sprite>()
@@ -48,9 +49,41 @@ pub fn init() {
    player_entity.add::<Player>();
    player_entity.add::<Networked>();
 
-   let _sprite_entity = create_sprite("assets/character.png", |entity: &mut Entity| {
-      entity.add::<Renderable>();
+   let lamp_post_sprite = create_sprite("assets/street_lamp.png", |entity| {
+      (*entity).add::<Renderable>();
    });
+   lamp_post_sprite.get::<Position>()
+      .set_x(155);
+   lamp_post_sprite.get::<Position>()
+      .set_y(170);
+
+   let light_sprite = create_sprite("assets/light_yellow.png", |entity| {
+         (*entity).add::<Renderable>();
+   });
+   light_sprite.get::<BlendMode>()
+      .set_mode(BlendModes::Add as u8);
+   light_sprite.get::<Position>()
+      .set_x(20);
+   light_sprite.get::<Position>()
+      .set_y(20);
+
+   let mut rect_entity = Entity::new();
+   rect_entity.set_name("rect");
+   // Rect, Renderable, Color, Size, Position
+   rect_entity.add::<Rect>();
+   rect_entity.add::<Renderable>();
+   rect_entity.add::<Color>();
+   rect_entity.add::<Size>();
+   rect_entity.add::<Position>();
+   let mut size = rect_entity.get::<Size>();
+   size.set_width(500);
+   size.set_height(500);
+   let mut color = rect_entity.get::<Color>();
+   // Transparent black
+   color.set_r(0);
+   color.set_g(0);
+   color.set_b(0);
+   color.set_a(255);
 
    #[cfg(feature = "render")] {
       let animation_entity = crate::utils::load::load_animation("assets/player.atlas", "assets/player.json", |entity| {

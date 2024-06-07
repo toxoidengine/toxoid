@@ -6,6 +6,7 @@ use std::collections::HashMap;
 use core::alloc::Layout;
 use flecs_core::*;
 use once_cell::sync::Lazy;
+use toxoid_api::StringPtr;
 use std::sync::Mutex;
 use crate::utils::*;
 use crate::allocator::*;
@@ -1220,9 +1221,10 @@ pub unsafe extern "C" fn toxoid_json_to_entity(json: *mut c_char) {
                         },
                         type_id if type_id == FLECS_IDecs_string_tID_ => {
                             let value = value.as_str().unwrap();
-                            let value = std::ffi::CString::new(value).unwrap();
-                            flecs_component_set_member_string(component_ptr, item.offset as u32, value.as_ptr() as *mut i8);
+                            flecs_component_set_member_string(component_ptr, item.offset as u32, toxoid_api::make_c_string(value));
                         },
+                        type_id if type_id == FLECS_IDecs_uptr_tID_ => {},
+                        type_id if type_id == FLECS_IDecs_iptr_tID_ => {},
                         _ => eprintln!("Type not supported {:?}", item.type_),
                     }
                 });

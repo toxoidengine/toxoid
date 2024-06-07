@@ -73,6 +73,7 @@ pub fn load_sprite_system(iter: &mut Iter)  {
         .enumerate()
         .for_each(|(i, sprite)| {
             let entity = &entities[i];
+            println!("Loading sprite with filename {:?}", sprite.get_filename());
             crate::utils::load::load_sprite(sprite.get_filename(), entity);
             entities[i].remove::<Loadable>();
         });
