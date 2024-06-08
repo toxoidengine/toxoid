@@ -67,10 +67,10 @@ component! {
         height: i32,
     },
     Color {
-        r: u8,
-        g: u8,
-        b: u8,
-        a: u8
+        r: f32,
+        g: f32,
+        b: f32,
+        a: f32
     },
     Sprite {
         filename: StringPtr,
