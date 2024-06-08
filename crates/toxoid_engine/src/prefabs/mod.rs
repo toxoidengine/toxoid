@@ -53,19 +53,24 @@ pub fn init() {
       (*entity).add::<Renderable>();
    });
    lamp_post_sprite.get::<Position>()
-      .set_x(155);
+      .set_x(0);
    lamp_post_sprite.get::<Position>()
-      .set_y(170);
+      .set_y(0);
+   lamp_post_sprite.get::<Size>()
+      .set_width(2000);
+   lamp_post_sprite.get::<Size>()
+      .set_height(2000);
 
-   let light_sprite = create_sprite("assets/light_yellow_2.png", |entity| {
+   let mut light_sprite = create_sprite("assets/light_yellow_2.png", |entity| {
          (*entity).add::<Renderable>();
    });
+   light_sprite.add::<Light>();
    light_sprite.get::<BlendMode>()
       .set_mode(BlendModes::Add as u8);
    light_sprite.get::<Position>()
-      .set_x(20);
+      .set_x(0);
    light_sprite.get::<Position>()
-      .set_y(20);
+      .set_y(0);
 
    let mut rect_entity = Entity::new();
    rect_entity.set_name("rect");
@@ -75,9 +80,6 @@ pub fn init() {
    rect_entity.add::<Color>();
    rect_entity.add::<Size>();
    rect_entity.add::<Position>();
-   let mut size = rect_entity.get::<Size>();
-   size.set_width(2000);
-   size.set_height(2000);
    
    let mut color = rect_entity.get::<Color>();
    // Transparent black
