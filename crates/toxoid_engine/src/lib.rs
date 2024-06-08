@@ -34,7 +34,7 @@ pub fn init() {
     systems::init();
 
     // Test WASM runtime
-    toxoid_wasm::wasm_init();
+    // toxoid_wasm::wasm_init();
     
     #[cfg(target_os = "emscripten")]
     toxoid_ffi::emscripten::start_loop(game_loop);

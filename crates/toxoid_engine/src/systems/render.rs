@@ -103,7 +103,7 @@ pub fn render_sprite_system(iter: &mut Iter) {
             // Add renderable to render target we just blitted the sprite to, which which be drawn on the main canvas buffer
             rt_entity.add::<Renderable>();
             // Remove renderable from sprite after blitting
-            // entity.remove::<Renderable>();
+            entity.remove::<Renderable>();
         });
 }
 
@@ -122,12 +122,6 @@ pub extern "C" fn render_rt_order_by(_e1: ecs_entity_t, v1: *const c_void, _e2: 
 #[components(RenderTarget, _, Size, Position, BlendMode)]
 // RenderTarget, Renderable, Size, Position
 pub fn render_rt_system(iter: &mut Iter) {
-    let entities = iter.entities();
-    entities
-        .iter_mut()
-        .for_each(|entity| {
-            println!("Render target render entity: {:?}", entity.get_id());
-        });
     components
         .for_each(|(rt, size, pos, blend_mode)| {
             // println!("Index {}", rt.get_z_index());
