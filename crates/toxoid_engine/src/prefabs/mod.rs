@@ -53,9 +53,9 @@ pub fn init() {
       (*entity).add::<Renderable>();
    });
    lamp_post_sprite.get::<Position>()
-      .set_x(50);
+      .set_x(200);
    lamp_post_sprite.get::<Position>()
-      .set_y(50);
+      .set_y(200);
 
    let mut light_sprite = create_sprite("assets/light_yellow_2.png", |entity| {
          (*entity).add::<Renderable>();
@@ -72,6 +72,10 @@ pub fn init() {
    rect_entity.add::<Color>();
    rect_entity.add::<Size>();
    rect_entity.add::<Position>();
+
+   let mut size = rect_entity.get::<Size>();
+   size.set_width(2000);
+   size.set_height(2000);
    
    let mut color = rect_entity.get::<Color>();
    // Transparent black

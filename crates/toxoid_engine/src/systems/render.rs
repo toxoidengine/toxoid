@@ -10,67 +10,65 @@ use toxoid_sokol::bindings::*;
 use toxoid_sokol::sokol::{app as sapp, gfx as sg, glue as sglue, gl as sgl};
 
 #[cfg(feature = "render")]
-// Rect, Color, Size, Position, Blittable
-#[components(_, Color, Size, Position)]
+// Rect, Blittable, Color, Size, Position
+#[components(_, _, Color, Size, Position)]
 pub fn blit_rect_system(iter: &mut Iter) {
     let entities = iter.entities();
     entities
         .iter_mut()
         .for_each(|entity| {
-            // let mut rt_entity = Entity::new();
-            // rt_entity.add::<Position>();
-            // rt_entity.add::<Size>();
-            // rt_entity.add::<RenderTarget>();
-            
-            // let (window_width, window_height) = (sapp::width(), sapp::height());
-            // let mut size = rt_entity.get::<Size>();
-            // size.set_width(window_width);
-            // size.set_height(window_height);
-            
-            // let mut position = rt_entity.get::<Position>();
-            // position.set_x(0);
-            // position.set_y(0);
-            
-            // let rt = SokolRenderer2D::create_render_target(window_width as u32, window_height as u32);
-            // let mut render_target = rt_entity.get::<RenderTarget>();
-            // render_target.set_render_target(Pointer { 
-            //     ptr: Box::leak(rt) as *mut _ as *mut c_void 
-            // });
-            // render_target.set_flip_y(true);
-            // render_target.set_z_index(2);
+            let mut size = entity.get::<Size>();
 
-            // entity.remove::<Blittable>();
-            // entity.add::<Renderable>();
-            // entity.parent_of(rt_entity);
+            let mut rt_entity = Entity::new();
+            rt_entity.add::<Position>();
+            rt_entity.add::<Size>();
+            rt_entity.add::<RenderTarget>();
             
-            let size = entity.get::<Size>();
             let rt = SokolRenderer2D::create_render_target(size.get_width() as u32, size.get_height() as u32);
-            entity.add::<RenderTarget>();
-            let mut render_target = entity.get::<RenderTarget>();
+            let mut render_target = rt_entity.get::<RenderTarget>();
             render_target.set_render_target(Pointer { 
                 ptr: Box::leak(rt) as *mut _ as *mut c_void 
             });
-            render_target.set_z_index(3);
+            render_target.set_z_index(2);
+            let mut rt_size = rt_entity.get::<Size>();
+            rt_size.set_width(size.get_width());
+            rt_size.set_height(size.get_height());
+            let mut rt_pos = rt_entity.get::<Position>();
+            let position = entity.get::<Position>();
+            rt_pos.set_x(position.get_x());
+            rt_pos.set_y(position.get_y());
 
+            // Add render target entity as a child of the sprite entity
+            entity.parent_of(rt_entity);
+
+            // Remove blittable component
             entity.remove::<Blittable>();
+
+            // Add renderable component
             entity.add::<Renderable>();
+
         });
 }
 
 #[cfg(feature = "render")]
-// Rect, Color, Size, Position, Renderable, RenderTarget
-#[components(_, Color, Size, Position, _, RenderTarget)]
+// Rect, Color, Size, Position, Renderable
+#[components(_, Color, Size, Position)]
 pub fn render_rect_system(iter: &mut Iter) {
+    let entities = iter.entities();
     components
-        .for_each(|(color, size, pos, rt)| {
-            let rt = rt.get_render_target().ptr as *mut SokolRenderTarget;
+        .enumerate()
+        .for_each(|(i, (color, size, pos))| {
+            let mut rt_entity = entities[i].children().get_mut(0).unwrap();
+            let rt = rt_entity.get::<RenderTarget>().get_render_target().ptr as *mut SokolRenderTarget;
             let rt_box = unsafe { Box::from_raw(rt) };
             let rt_trait_object: &Box<dyn toxoid_render::RenderTarget> = Box::leak(Box::new(rt_box as Box<dyn toxoid_render::RenderTarget>));
+
             unsafe {
                 SokolRenderer2D::begin_rt(&rt_trait_object, size.get_width() as f32, size.get_height() as f32);
                 SokolRenderer2D::draw_filled_rect(pos, size, color);
                 SokolRenderer2D::end_rt()
             }     
+            rt_entity.add::<Renderable>();
         });
 }
 
@@ -434,8 +432,6 @@ pub fn blit_sprite_system(iter: &mut Iter) {
             let mut rt_pos = rt_entity.get::<Position>();
             rt_pos.set_x(position.get_x());
             rt_pos.set_y(position.get_y());
-            println!("Origina position x: {}, y: {}", position.get_x(), position.get_y());
-            println!("Position x: {}, y: {}", rt_pos.get_x(), rt_pos.get_y());
 
             // Add render target entity as a child of the sprite entity
             entity.parent_of(rt_entity);
@@ -460,32 +456,32 @@ pub fn blit_sprite_system(iter: &mut Iter) {
 pub fn init() {
     #[cfg(feature = "render")] {
         // Renderers
-        // System::new(render_bone_animation)
-        //     .with::<(SpineInstance, Position, BoneAnimation, Renderable)>()
-        //     .build();
+        System::new(render_bone_animation)
+            .with::<(SpineInstance, Position, BoneAnimation, Renderable)>()
+            .build();
         System::new(render_rt_system)
             .with::<(RenderTarget, Renderable, Size, Position)>()
             .order_by::<RenderTarget>(render_rt_order_by)
             .build();
-        // System::new(render_rect_system)
-        //     .with::<(Rect, Color, Size, Position, Renderable)>()
-        //     .build();
+        System::new(render_rect_system)
+            .with::<(Rect, Color, Size, Position, Renderable)>()
+            .build();
         System::new(render_sprite_system)
             .with::<(Sprite, Renderable, Size, Position, BlendMode)>()
             .build();
         
         // Blitting
-        // System::new(blit_bone_animation)
-        //     .with::<(SpineInstance, Position, BoneAnimation, Blittable)>()
-        //     .build();
+        System::new(blit_bone_animation)
+            .with::<(SpineInstance, Position, BoneAnimation, Blittable)>()
+            .build();
         System::new(blit_cell_system)
             .with::<(TiledCellComponent, Blittable)>()
             .build();
         System::new(blit_sprite_system)
             .with::<(Sprite, Blittable, Position, Size, Callback)>()
             .build();
-        // System::new(blit_rect_system)
-        //     .with::<(Rect, Color, Size, Position, Blittable)>()
-        //     .build();
+        System::new(blit_rect_system)
+            .with::<(Rect, Blittable, Color, Size, Position)>()
+            .build();
     }
 }
