@@ -482,26 +482,26 @@ pub fn init() {
         System::new(blit_rect_system)
             .with::<(Rect, Blittable, Color, Size, Position)>()
             .build();
-        // System::new(blit_sprite_system)
-        //     .with::<(Sprite, Blittable, Position, Size, Callback)>()
-        //     .build();
-        // System::new(blit_bone_animation)
-        //     .with::<(SpineInstance, Position, BoneAnimation, Blittable)>()
-        //     .build();
-        // System::new(blit_cell_system)
-        //     .with::<(TiledCellComponent, Blittable)>()
-        //     .build();
+        System::new(blit_sprite_system)
+            .with::<(Sprite, Blittable, Position, Size, Callback)>()
+            .build();
+        System::new(blit_bone_animation)
+            .with::<(SpineInstance, Position, BoneAnimation, Blittable)>()
+            .build();
+        System::new(blit_cell_system)
+            .with::<(TiledCellComponent, Blittable)>()
+            .build();
 
         // Renderers
         System::new(render_rect_system)
             .with::<(Rect, Color, Size, Position, Renderable)>()
             .build();
-        // System::new(render_sprite_system)
-        //     .with::<(Sprite, Renderable, Size, Position, BlendMode)>()
-        //     .build();
-        // System::new(render_bone_animation)
-        //     .with::<(SpineInstance, Position, BoneAnimation, Renderable)>()
-        //     .build();
+        System::new(render_sprite_system)
+            .with::<(Sprite, Renderable, Size, Position, BlendMode)>()
+            .build();
+        System::new(render_bone_animation)
+            .with::<(SpineInstance, Position, BoneAnimation, Renderable)>()
+            .build();
         System::new(render_rt_system)
             .with::<(RenderTarget, Renderable, Size, Position, BlendMode)>()
             .order_by::<RenderTarget>(render_rt_order_by)
