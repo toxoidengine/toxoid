@@ -71,19 +71,20 @@ pub fn init() {
    rect_entity.set_name("rect");
    // Rect, Renderable, Color, Size, Position
    rect_entity.add::<Rect>();
-   rect_entity.add::<Renderable>();
+   rect_entity.add::<Blittable>();
    rect_entity.add::<Color>();
    rect_entity.add::<Size>();
    rect_entity.add::<Position>();
    let mut size = rect_entity.get::<Size>();
-   size.set_width(500);
-   size.set_height(500);
+   size.set_width(2000);
+   size.set_height(2000);
+   
    let mut color = rect_entity.get::<Color>();
    // Transparent black
-   color.set_r(0);
-   color.set_g(0);
-   color.set_b(0);
-   color.set_a(255);
+   color.set_r(0.);
+   color.set_g(0.);
+   color.set_b(0.);
+   color.set_a(0.7);
 
    #[cfg(feature = "render")] {
       let animation_entity = crate::utils::load::load_animation("assets/player.atlas", "assets/player.json", |entity| {
