@@ -91,6 +91,7 @@ extern "C" {
     pub fn toxoid_query_with(query_desc: *mut c_void, filter_index: u8, ids: *mut ecs_entity_t, components_count: i32) -> u8;
     pub fn toxoid_query_without(query_desc: *mut c_void, filter_index: u8, ids: *mut ecs_entity_t, components_count: i32) -> u8;
     pub fn toxoid_query_with_or(query_desc: *mut c_void, filter_index: u8, ids: *mut ecs_entity_t, components_count: i32) -> u8;
+    pub fn toxoid_query_order_by(query_desc: *mut c_void, component_id: ecs_entity_t, callback: extern "C" fn(ecs_entity_t, *const c_void, ecs_entity_t, *const c_void) -> i32);
     pub fn toxoid_query_build(query_desc: *mut c_void) -> *mut c_void;
     pub fn toxoid_query_iter(query: *mut c_void) -> *mut c_void;
     pub fn toxoid_query_next(iter: *mut c_void) -> bool;

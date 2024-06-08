@@ -208,88 +208,88 @@ pub fn blit_cell_system(iter: &mut Iter) {
             let rt = SokolRenderer2D::create_render_target(pixel_width, pixel_height);
             SokolRenderer2D::begin_rt(&rt, pixel_width as f32, pixel_height as f32);
             (*cell)
-            .layers
-            .iter()
-            .for_each(|layer| {
-                if layer.layer_type == "group" {
-                    layer
-                    .layers
-                    .as_ref()
-                    .unwrap()
-                    .iter()
-                    .for_each(|layer| {
-                        if layer.layer_type == "tilelayer" {
-                            // Iterate over the tiles in the map
-                            for y in 0..(*cell).height {
-                                for x in 0..(*cell).width {
-                                    // Calculate the position to blit each tile on the render target
-                                    let dest_x = x as f32 * tile_width as f32;
-                                    let dest_y = y as f32 * tile_height as f32;
-                                    let i = x as usize + (y as usize * (*cell).width as usize);
-                                    let tile_id = layer.data.as_ref().unwrap()[i];
-                                    // Tiled 1-indexes the tile ids
-                                    // and 0 is a special value for an empty tile
-                                    if tile_id == 0 {
-                                        continue;
-                                    }
-                                    // Calculate x and y position of the tile in the tileset
-                                    // Based on the tile id which is the index of the tile in the tileset
-                                    // Assuming the tileset is a single row of tiles
-                                    // You may need to adjust this based on the tileset layout
-                                    // Calculate the source x and y position of the tile in the tileset
-                                    let tileset_width = image_width / tile_width;
-                                    let tileset_x = (tile_id - 1) % tileset_width;
-                                    let tileset_y = (tile_id - 1) / tileset_width;
-                                    let src_x = tileset_x as f32 * tile_width as f32;
-                                    let src_y = tileset_y as f32 * tile_height as f32;
-                                    
-                                    // Blit tile from the tileset to the map's render target
-                                    // Assuming you have a way to determine the source tile's position in the tileset, adjust src_x and src_y accordingly
-                                    SokolRenderer2D::blit_sprite(&tileset_sprite, src_x, src_y, tile_width as f32, tile_height as f32, &rt, dest_x, dest_y);
-                                    
-                                    // Create an entity for each tile
-                                    let mut tile_entity = Entity::new();
-                                    tile_entity.add::<Position>();
-                                    let mut position = tile_entity.get::<Position>();
-                                    position.set_x(dest_x as u32);
-                                    position.set_y(dest_y as u32);
-                                    tile_entity.add::<Size>();
-                                    let mut size = tile_entity.get::<Size>();
-                                    size.set_width(tile_width as i32);
-                                    size.set_height(tile_height as i32);
-                                    // Add other components as needed, e.g., for collision checks
-                                }
-                            }
-                        } else if layer.layer_type == "objectgroup" {
-                            layer
-                            .objects
+                .layers
+                .iter()
+                .for_each(|layer| {
+                    if layer.layer_type == "group" {
+                        layer
+                            .layers
                             .as_ref()
                             .unwrap()
                             .iter()
-                            .for_each(|object| {
-                                object
-                                .properties
-                                .as_ref()
-                                .unwrap()
-                                .iter()
-                                .for_each(|property| {
-                                    if property.name == "entity" {
-                                        println!("Entity: {}", property.value.as_str());
-                                        toxoid_json_to_entity(
-                                            make_c_string(
-                                                property.value.as_str()
-                                            )
-                                        );
+                            .for_each(|layer| {
+                                if layer.layer_type == "tilelayer" {
+                                    // Iterate over the tiles in the map
+                                    for y in 0..(*cell).height {
+                                        for x in 0..(*cell).width {
+                                            // Calculate the position to blit each tile on the render target
+                                            let dest_x = x as f32 * tile_width as f32;
+                                            let dest_y = y as f32 * tile_height as f32;
+                                            let i = x as usize + (y as usize * (*cell).width as usize);
+                                            let tile_id = layer.data.as_ref().unwrap()[i];
+                                            // Tiled 1-indexes the tile ids
+                                            // and 0 is a special value for an empty tile
+                                            if tile_id == 0 {
+                                                continue;
+                                            }
+                                            // Calculate x and y position of the tile in the tileset
+                                            // Based on the tile id which is the index of the tile in the tileset
+                                            // Assuming the tileset is a single row of tiles
+                                            // You may need to adjust this based on the tileset layout
+                                            // Calculate the source x and y position of the tile in the tileset
+                                            let tileset_width = image_width / tile_width;
+                                            let tileset_x = (tile_id - 1) % tileset_width;
+                                            let tileset_y = (tile_id - 1) / tileset_width;
+                                            let src_x = tileset_x as f32 * tile_width as f32;
+                                            let src_y = tileset_y as f32 * tile_height as f32;
+                                            
+                                            // Blit tile from the tileset to the map's render target
+                                            // Assuming you have a way to determine the source tile's position in the tileset, adjust src_x and src_y accordingly
+                                            SokolRenderer2D::blit_sprite(&tileset_sprite, src_x, src_y, tile_width as f32, tile_height as f32, &rt, dest_x, dest_y);
+                                            
+                                            // Create an entity for each tile
+                                            let mut tile_entity = Entity::new();
+                                            tile_entity.add::<Position>();
+                                            let mut position = tile_entity.get::<Position>();
+                                            position.set_x(dest_x as u32);
+                                            position.set_y(dest_y as u32);
+                                            tile_entity.add::<Size>();
+                                            let mut size = tile_entity.get::<Size>();
+                                            size.set_width(tile_width as i32);
+                                            size.set_height(tile_height as i32);
+                                            // Add other components as needed, e.g., for collision checks
+                                        }
                                     }
-                                    // if property.name == "filename" {
-                                        
-                                        // }
-                                    });
+                                } else if layer.layer_type == "objectgroup" {
+                                    layer
+                                    .objects
+                                    .as_ref()
+                                    .unwrap()
+                                    .iter()
+                                    .for_each(|object| {
+                                        object
+                                        .properties
+                                        .as_ref()
+                                        .unwrap()
+                                        .iter()
+                                        .for_each(|property| {
+                                            if property.name == "entity" {
+                                                println!("Entity: {}", property.value.as_str());
+                                                toxoid_json_to_entity(
+                                                    make_c_string(
+                                                        property.value.as_str()
+                                                    )
+                                                );
+                                            }
+                                            // if property.name == "filename" {
+                                                
+                                            // }
+                                            });
+                                        });
+                                    }
                                 });
                             }
                         });
-                    }
-                });
                 SokolRenderer2D::end_rt();
                 // Create render target entity
                 let mut entity = Entity::new();
@@ -326,79 +326,95 @@ pub fn blit_cell_system(iter: &mut Iter) {
                 
                 // Remove the blittable component
                 cell_entity.remove::<Blittable>();
-            });
+    });
+}
+        
+#[cfg(feature = "render")]
+#[components(Sprite, Callback, _)]
+pub fn blit_sprite_system(iter: &mut Iter) {
+    use crate::prefabs::CallbackFn;
+    let entities = iter.entities();
+    components
+    .enumerate()
+    .for_each(|(i, (sprite, callback))| {
+        // Get image data
+        let data = sprite.get_data().ptr as *const u8;
+        let size = sprite.get_data_size();
+        
+        println!("Blitting sprite: {:?}", sprite.get_filename());
+        
+        // Create sprite
+        let sokol_sprite = SokolRenderer2D::create_sprite(data, size as usize);
+        
+        // Set sprite size
+        let mut sprite_size = entities[i].get::<Size>();
+        sprite_size.set_width(sokol_sprite.width() as i32);
+        sprite_size.set_height(sokol_sprite.height() as i32);
+        
+        // Set sprite object
+        sprite.set_sprite(Pointer { 
+            ptr: Box::into_raw(sokol_sprite) as *mut c_void 
+        });
+        
+        // Remove blittable component
+        entities[i].remove::<Blittable>();
+        
+        // Add renderable component if sprite is renderable
+        if sprite.get_renderable() {
+            entities[i].add::<Renderable>();
         }
         
-        #[cfg(feature = "render")]
-        #[components(Sprite, Callback, _)]
-        pub fn blit_sprite_system(iter: &mut Iter) {
-            use crate::prefabs::CallbackFn;
-            let entities = iter.entities();
-            components
-            .enumerate()
-            .for_each(|(i, (sprite, callback))| {
-                // Get image data
-                let data = sprite.get_data().ptr as *const u8;
-                let size = sprite.get_data_size();
-                
-                println!("Blitting sprite: {:?}", sprite.get_filename());
-                
-                // Create sprite
-                let sokol_sprite = SokolRenderer2D::create_sprite(data, size as usize);
-                
-                // Set sprite size
-                let mut sprite_size = entities[i].get::<Size>();
-                sprite_size.set_width(sokol_sprite.width() as i32);
-                sprite_size.set_height(sokol_sprite.height() as i32);
-                
-                // Set sprite object
-                sprite.set_sprite(Pointer { 
-                    ptr: Box::into_raw(sokol_sprite) as *mut c_void 
-                });
-                
-                // Remove blittable component
-                entities[i].remove::<Blittable>();
-                
-                // Add renderable component if sprite is renderable
-                if sprite.get_renderable() {
-                    entities[i].add::<Renderable>();
-                }
-                
-                // Callback
-                let callback_ptr = callback.get_callback().ptr as *mut c_void;
-                if !callback_ptr.is_null() {
-                    let mut callback: Box<CallbackFn> = unsafe { Box::from_raw(callback_ptr as *mut CallbackFn) };
-                    ((*callback).callback)(&mut entities[i]); 
-                }
-            });
+        // Callback
+        let callback_ptr = callback.get_callback().ptr as *mut c_void;
+        if !callback_ptr.is_null() {
+            let mut callback: Box<CallbackFn> = unsafe { Box::from_raw(callback_ptr as *mut CallbackFn) };
+            ((*callback).callback)(&mut entities[i]); 
         }
+    });
+}
+
+pub extern "C" fn render_rt_order_by(_e1: ecs_entity_t, v1: *const c_void, _e2: ecs_entity_t, v2: *const c_void) -> i32 {
+    println!("Ordered!");
+    let mut rt1 = RenderTarget::default();
+    let mut rt2 = RenderTarget::default();
+    rt1.set_ptr(v1 as *mut c_void);
+    rt2.set_ptr(v2 as *mut c_void);
+    let z1 = rt1.get_z_index();
+    let z2 = rt2.get_z_index();
+    println!("z1: {}, z2: {}", z1, z2);
+    println!("Really?");
+    z1.cmp(&z2) as i32
+}
+
+pub fn init() {
+    #[cfg(feature = "render")] {
+        // Renderers
+        System::new(render_bone_animation)
+            .with::<(SpineInstance, Position, BoneAnimation, Renderable)>()
+            .build();
+        System::new(render_rt_system)
+            .with::<(RenderTarget, Renderable, Size, Position)>()
+            .order_by::<RenderTarget>(render_rt_order_by)
+            .build();
+        System::new(render_rect_system)
+            .with::<(Rect, Renderable, Color, Size, Position)>()
+            .build();
+        System::new(render_sprite_system)
+            .with::<(Sprite, Renderable, Size, Position, BlendMode)>()
+            .build();
         
-        
-        pub fn init() {
-            #[cfg(feature = "render")] {
-                // Renderers
-                System::new(render_bone_animation)
-                    .with::<(SpineInstance, Position, BoneAnimation, Renderable)>()
-                    .build();
-                System::new(render_rt_system)
-                    .with::<(RenderTarget, Renderable, Size, Position)>()
-                    .build();
-                System::new(render_rect_system)
-                    .with::<(Rect, Renderable, Color, Size, Position)>()
-                    .build();
-                System::new(render_sprite_system)
-                    .with::<(Sprite, Renderable, Size, Position, BlendMode)>()
-                    .build();
-                
-                // Blitting
-                System::new(blit_bone_animation)
-                    .with::<(SpineInstance, Position, BoneAnimation, Blittable)>()
-                    .build();
-                System::new(blit_cell_system)
-                    .with::<(TiledCellComponent, Blittable)>()
-                    .build();
-                System::new(blit_sprite_system)
-                    .with::<(Sprite, Callback, Blittable)>()
-                    .build();
-            }
-        }
+        // Blitting
+        System::new(blit_bone_animation)
+            .with::<(SpineInstance, Position, BoneAnimation, Blittable)>()
+            .build();
+        System::new(blit_cell_system)
+            .with::<(TiledCellComponent, Blittable)>()
+            .build();
+        System::new(blit_sprite_system)
+            .with::<(Sprite, Callback, Blittable)>()
+            .build();
+        // System::new(blit_rect_system)
+        //     .with::<(Rect, Blittable)>()
+        //     .build();
+    }
+}

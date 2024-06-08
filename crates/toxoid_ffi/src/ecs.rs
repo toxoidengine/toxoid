@@ -243,6 +243,12 @@ pub unsafe extern "C" fn toxoid_query_with_or(query_desc: *mut flecs_core::ecs_q
 }
 
 #[no_mangle]
+pub unsafe extern "C" fn toxoid_query_order_by(query_desc: *mut flecs_core::ecs_query_desc_t, component_id: ecs_entity_t, callback: extern "C" fn(ecs_entity_t, *const c_void, ecs_entity_t, *const c_void) -> i32) {
+    (*query_desc).order_by_component = component_id;
+    (*query_desc).order_by = Some(callback);
+}
+
+#[no_mangle]
 pub unsafe extern "C" fn toxoid_query_build(query_desc: *mut flecs_core::ecs_query_desc_t) -> *mut flecs_core::ecs_query_t {
     flecs_core::flecs_query_build(query_desc)
 }
