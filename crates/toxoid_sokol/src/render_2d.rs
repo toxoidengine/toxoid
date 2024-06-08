@@ -443,7 +443,7 @@ impl Renderer2D for SokolRenderer2D {
             // let (window_width, _) = SokolRenderer2D::window_size();
             // let scale_factor = window_width as f32 / game_config.get_resolution_width() as f32;
             // sgp_reset_color();
-            // sgp_set_color(0., 0., 0., 0.5);
+            // sgp_set_color(0., 0., 0., 0.7);
             // sgp_draw_filled_rect(0., 0., window_width as f32, window_width as f32);
             /* 
             let game_config = World::get_singleton::<GameConfig>();

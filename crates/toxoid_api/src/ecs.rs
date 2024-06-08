@@ -615,6 +615,16 @@ impl Query {
         self
     }
 
+    pub fn order_by<T: Default + Component + ComponentType + 'static>(&mut self, callback: extern "C" fn(ecs_entity_t, *const c_void, ecs_entity_t, *const c_void) -> i32) -> &mut Self {
+        unsafe {
+            let type_hash = split_u64(T::get_hash());
+            let component_id_split = toxoid_component_cache_get(type_hash);
+            let component_id = combine_u32(component_id_split);
+            toxoid_query_order_by(self.query_desc, component_id, callback);
+            self
+        }
+    }
+
     pub fn build(&mut self) -> &mut Query {
         self.query = unsafe { toxoid_query_build(self.query_desc) };
         self
@@ -695,6 +705,16 @@ impl System {
         
         self.filter_index = unsafe { toxoid_query_with_or(self.query_desc, self.filter_index, ids_ptr, type_ids.len() as i32) };
         self
+    }
+
+    pub fn order_by<T: Default + Component + ComponentType + 'static>(&mut self, callback: extern "C" fn(ecs_entity_t, *const c_void, ecs_entity_t, *const c_void) -> i32) -> &mut Self {
+        unsafe {
+            let type_hash = split_u64(T::get_hash());
+            let component_id_split = toxoid_component_cache_get(type_hash);
+            let component_id = combine_u32(component_id_split);
+            toxoid_query_order_by(self.query_desc, component_id, callback);
+            self
+        }
     }
 
     pub fn build(&mut self) -> &mut Self {
