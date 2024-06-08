@@ -57,7 +57,7 @@ pub fn init() {
    lamp_post_sprite.get::<Position>()
       .set_y(170);
 
-   let light_sprite = create_sprite("assets/light_yellow.png", |entity| {
+   let light_sprite = create_sprite("assets/light_yellow_2.png", |entity| {
          (*entity).add::<Renderable>();
    });
    light_sprite.get::<BlendMode>()

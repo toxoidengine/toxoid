@@ -130,49 +130,6 @@ impl SokolRenderer2D {
         sg::init_sampler(sg::Sampler { id: sgsampler.id }, &sampler_desc);
     }
 
-    pub fn create_spine_context() -> Box<SpineOffscreenCtx> {
-        let image_desc = sg::ImageDesc {
-            render_target: true,
-            width: 500 as i32,
-            height: 500 as i32,
-            ..Default::default()
-        };
-        let img = sg::make_image(&image_desc);
-
-        let depth_image_desc = sg::ImageDesc {
-            render_target: true,
-            width: 500 as i32,
-            height: 500 as i32,
-            pixel_format: sg::PixelFormat::DepthStencil,
-            ..Default::default()
-        };
-        let depth_image = sg::make_image(&depth_image_desc);
-
-        let mut attachments_desc = sg::AttachmentsDesc::default();
-        attachments_desc.colors[0].image = img;
-        attachments_desc.depth_stencil.image = depth_image;
-        let attachments = sg::make_attachments(&attachments_desc);
-        // Create pass
-        let fb_pass = sg::Pass {
-            attachments,
-            ..Default::default()
-        };
-
-        unsafe {
-            let mut desc: sspine_context_desc = MaybeUninit::zeroed().assume_init(); 
-            desc.color_format = sg::PixelFormat::Rgba8 as i32;
-            desc.depth_format = sg::PixelFormat::DepthStencil as i32;
-            desc.sample_count = 1;
-            let ctx = sspine_make_context(&desc);
-            Box::new(SpineOffscreenCtx {
-                ctx,
-                img,
-                attachments,
-                pass_action: fb_pass.action,
-            })
-        }
-    }
-
     // fn draw_animation_to_render_target(render_target: &Box<dyn RenderTarget>) {
     //     // Get the size of the window
     //     let (window_width, window_height) = (sapp::width(), sapp::height());
@@ -211,6 +168,8 @@ impl Renderer2D for SokolRenderer2D {
     fn begin() {
         // Get the size of the window
         let (window_width, window_height) = (sapp::width(), sapp::height());
+        let game_config = World::get_singleton::<GameConfig>();
+        let scale_factor = window_width as f32 / game_config.get_resolution_width() as f32;
         unsafe {
             // Begin recording draw commands for a frame buffer of size (width, height).
             sgp_begin(window_width, window_height);
@@ -219,8 +178,11 @@ impl Renderer2D for SokolRenderer2D {
             // Set drawing coordinate space to (left=0, right=width, top=0, bottom=height).
             sgp_project(0.0, window_width as f32, 0.0, window_height as f32);
             // Clear the frame buffer.
-            sgp_set_color(0.1, 0.1, 0.1, 1.0);
+            sgp_set_color(1., 1., 1., 1.);
             sgp_clear();
+            // Set the blend mode to blend
+            // sgp_set_blend_mode(sgp_blend_mode_SGP_BLENDMODE_NONE);
+            println!("Hello world!");
         }
     }
 
@@ -291,8 +253,15 @@ impl Renderer2D for SokolRenderer2D {
         attachments_desc.colors[0].image = image;
         attachments_desc.depth_stencil.image = depth_image;
         let attachments = sg::make_attachments(&attachments_desc);
+        let mut pass_action = sg::PassAction::default();
+        pass_action.colors[0] = sg::ColorAttachmentAction {
+            load_action: sg::LoadAction::Clear,
+            clear_value: { sg::Color { a: 0.0, r: 0.0, g: 0.0, b: 0.0 } },
+            ..Default::default()
+        };
         let fb_pass = sg::Pass {
             attachments,
+            action: pass_action,
             ..Default::default()
         };
 
@@ -411,7 +380,7 @@ impl Renderer2D for SokolRenderer2D {
 
     fn draw_sprite(sprite: &Box<dyn Sprite>, x: f32, y: f32, blend_mode: u8) {
         unsafe {
-            sgp_reset_color();
+            // sgp_reset_color();
             if blend_mode == 0 {
                 sgp_set_blend_mode(sgp_blend_mode_SGP_BLENDMODE_BLEND);
             } else {
@@ -440,42 +409,42 @@ impl Renderer2D for SokolRenderer2D {
 
     fn draw_render_target(source: &Box<dyn RenderTarget>, sx: f32, sy: f32, sw: f32, sh: f32, dx: f32, dy: f32, dw: f32, dh: f32) {
         unsafe {
+            sgp_set_blend_mode(sgp_blend_mode_SGP_BLENDMODE_BLEND);
             // Get scale factor for resolution
             let game_config = World::get_singleton::<GameConfig>();
             let (window_width, _) = SokolRenderer2D::window_size();
             let scale_factor = window_width as f32 / game_config.get_resolution_width() as f32;
-
+    
             let sokol_source = source.as_any().downcast_ref::<SokolRenderTarget>().unwrap();
             let sprite = sokol_source.sprite.as_any().downcast_ref::<SokolSprite>().unwrap();
-            
-            // Reset the color and blend mode
-            sgp_reset_color();
-            sgp_set_blend_mode(sgp_blend_mode_SGP_BLENDMODE_BLEND);
-
-            // Set the source image for drawing, using the color attachment of the render target
-            sgp_set_image(0, sg_image { id: sprite.image.id }); // Assuming you want to draw the depth image. Use the appropriate image for color if needed.
+    
             // Define the source rectangle from the render target
-            let src_rect = sgp_rect { x: sx, y: sy, w: sw, h: sh }; // Assuming the entire render target is to be drawn
+            let src_rect = sgp_rect { x: sx, y: sy, w: sw, h: sh };
+    
             // Define the destination rectangle on the canvas
-            let dest_rect = sgp_rect { 
+            let mut dest_rect = sgp_rect { 
                 x: (dx * scale_factor).round(), 
                 y: (dy * scale_factor).round(), 
                 w: (dw * scale_factor).round(), 
                 h: (dh * scale_factor).round()
             };
-            // Draw the textured rectangle from the render target to the canvas
+
+            // Set the source image for drawing, using the color attachment of the render target
+            sgp_set_image(0, sg_image { id: sprite.image.id });
+
+            // Draw the render target onto the canvas
             sgp_draw_textured_rect(0, dest_rect, src_rect);
         }
     }
 
     fn draw_filled_rect(pos: &Position, size: &Size, color: &Color) {
         unsafe {
-            let game_config = World::get_singleton::<GameConfig>();
-            let (window_width, _) = SokolRenderer2D::window_size();
-            let scale_factor = window_width as f32 / game_config.get_resolution_width() as f32;
-            sgp_reset_color();
-            sgp_set_color(0., 0., 0., 0.5);
-            sgp_draw_filled_rect(0., 0., window_width as f32, window_width as f32);
+            // let game_config = World::get_singleton::<GameConfig>();
+            // let (window_width, _) = SokolRenderer2D::window_size();
+            // let scale_factor = window_width as f32 / game_config.get_resolution_width() as f32;
+            // sgp_reset_color();
+            // sgp_set_color(0., 0., 0., 0.5);
+            // sgp_draw_filled_rect(0., 0., window_width as f32, window_width as f32);
             /* 
             let game_config = World::get_singleton::<GameConfig>();
             let (window_width, _) = SokolRenderer2D::window_size();

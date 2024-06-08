@@ -84,7 +84,8 @@ component! {
     },
     RenderTarget {
         render_target: Pointer,
-        flip_y: bool
+        flip_y: bool,
+        z_index: u32
     },
     Networked {
         network_id: u64,
