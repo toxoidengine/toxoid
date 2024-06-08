@@ -54,16 +54,23 @@ pub fn render_sprite_system(iter: &mut Iter) {
 #[components(RenderTarget, _, Size, Position)]
 // RenderTarget, Renderable, Size, Position
 pub fn render_rt_system(iter: &mut Iter) {
-components
-    .for_each(|(rt, size, pos)| {
-        let rt_ptr = rt.get_render_target();
-        let rt_box = unsafe { Box::from_raw(rt_ptr.ptr as *mut SokolRenderTarget) };
-        let rt_trait_object: &Box<dyn toxoid_render::RenderTarget> = Box::leak(Box::new(rt_box as Box<dyn toxoid_render::RenderTarget>));
-        // Draw Render Target
-        // #[cfg(feature = "sokol")]
-        let source_height = if rt.get_flip_y() { -size.get_height() as f32 } else { size.get_height() as f32 };
-        SokolRenderer2D::draw_render_target(rt_trait_object, 0., 0., size.get_width() as f32, source_height, pos.get_x() as f32, pos.get_y() as f32, size.get_width() as f32, size.get_height() as f32);
-    });
+    // println!("Hello world");
+    // let mut components = components
+    //     .into_iter()
+    //     .collect::<Vec<(&mut RenderTarget, &mut Size, &mut Position)>>();
+    // components.sort_by(|a, b| b.0.get_z_index().cmp(&a.0.get_z_index()));
+    components
+        // .iter()
+        .for_each(|(rt, size, pos)| {
+            // println!("Index {}", rt.get_z_index());
+            let rt_ptr = rt.get_render_target();
+            let rt_box = unsafe { Box::from_raw(rt_ptr.ptr as *mut SokolRenderTarget) };
+            let rt_trait_object: &Box<dyn toxoid_render::RenderTarget> = Box::leak(Box::new(rt_box as Box<dyn toxoid_render::RenderTarget>));
+            // Draw Render Target
+            // #[cfg(feature = "sokol")]
+            let source_height = if rt.get_flip_y() { -size.get_height() as f32 } else { size.get_height() as f32 };
+            SokolRenderer2D::draw_render_target(rt_trait_object, 0., 0., size.get_width() as f32, source_height, pos.get_x() as f32, pos.get_y() as f32, size.get_width() as f32, size.get_height() as f32);
+        });
 }
 
 // SpineInstance, Position, BoneAnimation
@@ -102,30 +109,19 @@ pub fn render_bone_animation(iter: &mut Iter) {
                 let rt = rt_entity.get::<RenderTarget>().get_render_target().ptr as *mut SokolRenderTarget;
                 
                 let (window_width, window_height) = (sapp::width(), sapp::height());
-                let window_width = 500;
-                let window_width = 500;
                 let layer_transform = sspine_layer_transform {
                     size: sspine_vec2 { 
-                        x: window_width as f32, 
-                        y: window_height as f32
+                        x: 1280., 
+                        y: 720.
                     },
                     origin: sspine_vec2 { 
                         x: 0., 
                         y: 0. 
                     }
                 };
-                
-                sgp_begin(window_width, window_height);
-                sgp_project(0., window_width as f32, window_height as f32, 0.);
-                sgp_set_color(0., 0., 0., 0.);
-                sgp_clear();
-                sgp_reset_color();
-                sgp_set_blend_mode(sgp_blend_mode_SGP_BLENDMODE_BLEND);
+
                 sg::begin_pass(&(*rt).pass);
-                println!("Hello world!");
                 unsafe {                    
-                    sgp_flush();
-                    sgp_end();
                     sspine_draw_layer(0, &layer_transform);
                 }
                 sg::end_pass();
@@ -150,9 +146,6 @@ pub fn blit_bone_animation(iter: &mut Iter) {
         rt_entity.add::<RenderTarget>();
         
         let (window_width, window_height) = (sapp::width(), sapp::height());
-        let window_width = 500;
-        let window_height = 500;
-        
         let mut size = rt_entity.get::<Size>();
         size.set_width(window_width);
         size.set_height(window_height);
@@ -168,10 +161,11 @@ pub fn blit_bone_animation(iter: &mut Iter) {
             ptr: Box::leak(rt) as *mut _ as *mut c_void 
         });
         render_target.set_flip_y(true);
+        render_target.set_z_index(5);
         
-        entity.add::<Renderable>();
-        entity.parent_of(rt_entity);
         entity.remove::<Blittable>();
+        entity.parent_of(rt_entity);
+        entity.add::<Renderable>();
     });    
 }
 
@@ -383,28 +377,28 @@ pub fn blit_cell_system(iter: &mut Iter) {
         pub fn init() {
             #[cfg(feature = "render")] {
                 // Renderers
-                System::new(render_rt_system)
-                .with::<(RenderTarget, Renderable, Size, Position)>()
-                .build();
                 System::new(render_bone_animation)
-                .with::<(SpineInstance, Position, BoneAnimation, Renderable)>()
-                .build();
-                // System::new(render_rect_system)
-                // .with::<(Rect, Renderable, Color, Size, Position)>()
-                // .build();
-                // System::new(render_sprite_system)
-                // .with::<(Sprite, Renderable, Size, Position, BlendMode)>()
-                // .build();
+                    .with::<(SpineInstance, Position, BoneAnimation, Renderable)>()
+                    .build();
+                System::new(render_rt_system)
+                    .with::<(RenderTarget, Renderable, Size, Position)>()
+                    .build();
+                System::new(render_rect_system)
+                    .with::<(Rect, Renderable, Color, Size, Position)>()
+                    .build();
+                System::new(render_sprite_system)
+                    .with::<(Sprite, Renderable, Size, Position, BlendMode)>()
+                    .build();
                 
                 // Blitting
                 System::new(blit_bone_animation)
-                .with::<(SpineInstance, Position, BoneAnimation, Blittable)>()
-                .build();
-                // System::new(blit_cell_system)
-                //     .with::<(TiledCellComponent, Blittable)>()
-                //     .build();
-                // System::new(blit_sprite_system)
-                //     .with::<(Sprite, Callback, Blittable)>()
-                //     .build();
+                    .with::<(SpineInstance, Position, BoneAnimation, Blittable)>()
+                    .build();
+                System::new(blit_cell_system)
+                    .with::<(TiledCellComponent, Blittable)>()
+                    .build();
+                System::new(blit_sprite_system)
+                    .with::<(Sprite, Callback, Blittable)>()
+                    .build();
             }
         }
