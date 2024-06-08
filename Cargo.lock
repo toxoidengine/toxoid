@@ -890,7 +890,6 @@ dependencies = [
  "toxoid_serialize",
  "toxoid_sokol",
  "toxoid_tiled",
- "toxoid_wasm",
 ]
 
 [[package]]
