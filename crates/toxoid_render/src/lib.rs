@@ -38,9 +38,9 @@ pub trait Renderer2D {
     // Resize sprite
     fn resize_sprite(sprite: &Box<dyn Sprite>, width: u32, height: u32);
     // Draw sprite
-    fn draw_sprite(sprite: &Box<dyn Sprite>, x: f32, y: f32, blend_mode: u8);
+    fn draw_sprite(sprite: &Box<dyn Sprite>, x: f32, y: f32);
     // Draw render target
-    fn draw_render_target(source: &Box<dyn RenderTarget>, sx: f32, sy: f32, sw: f32, sh: f32, dx: f32, dy: f32, dw: f32, dh: f32);
+    fn draw_render_target(source: &Box<dyn RenderTarget>, sx: f32, sy: f32, sw: f32, sh: f32, dx: f32, dy: f32, dw: f32, dh: f32, blend_mode: u8);
     // Draw a filled rect
     fn draw_filled_rect(pos: &Position, size: &Size, color: &Color);
     // Draw a line

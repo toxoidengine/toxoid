@@ -63,6 +63,10 @@ pub fn init() {
    light_sprite.add::<Light>();
    light_sprite.get::<BlendMode>()
       .set_mode(BlendModes::Add as u8);
+   light_sprite.get::<Position>()
+      .set_x(60);
+   light_sprite.get::<Position>()
+      .set_y(55);
 
    let mut rect_entity = Entity::new();
    rect_entity.set_name("rect");
@@ -82,7 +86,7 @@ pub fn init() {
    color.set_r(0.);
    color.set_g(0.);
    color.set_b(0.);
-   color.set_a(0.7);
+   color.set_a(0.8);
 
    #[cfg(feature = "render")] {
       let animation_entity = crate::utils::load::load_animation("assets/player.atlas", "assets/player.json", |entity| {

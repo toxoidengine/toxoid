@@ -375,14 +375,8 @@ impl Renderer2D for SokolRenderer2D {
         unimplemented!()
     }
 
-    fn draw_sprite(sprite: &Box<dyn Sprite>, x: f32, y: f32, blend_mode: u8) {
+    fn draw_sprite(sprite: &Box<dyn Sprite>, x: f32, y: f32) {
         unsafe {
-            // sgp_reset_color();
-            // if blend_mode == 0 {
-            //     sgp_set_blend_mode(sgp_blend_mode_SGP_BLENDMODE_BLEND);
-            // } else {
-            //     sgp_set_blend_mode(blend_mode as i32);
-            // }
             sgp_set_blend_mode(sgp_blend_mode_SGP_BLENDMODE_BLEND);
             let game_config = World::get_singleton::<GameConfig>();
             let (window_width, _) = SokolRenderer2D::window_size();
@@ -405,9 +399,14 @@ impl Renderer2D for SokolRenderer2D {
         }
     }
 
-    fn draw_render_target(source: &Box<dyn RenderTarget>, sx: f32, sy: f32, sw: f32, sh: f32, dx: f32, dy: f32, dw: f32, dh: f32) {
+    fn draw_render_target(source: &Box<dyn RenderTarget>, sx: f32, sy: f32, sw: f32, sh: f32, dx: f32, dy: f32, dw: f32, dh: f32, blend_mode: u8) {
         unsafe {
-            sgp_set_blend_mode(sgp_blend_mode_SGP_BLENDMODE_BLEND);
+            sgp_reset_color();
+            if blend_mode == 0 {
+                sgp_set_blend_mode(sgp_blend_mode_SGP_BLENDMODE_BLEND);
+            } else {
+                sgp_set_blend_mode(blend_mode as i32);
+            }
             // Get scale factor for resolution
             let game_config = World::get_singleton::<GameConfig>();
             let (window_width, window_height) = SokolRenderer2D::window_size();
@@ -426,7 +425,7 @@ impl Renderer2D for SokolRenderer2D {
                 w: (dw as f32 * scale_factor).round(), 
                 h: (dh as f32 * scale_factor).round()
             };
-            
+
             // Set the source image for drawing, using the color attachment of the render target
             sgp_set_image(0, sg_image { id: sprite.image.id });
 
