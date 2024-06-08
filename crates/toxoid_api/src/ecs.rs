@@ -1005,38 +1005,9 @@ impl Entity {
         }
     }
 
-    // DEPRECATED
-    // pub fn children(&mut self) -> &mut [Entity] {
-    //     unsafe {
-    //         let iter = toxoid_entity_children(self.id as u32);
-    //         // toxoid_term_next(iter);
-    //         let count = toxoid_iter_count(iter);
-    //         let children = toxoid_child_entities(iter);
-    //         let children_slice = core::slice::from_raw_parts(children, count as usize);
-
-    //         let layout = Layout::array::<Entity>(count as usize).unwrap();
-    //         let entities_ptr = ALLOCATOR.alloc(layout) as *mut Entity;
-    //         children_slice
-    //             .iter()
-    //             .enumerate()
-    //             .for_each(|(i, &entity_id)| { 
-    //                 entities_ptr.add(i).write(Entity { 
-    //                     id: entity_id as i32, 
-    //                     children: &mut []
-    //                 });
-    //             });
-            
-    //         // Cleanup
-    //         ALLOCATOR.dealloc(iter as *mut u8, Layout::new::<c_void>());
-            
-    //         let entities = core::slice::from_raw_parts_mut(entities_ptr, count as usize);
-    //         // Make sure slice is not freed at the end of this function
-    //         core::mem::forget(entities_ptr);
-    //         // Assign to self so we can drop it later
-    //         // self.children = entities;
-    //         entities
-    //     }
-    // }
+    pub fn parents(&mut self) -> Entity {
+        unimplemented!()
+    }
 
     pub fn children(&mut self) -> &mut [Entity]  {
         unsafe {

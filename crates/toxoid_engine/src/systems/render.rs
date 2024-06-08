@@ -47,7 +47,6 @@ pub fn blit_rect_system(iter: &mut Iter) {
 
             // Add renderable component
             entity.add::<Renderable>();
-
         });
 }
 
@@ -59,7 +58,8 @@ pub fn render_rect_system(iter: &mut Iter) {
     components
         .enumerate()
         .for_each(|(i, (color, size, pos))| {
-            let mut rt_entity = entities[i].children().get_mut(0).unwrap();
+            let entity = &mut entities[i];
+            let mut rt_entity = entity.children().get_mut(0).unwrap();
             let rt = rt_entity.get::<RenderTarget>().get_render_target().ptr as *mut SokolRenderTarget;
             let rt_box = unsafe { Box::from_raw(rt) };
             let rt_trait_object: &Box<dyn toxoid_render::RenderTarget> = Box::leak(Box::new(rt_box as Box<dyn toxoid_render::RenderTarget>));
@@ -69,7 +69,12 @@ pub fn render_rect_system(iter: &mut Iter) {
                 SokolRenderer2D::draw_filled_rect(pos, size, color);
                 SokolRenderer2D::end_rt()
             }     
+
+            // Add renderable to render target we just blitted the sprite to, which which be drawn on the main canvas buffer
             rt_entity.add::<Renderable>();
+            // TODO: Bug: render_rect_system not blitting correctly the first timee maybe? So this has to be commented out to make it every frame
+            // Remove renderable from sprite after blitting 
+            // entity.remove::<Renderable>();
         });
 }
 
@@ -81,11 +86,12 @@ pub fn render_sprite_system(iter: &mut Iter) {
     components
         .enumerate()
         .for_each(|(i, (sprite, size, pos, blend_mode))| {
+            let entity = &mut entities[i];
             let sprite_ptr = sprite.get_sprite();
             let sprite_box = unsafe { Box::from_raw(sprite_ptr.ptr as *mut SokolSprite) };
             let sprite_trait_object: &Box<dyn toxoid_render::Sprite> = Box::leak(Box::new(sprite_box as Box<dyn toxoid_render::Sprite>));
 
-            let mut rt_entity = entities[i].children().get_mut(0).unwrap();
+            let mut rt_entity = entity.children().get_mut(0).unwrap();
             let rt = rt_entity.get::<RenderTarget>().get_render_target().ptr as *mut SokolRenderTarget;
             let rt_box = unsafe { Box::from_raw(rt) };
             let rt_trait_object: &Box<dyn toxoid_render::RenderTarget> = Box::leak(Box::new(rt_box as Box<dyn toxoid_render::RenderTarget>));
@@ -94,7 +100,10 @@ pub fn render_sprite_system(iter: &mut Iter) {
             SokolRenderer2D::draw_sprite(sprite_trait_object, pos.get_x() as f32, pos.get_y() as f32);
             SokolRenderer2D::end_rt();
 
+            // Add renderable to render target we just blitted the sprite to, which which be drawn on the main canvas buffer
             rt_entity.add::<Renderable>();
+            // Remove renderable from sprite after blitting
+            // entity.remove::<Renderable>();
         });
 }
 
@@ -113,6 +122,12 @@ pub extern "C" fn render_rt_order_by(_e1: ecs_entity_t, v1: *const c_void, _e2: 
 #[components(RenderTarget, _, Size, Position, BlendMode)]
 // RenderTarget, Renderable, Size, Position
 pub fn render_rt_system(iter: &mut Iter) {
+    let entities = iter.entities();
+    entities
+        .iter_mut()
+        .for_each(|entity| {
+            println!("Render target render entity: {:?}", entity.get_id());
+        });
     components
         .for_each(|(rt, size, pos, blend_mode)| {
             // println!("Index {}", rt.get_z_index());
@@ -463,33 +478,33 @@ pub fn blit_sprite_system(iter: &mut Iter) {
 
 pub fn init() {
     #[cfg(feature = "render")] {
+        // Blitting
+        System::new(blit_rect_system)
+            .with::<(Rect, Blittable, Color, Size, Position)>()
+            .build();
+        // System::new(blit_sprite_system)
+        //     .with::<(Sprite, Blittable, Position, Size, Callback)>()
+        //     .build();
+        // System::new(blit_bone_animation)
+        //     .with::<(SpineInstance, Position, BoneAnimation, Blittable)>()
+        //     .build();
+        // System::new(blit_cell_system)
+        //     .with::<(TiledCellComponent, Blittable)>()
+        //     .build();
+
         // Renderers
-        System::new(render_bone_animation)
-            .with::<(SpineInstance, Position, BoneAnimation, Renderable)>()
-            .build();
-        System::new(render_rt_system)
-            .with::<(RenderTarget, Renderable, Size, Position, BlendMode)>()
-            .order_by::<RenderTarget>(render_rt_order_by)
-            .build();
         System::new(render_rect_system)
             .with::<(Rect, Color, Size, Position, Renderable)>()
             .build();
-        System::new(render_sprite_system)
-            .with::<(Sprite, Renderable, Size, Position, BlendMode)>()
-            .build();
-        
-        // Blitting
-        System::new(blit_bone_animation)
-            .with::<(SpineInstance, Position, BoneAnimation, Blittable)>()
-            .build();
-        System::new(blit_cell_system)
-            .with::<(TiledCellComponent, Blittable)>()
-            .build();
-        System::new(blit_sprite_system)
-            .with::<(Sprite, Blittable, Position, Size, Callback)>()
-            .build();
-        System::new(blit_rect_system)
-            .with::<(Rect, Blittable, Color, Size, Position)>()
+        // System::new(render_sprite_system)
+        //     .with::<(Sprite, Renderable, Size, Position, BlendMode)>()
+        //     .build();
+        // System::new(render_bone_animation)
+        //     .with::<(SpineInstance, Position, BoneAnimation, Renderable)>()
+        //     .build();
+        System::new(render_rt_system)
+            .with::<(RenderTarget, Renderable, Size, Position, BlendMode)>()
+            .order_by::<RenderTarget>(render_rt_order_by)
             .build();
     }
 }
