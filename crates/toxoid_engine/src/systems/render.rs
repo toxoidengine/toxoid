@@ -23,6 +23,7 @@ pub fn blit_rect_system(iter: &mut Iter) {
             rt_entity.add::<Position>();
             rt_entity.add::<Size>();
             rt_entity.add::<RenderTarget>();
+            rt_entity.add::<BlendMode>();
             
             let rt = SokolRenderer2D::create_render_target(size.get_width() as u32, size.get_height() as u32);
             let mut render_target = rt_entity.get::<RenderTarget>();
@@ -90,7 +91,7 @@ pub fn render_sprite_system(iter: &mut Iter) {
             let rt_trait_object: &Box<dyn toxoid_render::RenderTarget> = Box::leak(Box::new(rt_box as Box<dyn toxoid_render::RenderTarget>));
 
             SokolRenderer2D::begin_rt(&rt_trait_object, size.get_width() as f32, size.get_height() as f32);
-            SokolRenderer2D::draw_sprite(sprite_trait_object, pos.get_x() as f32, pos.get_y() as f32, blend_mode.get_mode());
+            SokolRenderer2D::draw_sprite(sprite_trait_object, pos.get_x() as f32, pos.get_y() as f32);
             SokolRenderer2D::end_rt();
 
             rt_entity.add::<Renderable>();
@@ -109,19 +110,21 @@ pub extern "C" fn render_rt_order_by(_e1: ecs_entity_t, v1: *const c_void, _e2: 
 }
 
 #[cfg(feature = "render")]
-#[components(RenderTarget, _, Size, Position)]
+#[components(RenderTarget, _, Size, Position, BlendMode)]
 // RenderTarget, Renderable, Size, Position
 pub fn render_rt_system(iter: &mut Iter) {
     components
-        .for_each(|(rt, size, pos)| {
+        .for_each(|(rt, size, pos, blend_mode)| {
             // println!("Index {}", rt.get_z_index());
             let rt_ptr = rt.get_render_target();
             let rt_box = unsafe { Box::from_raw(rt_ptr.ptr as *mut SokolRenderTarget) };
             let rt_trait_object: &Box<dyn toxoid_render::RenderTarget> = Box::leak(Box::new(rt_box as Box<dyn toxoid_render::RenderTarget>));
-            // Draw Render Target
-            // #[cfg(feature = "sokol")]
+
             let source_height = if rt.get_flip_y() { -size.get_height() as f32 } else { size.get_height() as f32 };
-            SokolRenderer2D::draw_render_target(rt_trait_object, 0., 0., size.get_width() as f32, source_height, pos.get_x() as f32, pos.get_y() as f32, size.get_width() as f32, size.get_height() as f32);
+
+            let blend_mode = blend_mode.get_mode();
+
+            SokolRenderer2D::draw_render_target(rt_trait_object, 0., 0., size.get_width() as f32, source_height, pos.get_x() as f32, pos.get_y() as f32, size.get_width() as f32, size.get_height() as f32, blend_mode);
         });
 }
 
@@ -196,6 +199,7 @@ pub fn blit_bone_animation(iter: &mut Iter) {
         rt_entity.add::<Position>();
         rt_entity.add::<Size>();
         rt_entity.add::<RenderTarget>();
+        rt_entity.add::<BlendMode>();
         
         let mut size = rt_entity.get::<Size>();
         size.set_width(1280);
@@ -347,6 +351,7 @@ pub fn blit_cell_system(iter: &mut Iter) {
                 entity.add::<Position>();
                 entity.add::<Size>();
                 entity.add::<RenderTarget>();
+                entity.add::<BlendMode>();
                 
                 let mut position = entity.get::<Position>();
                 // Assuming grid dimensions are known
@@ -414,6 +419,7 @@ pub fn blit_sprite_system(iter: &mut Iter) {
             rt_entity.add::<Position>();
             rt_entity.add::<Size>();
             rt_entity.add::<RenderTarget>();
+            rt_entity.add::<BlendMode>();
             
             let rt = SokolRenderer2D::create_render_target(size.get_width() as u32, size.get_height() as u32);
             rt_entity.add::<RenderTarget>();
@@ -423,6 +429,8 @@ pub fn blit_sprite_system(iter: &mut Iter) {
             });
             if entity.has::<Light>() {
                 render_target.set_z_index(4);
+                let mut blend_mode = rt_entity.get::<BlendMode>();
+                blend_mode.set_mode(BlendModes::Add as u8);
             } else {
                 render_target.set_z_index(1);
             }
@@ -460,7 +468,7 @@ pub fn init() {
             .with::<(SpineInstance, Position, BoneAnimation, Renderable)>()
             .build();
         System::new(render_rt_system)
-            .with::<(RenderTarget, Renderable, Size, Position)>()
+            .with::<(RenderTarget, Renderable, Size, Position, BlendMode)>()
             .order_by::<RenderTarget>(render_rt_order_by)
             .build();
         System::new(render_rect_system)
