@@ -388,10 +388,10 @@ impl Renderer2D for SokolRenderer2D {
             let (window_width, _) = SokolRenderer2D::window_size();
             let scale_factor = window_width as f32 / game_config.get_resolution_width() as f32;
             let dest_rect = sgp_rect { 
-                x: (x * scale_factor).round(), 
-                y: (y * scale_factor).round(), 
-                w: (sprite.width() as f32 * scale_factor).round(), 
-                h: (sprite.height() as f32 * scale_factor).round()
+                x: 0., 
+                y: 0., 
+                w: sprite.width() as f32, 
+                h: sprite.height() as f32
             };
             let src_rect = sgp_rect { 
                 x: 0., 
@@ -410,7 +410,7 @@ impl Renderer2D for SokolRenderer2D {
             sgp_set_blend_mode(sgp_blend_mode_SGP_BLENDMODE_BLEND);
             // Get scale factor for resolution
             let game_config = World::get_singleton::<GameConfig>();
-            let (window_width, _) = SokolRenderer2D::window_size();
+            let (window_width, window_height) = SokolRenderer2D::window_size();
             let scale_factor = window_width as f32 / game_config.get_resolution_width() as f32;
     
             let sokol_source = source.as_any().downcast_ref::<SokolRenderTarget>().unwrap();
@@ -423,9 +423,12 @@ impl Renderer2D for SokolRenderer2D {
             let mut dest_rect = sgp_rect { 
                 x: (dx * scale_factor).round(), 
                 y: (dy * scale_factor).round(), 
-                w: (dw * scale_factor).round(), 
-                h: (dh * scale_factor).round()
+                w: (dw as f32 * scale_factor).round(), 
+                h: (dh as f32 * scale_factor).round()
             };
+
+            println!("src rect: {:?}", src_rect);
+            println!("dest rect: {:?}", dest_rect);
 
             // Set the source image for drawing, using the color attachment of the render target
             sgp_set_image(0, sg_image { id: sprite.image.id });

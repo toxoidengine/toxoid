@@ -75,22 +75,27 @@ pub fn render_rect_system(iter: &mut Iter) {
 }
 
 #[cfg(feature = "render")]
-// Sprite, Renderable, Size, Position, BlendMode, RenderTarget
-#[components(Sprite, _, Size, Position, BlendMode, RenderTarget)]
+// Sprite, Renderable, Size, Position, BlendMode
+#[components(Sprite, _, Size, Position, BlendMode)]
 pub fn render_sprite_system(iter: &mut Iter) {
+    let entities = iter.entities();
     components
-        .for_each(|(sprite, size, pos, blend_mode, rt)| {
+        .enumerate()
+        .for_each(|(i, (sprite, size, pos, blend_mode))| {
             let sprite_ptr = sprite.get_sprite();
             let sprite_box = unsafe { Box::from_raw(sprite_ptr.ptr as *mut SokolSprite) };
             let sprite_trait_object: &Box<dyn toxoid_render::Sprite> = Box::leak(Box::new(sprite_box as Box<dyn toxoid_render::Sprite>));
 
-            let rt = rt.get_render_target().ptr as *mut SokolRenderTarget;
+            let mut rt_entity = entities[i].children().get_mut(0).unwrap();
+            let rt = rt_entity.get::<RenderTarget>().get_render_target().ptr as *mut SokolRenderTarget;
             let rt_box = unsafe { Box::from_raw(rt) };
             let rt_trait_object: &Box<dyn toxoid_render::RenderTarget> = Box::leak(Box::new(rt_box as Box<dyn toxoid_render::RenderTarget>));
-            
+
             SokolRenderer2D::begin_rt(&rt_trait_object, size.get_width() as f32, size.get_height() as f32);
             SokolRenderer2D::draw_sprite(sprite_trait_object, pos.get_x() as f32, pos.get_y() as f32, blend_mode.get_mode());
             SokolRenderer2D::end_rt();
+
+            rt_entity.add::<Renderable>();
         });
 }
 
@@ -194,16 +199,15 @@ pub fn blit_bone_animation(iter: &mut Iter) {
         rt_entity.add::<Size>();
         rt_entity.add::<RenderTarget>();
         
-        let (window_width, window_height) = (sapp::width(), sapp::height());
         let mut size = rt_entity.get::<Size>();
-        size.set_width(window_width);
-        size.set_height(window_height);
+        size.set_width(1280);
+        size.set_height(720);
 
         let mut position = rt_entity.get::<Position>();
         position.set_x(0);
         position.set_y(0);
         
-        let rt = SokolRenderer2D::create_render_target(window_width as u32, window_height as u32);
+        let rt = SokolRenderer2D::create_render_target(1280, 720);
         
         let mut render_target = rt_entity.get::<RenderTarget>();
         render_target.set_render_target(Pointer { 
@@ -379,14 +383,14 @@ pub fn blit_cell_system(iter: &mut Iter) {
 }
         
 #[cfg(feature = "render")]
-// Sprite, Callback, Blittable
-#[components(Sprite, Callback, _)]
+// Sprite, Blittable, Position, Size, Callback
+#[components(Sprite, _, Position, Size, Callback)]
 pub fn blit_sprite_system(iter: &mut Iter) {
     use crate::prefabs::CallbackFn;
     let entities = iter.entities();
     components
         .enumerate()
-        .for_each(|(i, (sprite, callback))| {
+        .for_each(|(i, (sprite, position, size, callback))| {
             let entity = &mut entities[i];
             // Get image data
             let data = sprite.get_data().ptr as *const u8;
@@ -396,7 +400,7 @@ pub fn blit_sprite_system(iter: &mut Iter) {
             
             // Create sprite
             let sokol_sprite = SokolRenderer2D::create_sprite(data, size as usize);
-            
+
             // Set sprite size
             let mut size = entity.get::<Size>();
             size.set_width(sokol_sprite.width() as i32);
@@ -406,19 +410,16 @@ pub fn blit_sprite_system(iter: &mut Iter) {
             sprite.set_sprite(Pointer { 
                 ptr: Box::into_raw(sokol_sprite) as *mut c_void 
             });
-            
-            // Remove blittable component
-            entity.remove::<Blittable>();
-            
-            // Add renderable component if sprite is renderable
-            if sprite.get_renderable() {
-                entity.add::<Renderable>();
-            }
 
-            let size = entity.get::<Size>();
+            // Create render target entity
+            let mut rt_entity = Entity::new();
+            rt_entity.add::<Position>();
+            rt_entity.add::<Size>();
+            rt_entity.add::<RenderTarget>();
+            
             let rt = SokolRenderer2D::create_render_target(size.get_width() as u32, size.get_height() as u32);
-            entity.add::<RenderTarget>();
-            let mut render_target = entity.get::<RenderTarget>();
+            rt_entity.add::<RenderTarget>();
+            let mut render_target = rt_entity.get::<RenderTarget>();
             render_target.set_render_target(Pointer { 
                 ptr: Box::leak(rt) as *mut _ as *mut c_void 
             });
@@ -426,6 +427,25 @@ pub fn blit_sprite_system(iter: &mut Iter) {
                 render_target.set_z_index(4);
             } else {
                 render_target.set_z_index(1);
+            }
+            let mut rt_size = rt_entity.get::<Size>();
+            rt_size.set_width(size.get_width());
+            rt_size.set_height(size.get_height());
+            let mut rt_pos = rt_entity.get::<Position>();
+            rt_pos.set_x(position.get_x());
+            rt_pos.set_y(position.get_y());
+            println!("Origina position x: {}, y: {}", position.get_x(), position.get_y());
+            println!("Position x: {}, y: {}", rt_pos.get_x(), rt_pos.get_y());
+
+            // Add render target entity as a child of the sprite entity
+            entity.parent_of(rt_entity);
+            
+            // Remove blittable component
+            entity.remove::<Blittable>();
+            
+            // Add renderable component if sprite is renderable
+            if sprite.get_renderable() {
+                entity.add::<Renderable>();
             }
             
             // Callback
@@ -440,33 +460,32 @@ pub fn blit_sprite_system(iter: &mut Iter) {
 pub fn init() {
     #[cfg(feature = "render")] {
         // Renderers
-        System::new(render_bone_animation)
-            // TODO: Make this require RenderTarget instead of making it a child of the entity
-            .with::<(SpineInstance, Position, BoneAnimation, Renderable)>()
-            .build();
+        // System::new(render_bone_animation)
+        //     .with::<(SpineInstance, Position, BoneAnimation, Renderable)>()
+        //     .build();
         System::new(render_rt_system)
             .with::<(RenderTarget, Renderable, Size, Position)>()
             .order_by::<RenderTarget>(render_rt_order_by)
             .build();
-        System::new(render_rect_system)
-            .with::<(Rect, Color, Size, Position, Renderable, RenderTarget)>()
-            .build();
+        // System::new(render_rect_system)
+        //     .with::<(Rect, Color, Size, Position, Renderable)>()
+        //     .build();
         System::new(render_sprite_system)
-            .with::<(Sprite, Renderable, Size, Position, BlendMode, RenderTarget)>()
+            .with::<(Sprite, Renderable, Size, Position, BlendMode)>()
             .build();
         
         // Blitting
-        System::new(blit_bone_animation)
-            .with::<(SpineInstance, Position, BoneAnimation, Blittable)>()
-            .build();
+        // System::new(blit_bone_animation)
+        //     .with::<(SpineInstance, Position, BoneAnimation, Blittable)>()
+        //     .build();
         System::new(blit_cell_system)
             .with::<(TiledCellComponent, Blittable)>()
             .build();
         System::new(blit_sprite_system)
-            .with::<(Sprite, Callback, Blittable)>()
+            .with::<(Sprite, Blittable, Position, Size, Callback)>()
             .build();
-        System::new(blit_rect_system)
-            .with::<(Rect, Color, Size, Position, Blittable)>()
-            .build();
+        // System::new(blit_rect_system)
+        //     .with::<(Rect, Color, Size, Position, Blittable)>()
+        //     .build();
     }
 }
