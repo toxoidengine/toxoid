@@ -50,7 +50,7 @@ pub fn init() {
    player_entity.add::<Networked>();
 
    let lamp_post_sprite = create_sprite("assets/street_lamp.png", |entity| {
-      (*entity).add::<Renderable>();
+      (*entity).add::<Blittable>();
    });
    lamp_post_sprite.get::<Position>()
       .set_x(200);
@@ -58,13 +58,32 @@ pub fn init() {
       .set_y(200);
 
    let mut light_sprite = create_sprite("assets/light_yellow_2.png", |entity| {
-         (*entity).add::<Renderable>();
+         (*entity).add::<Blittable>();
    });
    light_sprite.add::<Light>();
    light_sprite.get::<BlendMode>()
       .set_mode(BlendModes::Add as u8);
    light_sprite.get::<Position>()
       .set_x(60);
+   light_sprite.get::<Position>()
+      .set_y(55);
+
+   let lamp_post_sprite = create_sprite("assets/street_lamp.png", |entity| {
+      (*entity).add::<Blittable>();
+   });
+   lamp_post_sprite.get::<Position>()
+      .set_x(400);
+   lamp_post_sprite.get::<Position>()
+      .set_y(200);
+
+   let mut light_sprite = create_sprite("assets/light_yellow.png", |entity| {
+         (*entity).add::<Blittable>();
+   });
+   light_sprite.add::<Light>();
+   light_sprite.get::<BlendMode>()
+      .set_mode(BlendModes::Add as u8);
+   light_sprite.get::<Position>()
+      .set_x(260);
    light_sprite.get::<Position>()
       .set_y(55);
 
