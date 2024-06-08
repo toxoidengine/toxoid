@@ -134,6 +134,7 @@ component! {
     Local {},
     Remote {},
     Player {},
+    Light {},
 
     // States
     Loadable {},
@@ -180,4 +181,5 @@ pub fn init() {
     Local::register();
     Remote::register();
     Player::register();
+    Light::register();
 }

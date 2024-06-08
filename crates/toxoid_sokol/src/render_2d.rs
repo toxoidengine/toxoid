@@ -378,11 +378,12 @@ impl Renderer2D for SokolRenderer2D {
     fn draw_sprite(sprite: &Box<dyn Sprite>, x: f32, y: f32, blend_mode: u8) {
         unsafe {
             // sgp_reset_color();
-            if blend_mode == 0 {
-                sgp_set_blend_mode(sgp_blend_mode_SGP_BLENDMODE_BLEND);
-            } else {
-                sgp_set_blend_mode(blend_mode as i32);
-            }
+            // if blend_mode == 0 {
+            //     sgp_set_blend_mode(sgp_blend_mode_SGP_BLENDMODE_BLEND);
+            // } else {
+            //     sgp_set_blend_mode(blend_mode as i32);
+            // }
+            sgp_set_blend_mode(sgp_blend_mode_SGP_BLENDMODE_BLEND);
             let game_config = World::get_singleton::<GameConfig>();
             let (window_width, _) = SokolRenderer2D::window_size();
             let scale_factor = window_width as f32 / game_config.get_resolution_width() as f32;
