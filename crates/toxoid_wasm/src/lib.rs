@@ -1,6 +1,7 @@
 use wasmi::*;
 
 pub fn wasm_init() {
+    println!("WASM INIT!");
     // First step is to create the Wasm execution engine with some config.
     // In this example we are using the default configuration.
     let engine = Engine::default();
@@ -25,6 +26,7 @@ pub fn wasm_init() {
     let host_hello = Func::wrap(&mut store, |caller: Caller<'_, HostState>, param: i32| {
         println!("Got {param} from WebAssembly");
         println!("My host state is: {}", caller.data());
+        toxoid_api::print_string("Hello from Rust!");
     });
 
     // In order to create Wasm module instances and link their imports

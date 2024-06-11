@@ -15,6 +15,9 @@ pub fn init() {
     // Initialize default components.
     toxoid_api::components::init();
 
+    // Test WASM runtime
+    toxoid_wasm::wasm_init();
+
     // Initialize sokol
     // TODO: Renderer backend feature flags
     // Check if emscripten but also check if renderer feature is enabled
@@ -32,9 +35,6 @@ pub fn init() {
 
     // Initialize default engine systems. Such as rendering, input, etc.
     systems::init();
-
-    // Test WASM runtime
-    // toxoid_wasm::wasm_init();
     
     #[cfg(target_os = "emscripten")]
     toxoid_ffi::emscripten::start_loop(game_loop);

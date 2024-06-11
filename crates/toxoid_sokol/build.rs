@@ -72,40 +72,40 @@ fn main() {
 
     // Check if we are building for Emscripten
     let target = var("TARGET").unwrap();
-    if !target.contains("emscripten") {
-        let _bindings = bindgen::Builder::default()
-            .clang_arg("-x")
-            .clang_arg("c++")
-            .clang_arg("-std=c++11")
-            // CIMGUI_DEFINE_ENUMS_AND_STRUCTS
-            .clang_arg("-DCIMGUI_DEFINE_ENUMS_AND_STRUCTS=0")
-            // IMGUI_DISABLE_OBSOLETE_FUNCTIONS
-            .clang_arg("-DIMGUI_DISABLE_OBSOLETE_FUNCTIONS=1")
-            .clang_arg("-Wno-unused-parameter")
-            .clang_arg("-Wno-missing-field-initializers")
+    // if !target.contains("emscripten") {
+    //     let _bindings = bindgen::Builder::default()
+    //         .clang_arg("-x")
+    //         .clang_arg("c++")
+    //         .clang_arg("-std=c++11")
+    //         // CIMGUI_DEFINE_ENUMS_AND_STRUCTS
+    //         .clang_arg("-DCIMGUI_DEFINE_ENUMS_AND_STRUCTS=0")
+    //         // IMGUI_DISABLE_OBSOLETE_FUNCTIONS
+    //         .clang_arg("-DIMGUI_DISABLE_OBSOLETE_FUNCTIONS=1")
+    //         .clang_arg("-Wno-unused-parameter")
+    //         .clang_arg("-Wno-missing-field-initializers")
 
-            .header(sokol_headers_path.join("sokol_app.h").to_str().unwrap())
-            .header(sokol_headers_path.join("sokol_gfx.h").to_str().unwrap())
-            .header(sokol_headers_path.join("sokol_glue.h").to_str().unwrap())
-            .header(sokol_headers_path.join("sokol_log.h").to_str().unwrap())
-            .header(sokol_headers_path.join("sokol_time.h").to_str().unwrap())
-            .header(sokol_headers_path.join("stb_image.h").to_str().unwrap())
-            .header(sokol_headers_path.join("sokol_gp.h").to_str().unwrap())
-            .header(sokol_headers_path.join("sokol_imgui.h").to_str().unwrap())
-            .header(sokol_headers_path.join("sokol_spine.h").to_str().unwrap())
-            .header(sokol_headers_path.join("sokol_fetch.h").to_str().unwrap())
-            .header(sokol_headers_path.join("sokol_audio.h").to_str().unwrap())
-            .header(sokol_headers_path.join("cimgui").join("cimgui.h").to_str().unwrap())
-            .generate()
-            .expect("Unable to generate bindings");
+    //         .header(sokol_headers_path.join("sokol_app.h").to_str().unwrap())
+    //         .header(sokol_headers_path.join("sokol_gfx.h").to_str().unwrap())
+    //         .header(sokol_headers_path.join("sokol_glue.h").to_str().unwrap())
+    //         .header(sokol_headers_path.join("sokol_log.h").to_str().unwrap())
+    //         .header(sokol_headers_path.join("sokol_time.h").to_str().unwrap())
+    //         .header(sokol_headers_path.join("stb_image.h").to_str().unwrap())
+    //         .header(sokol_headers_path.join("sokol_gp.h").to_str().unwrap())
+    //         .header(sokol_headers_path.join("sokol_imgui.h").to_str().unwrap())
+    //         .header(sokol_headers_path.join("sokol_spine.h").to_str().unwrap())
+    //         .header(sokol_headers_path.join("sokol_fetch.h").to_str().unwrap())
+    //         .header(sokol_headers_path.join("sokol_audio.h").to_str().unwrap())
+    //         .header(sokol_headers_path.join("cimgui").join("cimgui.h").to_str().unwrap())
+    //         .generate()
+    //         .expect("Unable to generate bindings");
 
-        // Write the bindings to the $OUT_DIR/bindings.rs file.
-        // let out_path = PathBuf::from(var("OUT_DIR").unwrap());
-        // let out_path = PathBuf::from("./src");
-        // bindings
-        //     .write_to_file(out_path.join("bindings.rs"))
-        //     .expect("Couldn't write bindings!");
-    }
+    //     // Write the bindings to the $OUT_DIR/bindings.rs file.
+    //     // let out_path = PathBuf::from(var("OUT_DIR").unwrap());
+    //     // let out_path = PathBuf::from("./src");
+    //     // bindings
+    //     //     .write_to_file(out_path.join("bindings.rs"))
+    //     //     .expect("Couldn't write bindings!");
+    // }
     
     let mut build = cc::Build::new();
     // Flags
