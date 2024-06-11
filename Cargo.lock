@@ -890,6 +890,7 @@ dependencies = [
  "toxoid_serialize",
  "toxoid_sokol",
  "toxoid_tiled",
+ "toxoid_wasm",
 ]
 
 [[package]]
@@ -962,6 +963,7 @@ dependencies = [
 name = "toxoid_wasm"
 version = "0.1.0"
 dependencies = [
+ "toxoid_api",
  "wasmi",
  "wat",
 ]

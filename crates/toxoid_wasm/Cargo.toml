@@ -8,3 +8,4 @@ edition = "2021"
 [dependencies]
 wasmi = "0.32.0"
 wat = "1.209.1"
+toxoid_api = { path="../toxoid_api" }
