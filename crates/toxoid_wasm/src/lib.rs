@@ -163,6 +163,10 @@ pub fn wasm_init() {
         link_function!(linker, store, "toxoid_print_f64", |_caller: Caller<'_, u32>, v: f64| {
             toxoid_api::toxoid_print_f64(toxoid_api::split_f64(v))
         });
+        // pub fn toxoid_print_string(v: *const i8, v_len: usize);
+        // link_function!(linker, store, "toxoid_print_string", |_caller: Caller<'_, u32>, v: *const i8, v_len: usize| {
+        //     toxoid_api::toxoid_print_string(v, v_len)
+        // });
     }
     
     // Instantiate WASM module
