@@ -6,6 +6,17 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-wasmi = "0.32.0"
-wat = "1.209.1"
 toxoid_api = { path="../toxoid_api" }
+wat = "1.209.1"
+wasmi = "0.32"
+
+[features]
+default = ["wasmi"]
+wasmi = []
+wasmtime = []
+
+[target.'cfg(feature = "wasmi")'.dependencies]
+wasmi = "0.32"
+
+[target.'cfg(feature = "wasmtime")'.dependencies]
+wasmtime = "21.0"

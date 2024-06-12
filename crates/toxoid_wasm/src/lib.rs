@@ -1,48 +1,241 @@
+#[cfg(feature = "wasmtime")]
+use wasmtime::*;
+#[cfg(feature = "wasmi")]
 use wasmi::*;
 
+// Macro for creating the engine with wasmtime
+#[cfg(feature = "wasmtime")]
+#[macro_export]
+macro_rules! create_engine_wasmtime {
+    () => {
+        wasmtime::Engine::default()
+    };
+}
+
+// Macro for creating the engine with wasmi
+#[cfg(feature = "wasmi")]
+#[macro_export]
+macro_rules! create_engine_wasmi {
+    () => {
+        wasmi::Engine::default()
+    };
+}
+
+// Unified macro to call the appropriate macro based on the feature flag
+#[macro_export]
+macro_rules! create_engine {
+    () => {
+        create_engine_impl!()
+    };
+}
+
+#[cfg(feature = "wasmtime")]
+macro_rules! create_engine_impl {
+    () => {
+        create_engine_wasmtime!()
+    };
+}
+
+#[cfg(feature = "wasmi")]
+macro_rules! create_engine_impl {
+    () => {
+        create_engine_wasmi!()
+    };
+}
+
+// Macro for compiling modules with wasmtime
+#[cfg(feature = "wasmtime")]
+#[macro_export]
+macro_rules! compile_module_wasmtime {
+    ($engine:expr, $wat:expr) => {
+        wasmtime::Module::new(&$engine, $wat).expect("Failed to create module")
+    };
+}
+
+// Macro for compiling modules with wasmi
+#[cfg(feature = "wasmi")]
+#[macro_export]
+macro_rules! compile_module_wasmi {
+    ($engine:expr, $wat:expr) => {{
+        let wasm = wat::parse_str($wat).expect("Failed to parse WAT");
+        wasmi::Module::new(&$engine, &wasm[..]).expect("Failed to create module")
+    }};
+}
+
+// Unified macro to call the appropriate macro based on the feature flag
+#[macro_export]
+macro_rules! compile_module {
+    ($engine:expr, $wat:expr) => {
+        compile_module_impl!($engine, $wat)
+    };
+}
+
+#[cfg(feature = "wasmtime")]
+macro_rules! compile_module_impl {
+    ($engine:expr, $wat:expr) => {
+        compile_module_wasmtime!($engine, $wat)
+    };
+}
+
+#[cfg(feature = "wasmi")]
+macro_rules! compile_module_impl {
+    ($engine:expr, $wat:expr) => {
+        compile_module_wasmi!($engine, $wat)
+    };
+}
+
+// Macro for creating a store with wasmtime
+#[cfg(feature = "wasmtime")]
+#[macro_export]
+macro_rules! create_store_wasmtime {
+    ($engine:expr, $host_state:expr) => {
+        wasmtime::Store::new(&$engine, $host_state)
+    };
+}
+
+// Macro for creating a store with wasmi
+#[cfg(feature = "wasmi")]
+#[macro_export]
+macro_rules! create_store_wasmi {
+    ($engine:expr, $host_state:expr) => {{
+        let mut store = wasmi::Store::new(&$engine, $host_state);
+        store
+    }};
+}
+
+// Unified macro to call the appropriate macro based on the feature flag
+#[macro_export]
+macro_rules! create_store {
+    ($engine:expr, $host_state:expr) => {
+        create_store_impl!($engine, $host_state)
+    };
+}
+
+#[cfg(feature = "wasmtime")]
+macro_rules! create_store_impl {
+    ($engine:expr, $host_state:expr) => {
+        create_store_wasmtime!($engine, $host_state)
+    };
+}
+
+#[cfg(feature = "wasmi")]
+macro_rules! create_store_impl {
+    ($engine:expr, $host_state:expr) => {
+        create_store_wasmi!($engine, $host_state)
+    };
+}
+
+// Macro for linking functions with wasmtime
+#[cfg(feature = "wasmtime")]
+#[macro_export]
+macro_rules! link_function_wasmtime {
+    ($engine:expr, $store:expr, $func:expr) => {{
+        // TODO: Extract the host state type from the closure in a macro
+        let mut linker: wasmtime::Linker<u32> = wasmtime::Linker::new(&$engine);
+        linker.func_wrap("host", "host_func", $func).expect("Failed to wrap function");
+        linker
+    }};
+}
+
+// Macro for linking functions with wasmi
+#[cfg(feature = "wasmi")]
+#[macro_export]
+macro_rules! link_function_wasmi {
+    ($engine:expr, $store:expr, $func:expr) => {{
+        // TODO: Extract the host state type from the closure in a macro
+        let mut linker: wasmi::Linker<u32> = wasmi::Linker::new(&$engine);
+        let host_hello = wasmi::Func::wrap(&mut $store, $func);
+        linker.define("host", "hello", host_hello).expect("Failed to define function");
+        linker
+    }};
+}
+
+
+// Unified macro to call the appropriate macro based on the feature flag
+#[macro_export]
+macro_rules! link_function {
+    ($engine:expr, $store:expr, $func:expr) => {{
+        link_function_impl!($engine, $store, $func)
+    }};
+}
+
+
+#[cfg(feature = "wasmtime")]
+macro_rules! link_function_impl {
+    ($engine:expr, $store:expr,  $func:expr) => {
+        link_function_wasmtime!($engine, $store, $func)
+    };
+}
+
+#[cfg(feature = "wasmi")]
+macro_rules! link_function_impl {
+    ($engine:expr, $store:expr, $func:expr) => {
+        link_function_wasmi!($engine, $store, $func)
+    };
+}
+
+// Macro for instantiation and function calling with wasmtime
+#[cfg(feature = "wasmtime")]
+#[macro_export]
+macro_rules! instantiate_and_call_wasmtime {
+    ($linker:expr, $store:expr, $module:expr) => {
+        let instance = $linker.instantiate(&mut $store, &$module).expect("Failed to instantiate module");
+        let hello = instance.get_typed_func::<(), ()>(&mut $store, "hello").expect("Failed to get function");
+        hello.call(&mut $store, ()).expect("Failed to call function");
+    };
+}
+
+// Macro for instantiation and function calling with wasmi
+#[cfg(feature = "wasmi")]
+#[macro_export]
+macro_rules! instantiate_and_call_wasmi {
+    ($linker:expr, $store:expr, $module:expr) => {
+        let instance = $linker.instantiate(&mut $store, &$module).expect("Failed to instantiate module").start(&mut $store).expect("Failed to start instance");
+        let hello = instance.get_typed_func::<(), ()>(&$store, "hello").expect("Failed to get function");
+        hello.call(&mut $store, ()).expect("Failed to call function");
+    };
+}
+
+// Unified macro to call the appropriate macro based on the feature flag
+#[macro_export]
+macro_rules! instantiate_and_call {
+    ($linker:expr, $store:expr, $module:expr) => {
+        instantiate_and_call_impl!($linker, $store, $module)
+    };
+}
+
+#[cfg(feature = "wasmtime")]
+macro_rules! instantiate_and_call_impl {
+    ($linker:expr, $store:expr, $module:expr) => {
+        instantiate_and_call_wasmtime!($linker, $store, $module)
+    };
+}
+
+#[cfg(feature = "wasmi")]
+macro_rules! instantiate_and_call_impl {
+    ($linker:expr, $store:expr, $module:expr) => {
+        instantiate_and_call_wasmi!($linker, $store, $module)
+    };
+}
+
+#[cfg(any(feature = "wasmi", feature = "wasmtime"))]
 pub fn wasm_init() {
-    println!("WASM INIT!");
-    // First step is to create the Wasm execution engine with some config.
-    // In this example we are using the default configuration.
-    let engine = Engine::default();
     let wat = r#"
-        (module
-            (import "host" "hello" (func $host_hello (param i32)))
-            (func (export "hello")
-                (call $host_hello (i32.const 3))
-            )
+    (module
+        (import "host" "hello" (func $host_hello (param i32) (param i64)))
+        (func (export "hello")
+            (call $host_hello (i32.const 3) (i64.const 3))
         )
+    )
     "#;
-    // Wasmi does not yet support parsing `.wat` so we have to convert
-    // out `.wat` into `.wasm` before we compile and validate it.
-    let wasm = wat::parse_str(&wat).unwrap();
-    let module = Module::new(&engine, &mut &wasm[..]).unwrap();
-
-    // All Wasm objects operate within the context of a `Store`.
-    // Each `Store` has a type parameter to store host-specific data,
-    // which in this case we are using `42` for.
-    type HostState = u32;
-    let mut store = Store::new(&engine, 42);
-    let host_hello = Func::wrap(&mut store, |caller: Caller<'_, HostState>, param: i32| {
-        println!("Got {param} from WebAssembly");
-        println!("My host state is: {}", caller.data());
-        toxoid_api::print_string("Hello from Rust!");
+    let engine = create_engine!();
+    let module = compile_module!(engine, wat);
+    #[allow(unused_mut)]
+    let mut store = create_store!(engine, 0);  
+    let linker = link_function!(engine, store, |caller: Caller<'_, u32>, param1: i32, param2: i64| {
+        // Your function logic here
+        println!("Integer: {}, Double: {}", param1, param2);
+        println!("Host data: {}", caller.data());
     });
-
-    // In order to create Wasm module instances and link their imports
-    // and exports we require a `Linker`.
-    let mut linker = <Linker<HostState>>::new(&engine);
-    // Instantiation of a Wasm module requires defining its imports and then
-    // afterwards we can fetch exports by name, as well as asserting the
-    // type signature of the function with `get_typed_func`.
-    //
-    // Also before using an instance created this way we need to start it.
-    linker.define("host", "hello", host_hello).unwrap();
-    let instance = linker
-        .instantiate(&mut store, &module).unwrap()
-        .start(&mut store).unwrap();
-    let hello = instance.get_typed_func::<(), ()>(&store, "hello").unwrap();
-
-    // And finally we can call the wasm!
-    hello.call(&mut store, ()).unwrap();
+    instantiate_and_call!(linker, store, module);
 }
