@@ -22,8 +22,8 @@ macro_rules! create_engine {
 // Macro for compiling modules with wasmtime
 #[cfg(feature = "wasmtime")]
 macro_rules! compile_module {
-    ($engine:expr, $wat:expr) => {
-        wasmtime::Module::new(&$engine, $wat)
+    ($engine:expr, $wasm:expr) => {
+        wasmtime::Module::new(&$engine, &$wasm)
             .expect("Failed to create module")
     };
 }
@@ -31,10 +31,8 @@ macro_rules! compile_module {
 // Macro for compiling modules with wasmi
 #[cfg(feature = "wasmi")]
 macro_rules! compile_module {
-    ($engine:expr, $wat:expr) => {{
-        let wasm = wat::parse_str($wat)
-            .expect("Failed to parse WAT");
-        wasmi::Module::new(&$engine, &wasm[..])
+    ($engine:expr, $wasm:expr) => {{
+        wasmi::Module::new(&$engine, &$wasm[..])
             .expect("Failed to create module")
     }};
 }
@@ -74,7 +72,7 @@ macro_rules! create_linker {
 macro_rules! link_function {
     ($linker:expr, $store:expr, $name:expr, $func:expr) => {{
         linker
-            .func_wrap("host", $name, $func)
+            .func_wrap("env", $name, $func)
             .expect("Failed to wrap function");
     }};
 }
@@ -83,7 +81,7 @@ macro_rules! link_function {
 macro_rules! link_function {
     ($linker:expr, $store:expr, $name:expr, $func:expr) => {{
         $linker
-            .define("host", $name, wasmi::Func::wrap(&mut $store, $func))
+            .define("env", $name, wasmi::Func::wrap(&mut $store, $func))
             .expect("Failed to define function");
     }};
 }
@@ -132,20 +130,34 @@ macro_rules! call_function {
 }
 
 #[cfg(any(feature = "wasmi", feature = "wasmtime"))]
-pub fn wasm_init() {
-    // Use WAT for initial testing
-    let wat = r#"
-        (module
-            (import "host" "toxoid_print_i32" (func $toxoid_print_i32 (param i32)))
-            (func (export "app_main")
-                (call $toxoid_print_i32 (i32.const 777))
-            )
-        )
-    "#;
+fn get_wasm_string(mut caller: Caller<'_, u32>, v: i32, v_len: i32) -> String {
+    let memory = caller
+        .get_export("memory")
+        .and_then(|extern_| extern_.into_memory())
+        .ok_or_else(|| panic!("failed to find host memory"))
+        .expect("failed to find host memory");
+    let mut buffer = vec![0; v_len as usize];
+    memory
+        .read(&mut caller, v as usize, &mut buffer)
+        .expect("failed to read memory");
+    String::from_utf8_lossy(&buffer)
+        .to_string()
+}
 
+#[cfg(any(feature = "wasmi", feature = "wasmtime"))]
+pub fn wasm_init() {
+    let mut path = std::env::current_exe()
+        .expect("Failed to get current executable path");
+    path.pop(); // Remove the executable name
+    path.push("toxoid_wasm_test.wasm");
+
+    println!("path: {:?}", path);
+ 
+    let wasm = std::fs::read(path)
+        .expect("Failed to read WASM file");
     // Setup WASM runtime
     let engine = create_engine!();
-    let module = compile_module!(engine, wat);
+    let module = compile_module!(engine, wasm);
     let mut store = create_store!(engine, 0);  
     let mut linker = create_linker!(engine, u32);
 
@@ -163,10 +175,10 @@ pub fn wasm_init() {
         link_function!(linker, store, "toxoid_print_f64", |_caller: Caller<'_, u32>, v: f64| {
             toxoid_api::toxoid_print_f64(toxoid_api::split_f64(v))
         });
-        // pub fn toxoid_print_string(v: *const i8, v_len: usize);
-        // link_function!(linker, store, "toxoid_print_string", |_caller: Caller<'_, u32>, v: *const i8, v_len: usize| {
-        //     toxoid_api::toxoid_print_string(v, v_len)
-        // });
+        link_function!(linker, store, "toxoid_print_string", |caller: Caller<'_, u32>, v: i32, v_len: i32| {
+            let wasm_string = get_wasm_string(caller, v, v_len);
+            println!("String: {:?}", wasm_string);
+        });
     }
     
     // Instantiate WASM module
