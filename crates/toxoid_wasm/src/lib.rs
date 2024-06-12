@@ -23,7 +23,8 @@ macro_rules! create_engine {
 #[cfg(feature = "wasmtime")]
 macro_rules! compile_module {
     ($engine:expr, $wat:expr) => {
-        wasmtime::Module::new(&$engine, $wat).expect("Failed to create module")
+        wasmtime::Module::new(&$engine, $wat)
+            .expect("Failed to create module")
     };
 }
 
@@ -31,8 +32,10 @@ macro_rules! compile_module {
 #[cfg(feature = "wasmi")]
 macro_rules! compile_module {
     ($engine:expr, $wat:expr) => {{
-        let wasm = wat::parse_str($wat).expect("Failed to parse WAT");
-        wasmi::Module::new(&$engine, &wasm[..]).expect("Failed to create module")
+        let wasm = wat::parse_str($wat)
+            .expect("Failed to parse WAT");
+        wasmi::Module::new(&$engine, &wasm[..])
+            .expect("Failed to create module")
     }};
 }
 
@@ -133,9 +136,9 @@ pub fn wasm_init() {
     // Use WAT for initial testing
     let wat = r#"
         (module
-            (import "host" "hello" (func $host_hello (param i32) (param i64)))
-            (func (export "hello")
-                (call $host_hello (i32.const 3) (i64.const 300))
+            (import "host" "toxoid_print_i32" (func $toxoid_print_i32 (param i32)))
+            (func (export "app_main")
+                (call $toxoid_print_i32 (i32.const 777))
             )
         )
     "#;
@@ -147,12 +150,22 @@ pub fn wasm_init() {
     let mut linker = create_linker!(engine, u32);
 
     // Bind functions
-    link_function!(linker, store, "hello", |caller: Caller<'_, u32>, param1: i32, param2: i64| {
-        println!("Integer: {}, Double: {}", param1, param2);
-        println!("Host data: {}", caller.data());
-    });
-
+    unsafe {
+        link_function!(linker, store, "toxoid_print_i32", |_caller: Caller<'_, u32>, v: i32| {
+            toxoid_api::toxoid_print_i32(v)
+        });
+        link_function!(linker, store, "toxoid_print_u64", |_caller: Caller<'_, u32>, v: u64| {
+            toxoid_api::toxoid_print_u64(toxoid_api::split_u64(v))
+        });
+        link_function!(linker, store, "toxoid_print_f32", |_caller: Caller<'_, u32>, v: f32| {
+            toxoid_api::toxoid_print_f32(v)
+        });
+        link_function!(linker, store, "toxoid_print_f64", |_caller: Caller<'_, u32>, v: f64| {
+            toxoid_api::toxoid_print_f64(toxoid_api::split_f64(v))
+        });
+    }
+    
     // Instantiate WASM module
     let instance = instantiate_module!(linker, store, module);
-    call_function!(instance, store, "hello");
+    call_function!(instance, store, "app_main");
 }
