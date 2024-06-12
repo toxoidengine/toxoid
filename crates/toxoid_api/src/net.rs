@@ -22,32 +22,32 @@ pub fn add_network_event(event: &str, callback: extern "C" fn(message: &MessageE
     unsafe { toxoid_net_add_event(event, callback); }
 }
 
-#[cfg(target_arch="wasm32")]
+#[cfg(all(target_arch="wasm32", target_os="emscripten"))]
 pub fn network_entity_cache_insert(local_id: u64, network_id: u64) {
     unsafe { toxoid_network_entity_cache_insert(split_u64(local_id), split_u64(network_id)); }
 }
 
-#[cfg(not(target_arch="wasm32"))]
+#[cfg(any(not(target_arch="wasm32"), all(target_arch="wasm32", target_os="unknown")))]
 pub fn network_entity_cache_insert(local_id: u64, network_id: u64) {
     unsafe { toxoid_network_entity_cache_insert(local_id, network_id) }
 }
 
-#[cfg(target_arch="wasm32")]
+#[cfg(all(target_arch="wasm32", target_os="emscripten"))]
 pub fn network_entity_cache_get(local_id: u64) -> u64 {
     unsafe { combine_u32(toxoid_network_entity_cache_get(split_u64(local_id))) }
 }
 
-#[cfg(not(target_arch="wasm32"))]
+#[cfg(any(not(target_arch="wasm32"), all(target_arch="wasm32", target_os="unknown")))]
 pub fn network_entity_cache_get(local_id: u64) -> u64 {
     unsafe { toxoid_network_entity_cache_get(local_id) }
 }
 
-#[cfg(target_arch="wasm32")]
+#[cfg(all(target_arch="wasm32", target_os="emscripten"))]
 pub fn network_entity_cache_remove(local_id: u64) {
     unsafe { toxoid_network_entity_cache_remove(split_u64(local_id)) }
 }
 
-#[cfg(not(target_arch="wasm32"))]
+#[cfg(any(not(target_arch="wasm32"), all(target_arch="wasm32", target_os="unknown")))]
 pub fn network_entity_cache_remove(local_id: u64) {
     unsafe { toxoid_network_entity_cache_remove(local_id) }
 }

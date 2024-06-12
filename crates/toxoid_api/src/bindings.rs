@@ -13,6 +13,7 @@ pub struct SplitU64 {
     pub low: u32,
 }
 
+#[cfg(all(target_arch="wasm32", target_os="emscripten"))]
 pub fn split_u64(v: u64) -> SplitU64 {
     SplitU64 {
         high: (v >> 32) as u32,
@@ -20,8 +21,19 @@ pub fn split_u64(v: u64) -> SplitU64 {
     }
 }
 
+#[cfg(any(not(target_arch="wasm32"), all(target_arch="wasm32", target_os="unknown")))]
+pub fn split_u64(v: u64) -> u64 {
+    v
+}
+
+#[cfg(all(target_arch="wasm32", target_os="emscripten"))]
 pub fn combine_u32(split_u64: SplitU64) -> u64 {
     ((split_u64.high as u64) << 32) | (split_u64.low as u64)
+}
+
+#[cfg(any(not(target_arch="wasm32"), all(target_arch="wasm32", target_os="unknown")))]
+pub fn combine_u32(split_u64: u64) -> u64 {
+    split_u64
 }
 
 #[derive(Debug)]
@@ -50,34 +62,32 @@ pub fn combine_f32(split_f64: SplitF64) -> f64 {
 
 extern "C" {
     pub fn toxoid_print_i32(v: i32);
+    #[cfg(all(target_arch="wasm32", target_os="emscripten"))]
     pub fn toxoid_print_u64(v: SplitU64);
+    #[cfg(any(not(target_arch="wasm32"), all(target_arch="wasm32", target_os="unknown")))]
+    pub fn toxoid_print_u64(v: u64);
     pub fn toxoid_print_f32(v: f32);
+    #[cfg(all(target_arch="wasm32", target_os="emscripten"))]
     pub fn toxoid_print_f64(v: SplitF64);
+    #[cfg(any(not(target_arch="wasm32"), all(target_arch="wasm32", target_os="unknown")))]
+    pub fn toxoid_print_f64(v: f64);
     pub fn toxoid_print_string(v: *const i8, v_len: usize);
-    pub fn toxoid_create_vec() -> *mut c_void;
-    pub fn toxoid_vec_push(ptr: *mut c_void, value: *mut c_void);
-    pub fn toxoid_vec_drop(ptr: *mut c_void);
-    pub fn toxoid_vec_as_slice(ptr: *mut c_void) -> (*mut *mut c_void, i32);
-    pub fn toxoid_free_slice(ptr: *mut c_void, len: usize);
-    pub fn toxoid_entity_get_name(id: i32);
     pub fn toxoid_register_tag(name: *const i8, name_len: usize) -> ecs_entity_t;
-    pub fn register_component_ecs(
+    #[cfg(all(target_arch="wasm32", target_os="emscripten"))]
+    pub fn toxoid_register_component_ecs(
         name: &str,
         member_names: &[&str],
         member_types: &[u8],
     ) -> SplitU64;
-    pub fn toxoid_register_component(
-        component_name: *const c_char,
-        component_name_len: u8,
-        member_names: *const *const c_char,
-        member_names_count: u32,
-        member_names_len: *const u8,
-        member_types: *const u8,
-        member_types_count: u32,
+    #[cfg(any(not(target_arch="wasm32"), all(target_arch="wasm32", target_os="unknown")))]
+    pub fn toxoid_register_component_ecs(
+        name: &str,
+        member_names: &[&str],
+        member_types: &[u8],
     ) -> ecs_entity_t;
-    #[cfg(target_arch="wasm32")]
+    #[cfg(all(target_arch="wasm32", target_os="emscripten"))]
     pub fn toxoid_entity_create() -> SplitU64;
-    #[cfg(not(target_arch="wasm32"))]
+    #[cfg(any(not(target_arch="wasm32"), all(target_arch="wasm32", target_os="unknown")))]
     pub fn toxoid_entity_create() -> ecs_entity_t;
     pub fn toxoid_entity_set_name(entity_id: ecs_entity_t, name: *const c_char);
     pub fn toxoid_entity_add_component(entity: ecs_entity_t, component: ecs_entity_t);
@@ -125,24 +135,33 @@ extern "C" {
     pub fn toxoid_filter_term_entity(iter: *mut c_void, count: u32, index: u32) -> ecs_entity_t;
     pub fn toxoid_filter_term_entity_list(iter: *mut c_void) -> *mut ecs_entity_t;
     pub fn toxoid_iter_count(iter: *mut c_void) -> i32;
+    #[cfg(all(target_arch="wasm32", target_os="emscripten"))]
     pub fn toxoid_component_cache_insert(type_id: SplitU64, component_id: SplitU64);
+    #[cfg(any(not(target_arch="wasm32"), all(target_arch="wasm32", target_os="unknown")))]
+    pub fn toxoid_component_cache_insert(type_id: u64, component_id: ecs_entity_t);
+    #[cfg(all(target_arch="wasm32", target_os="emscripten"))]
     pub fn toxoid_component_cache_get(type_id: SplitU64) -> SplitU64;
-    #[cfg(target_arch="wasm32")]
+    #[cfg(any(not(target_arch="wasm32"), all(target_arch="wasm32", target_os="unknown")))]
+    pub fn toxoid_component_cache_get(type_id: u64) -> ecs_entity_t;
+    #[cfg(all(target_arch="wasm32", target_os="emscripten"))]
     pub fn toxoid_network_entity_cache_insert(network_id: SplitU64, entity_id: SplitU64);
-    #[cfg(not(target_arch="wasm32"))]
+    #[cfg(any(not(target_arch="wasm32"), all(target_arch="wasm32", target_os="unknown")))]
     pub fn toxoid_network_entity_cache_insert(network_id: u64, entity_id: ecs_entity_t);
-    #[cfg(target_arch="wasm32")]
+    #[cfg(all(target_arch="wasm32", target_os="emscripten"))]
     pub fn toxoid_network_entity_cache_get(network_id: SplitU64) -> SplitU64;
-    #[cfg(not(target_arch="wasm32"))]
+    #[cfg(any(not(target_arch="wasm32"), all(target_arch="wasm32", target_os="unknown")))]
     pub fn toxoid_network_entity_cache_get(network_id: u64) -> ecs_entity_t;
-    #[cfg(target_arch="wasm32")]
+    #[cfg(all(target_arch="wasm32", target_os="emscripten"))]
     pub fn toxoid_network_entity_cache_remove(network_id: SplitU64);
-    #[cfg(not(target_arch="wasm32"))]
+    #[cfg(any(not(target_arch="wasm32"), all(target_arch="wasm32", target_os="unknown")))]
     pub fn toxoid_network_entity_cache_remove(network_id: u64);
     pub fn toxoid_component_get_member_u8(component_ptr: *mut c_void, offset: u32) -> u8;
     pub fn toxoid_component_get_member_u16(component_ptr: *mut c_void, offset: u32) -> u8;
     pub fn toxoid_component_get_member_u32(component_ptr: *mut c_void, offset: u32) -> u32;
+    #[cfg(all(target_arch="wasm32", target_os="emscripten"))]
     pub fn toxoid_component_get_member_u64(component_ptr: *mut c_void, offset: u32) -> SplitU64;
+    #[cfg(any(not(target_arch="wasm32"), all(target_arch="wasm32", target_os="unknown")))]
+    pub fn toxoid_component_get_member_u64(component_ptr: *mut c_void, offset: u32) -> ecs_entity_t;
     pub fn toxoid_component_get_member_i8(component_ptr: *mut c_void, offset: u8) -> i8;
     pub fn toxoid_component_get_member_i16(component_ptr: *mut c_void, offset: u8) -> i16;
     pub fn toxoid_component_get_member_i32(component_ptr: *mut c_void, offset: u32) -> i32;
@@ -160,7 +179,10 @@ extern "C" {
     pub fn toxoid_component_set_member_u8(component_ptr: *mut c_void, offset: u32, value: u8);
     pub fn toxoid_component_set_member_u16(component_ptr: *mut c_void, offset: u32, value: u16);
     pub fn toxoid_component_set_member_u32(component_ptr: *mut c_void, offset: u32, value: u32);
+    #[cfg(all(target_arch="wasm32", target_os="emscripten"))]
     pub fn toxoid_component_set_member_u64(component_ptr: *mut c_void, offset: u32, value: SplitU64);
+    #[cfg(any(not(target_arch="wasm32"), all(target_arch="wasm32", target_os="unknown")))]
+    pub fn toxoid_component_set_member_u64(component_ptr: *mut c_void, offset: u32, value: ecs_entity_t);
     pub fn toxoid_component_set_member_i8(component_ptr: *mut c_void, offset: u32, value: i8);
     pub fn toxoid_component_set_member_i16(component_ptr: *mut c_void, offset: u32, value: i16);
     pub fn toxoid_component_set_member_i32(component_ptr: *mut c_void, offset: u32, value: i32);
@@ -204,34 +226,63 @@ extern "C" {
         ids: [ecs_id_t; 16],
         callback: unsafe extern "C" fn(*mut c_void)
     ) -> ecs_entity_t;
+    #[cfg(all(target_arch="wasm32", target_os="emscripten"))]
     pub fn toxoid_prefab_create() -> SplitU64;
+    #[cfg(any(not(target_arch="wasm32"), all(target_arch="wasm32", target_os="unknown")))]
+    pub fn toxoid_prefab_create() -> ecs_entity_t;
     pub fn toxoid_prefab_instance(prefab_high: u32, prefab_low: u32) -> SplitU64;
     pub fn toxoid_system_create(callback_closure: fn(&mut Iter)) -> *mut c_void;
-    #[cfg(target_arch="wasm32")]
+    #[cfg(all(target_arch="wasm32", target_os="emscripten"))]
     pub fn toxoid_system_build(system_desc: *mut c_void) -> SplitU64;
-    #[cfg(not(target_arch="wasm32"))]
+    #[cfg(any(not(target_arch="wasm32"), all(target_arch="wasm32", target_os="unknown")))]
     pub fn toxoid_system_build(system_desc: *mut c_void) -> ecs_entity_t;
     pub fn toxoid_query_from_system_desc(query_desc: *mut c_void) -> *mut c_void;
     pub fn toxoid_network_send(network_messages: *mut c_void);
+    #[cfg(all(target_arch="wasm32", target_os="emscripten"))]
     pub fn toxoid_net_send_components(
         entity_id: SplitU64,
         components: &[&dyn Component], 
         event: &str
     );
+    #[cfg(any(not(target_arch="wasm32"), all(target_arch="wasm32", target_os="unknown")))]
+    pub fn toxoid_net_send_components(
+        entity_id: ecs_entity_t,
+        components: &[&dyn Component], 
+        event: &str
+    );
+    #[cfg(all(target_arch="wasm32", target_os="emscripten"))]
     pub fn toxoid_component_lookup(name: *mut i8) -> SplitU64;
+    #[cfg(any(not(target_arch="wasm32"), all(target_arch="wasm32", target_os="unknown")))]
+    pub fn toxoid_component_lookup(name: *mut i8) -> ecs_entity_t;
     pub fn toxoid_net_add_event(
         event_name: &str,
         callback: extern "C" fn(message: &crate::net::MessageEntity)
     );
+    pub fn toxoid_deserialize_entity_sync(entity_id: ecs_entity_t, components_serialized: &[crate::net::MessageComponent]);
+    pub fn toxoid_make_c_string(string: &str) -> *mut i8;
+    pub fn toxoid_get_timestamp() -> SplitF64;
+    pub fn gen_uuid() -> *mut c_char;
     // pub fn toxoid_engine_load_sprite(filename: &str, callback: extern "C" fn(&mut Entity)) -> *mut Entity;
     // pub fn toxoid_engine_load_worldmap(filename: &str, callback: extern "C" fn(&mut Entity)) -> *mut Entity;
     // pub fn toxoid_deserialize_entity(components_serialized: &[MessageComponent]) -> HashMap<String, HashMap<String, DynamicType>>;
-    pub fn toxoid_deserialize_entity_sync(entity_id: ecs_entity_t, components_serialized: &[crate::net::MessageComponent]);
-    // pub fn toxoid_serialize_entity(entity_id: ecs_entity_t) -> Vec<crate::net::NetworkMessageComponent>;
-    // pub fn toxoid_serialize_component(entity_id: ecs_entity_t, component_id: ecs_entity_t) -> crate::net::NetworkMessageComponent;
-    pub fn toxoid_make_c_string(string: &str) -> *mut i8;
     // TODO: Replace this function with a generic abstraction for rand
     // pub fn gen_rng_grid_pos() -> (i32, i32);
-    pub fn toxoid_get_timestamp() -> SplitF64;
-    pub fn gen_uuid() -> *mut c_char;
+    // pub fn toxoid_serialize_entity(entity_id: ecs_entity_t) -> Vec<crate::net::NetworkMessageComponent>;
+    // pub fn toxoid_serialize_component(entity_id: ecs_entity_t, component_id: ecs_entity_t) -> crate::net::NetworkMessageComponent;
+    // pub fn toxoid_register_component(
+    //     component_name: *const c_char,
+    //     component_name_len: u8,
+    //     member_names: *const *const c_char,
+    //     member_names_count: u32,
+    //     member_names_len: *const u8,
+    //     member_types: *const u8,
+    //     member_types_count: u32,
+    // ) -> ecs_entity_t;
+    // pub fn toxoid_create_vec() -> *mut c_void;
+    // pub fn toxoid_vec_push(ptr: *mut c_void, value: *mut c_void);
+    // pub fn toxoid_vec_drop(ptr: *mut c_void);
+    // pub fn toxoid_vec_as_slice(ptr: *mut c_void) -> (*mut *mut c_void, i32);
+    // pub fn toxoid_free_slice(ptr: *mut c_void, len: usize);
+    // pub fn toxoid_entity_get_name(id: i32);
 }
+

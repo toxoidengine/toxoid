@@ -456,7 +456,7 @@ pub fn component(input: TokenStream) -> TokenStream {
             let field_types_code = field_types.clone().map(|f| get_type_code(f));
             let register_component_tokens = quote! {
                 let component_id_split = unsafe {
-                    register_component_ecs(
+                    toxoid_register_component_ecs(
                         #struct_name_str,
                         &[#(#field_names_str),*],
                         &[#(#field_types_code),*],

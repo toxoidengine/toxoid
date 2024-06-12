@@ -887,7 +887,7 @@ pub struct Entity {
 impl Entity {
     pub fn new() -> Entity {
         let entity = unsafe { toxoid_entity_create() };
-        #[cfg(target_arch="wasm32")]
+        #[cfg(all(target_arch="wasm32", target_os="emscripten"))]
         let entity = combine_u32(entity);
         unsafe { toxoid_entity_set_name(entity, make_c_string("")); }
         Entity {
@@ -909,15 +909,16 @@ impl Entity {
         }
     }
 
-    pub fn from_prefab(prefab: Prefab) -> Entity {
-        let prefab_split = split_u64(prefab.entity.id);
-        let entity_split = unsafe { toxoid_prefab_instance(prefab_split.high, prefab_split.low) };
-        let entity = combine_u32(entity_split);
-        Entity {
-            id: entity,
-            children: &mut []
-        }
-    }
+    // pub fn from_prefab(prefab: Prefab) -> Entity {
+        // let prefab_split = split_u64(prefab.entity.id);
+        // let entity_split = unsafe { toxoid_prefab_instance(prefab_split.high, prefab_split.low) };
+        // let entity = combine_u32(entity_split);
+        // Entity {
+        //     id: entity,
+        //     children: &mut []
+        // }
+        // unimplemented!()
+    // }
 
     pub fn add<T: Component + ComponentType + 'static>(&mut self) {
         unsafe {
@@ -1088,7 +1089,7 @@ pub fn register_tag(name: &str) -> ecs_entity_t {
     unsafe { toxoid_register_tag(name.as_bytes().as_ptr() as *const i8, name.len()) }
 }
 
-pub fn cache_component_ecs(type_id: SplitU64, component_id: SplitU64) {
+pub fn cache_component_ecs(type_id: u64, component_id: u64) {
     unsafe {
         toxoid_component_cache_insert(type_id, component_id);
     }

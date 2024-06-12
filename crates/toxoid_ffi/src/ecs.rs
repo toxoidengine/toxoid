@@ -35,9 +35,16 @@ pub unsafe extern "C" fn toxoid_print_i32(v: i32) {
     println!("Printing from Toxoid Engine: {}", v);
 }
 
+#[cfg(target_arch="wasm32")]
 #[no_mangle]
 pub unsafe extern "C" fn toxoid_print_u64(v: SplitU64) {
     println!("Printing from Toxoid Engine: {}", combine_u32(v));
+}
+
+#[cfg(not(target_arch="wasm32"))]
+#[no_mangle]
+pub unsafe extern "C" fn toxoid_print_u64(v: u64) {
+    println!("Printing from Toxoid Engine: {}", v);
 }
 
 #[no_mangle]
@@ -45,10 +52,18 @@ pub unsafe extern "C" fn toxoid_print_f32(v: f32) {
     println!("Printing from Toxoid Engine: {}", v);
 }
 
+#[cfg(target_arch="wasm32")]
 #[no_mangle]
 pub unsafe extern "C" fn toxoid_print_f64(v: SplitF64) {
     println!("Printing from Toxoid Engine: {}", combine_f32(v));
 }
+
+#[cfg(not(target_arch="wasm32"))]
+#[no_mangle]
+pub unsafe extern "C" fn toxoid_print_f64(v: f64) {
+    println!("Printing from Toxoid Engine: {}", v);
+}
+
 
 #[no_mangle]
 pub unsafe extern "C" fn toxoid_print_string(v: *const i8, v_len: usize) {
@@ -85,7 +100,7 @@ pub unsafe extern "C" fn toxoid_register_tag(name: *const i8, name_len: usize) -
 
 // Have to define high level workaround to maintain context in toxoid_api_macro
 #[no_mangle]
-pub unsafe extern "C" fn register_component_ecs(
+pub unsafe extern "C" fn toxoid_register_component_ecs(
     name: &str,
     member_names: &[&str],
     member_types: &[u8],
