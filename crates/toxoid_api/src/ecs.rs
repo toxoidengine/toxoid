@@ -1089,6 +1089,14 @@ pub fn register_tag(name: &str) -> ecs_entity_t {
     unsafe { toxoid_register_tag(name.as_bytes().as_ptr() as *const i8, name.len()) }
 }
 
+#[cfg(all(target_arch="wasm32", target_os="emscripten"))]
+pub fn cache_component_ecs(type_id: SplitU64, component_id: SplitU64) {
+    unsafe {
+        toxoid_component_cache_insert(type_id, component_id);
+    }
+}
+
+#[cfg(any(not(target_arch="wasm32"), all(target_arch="wasm32", target_os="unknown")))]
 pub fn cache_component_ecs(type_id: u64, component_id: u64) {
     unsafe {
         toxoid_component_cache_insert(type_id, component_id);
