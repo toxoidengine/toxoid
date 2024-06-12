@@ -177,7 +177,7 @@ pub fn wasm_init() {
         });
         link_function!(linker, store, "toxoid_print_string", |caller: Caller<'_, u32>, v: i32, v_len: i32| {
             let wasm_string = get_wasm_string(caller, v, v_len);
-            println!("String: {:?}", wasm_string);
+            toxoid_api::toxoid_print_string(wasm_string.as_ptr() as *const i8, wasm_string.len() as usize);
         });
     }
     
