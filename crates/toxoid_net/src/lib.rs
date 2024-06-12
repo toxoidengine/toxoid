@@ -208,6 +208,7 @@ pub unsafe extern "C" fn toxoid_net_send_components(
     components: &[&dyn Component], 
     event: &str
 ) {
-    send_components(combine_u32(entity_id), components, event.to_string());
+    // send_components(combine_u32(entity_id), components, event.to_string());
+    unimplemented!()
 }
 
