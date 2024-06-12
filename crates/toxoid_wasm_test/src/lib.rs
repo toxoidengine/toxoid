@@ -1,27 +1,20 @@
-#![no_std]
-use core::panic::PanicInfo;
+// #![no_std]
+// use core::panic::PanicInfo;
 
-#[no_mangle]
-pub extern "C" fn print_i32() {
-    unsafe {
-        host_print_i32(3);
-    }
+extern "C" {
+    pub fn toxoid_print_i32(v: i32);
+    pub fn toxoid_print_u64(v: u64);
+    pub fn toxoid_print_f32(v: f32);
+    pub fn toxoid_print_f64(v: f64);
 }
 
 #[no_mangle]
-pub extern "C" fn print_f32() {
-    unsafe {
-        host_print_f32(3.14);
-    }
+pub unsafe extern "C" fn app_main() {
+    toxoid_print_i32(420);
 }
 
-extern {
-    fn host_print_i32(val: i32);
-    fn host_print_f32(val: f32);
-}
-
-// Define a panic handler.
-#[panic_handler]
-fn panic(_info: &PanicInfo) -> ! {
-    loop {}
-}
+// // Define a panic handler.
+// #[panic_handler]
+// fn panic(_info: &PanicInfo) -> ! {
+//     loop {}
+// }
