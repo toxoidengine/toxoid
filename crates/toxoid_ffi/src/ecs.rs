@@ -8,7 +8,8 @@ use flecs_core::*;
 use once_cell::sync::Lazy;
 use toxoid_api::StringPtr;
 use std::sync::Mutex;
-use crate::utils::*;
+// use crate::utils::*;
+use toxoid_api::{split_u64, combine_u32, split_f64, combine_f32, SplitU64, SplitF64};
 use crate::allocator::*;
 
 #[derive(Debug)]
@@ -100,11 +101,62 @@ pub unsafe extern "C" fn toxoid_register_tag(name: *const i8, name_len: usize) -
 
 // Have to define high level workaround to maintain context in toxoid_api_macro
 #[no_mangle]
+#[cfg(all(target_arch="wasm32", target_os="emscripten"))]
 pub unsafe extern "C" fn toxoid_register_component_ecs(
     name: &str,
     member_names: &[&str],
     member_types: &[u8],
 ) -> SplitU64 {
+    unsafe {
+        if member_names.len() == 0 {
+            let entity = toxoid_register_tag(
+                name.as_bytes().as_ptr() as *const c_char, 
+                name.len() as usize
+            );
+            split_u64(entity)
+        } else {
+            let member_names_layout = Layout::array::<*mut c_char>(member_names.len() as usize).unwrap();
+            let member_names_ptr = host_alloc(member_names_layout) as *mut *mut c_char;
+            let member_names_len_layout = Layout::array::<u8>(member_names.len() as usize).unwrap();
+            let member_names_len_ptr = host_alloc(member_names_len_layout) as *mut u8;
+            member_names
+                .iter()
+                .enumerate()
+                .for_each(|(i, &member_name)| {
+                    member_names_ptr.add(i).write(member_name.as_ptr() as *mut i8);
+                    member_names_len_ptr.add(i).write(member_name.len() as u8);
+                });
+
+            let member_types_layout = Layout::array::<u8>(member_types.len() as usize).unwrap();
+            let member_types_ptr = host_alloc(member_types_layout) as *mut u8;
+            member_types
+                .iter()
+                .enumerate()
+                .for_each(|(i, &member_type)| {
+                    member_types_ptr.add(i).write(member_type);
+                });
+
+            let entity = toxoid_register_component(
+                name.as_bytes().as_ptr() as *const c_char,
+                name.len() as u8,
+                member_names_ptr as *const *const c_char,
+                member_names.len() as u32,
+                member_names_len_ptr,
+                member_types_ptr,
+                member_types.len() as u32,
+            );
+            split_u64(entity)
+        }
+    }
+}
+
+#[cfg(any(not(target_arch="wasm32"), all(target_arch="wasm32", target_os="unknown")))]
+#[no_mangle]
+pub unsafe extern "C" fn toxoid_register_component_ecs(
+    name: &str,
+    member_names: &[&str],
+    member_types: &[u8],
+) -> u64 {
     unsafe {
         if member_names.len() == 0 {
             let entity = toxoid_register_tag(
@@ -335,6 +387,7 @@ pub unsafe extern "C" fn toxoid_entity_get_component(entity: ecs_entity_t, compo
 }
 
 #[no_mangle]
+#[cfg(all(target_arch="wasm32", target_os="emscripten"))]
 pub unsafe extern "C" fn toxoid_component_cache_insert(
     type_hash: SplitU64,
     component_id: SplitU64
@@ -346,7 +399,29 @@ pub unsafe extern "C" fn toxoid_component_cache_insert(
 }
 
 #[no_mangle]
+#[cfg(any(not(target_arch="wasm32"), all(target_arch="wasm32", target_os="unknown")))]
+pub unsafe extern "C" fn toxoid_component_cache_insert(
+    type_hash: u64,
+    component_id: u64
+) {
+    let mut cache = COMPONENT_ID_CACHE.lock().unwrap();
+    let type_hash = combine_u32(type_hash);
+    let component_id = combine_u32(component_id);
+    cache.insert(type_hash, component_id);
+}
+
+#[no_mangle]
+#[cfg(all(target_arch="wasm32", target_os="emscripten"))]
 pub unsafe extern "C" fn toxoid_component_cache_get(type_hash: SplitU64) -> SplitU64 {
+    let cache = COMPONENT_ID_CACHE.lock().unwrap();
+    let type_hash = combine_u32(type_hash);
+    let component_id = *cache.get(&type_hash).unwrap_or(&0);
+    split_u64(component_id)
+}
+
+#[no_mang]
+#[cfg(any(not(target_arch="wasm32"), all(target_arch="wasm32", target_os="unknown")))]
+pub unsafe extern "C" fn toxoid_component_cache_get(type_hash: u64) -> u64 {
     let cache = COMPONENT_ID_CACHE.lock().unwrap();
     let type_hash = combine_u32(type_hash);
     let component_id = *cache.get(&type_hash).unwrap_or(&0);
@@ -479,10 +554,20 @@ pub unsafe extern "C" fn toxoid_component_get_member_u32(
 }
 
 #[no_mangle]
+#[cfg(all(target_arch="wasm32", target_os="emscripten"))]
 pub unsafe extern "C" fn toxoid_component_get_member_u64(
     component_ptr: *mut c_void,
     offset: u32
 ) -> SplitU64 {
+    split_u64(flecs_core::flecs_component_get_member_u64(component_ptr, offset))
+}
+
+#[no_mangle]
+#[cfg(any(not(target_arch="wasm32"), all(target_arch="wasm32", target_os="unknown")))]
+pub unsafe extern "C" fn toxoid_component_get_member_u64(
+    component_ptr: *mut c_void,
+    offset: u32
+) -> u64 {
     split_u64(flecs_core::flecs_component_get_member_u64(component_ptr, offset))
 }
 
@@ -594,10 +679,21 @@ pub unsafe extern "C" fn toxoid_component_set_member_u32(
 }
 
 #[no_mangle]
+#[cfg(all(target_arch="wasm32", target_os="emscripten"))]
 pub unsafe extern "C" fn toxoid_component_set_member_u64(
     component_ptr: *mut c_void,
     offset: u32,
     value: SplitU64,
+) {
+    flecs_core::flecs_component_set_member_u64(component_ptr, offset, combine_u32(value));
+}
+
+#[no_mangle]
+#[cfg(any(not(target_arch="wasm32"), all(target_arch="wasm32", target_os="unknown")))]
+pub unsafe extern "C" fn toxoid_component_set_member_u64(
+    component_ptr: *mut c_void,
+    offset: u32,
+    value: u64,
 ) {
     flecs_core::flecs_component_set_member_u64(component_ptr, offset, combine_u32(value));
 }
@@ -867,16 +963,31 @@ pub unsafe extern "C" fn toxoid_filter_entity_list(iter: *mut flecs_core::ecs_it
 }
 
 #[no_mangle]
+#[cfg(all(target_arch="wasm32", target_os="emscripten"))]
 pub unsafe extern "C" fn toxoid_prefab_create() -> SplitU64 {
     split_u64(flecs_core::flecs_prefab_create())
 }
 
-// Does not accept SplitU64 -> SplitU64 on Emscripten because of weird linker bug
+#[no_mangle]
+#[cfg(any(not(target_arch="wasm32"), all(target_arch="wasm32", target_os="unknown")))]
+pub unsafe extern "C" fn toxoid_prefab_create() -> u64 {
+    split_u64(flecs_core::flecs_prefab_create())
+}
+
+// TODO: Does not accept SplitU64 -> SplitU64 on Emscripten because of weird linker bug
 // Use tools like nm, objdump, or readelf to inspect the symbols and their signatures in the compiled object files.
 // Look at the generated WebAssembly text format (.wat file) or bytecode (.wasm file) to verify the exported function signatures.
 #[no_mangle]
+#[cfg(all(target_arch="wasm32", target_os="emscripten"))]
 pub unsafe extern "C" fn toxoid_prefab_instance(prefab_high: u32, prefab_low: u32) -> SplitU64 {
     split_u64(flecs_core::flecs_prefab_instance(combine_u32(SplitU64 { high: prefab_high, low: prefab_low })))
+}
+
+#[no_mangle]
+#[cfg(any(not(target_arch="wasm32"), all(target_arch="wasm32", target_os="unknown")))]
+pub unsafe extern "C" fn toxoid_prefab_instance(prefab_high: u32, prefab_low: u32) -> u64 {
+    // split_u64(flecs_core::flecs_prefab_instance(combine_u32(SplitU64 { high: prefab_high, low: prefab_low })))
+    0
 }
 
 #[no_mangle]
@@ -910,7 +1021,13 @@ pub unsafe extern "C" fn toxoid_query_from_system_desc(
 }
 
 #[no_mangle]
+#[cfg(all(target_arch="wasm32", target_os="emscripten"))]
 pub unsafe extern "C" fn toxoid_component_lookup(name: *mut c_char) -> SplitU64 {
+    split_u64(flecs_core::flecs_component_lookup(name))
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn toxoid_component_lookup(name: *mut c_char) -> u64 {
     split_u64(flecs_core::flecs_component_lookup(name))
 }
 
