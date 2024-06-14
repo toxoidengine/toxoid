@@ -132,19 +132,45 @@ macro_rules! call_function {
 }
 
 #[cfg(any(feature = "wasmi", feature = "wasmtime"))]
-fn get_wasm_string(mut caller: Caller<'_, u32>, v: i32, v_len: i32) -> String {
+fn get_wasm_string(mut caller: &Caller<'_, u32>, v: i32, v_len: i32) -> String {
     let memory = caller
-    .get_export("memory")
-    .and_then(|extern_| extern_.into_memory())
-    .ok_or_else(|| panic!("failed to find host memory"))
-    .expect("failed to find host memory");
+        .get_export("memory")
+        .and_then(|extern_| extern_.into_memory())
+        .expect("failed to find host memory");
     let mut buffer = vec![0; v_len as usize];
     memory
-    .read(&mut caller, v as usize, &mut buffer)
-    .expect("failed to read memory");
-    String::from_utf8_lossy(&buffer)
-    .to_string()
+        .read(&mut caller, v as usize, &mut buffer)
+        .expect("failed to read memory");
+    String::from_utf8(buffer).expect("failed to convert to UTF-8")
 }
+
+#[cfg(any(feature = "wasmi", feature = "wasmtime"))]
+fn get_wasm_func<Params, Results>(caller: &Caller<'_, u32>, callback: i32) -> TypedFunc<Params, Results> 
+where
+    Params: WasmParams,
+    Results: WasmResults, 
+{
+    let table = caller.get_export("table")
+        .and_then(|export| export.into_table())
+        .expect("expected table export");
+
+    // Retrieve the callback function from the table using the index
+    let func = table
+        .get(caller.as_context(), callback as u32)
+        .unwrap();
+    let func = func
+        .funcref()
+        .unwrap()
+        .func()
+        .unwrap();
+
+    // Convert to a proper function pointer
+    func
+        .typed::<Params, Results>(caller.as_context())
+        .expect("function type mismatch")
+        .clone()
+}
+
 
 #[cfg(any(feature = "wasmi", feature = "wasmtime"))]
 pub fn wasm_init() {
@@ -178,7 +204,7 @@ pub fn wasm_init() {
                 toxoid_api::toxoid_print_f64(v)
             });
             link_function!(linker, store, "toxoid_print_string", |caller: Caller<'_, u32>, v: i32, v_len: i32| {
-                let wasm_string = get_wasm_string(caller, v, v_len);
+                let wasm_string = get_wasm_string(&caller, v, v_len);
                 toxoid_api::toxoid_print_string(wasm_string.as_ptr() as *const i8, wasm_string.len() as usize);
             });
             link_function!(linker, store, "toxoid_register_tag", |_caller: Caller<'_, u32>, name: i32, name_len: u32| -> u64 {
@@ -195,10 +221,9 @@ pub fn wasm_init() {
             link_function!(linker, store, "toxoid_entity_create", |_caller: Caller<'_, u32>| {
                 toxoid_api::toxoid_entity_create()
             });
-            link_function!(linker, store, "toxoid_entity_set_name", |caller: Caller<'_, u32>, entity_id: u64, name: i32| {
-                // let wasm_string = get_wasm_string(caller, name, name_len);
-                // toxoid_api::toxoid_entity_set_name(entity_id, wasm_string.as_ptr() as *const i8);
-                unimplemented!()
+            link_function!(linker, store, "toxoid_entity_set_name", |caller: Caller<'_, u32>, entity_id: u64, name: i32, name_len: i32| {
+                let wasm_string = get_wasm_string(&caller, name, name_len);
+                toxoid_api::toxoid_entity_set_name(entity_id, wasm_string.as_str());
             });
             link_function!(linker, store, "toxoid_entity_add_component", |_caller: Caller<'_, u32>, entity: u64, component: u64| {
                 toxoid_api::toxoid_entity_add_component(entity, component);
@@ -401,8 +426,9 @@ pub fn wasm_init() {
             link_function!(linker, store, "toxoid_component_set_member_f32array", |_caller: Caller<'_, u32>, component_ptr: i32, offset: u32, value: i32| {
                 toxoid_api::toxoid_component_set_member_f32array(component_ptr as *mut c_void, offset, value as *mut f32);
             });
-            link_function!(linker, store, "toxoid_component_set_member_string", |_caller: Caller<'_, u32>, component_ptr: i32, offset: u32, len: u32, value: i32| {
-                toxoid_api::toxoid_component_set_member_string(component_ptr as *mut c_void, offset, len, value as *mut c_char);
+            link_function!(linker, store, "toxoid_component_set_member_string", |caller: Caller<'_, u32>, component_ptr: i32, offset: u32, len: u32, value: i32, value_len: i32| {
+                let wasm_string = get_wasm_string(&caller, value, value_len);
+                toxoid_api::toxoid_component_set_member_string(component_ptr as *mut c_void, offset, len, wasm_string.as_str());
             });
             link_function!(linker, store, "toxoid_component_set_member_ptr", |_caller: Caller<'_, u32>, component_ptr: i32, offset: u32, value: i32| {
                 toxoid_api::toxoid_component_set_member_ptr(component_ptr as *mut c_void, offset, value as *mut c_void);
@@ -447,10 +473,6 @@ pub fn wasm_init() {
             link_function!(linker, store, "toxoid_singleton_remove", |_caller: Caller<'_, u32>, component: u64| {
                 toxoid_api::toxoid_singleton_remove(component);
             });
-            link_function!(linker, store, "toxoid_systems_init", |_caller: Caller<'_, u32>, system_name: i32, ids: i32, callback: i32| -> u64 {
-                // toxoid_api::toxoid_systems_init(system_name as *const i8, ids as *const u64, callback as *mut c_void) as u64
-                unimplemented!()
-            });
             link_function!(linker, store, "toxoid_prefab_create", |_caller: Caller<'_, u32>| -> i32 {
                 toxoid_api::toxoid_prefab_create() as i32
             });
@@ -478,9 +500,19 @@ pub fn wasm_init() {
             link_function!(linker, store, "toxoid_component_lookup", |_caller: Caller<'_, u32>, name: i32| -> u64 {
                 toxoid_api::toxoid_component_lookup(name as *mut i8)
             });
-            link_function!(linker, store, "toxoid_net_add_event", |_caller: Caller<'_, u32>, event_name: i32, event_name_length: i32, callback: i32| {
-                // toxoid_api::toxoid_net_add_event(event_name as *const i8, callback as *mut c_void);
-                unimplemented!()
+            link_function!(linker, store, "toxoid_net_add_event", |mut caller: Caller<'_, u32>, event_name: i32, event_name_len: i32, callback: i32| {
+                let wasm_string = get_wasm_string(&caller, event_name, event_name_len);
+                let wasm_func = get_wasm_func::<(i32,), ()>(&caller, callback);
+                let closure: = Box::into_raw(Box::new(move |message: &toxoid_api::net::MessageEntity| {
+                    let message_ptr = Box::into_raw(Box::new(message.clone())) as *mut c_void as i32;
+                    wasm_func
+                        .call(
+                            caller.as_context_mut(), 
+                            (message_ptr,)
+                        )
+                        .expect("failed to call WASM function");
+                }));
+                toxoid_api::toxoid_net_add_event(wasm_string.as_str(), closure as *mut c_void);
             });
             link_function!(linker, store, "toxoid_deserialize_entity_sync", |_caller: Caller<'_, u32>, entity_id: u64, components_serialized: i32, components_serialized_len: i32| {
                 // toxoid_api::toxoid_deserialize_entity_sync(entity_id, components_serialized as *mut c_void);
