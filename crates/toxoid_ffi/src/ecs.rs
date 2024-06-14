@@ -419,7 +419,7 @@ pub unsafe extern "C" fn toxoid_component_cache_get(type_hash: SplitU64) -> Spli
     split_u64(component_id)
 }
 
-#[no_mang]
+#[no_mangle]
 #[cfg(any(not(target_arch="wasm32"), all(target_arch="wasm32", target_os="unknown")))]
 pub unsafe extern "C" fn toxoid_component_cache_get(type_hash: u64) -> u64 {
     let cache = COMPONENT_ID_CACHE.lock().unwrap();
