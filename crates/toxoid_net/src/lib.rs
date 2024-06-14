@@ -6,7 +6,10 @@ use std::collections::HashMap;
 use toxoid_api::*;
 use toxoid_serialize::*;
 
+#[cfg(all(target_arch="wasm32"))]
 pub static NETWORK_EVENT_CACHE: Lazy<Mutex<HashMap<String, extern "C" fn(message: &MessageEntity)>>> = Lazy::new(|| Mutex::new(HashMap::new()));
+#[cfg(not(target_arch="wasm32"))]
+pub static NETWORK_EVENT_CACHE: Lazy<Mutex<HashMap<String, std::sync::atomic::AtomicPtr<c_void>>>> = Lazy::new(|| Mutex::new(HashMap::new()));
 
 pub fn init() {}
 
@@ -156,10 +159,11 @@ pub fn receive(data: Vec<u8>) {
 #[no_mangle]
 pub unsafe extern "C" fn toxoid_net_add_event(
     event_name: &'static str,
-    callback: fn(&mut Iter)
+    callback: *mut c_void
 ) {
     let mut cache = NETWORK_EVENT_CACHE.lock().unwrap();
-    cache.insert(event_name.to_string(), callback);
+    let atomic_ptr = std::sync::atomic::AtomicPtr::new(callback);
+    cache.insert(event_name.to_string(), atomic_ptr);
 }
 
 #[no_mangle]
@@ -189,7 +193,14 @@ pub unsafe extern "C" fn toxoid_net_run_event(
             components: Box::leak(components.into_boxed_slice())
         };
 
-        event_cb(&message);
+        // Dereference the atomic pointer to get the raw pointer
+        let callback_ptr = event_cb.load(std::sync::atomic::Ordering::SeqCst);
+        
+        // Cast the raw pointer to the appropriate function type
+        let callback: fn(&MessageEntity) = std::mem::transmute(callback_ptr);
+        
+        // Call the function
+        callback(&message);
 
         // // Convert the `&'static MessageEntity` back into a `Box<MessageEntity>`
         // let message_boxed = unsafe { Box::from_raw(&message as *const MessageEntity as *mut MessageEntity) };

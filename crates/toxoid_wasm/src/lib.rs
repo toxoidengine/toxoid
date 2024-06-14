@@ -178,7 +178,7 @@ pub fn wasm_init() {
         let mut path = std::env::current_exe()
         .expect("Failed to get current executable path");
         path.pop(); // Remove the executable name
-        path.push("low.wasm");
+        path.push("toxoid_wasm_test.wasm");
         
         let wasm = std::fs::read(path)
         .expect("Failed to read WASM file");
@@ -503,8 +503,8 @@ pub fn wasm_init() {
             link_function!(linker, store, "toxoid_net_add_event", |mut caller: Caller<'_, u32>, event_name: i32, event_name_len: i32, callback: i32| {
                 let wasm_string = get_wasm_string(&caller, event_name, event_name_len);
                 let wasm_func = get_wasm_func::<(i32,), ()>(&caller, callback);
-                let closure: = Box::into_raw(Box::new(move |message: &toxoid_api::net::MessageEntity| {
-                    let message_ptr = Box::into_raw(Box::new(message.clone())) as *mut c_void as i32;
+                let closure = Box::into_raw(Box::new(move |message: &toxoid_api::net::MessageEntity| {
+                    let message_ptr = Box::into_raw(Box::new(message)) as *mut c_void as i32;
                     wasm_func
                         .call(
                             caller.as_context_mut(), 
