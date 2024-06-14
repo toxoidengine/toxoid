@@ -12,6 +12,7 @@ extern "C" {
 
 pub struct GuestAllocator;
 
+
 unsafe impl GlobalAlloc for GuestAllocator {
     unsafe fn alloc(&self, layout: Layout) -> *mut u8 {
         host_alloc(layout)
@@ -22,5 +23,10 @@ unsafe impl GlobalAlloc for GuestAllocator {
     }
 }
 
+#[cfg(all(target_arch="wasm32", target_os="emscripten"))]
 #[global_allocator]
 pub static ALLOCATOR: GuestAllocator = GuestAllocator;
+
+#[cfg(any(not(target_arch="wasm32"), all(target_arch="wasm32", target_os="unknown")))]
+#[global_allocator]
+pub static ALLOCATOR: std::alloc::System = std::alloc::System;
