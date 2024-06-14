@@ -18,9 +18,15 @@ pub fn send_components(entity: &mut Entity, components: &[&dyn Component], event
     unsafe { toxoid_net_send_components(split_u64(entity.get_id()), components, event); }
 }
 
+#[cfg(all(target_arch="wasm32"))]
 pub fn add_network_event(event: &str, callback: extern "C" fn(message: &MessageEntity)) {
     unsafe { toxoid_net_add_event(event, callback); }
 }
+
+// #[cfg(not(target_arch="wasm32"))]
+// pub fn add_network_event(event: &str, callback: Box<dyn Fn(&crate::net::MessageEntity) + 'static>) {
+//     unsafe { toxoid_net_add_event(event, callback); }
+// }
 
 #[cfg(all(target_arch="wasm32", target_os="emscripten"))]
 pub fn network_entity_cache_insert(local_id: u64, network_id: u64) {

@@ -89,7 +89,7 @@ extern "C" {
     pub fn toxoid_entity_create() -> SplitU64;
     #[cfg(any(not(target_arch="wasm32"), all(target_arch="wasm32", target_os="unknown")))]
     pub fn toxoid_entity_create() -> ecs_entity_t;
-    pub fn toxoid_entity_set_name(entity_id: ecs_entity_t, name: *const c_char);
+    pub fn toxoid_entity_set_name(entity_id: ecs_entity_t, name: &str);
     pub fn toxoid_entity_add_component(entity: ecs_entity_t, component: ecs_entity_t);
     pub fn toxoid_entity_add_tag(entity: ecs_entity_t, tag: ecs_entity_t);
     pub fn toxoid_entity_get_component(entity: ecs_entity_t, component: ecs_entity_t) -> *mut c_void;
@@ -196,7 +196,7 @@ extern "C" {
         component_ptr: *mut c_void,
         offset: u32,
         len: u32,
-        value: *mut c_char,
+        value: &str,
     );   
     pub fn toxoid_component_set_member_ptr(
         component_ptr: *mut c_void,
@@ -222,10 +222,6 @@ extern "C" {
     pub fn toxoid_singleton_get(component: ecs_entity_t) -> *mut c_void;
     pub fn toxoid_singleton_add(component: ecs_entity_t);
     pub fn toxoid_singleton_remove(component: ecs_entity_t);
-    pub fn toxoid_systems_init(system_name: *const c_char,
-        ids: [ecs_id_t; 16],
-        callback: unsafe extern "C" fn(*mut c_void)
-    ) -> ecs_entity_t;
     #[cfg(all(target_arch="wasm32", target_os="emscripten"))]
     pub fn toxoid_prefab_create() -> SplitU64;
     #[cfg(any(not(target_arch="wasm32"), all(target_arch="wasm32", target_os="unknown")))]
@@ -254,9 +250,15 @@ extern "C" {
     pub fn toxoid_component_lookup(name: *mut i8) -> SplitU64;
     #[cfg(any(not(target_arch="wasm32"), all(target_arch="wasm32", target_os="unknown")))]
     pub fn toxoid_component_lookup(name: *mut i8) -> ecs_entity_t;
+    #[cfg(all(target_arch="wasm32"))]
     pub fn toxoid_net_add_event(
         event_name: &str,
         callback: extern "C" fn(message: &crate::net::MessageEntity)
+    );
+    #[cfg(not(target_arch="wasm32"))]
+    pub fn toxoid_net_add_event(
+        event_name: &str,
+        callback: *mut c_void
     );
     pub fn toxoid_deserialize_entity_sync(entity_id: ecs_entity_t, components_serialized: &[crate::net::MessageComponent]);
     pub fn toxoid_make_c_string(string: &str) -> *mut i8;

@@ -156,7 +156,7 @@ pub fn receive(data: Vec<u8>) {
 #[no_mangle]
 pub unsafe extern "C" fn toxoid_net_add_event(
     event_name: &'static str,
-    callback: extern "C" fn(message: &MessageEntity)
+    callback: fn(&mut Iter)
 ) {
     let mut cache = NETWORK_EVENT_CACHE.lock().unwrap();
     cache.insert(event_name.to_string(), callback);

@@ -889,7 +889,7 @@ impl Entity {
         let entity = unsafe { toxoid_entity_create() };
         #[cfg(all(target_arch="wasm32", target_os="emscripten"))]
         let entity = combine_u32(entity);
-        unsafe { toxoid_entity_set_name(entity, make_c_string("")); }
+        unsafe { toxoid_entity_set_name(entity, ""); }
         Entity {
             id: entity,
             children: &mut []
@@ -898,7 +898,7 @@ impl Entity {
 
     pub fn set_name(&self, name: &str) {
         unsafe {
-           toxoid_entity_set_name(self.id, make_c_string(name));
+           toxoid_entity_set_name(self.id, name);
         }
     }
 

@@ -765,9 +765,9 @@ pub unsafe extern "C" fn toxoid_component_set_member_bool(
 pub unsafe extern "C" fn toxoid_component_set_member_string(
     component_ptr: *mut c_void,
     offset: u32,
-    value: *mut c_char,
-) {
-    flecs_core::flecs_component_set_member_string(component_ptr, offset, value);
+    value: &str,
+) { 
+    flecs_core::flecs_component_set_member_string(component_ptr, offset, toxoid_api::make_c_string(value));
 }
 
 #[no_mangle]
@@ -1371,9 +1371,7 @@ pub unsafe extern "C" fn toxoid_json_to_entity(json: *mut c_char) {
 }
 
  #[no_mangle]
- pub unsafe extern "C" fn toxoid_entity_set_name(entity: ecs_entity_t, name: *mut c_char) {
-    // Convert name to string
-    let name = core::ffi::CStr::from_ptr(name).to_str().unwrap();
+ pub unsafe extern "C" fn toxoid_entity_set_name(entity: ecs_entity_t, name: &str) {
     // String interpolate uuid after name
     if name.is_empty() {
         let name = format!("{}", uuid::Uuid::new_v4());
