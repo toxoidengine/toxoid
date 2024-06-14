@@ -195,9 +195,10 @@ pub fn wasm_init() {
             link_function!(linker, store, "toxoid_entity_create", |_caller: Caller<'_, u32>| {
                 toxoid_api::toxoid_entity_create()
             });
-            link_function!(linker, store, "toxoid_entity_set_name", |caller: Caller<'_, u32>, entity_id: u64, name: i32, name_len: i32| {
-                let wasm_string = get_wasm_string(caller, name, name_len);
-                toxoid_api::toxoid_entity_set_name(entity_id, wasm_string.as_ptr() as *const i8);
+            link_function!(linker, store, "toxoid_entity_set_name", |caller: Caller<'_, u32>, entity_id: u64, name: i32| {
+                // let wasm_string = get_wasm_string(caller, name, name_len);
+                // toxoid_api::toxoid_entity_set_name(entity_id, wasm_string.as_ptr() as *const i8);
+                unimplemented!()
             });
             link_function!(linker, store, "toxoid_entity_add_component", |_caller: Caller<'_, u32>, entity: u64, component: u64| {
                 toxoid_api::toxoid_entity_add_component(entity, component);
@@ -250,8 +251,9 @@ pub fn wasm_init() {
             link_function!(linker, store, "toxoid_query_field", |_caller: Caller<'_, u32>, iter: i32, term_index: i32, count: u32, index: u32| -> i32 {
                 toxoid_api::toxoid_query_field(iter as *mut c_void, term_index, count, index) as i32
             });
-            link_function!(linker, store, "toxoid_query_entity_list", |_caller: Caller<'_, u32>, iter: i32| -> i32 {
-                toxoid_api::toxoid_query_entity_list(iter as *mut c_void).as_ptr() as i32
+            link_function!(linker, store, "toxoid_query_entity_list", |_caller: Caller<'_, u32>, iter: i32, iter_len: i32|  {
+                // toxoid_api::toxoid_query_entity_list(iter as *mut c_void).as_ptr() as i32
+                unimplemented!()
             });
             link_function!(linker, store, "toxoid_query_field_size", |_caller: Caller<'_, u32>, iter: i32, term_index: i32| -> i32 {
                 toxoid_api::toxoid_query_field_size(iter as *mut c_void, term_index) as i32
@@ -460,8 +462,8 @@ pub fn wasm_init() {
                 // toxoid_api::toxoid_system_create(callback_closure as *mut c_void) as i32
                 unimplemented!()
             });
-            link_function!(linker, store, "toxoid_system_build", |_caller: Caller<'_, u32>, system_desc: i32| -> i32 {
-                toxoid_api::toxoid_system_build(system_desc as *mut c_void) as i32
+            link_function!(linker, store, "toxoid_system_build", |_caller: Caller<'_, u32>, system_desc: i32| -> u64 {
+                toxoid_api::toxoid_system_build(system_desc as *mut c_void) 
             });
             link_function!(linker, store, "toxoid_query_from_system_desc", |_caller: Caller<'_, u32>, query_desc: i32| -> i32 {
                 toxoid_api::toxoid_query_from_system_desc(query_desc as *mut c_void) as i32
@@ -469,22 +471,22 @@ pub fn wasm_init() {
             link_function!(linker, store, "toxoid_network_send", |_caller: Caller<'_, u32>, network_messages: i32| {
                 toxoid_api::toxoid_network_send(network_messages as *mut c_void);
             });
-            link_function!(linker, store, "toxoid_net_send_components", |_caller: Caller<'_, u32>, entity_id: u64, components: i32, event: i32| {
-                // toxoid_api::toxoid_net_send_components(entity_id, components as *mut c_void, event as *const i8);
+            link_function!(linker, store, "toxoid_net_send_components", |_caller: Caller<'_, u32>, entity_id: u64, components: i32, components_len: i32, event: i32, even_len: i32| {
+                // `toxoid_api::toxoid_net_send_components(entity_id, components as *mut c_void, event as *const i8);
                 unimplemented!()
             });
-            link_function!(linker, store, "toxoid_component_lookup", |_caller: Caller<'_, u32>, name: i32| -> i32 {
-                toxoid_api::toxoid_component_lookup(name as *mut i8) as i32
+            link_function!(linker, store, "toxoid_component_lookup", |_caller: Caller<'_, u32>, name: i32| -> u64 {
+                toxoid_api::toxoid_component_lookup(name as *mut i8)
             });
-            link_function!(linker, store, "toxoid_net_add_event", |_caller: Caller<'_, u32>, event_name: i32, callback: i32| {
+            link_function!(linker, store, "toxoid_net_add_event", |_caller: Caller<'_, u32>, event_name: i32, event_name_length: i32, callback: i32| {
                 // toxoid_api::toxoid_net_add_event(event_name as *const i8, callback as *mut c_void);
                 unimplemented!()
             });
-            link_function!(linker, store, "toxoid_deserialize_entity_sync", |_caller: Caller<'_, u32>, entity_id: u64, components_serialized: i32| {
+            link_function!(linker, store, "toxoid_deserialize_entity_sync", |_caller: Caller<'_, u32>, entity_id: u64, components_serialized: i32, components_serialized_len: i32| {
                 // toxoid_api::toxoid_deserialize_entity_sync(entity_id, components_serialized as *mut c_void);
                 unimplemented!()
             });
-            link_function!(linker, store, "toxoid_make_c_string", |_caller: Caller<'_, u32>, string: i32| -> i32 {
+            link_function!(linker, store, "toxoid_make_c_string", |_caller: Caller<'_, u32>, v: i32, v_len: i32| -> i32 {
                 // toxoid_api::toxoid_make_c_string(string as *const i8) as i32
                 unimplemented!()
             });
