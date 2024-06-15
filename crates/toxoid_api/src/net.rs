@@ -1,15 +1,19 @@
 use crate::*;
 
+#[repr(C)]
 pub struct MessageComponent {
     pub name: &'static str,
     pub data: &'static [u8]
 }
 
+#[repr(C)]
 pub struct MessageEntity {
     pub id: u64,
     pub event: &'static str,
     pub components: &'static [MessageComponent]
 }
+
+#[repr(C)]
 pub struct Messages {
     pub messages: &'static [MessageEntity]
 }

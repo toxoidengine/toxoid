@@ -258,7 +258,7 @@ extern "C" {
     #[cfg(not(target_arch="wasm32"))]
     pub fn toxoid_net_add_event(
         event_name: &str,
-        callback: *mut c_void
+        callback: &mut Box<dyn FnMut(&crate::net::MessageEntity) + Send + Sync>
     );
     pub fn toxoid_deserialize_entity_sync(entity_id: ecs_entity_t, components_serialized: &[crate::net::MessageComponent]);
     pub fn toxoid_make_c_string(string: &str) -> *mut i8;

@@ -1,4 +1,5 @@
 use core::result::Result;
+use std::any::Any;
 use once_cell::sync::Lazy;
 use toxoid_ffi::flecs_core::EcsWorld;
 use std::sync::Mutex;
@@ -9,7 +10,7 @@ use toxoid_serialize::*;
 #[cfg(all(target_arch="wasm32"))]
 pub static NETWORK_EVENT_CACHE: Lazy<Mutex<HashMap<String, extern "C" fn(message: &MessageEntity)>>> = Lazy::new(|| Mutex::new(HashMap::new()));
 #[cfg(not(target_arch="wasm32"))]
-pub static NETWORK_EVENT_CACHE: Lazy<Mutex<HashMap<String, std::sync::atomic::AtomicPtr<c_void>>>> = Lazy::new(|| Mutex::new(HashMap::new()));
+pub static NETWORK_EVENT_CACHE: Lazy<Mutex<HashMap<String, Box<dyn Fn(&toxoid_api::net::MessageEntity) + Send + Sync>>>> = Lazy::new(|| Mutex::new(HashMap::new()));
 
 pub fn init() {}
 
@@ -156,14 +157,33 @@ pub fn receive(data: Vec<u8>) {
         });
 }
 
+/*
 #[no_mangle]
 pub unsafe extern "C" fn toxoid_net_add_event(
     event_name: &'static str,
-    callback: *mut c_void
+    callback: extern "C" fn(message: &MessageEntity)
 ) {
     let mut cache = NETWORK_EVENT_CACHE.lock().unwrap();
-    let atomic_ptr = std::sync::atomic::AtomicPtr::new(callback);
-    cache.insert(event_name.to_string(), atomic_ptr);
+    cache.insert(event_name.to_string(), callback);
+} */
+
+#[no_mangle]
+pub unsafe extern "C" fn toxoid_net_add_event(
+    event_name: &str,
+    mut callback: Box<dyn FnMut(&toxoid_api::net::MessageEntity) + Send + Sync>
+) {
+   callback(&toxoid_api::MessageEntity {
+        id: 1, 
+        event: "test", 
+        components: &[]
+    });
+    // let mut cache = NETWORK_EVENT_CACHE.lock().unwrap();
+    // cache.insert(event_name.to_string(), callback);
+    // callback(&toxoid_api::MessageEntity {
+    //     id: 1, 
+    //     event: "test", 
+    //     components: &[]
+    // });
 }
 
 #[no_mangle]
@@ -192,14 +212,8 @@ pub unsafe extern "C" fn toxoid_net_run_event(
             event: event_name,
             components: Box::leak(components.into_boxed_slice())
         };
-
-        // Dereference the atomic pointer to get the raw pointer
-        let callback_ptr = event_cb.load(std::sync::atomic::Ordering::SeqCst);
-        
-        // Cast the raw pointer to the appropriate function type
-        let callback: fn(&MessageEntity) = std::mem::transmute(callback_ptr);
-        
-        // Call the function
+        let callback = event_cb.as_ref();
+        println!("Callback: {:?}", callback.type_id());
         callback(&message);
 
         // // Convert the `&'static MessageEntity` back into a `Box<MessageEntity>`

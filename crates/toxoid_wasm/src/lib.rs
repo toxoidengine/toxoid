@@ -181,7 +181,15 @@ pub fn wasm_init() {
         path.push("toxoid_wasm_test.wasm");
         
         let wasm = std::fs::read(path)
-        .expect("Failed to read WASM file");
+            .expect("Failed to read WASM file");
+        // Set up WASM module for parsing
+        let mut wasm_parsed = walrus::ModuleConfig::new().parse(&wasm).unwrap();
+        // Assuming the table is the first table in the module
+        let table_id = wasm_parsed.tables.iter().next().unwrap().id();
+        // Export the table
+        wasm_parsed.exports.add("table", walrus::ExportItem::Table(table_id));
+        let wasm = wasm_parsed.emit_wasm();
+
         // Setup WASM runtime
         let engine = create_engine!();
         let module = compile_module!(engine, wasm);
@@ -503,16 +511,12 @@ pub fn wasm_init() {
             link_function!(linker, store, "toxoid_net_add_event", |mut caller: Caller<'_, u32>, event_name: i32, event_name_len: i32, callback: i32| {
                 let wasm_string = get_wasm_string(&caller, event_name, event_name_len);
                 let wasm_func = get_wasm_func::<(i32,), ()>(&caller, callback);
-                let closure = Box::into_raw(Box::new(move |message: &toxoid_api::net::MessageEntity| {
-                    let message_ptr = Box::into_raw(Box::new(message)) as *mut c_void as i32;
-                    wasm_func
-                        .call(
-                            caller.as_context_mut(), 
-                            (message_ptr,)
-                        )
-                        .expect("failed to call WASM function");
-                }));
-                toxoid_api::toxoid_net_add_event(wasm_string.as_str(), closure as *mut c_void);
+                let wasm_func_boxed = Box::leak(Box::new(wasm_func));
+                let caller_boxed = Box::leak(Box::new(caller.as_context_mut()));
+                let closure: Box<dyn FnMut(&toxoid_api::net::MessageEntity) + Send + Sync> = Box::new(move |message: &toxoid_api::net::MessageEntity| {
+                    println!("Hello world from closure");
+                });
+                toxoid_net::toxoid_net_add_event(wasm_string.as_str(), closure);
             });
             link_function!(linker, store, "toxoid_deserialize_entity_sync", |_caller: Caller<'_, u32>, entity_id: u64, components_serialized: i32, components_serialized_len: i32| {
                 // toxoid_api::toxoid_deserialize_entity_sync(entity_id, components_serialized as *mut c_void);
