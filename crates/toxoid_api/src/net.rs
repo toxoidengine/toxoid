@@ -1,12 +1,32 @@
 use crate::*;
+use serde::{Deserialize, Serialize};
 
 #[repr(C)]
+#[cfg(any(not(target_arch="wasm32"), all(target_arch="wasm32", target_os="unknown")))]
+#[derive(Serialize, Deserialize)]
+pub struct MessageComponent {
+    pub name: String,
+    pub data: Vec<u8>
+}
+
+#[repr(C)]
+#[cfg(all(target_arch="wasm32", target_os="emscripten"))]
 pub struct MessageComponent {
     pub name: &'static str,
     pub data: &'static [u8]
 }
 
 #[repr(C)]
+#[cfg(any(not(target_arch="wasm32"), all(target_arch="wasm32", target_os="unknown")))]
+#[derive(Serialize, Deserialize)]
+pub struct MessageEntity {
+    pub id: u64,
+    pub event: String,
+    pub components: Vec<MessageComponent>
+}
+
+#[repr(C)]
+#[cfg(all(target_arch="wasm32", target_os="emscripten"))]
 pub struct MessageEntity {
     pub id: u64,
     pub event: &'static str,
@@ -14,8 +34,16 @@ pub struct MessageEntity {
 }
 
 #[repr(C)]
+#[cfg(all(target_arch="wasm32", target_os="emscripten"))]
 pub struct Messages {
     pub messages: &'static [MessageEntity]
+}
+
+#[repr(C)]
+#[derive(Serialize, Deserialize)]
+#[cfg(any(not(target_arch="wasm32"), all(target_arch="wasm32", target_os="unknown")))]
+pub struct Messages {
+    pub messages: Vec<MessageEntity>
 }
 
 pub fn send_components(entity: &mut Entity, components: &[&dyn Component], event: &str) {

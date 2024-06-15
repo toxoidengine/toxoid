@@ -46,7 +46,6 @@ pub unsafe extern "C" fn app_main() {
     // toxoid_print_f64(777.2);
     // print_string("Entity ID: ");
     // toxoid_print_u64(toxoid_entity_create());
-
     print_string("Hello World from WASM");
     toxoid_net_add_event("test", test_callback);
     toxoid_net_add_event("test", test_callback_2);

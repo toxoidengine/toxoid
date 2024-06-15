@@ -1,4 +1,5 @@
 use toxoid_api::{c_void, c_char};
+use toxoid_api::serde::Serialize;
 
 #[cfg(feature = "wasmtime")]
 use wasmtime::*;
@@ -139,17 +140,17 @@ macro_rules! call_function {
 fn get_wasm_string(v: i32, v_len: i32) -> String {
     unsafe {
         let memory = {
-            let mut store = &mut *STORE.lock().unwrap();
+            let store = &mut *STORE.lock().unwrap();
             INSTANCE
                 .lock()
                 .unwrap()
                 .unwrap()
                 .get_export(store, "memory")
-                    .and_then(|extern_| extern_.into_memory())
-                    .expect("failed to find host memory")
+                .and_then(|extern_| extern_.into_memory())
+                .expect("failed to find host memory")
         };   
         
-        let mut store = &mut *STORE.lock().unwrap();
+        let store = &mut *STORE.lock().unwrap();
         let mut buffer = vec![0; v_len as usize];
         memory
             .read(store.as_context_mut(), v as usize, &mut buffer)
@@ -159,30 +160,39 @@ fn get_wasm_string(v: i32, v_len: i32) -> String {
 }
 
 #[cfg(any(feature = "wasmi", feature = "wasmtime"))]
-fn get_wasm_func<Params, Results>(caller: &Caller<'_, u32>, callback: i32) -> TypedFunc<Params, Results> 
+fn get_wasm_func<Params, Results>(callback: i32) -> TypedFunc<Params, Results> 
 where
     Params: WasmParams,
     Results: WasmResults, 
 {
-    let table = caller.get_export("table")
-        .and_then(|export| export.into_table())
-        .expect("expected table export");
+    let table = unsafe {
+        let store = &mut *STORE.lock().unwrap();
+        INSTANCE
+            .lock()
+            .unwrap()
+            .unwrap()
+            .get_export(store, "table")
+            .and_then(|export| export.into_table())
+            .expect("expected table export")
+    };
 
     // Retrieve the callback function from the table using the index
-    let func = table
-        .get(caller.as_context(), callback as u32)
-        .unwrap();
-    let func = func
-        .funcref()
-        .unwrap()
-        .func()
-        .unwrap();
-
-    // Convert to a proper function pointer
-    func
-        .typed::<Params, Results>(caller.as_context())
-        .expect("function type mismatch")
-        .clone()
+    {
+        let store = &mut *STORE.lock().unwrap();
+        let func = table
+            .get(store.as_context_mut(), callback as u32)
+            .unwrap();
+        let func = func
+            .funcref()
+            .unwrap()
+            .func()
+            .unwrap();
+        // Convert to a proper function pointer
+        func
+            .typed::<Params, Results>(store.as_context())
+            .expect("function type mismatch")
+            .clone()
+    }
 }
 
 // OnceCell global store
@@ -533,59 +543,41 @@ pub fn wasm_init() {
                 toxoid_api::toxoid_component_lookup(name as *mut i8)
             });
             link_function!(linker, store, "toxoid_net_add_event", |mut event_name: i32, event_name_len: i32, callback: i32| {
-                // Spawn thread
                 std::thread::spawn(move || {
-                    let table = {
+                    let closure: Box<dyn FnMut(&toxoid_api::net::MessageEntity) + Send + Sync> = Box::new(move |message: &toxoid_api::net::MessageEntity| {
+                        println!("Hello?");
+                        let wasm_func = get_wasm_func::<(i32,), ()>(callback);
                         let store = &mut *STORE.lock().unwrap();
-                        INSTANCE
-                            .lock()
-                            .unwrap()
-                            .unwrap()
-                            .get_export(store, "table")
-                            .and_then(|export| export.into_table())
-                            .expect("expected table export")
-                    };
 
-                    // Retrieve the callback function from the table using the index
-                    let wasm_func = {
-                        let store = &mut *STORE.lock().unwrap();
-                        let func = table
-                            .get(store.as_context_mut(), callback as u32)
-                            .unwrap();
-                        let func = func
-                            .funcref()
-                            .unwrap()
-                            .func()
-                            .unwrap();
-                        // Convert to a proper function pointer
-                        func
-                            .typed::<(i32,), ()>(store.as_context())
-                                            .expect("function type mismatch")
-                                            .clone()
-                    };
-                    let store = &mut *STORE.lock().unwrap();
-                    wasm_func
-                        .call(
-                            store.as_context_mut(), 
-                            (1,)
-                        )
-                        .expect("failed to call WASM function");
+                        // Serialize MessagEntity using flexbuffers
+                        let mut s = toxoid_serialize::flexbuffers::FlexbufferSerializer::new();
+                        message.serialize(&mut s).unwrap();
+                        println!("Serialized message: {:?}", s.view());
+                        // Write to wasmtime memory
+                        {
+                            let wasm_memory = INSTANCE
+                                .lock()
+                                .unwrap()
+                                .unwrap()
+                                .get_export(&store, "memory")
+                                .and_then(|extern_| extern_.into_memory())
+                                .expect("failed to find host memory");
+                            wasm_memory
+                                .write(store.as_context_mut(), 0, &s.view())
+                                .unwrap();
+                        }
+                        let msg_ptr = message as *const _ as *const c_void as i32;
+                        wasm_func
+                            .call(
+                                store.as_context_mut(), 
+                                (msg_ptr,)
+                            )
+                            .expect("failed to call WASM function")
+                    });
+                    let wasm_string = get_wasm_string(event_name, event_name_len);
+                    toxoid_net::toxoid_net_add_event(wasm_string.as_str(), closure);
+                    toxoid_net::toxoid_net_run_event(wasm_string, &toxoid_serialize::NetworkMessageEntity::default());
                 });
-                // let wasm_string = get_wasm_string(&caller, event_name, event_name_len);
-                // let wasm_func = get_wasm_func::<(i32,), ()>(&caller, callback);
-                // // let wasm_func_boxed = Box::leak(Box::new(wasm_func));
-                // // let caller_boxed = Box::leak(Box::new(caller.as_context_mut()));
-                // wasm_func_boxed
-                //         .call(
-                //             caller.as_context_mut(), 
-                //             (1,)
-                //         )
-                //         .expect("failed to call WASM function");
-                // let closure: Box<dyn FnMut(&toxoid_api::net::MessageEntity) + Send + Sync> = Box::new(move |message: &toxoid_api::net::MessageEntity| {
-                //     println!("Hello world from closure");
-                    
-                // });
-                // toxoid_net::toxoid_net_add_event(wasm_string.as_str(), closure);
             });
             link_function!(linker, store, "toxoid_deserialize_entity_sync", |entity_id: u64, components_serialized: i32, components_serialized_len: i32| {
                 // toxoid_api::toxoid_deserialize_entity_sync(entity_id, components_serialized as *mut c_void);
