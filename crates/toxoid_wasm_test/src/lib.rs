@@ -3,6 +3,13 @@ pub type ecs_entity_t = ecs_id_t;
 pub type c_char = i8;
 pub type c_void = i32;
 
+#[repr(C)]
+pub struct MessageEntity {
+    pub id: u64,
+    pub event: &'static str,
+    pub components: &'static [c_void]
+}
+
 extern "C" {
     pub fn toxoid_print_i32(v: i32);
     pub fn toxoid_print_u64(v: u64);
@@ -12,7 +19,7 @@ extern "C" {
     pub fn toxoid_entity_create() -> ecs_entity_t;
     pub fn toxoid_net_add_event(
         event_name: &str,
-        callback: *mut c_void
+        callback: extern "C" fn(message: *mut MessageEntity)
     );
 }
 
@@ -22,18 +29,25 @@ pub fn print_string(v: &str) {
     }
 }
 
-extern "C" fn test_callback() {
-    print_string("Hello World 12345");
+#[no_mangle]
+pub extern "C" fn test_callback(message: *mut MessageEntity) {
+    print_string("Hello World callback");
+}
+
+#[no_mangle]
+pub extern "C" fn test_callback_2(message: *mut MessageEntity) {
+    print_string("Hello World callback 2");
 }
 
 #[no_mangle]
 pub unsafe extern "C" fn app_main() {
-    print_string("Hello World 123");
-    toxoid_print_i32(4200);
-    toxoid_print_u64(888);
-    toxoid_print_f64(777.2);
-    print_string("Entity ID: ");
-    toxoid_print_u64(toxoid_entity_create());
-    toxoid_net_add_event("test", test_callback as *mut c_void);
-    print_string("Hello World 12345");
+    // toxoid_print_i32(4200);
+    // toxoid_print_u64(888);
+    // toxoid_print_f64(777.2);
+    // print_string("Entity ID: ");
+    // toxoid_print_u64(toxoid_entity_create());
+
+    print_string("Hello World from WASM");
+    toxoid_net_add_event("test", test_callback);
+    toxoid_net_add_event("test", test_callback_2);
 }
