@@ -114,26 +114,27 @@ macro_rules! instantiate_module {
 
 #[cfg(feature = "wasmtime")]
 macro_rules! call_function {
-    ($instance:expr, $store:expr, $func_name:expr) => {
+    ($instance:expr, $func_name:expr, $params: ty, $results: ty) => {
+        let mut store = &mut *STORE.lock().unwrap();
         $instance
-        .get_typed_func::<(), ()>(&mut $store, $func_name)
-        .expect("Failed to get function")
-        .call(&mut $store, ())
-        .expect("Failed to call function");
+            .get_typed_func::<$params, $results>(&mut store, $func_name)
+            .expect("Failed to get function")
+            .call(&mut store, ())
+            .expect("Failed to call function");
     };
 }
 
 // Macro for instantiation and function calling with wasmi
 #[cfg(feature = "wasmi")]
 macro_rules! call_function {
-    ($instance:expr, $func_name:expr) => {
+    ($instance:expr, $func_name:expr, $params:ty, $results:ty, $value:expr) => {{
         let mut store = &mut *STORE.lock().unwrap();
         $instance
-        .get_typed_func::<(), ()>(&mut store, $func_name)
-        .expect("Failed to get function")
-        .call(&mut store, ())
-        .expect("Failed to call function");
-    };
+            .get_typed_func::<$params, $results>(&mut store, $func_name)
+            .expect("Failed to get function")
+            .call(&mut store, $value)
+            .expect("Failed to call function")
+    }};
 }
 
 #[cfg(any(feature = "wasmi", feature = "wasmtime"))]
@@ -208,6 +209,8 @@ static mut INSTANCE: once_cell::sync::Lazy<Mutex<Option<wasmi::Instance>>> = onc
 
 #[cfg(any(feature = "wasmi", feature = "wasmtime"))]
 pub fn wasm_init() {
+    use std::mem::size_of;
+
     #[cfg(any(not(target_arch="wasm32"), all(target_arch="wasm32", target_os="unknown")))] {
         let mut path = std::env::current_exe()
             .expect("Failed to get current executable path");
@@ -545,32 +548,40 @@ pub fn wasm_init() {
             link_function!(linker, store, "toxoid_net_add_event", |mut event_name: i32, event_name_len: i32, callback: i32| {
                 std::thread::spawn(move || {
                     let closure: Box<dyn FnMut(&toxoid_api::net::MessageEntity) + Send + Sync> = Box::new(move |message: &toxoid_api::net::MessageEntity| {
-                        println!("Hello?");
                         let wasm_func = get_wasm_func::<(i32,), ()>(callback);
-                        let store = &mut *STORE.lock().unwrap();
-
+                        // TODO: Make global variable 
                         // Serialize MessagEntity using flexbuffers
                         let mut s = toxoid_serialize::flexbuffers::FlexbufferSerializer::new();
                         message.serialize(&mut s).unwrap();
-                        println!("Serialized message: {:?}", s.view());
                         // Write to wasmtime memory
-                        {
-                            let wasm_memory = INSTANCE
+                        let wasm_ptr = {
+                            let instance = INSTANCE
                                 .lock()
                                 .unwrap()
-                                .unwrap()
-                                .get_export(&store, "memory")
-                                .and_then(|extern_| extern_.into_memory())
-                                .expect("failed to find host memory");
-                            wasm_memory
-                                .write(store.as_context_mut(), 0, &s.view())
                                 .unwrap();
-                        }
-                        let msg_ptr = message as *const _ as *const c_void as i32;
+                            let wasm_memory = {
+                                let store = &mut *STORE.lock().unwrap();
+                                instance
+                                    .get_export(&store, "memory")
+                                    .and_then(|extern_| extern_.into_memory())
+                                    .expect("failed to find host memory")
+                            };
+                            let wasm_ptr = call_function!(instance, "allocate", (i32,), i32, (size_of::<toxoid_api::net::MessageEntity>() as i32,)) as i32;
+                            {
+                                let store = &mut *STORE.lock().unwrap();
+                                println!("Data len: {:?}", wasm_memory.data(&store.as_context_mut()).len());
+                                println!("WASM ptr: {:?}", wasm_ptr);
+                                wasm_memory
+                                    .write(store.as_context_mut(), 0, &s.view())
+                                    .unwrap();
+                            }
+                            wasm_ptr 
+                        };
+                        let store = &mut *STORE.lock().unwrap();
                         wasm_func
                             .call(
                                 store.as_context_mut(), 
-                                (msg_ptr,)
+                                (wasm_ptr,)
                             )
                             .expect("failed to call WASM function")
                     });
@@ -599,6 +610,12 @@ pub fn wasm_init() {
         // Instantiate WASM module
         let instance = instantiate_module!(linker, module);
         unsafe { *INSTANCE = Mutex::new(Some(instance)); }
-        call_function!(instance, "app_main");
+        {
+            let store = &mut *STORE.lock().unwrap();
+            for export in instance.exports(store) {
+                println!("Export: {}", export.name());
+            }
+        }
+        call_function!(instance, "app_main", (), (), ());
     }
 }

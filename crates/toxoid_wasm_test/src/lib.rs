@@ -32,11 +32,25 @@ pub fn print_string(v: &str) {
 #[no_mangle]
 pub extern "C" fn test_callback(message: *mut MessageEntity) {
     print_string("Hello World callback");
+    unsafe { toxoid_print_i32(message as i32); }
+    print_string("Hello World callback again");
 }
 
 #[no_mangle]
 pub extern "C" fn test_callback_2(message: *mut MessageEntity) {
     print_string("Hello World callback 2");
+}
+
+#[no_mangle]
+pub extern "C" fn allocate(size: usize) -> *mut u8 {
+    let layout = std::alloc::Layout::from_size_align(size, 1).unwrap();
+    unsafe { std::alloc::alloc(layout) }
+}
+
+#[no_mangle]
+pub extern "C" fn deallocate(ptr: *mut u8, size: usize) {
+    let layout = std::alloc::Layout::from_size_align(size, 1).unwrap();
+    unsafe { std::alloc::dealloc(ptr, layout) }
 }
 
 #[no_mangle]
