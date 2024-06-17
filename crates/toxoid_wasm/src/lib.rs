@@ -215,7 +215,7 @@ pub fn wasm_init() {
         let mut path = std::env::current_exe()
             .expect("Failed to get current executable path");
         path.pop(); // Remove the executable name
-        path.push("toxoid_wasm_test.wasm");
+        path.push("low.wasm");
         
         let wasm = std::fs::read(path)
             .expect("Failed to read WASM file");
@@ -264,7 +264,7 @@ pub fn wasm_init() {
                 0
             });
             link_function!(linker, store, "toxoid_entity_create", || {
-                // toxoid_api::toxoid_entity_create()
+                toxoid_api::toxoid_entity_create()
             });
             link_function!(linker, store, "toxoid_entity_set_name", |entity_id: u64, name: i32, name_len: i32| {
                 // let wasm_string = get_wasm_string(&caller, name, name_len);
@@ -587,7 +587,7 @@ pub fn wasm_init() {
                     });
                     let wasm_string = get_wasm_string(event_name, event_name_len);
                     toxoid_net::toxoid_net_add_event(wasm_string.as_str(), closure);
-                    toxoid_net::toxoid_net_run_event(wasm_string, &toxoid_serialize::NetworkMessageEntity::default());
+                    // toxoid_net::toxoid_net_run_event(wasm_string, &toxoid_serialize::NetworkMessageEntity::default());
                 });
             });
             link_function!(linker, store, "toxoid_deserialize_entity_sync", |entity_id: u64, components_serialized: i32, components_serialized_len: i32| {
