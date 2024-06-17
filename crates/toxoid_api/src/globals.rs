@@ -31,13 +31,14 @@ pub static ALLOCATOR: GuestAllocator = GuestAllocator;
 #[global_allocator]
 pub static ALLOCATOR: std::alloc::System = std::alloc::System;
 
-
+#[no_mangle]
 #[cfg(any(not(target_arch="wasm32"), all(target_arch="wasm32", target_os="unknown")))]
 pub extern "C" fn allocate(size: usize) -> *mut u8 {
     let layout = std::alloc::Layout::from_size_align(size, 1).unwrap();
     unsafe { std::alloc::alloc(layout) }
 }
 
+#[no_mangle]
 #[cfg(any(not(target_arch="wasm32"), all(target_arch="wasm32", target_os="unknown")))]
 pub extern "C" fn deallocate(ptr: *mut u8, size: usize) {
     let layout = std::alloc::Layout::from_size_align(size, 1).unwrap();
