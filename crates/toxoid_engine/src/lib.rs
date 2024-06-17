@@ -16,7 +16,7 @@ pub fn init() {
     toxoid_api::components::init();
 
     // Test WASM runtime
-    toxoid_wasm::wasm_init();
+    // toxoid_wasm::wasm_init();
 
     // Initialize sokol
     // TODO: Renderer backend feature flags
