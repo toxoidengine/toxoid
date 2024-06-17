@@ -315,9 +315,9 @@ pub fn wasm_init() {
             link_function!(linker, store, "toxoid_query_next", |iter: i32| -> i32 {
                 toxoid_api::toxoid_query_next(iter as *mut c_void) as i32
             });
-            link_function!(linker, store, "toxoid_query_count", |iter: i32| -> i32 {
-                toxoid_api::toxoid_query_count(iter as *mut c_void)
-            });
+            // link_function!(linker, store, "toxoid_query_count", |iter: i32| -> i32 {
+            //     toxoid_api::toxoid_query_count(iter as *mut c_void)
+            // });
             link_function!(linker, store, "toxoid_query_field", |iter: i32, term_index: i32, count: u32, index: u32| -> i32 {
                 toxoid_api::toxoid_query_field(iter as *mut c_void, term_index, count, index) as i32
             });
@@ -347,27 +347,27 @@ pub fn wasm_init() {
             link_function!(linker, store, "toxoid_filter_build", |filter: i32| -> i32 {
                 toxoid_api::toxoid_filter_build(filter as *mut c_void) as i32
             });
-            link_function!(linker, store, "toxoid_filter_term_count", |filter: i32| -> i32 {
-                toxoid_api::toxoid_filter_term_count(filter as *mut c_void)
-            });
-            link_function!(linker, store, "toxoid_filter_term_size", |filter: i32, term_index: i32| -> i32 {
-                toxoid_api::toxoid_filter_term_size(filter as *mut c_void, term_index) as i32
-            });
-            link_function!(linker, store, "toxoid_filter_term_list", |filter: i32, term_index: i32, count: u32| -> i32 {
-                toxoid_api::toxoid_filter_term_list(filter as *mut c_void, term_index, count).as_ptr() as i32
-            });
-            link_function!(linker, store, "toxoid_filter_term_iter", |filter: i32, term_index: i32| -> i32 {
-                toxoid_api::toxoid_filter_term_iter(filter as *mut c_void, term_index) as i32
-            });
-            link_function!(linker, store, "toxoid_filter_term_next", |iter: i32| -> i32 {
-                toxoid_api::toxoid_filter_term_next(iter as *mut c_void) as i32
-            });
-            link_function!(linker, store, "toxoid_filter_term_entity", |iter: i32, count: u32, index: u32| -> u64 {
-                toxoid_api::toxoid_filter_term_entity(iter as *mut c_void, count, index) as u64
-            });
-            link_function!(linker, store, "toxoid_filter_term_entity_list", |iter: i32| -> i32 {
-                toxoid_api::toxoid_filter_term_entity_list(iter as *mut c_void) as i32
-            });
+            // link_function!(linker, store, "toxoid_filter_term_count", |filter: i32| -> i32 {
+            //     toxoid_api::toxoid_filter_term_count(filter as *mut c_void)
+            // });
+            // link_function!(linker, store, "toxoid_filter_term_size", |filter: i32, term_index: i32| -> i32 {
+            //     toxoid_api::toxoid_filter_term_size(filter as *mut c_void, term_index) as i32
+            // });
+            // link_function!(linker, store, "toxoid_filter_term_list", |filter: i32, term_index: i32, count: u32| -> i32 {
+            //     toxoid_api::toxoid_filter_term_list(filter as *mut c_void, term_index, count).as_ptr() as i32
+            // });
+            // link_function!(linker, store, "toxoid_filter_term_iter", |filter: i32, term_index: i32| -> i32 {
+            //     toxoid_api::toxoid_filter_term_iter(filter as *mut c_void, term_index) as i32
+            // });
+            // link_function!(linker, store, "toxoid_filter_term_next", |iter: i32| -> i32 {
+            //     toxoid_api::toxoid_filter_term_next(iter as *mut c_void) as i32
+            // });
+            // link_function!(linker, store, "toxoid_filter_term_entity", |iter: i32, count: u32, index: u32| -> u64 {
+            //     toxoid_api::toxoid_filter_term_entity(iter as *mut c_void, count, index) as u64
+            // });
+            // link_function!(linker, store, "toxoid_filter_term_entity_list", |iter: i32| -> i32 {
+            //     toxoid_api::toxoid_filter_term_entity_list(iter as *mut c_void) as i32
+            // });
             link_function!(linker, store, "toxoid_iter_count", |iter: i32| -> i32 {
                 toxoid_api::toxoid_iter_count(iter as *mut c_void)
             });
