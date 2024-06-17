@@ -60,6 +60,7 @@ pub fn combine_f32(split_f64: SplitF64) -> f64 {
     f64::from_bits(combined)              // Convert the u64 to f64
 }
 
+#[link(name = "engine")]
 extern "C" {
     pub fn toxoid_print_i32(v: i32);
     #[cfg(all(target_arch="wasm32", target_os="emscripten"))]
