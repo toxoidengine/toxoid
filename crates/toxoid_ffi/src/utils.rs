@@ -70,3 +70,9 @@ pub extern "C" fn toxoid_get_timestamp() -> SplitF64 {
     //         .as_millis() as f64
     // )
 }
+
+#[cfg(not(target_arch = "wasm32"))]
+#[no_mangle]
+pub extern "C" fn toxoid_get_timestamp() -> u64 {
+    unimplemented!()
+}

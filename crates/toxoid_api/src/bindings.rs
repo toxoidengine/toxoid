@@ -105,7 +105,7 @@ extern "C" {
     pub fn toxoid_query_build(query_desc: *mut c_void) -> *mut c_void;
     pub fn toxoid_query_iter(query: *mut c_void) -> *mut c_void;
     pub fn toxoid_query_next(iter: *mut c_void) -> bool;
-    pub fn toxoid_query_count(iter: *mut c_void) -> i32;
+    // pub fn toxoid_query_count(iter: *mut c_void) -> i32;
     pub fn toxoid_query_field(
         iter: *mut c_void,
         term_index: i32,
@@ -127,13 +127,13 @@ extern "C" {
     pub fn toxoid_filter_without(filter: *mut c_void, filter_index: u8, ids: *mut ecs_entity_t, components_count: i32) -> u8;
     pub fn toxoid_filter_with_or(filter: *mut c_void, filter_index: u8, ids: *mut ecs_entity_t, components_count: i32) -> u8;
     pub fn toxoid_filter_build(filter: *mut c_void) -> *mut c_void;
-    pub fn toxoid_filter_term_count(filter: *mut c_void) -> i32;
-    pub fn toxoid_filter_term_size(filter: *mut c_void, term_index: i32) -> usize;
-    pub fn toxoid_filter_term_list(filter: *mut c_void, term_index: i32, count: u32) -> &'static mut [*const c_void];
-    pub fn toxoid_filter_term_iter(filter: *mut c_void, term_index: i32) -> *mut c_void;
-    pub fn toxoid_filter_term_next(iter: *mut c_void) -> bool;
-    pub fn toxoid_filter_term_entity(iter: *mut c_void, count: u32, index: u32) -> ecs_entity_t;
-    pub fn toxoid_filter_term_entity_list(iter: *mut c_void) -> *mut ecs_entity_t;
+    // pub fn toxoid_filter_term_count(filter: *mut c_void) -> i32;
+    // pub fn toxoid_filter_term_size(filter: *mut c_void, term_index: i32) -> usize;
+    // pub fn toxoid_filter_term_list(filter: *mut c_void, term_index: i32, count: u32) -> &'static mut [*const c_void];
+    // pub fn toxoid_filter_term_iter(filter: *mut c_void, term_index: i32) -> *mut c_void;
+    // pub fn toxoid_filter_term_next(iter: *mut c_void) -> bool;
+    // pub fn toxoid_filter_term_entity(iter: *mut c_void, count: u32, index: u32) -> ecs_entity_t;
+    // pub fn toxoid_filter_term_entity_list(iter: *mut c_void) -> *mut ecs_entity_t;
     pub fn toxoid_iter_count(iter: *mut c_void) -> i32;
     #[cfg(all(target_arch="wasm32", target_os="emscripten"))]
     pub fn toxoid_component_cache_insert(type_id: SplitU64, component_id: SplitU64);
