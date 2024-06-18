@@ -53,23 +53,23 @@ pub unsafe extern "C" fn worldmap_load_callback(result: *const sfetch_response_t
     let world = toxoid_tiled::parse_world(data_string);
     let world_ptr = Box::into_raw(Box::new(world));
     // Get user data
-    let user_data: Box<FetchUserData> = Box::from_raw((*result).user_data as *mut FetchUserData);
+    let user_data = (*result).user_data as *mut FetchUserData;
 
     // Grab entity from user data
-    let mut entity: Box<Entity> = Box::from_raw(user_data.entity);
+    let mut entity = (*user_data).entity;
 
     // Add TiledWorldComponent to entity
-    entity.add::<TiledWorldComponent>();
-    let mut world_component = entity.get::<TiledWorldComponent>();
+    (*entity).add::<TiledWorldComponent>();
+    let mut world_component = (*entity).get::<TiledWorldComponent>();
     world_component.set_world(Pointer { ptr: world_ptr as *mut c_void });
 
     // Make loadable
-    entity.add::<Loadable>();
-    entity.add::<Position>();
+    (*entity).add::<Loadable>();
+    (*entity).add::<Position>();
     
     // Get user data
-    let mut user_data: Box<FetchUserData> = Box::from_raw((*result).user_data as *mut FetchUserData);
-    (user_data.callback)(&mut *user_data.entity);
+    let mut user_data = (*result).user_data as *mut FetchUserData;
+    ((*user_data).callback)(&mut *(*user_data).entity);
 }
 
 #[cfg(feature = "fetch")]
@@ -101,22 +101,22 @@ pub unsafe extern "C" fn cell_load_callback(result: *const sfetch_response_t) {
     let cell = toxoid_tiled::parse_cell(data_string);
     let cell_ptr = Box::into_raw(Box::new(cell));
     // Get user data
-    let user_data: Box<FetchUserData> = Box::from_raw((*result).user_data as *mut FetchUserData);
+    let user_data = (*result).user_data as *mut FetchUserData;
 
     // Grab entity from user data
-    let mut entity: Box<Entity> = Box::from_raw(user_data.entity);
+    let mut entity = (*user_data).entity;
 
     // Add TiledWorldComponent to entity
-    entity.add::<TiledCellComponent>();
-    let mut cell_component = entity.get::<TiledCellComponent>();
+    (*entity).add::<TiledCellComponent>();
+    let mut cell_component = (*entity).get::<TiledCellComponent>();
     cell_component.set_cell(Pointer { ptr: cell_ptr as *mut c_void });
 
     // Add Loadable
-    entity.add::<Loadable>();
+    (*entity).add::<Loadable>();
     
     // Get user data
-    let mut user_data: Box<FetchUserData> = Box::from_raw((*result).user_data as *mut FetchUserData);
-    (user_data.callback)(&mut *user_data.entity);
+    let mut user_data = (*result).user_data as *mut FetchUserData;
+    ((*user_data).callback)(&mut *(*user_data).entity);
 }
 
 #[cfg(feature = "fetch")]
@@ -150,7 +150,7 @@ pub unsafe extern "C" fn sprite_load_callback(result: *const sfetch_response_t) 
         }
 
         // Get user data
-        let user_data = Box::from_raw((*result).user_data as *mut u64);
+        let user_data = (*result).user_data as *mut u64;
 
         // Grab entity from user data
         let mut entity = Entity::from_id(*user_data as u64);
@@ -220,10 +220,10 @@ pub unsafe extern "C" fn image_load_callback(result: *const sfetch_response_t) {
 pub extern "C" fn animation_load_callback(result: *const sfetch_response_t) {
     unsafe {
         // Get user data
-        let user_data: Box<FetchUserData> = Box::from_raw((*result).user_data as *mut FetchUserData);
+        let user_data = (*result).user_data as *mut FetchUserData;
 
         // Grab entity from user data
-        let mut entity: Box<Entity> = Box::from_raw(user_data.entity);
+        let mut entity = (*user_data).entity;
 
         // Get animation data
         let data = (*result).data.ptr as *const u8;
