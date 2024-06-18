@@ -8,7 +8,7 @@ edition = "2021"
 [dependencies]
 toxoid_api_macro = { path = "../toxoid_api_macro" }
 toxoid_ffi = { path="../toxoid_ffi" }
-toxoid_api = { path="../toxoid_api" }
+toxoid_api = { path="../toxoid_api", features=["host"] }
 # toxoid_api_macro = { path="../toxoid_api_macro" }
 toxoid_render = { path="../toxoid_render" }
 toxoid_sokol = { path="../toxoid_sokol", default-features = false, optional = true }

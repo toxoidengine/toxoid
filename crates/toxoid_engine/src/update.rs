@@ -3,7 +3,7 @@ use toxoid_api::{World, SpineInstance};
 use toxoid_render::Renderer2D;
 use toxoid_api::toxoid_progress;
 
-pub extern "C" fn game_loop(_parg: *mut std::ffi::c_void) {
+pub extern "C" fn game_loop() {
     #[cfg(feature = "fetch")]
     unsafe { toxoid_sokol::bindings::sfetch_dowork() };
 
@@ -52,5 +52,5 @@ pub extern "C" fn game_loop(_parg: *mut std::ffi::c_void) {
 }
 
 #[cfg(feature = "render")]
-pub extern "C" fn render_loop() {}
+pub extern "C" fn render_loop(_parg: *mut std::ffi::c_void) {}
 
