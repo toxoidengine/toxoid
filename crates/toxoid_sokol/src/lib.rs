@@ -30,7 +30,7 @@ extern "C" {
 
 const SOKOL_POOL_MODIFIER: i32 = 100;
 
-extern "C" fn sokol_init() {
+pub extern "C" fn sokol_init() {
     // Setup sokol app
     sg::setup(&sg::Desc {
         environment: sglue::environment(),
@@ -97,7 +97,7 @@ extern "C" fn sokol_cleanup() {
 }
 
 #[cfg(feature = "render")]
-pub fn init(sokol_frame: extern "C" fn()) {
+pub fn init(sokol_init: extern "C" fn(), sokol_frame: extern "C" fn()) {
     let game_config = World::get_singleton::<GameConfig>();
     let window_title = b"Toxoid Engine Demo\0".as_ptr() as _;
     let canvas_id = std::ffi::CString::new("canvas").unwrap();
@@ -108,20 +108,37 @@ pub fn init(sokol_frame: extern "C" fn()) {
     }
 
     // Initialize renderer
-    sapp::run(&sapp::Desc {
-        // init_cb: Some(sokol_init),
-        cleanup_cb: Some(sokol_cleanup),
-        // frame_cb: Some(sokol_frame),
-        window_title,
-        width: game_config.get_resolution_width() as i32,
-        height: game_config.get_resolution_height() as i32,
-        sample_count: 1,
-        icon: sapp::IconDesc {
-            sokol_default: true,
+    #[cfg(all(target_arch="wasm32", target_os="emscripten"))] {
+        sapp::run(&sapp::Desc {
+            init_cb: Some(sokol_init),
+            cleanup_cb: Some(sokol_cleanup),
+            window_title,
+            width: game_config.get_resolution_width() as i32,
+            height: game_config.get_resolution_height() as i32,
+            sample_count: 1,
+            icon: sapp::IconDesc {
+                sokol_default: true,
+                ..Default::default()
+            },
             ..Default::default()
-        },
-        ..Default::default()
-    });
+        });
+        // sokol_init();
+    }
 
-    sokol_init();
+    #[cfg(any(not(target_arch="wasm32"), all(target_arch="wasm32", target_os="unknown")))] {
+        sapp::run(&sapp::Desc {
+            init_cb: Some(sokol_init),
+            cleanup_cb: Some(sokol_cleanup),
+            frame_cb: Some(sokol_frame),
+            window_title,
+            width: game_config.get_resolution_width() as i32,
+            height: game_config.get_resolution_height() as i32,
+            sample_count: 1,
+            icon: sapp::IconDesc {
+                sokol_default: true,
+                ..Default::default()
+            },
+            ..Default::default()
+        });
+    }
 }

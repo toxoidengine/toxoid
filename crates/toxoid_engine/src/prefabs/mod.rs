@@ -107,17 +107,17 @@ pub fn init() {
    color.set_b(0.);
    color.set_a(0.8);
 
-   #[cfg(feature = "render")] {
-      let animation_entity = crate::utils::load::load_animation("assets/player.atlas", "assets/player.json", |entity| {
-      });
-      unsafe {
-         let mut position = (*animation_entity).get::<Position>();
-         position.set_x(100);
-         position.set_y(100);
-         (*animation_entity).add::<Local>();
-      }
-   }
+   // #[cfg(feature = "render")] {
+   //    let animation_entity = crate::utils::load::load_animation("assets/player.atlas", "assets/player.json", |entity| {
+   //    });
+   //    unsafe {
+   //       let mut position = (*animation_entity).get::<Position>();
+   //       position.set_x(100);
+   //       position.set_y(100);
+   //       (*animation_entity).add::<Local>();
+   //    }
+   // }
 
-   #[cfg(feature = "render")]
-   crate::utils::load::load_worldmap("assets/world_1.world", |world_entity: &mut Entity| {});
+   // #[cfg(feature = "render")]
+   // crate::utils::load::load_worldmap("assets/world_1.world", |world_entity: &mut Entity| {});
 }
