@@ -101,3 +101,5 @@ EXPORTS
     toxoid_make_c_string
     toxoid_get_timestamp
     gen_uuid
+    host_alloc
+    host_dealloc
