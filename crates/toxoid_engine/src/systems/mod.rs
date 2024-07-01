@@ -78,10 +78,10 @@ pub fn init() {
     render::init();
     load::init();
 
-    #[cfg(feature = "render")]
-    System::new(animation_input_system)
-            .with::<(SpineInstance, Position)>()
-            .build();
+    // #[cfg(feature = "render")]
+    // System::new(animation_input_system)
+    //         .with::<(SpineInstance, Position)>()
+    //         .build();
     // Network
     // #[cfg(feature = "net")]
     // System::new(network_event_system)

@@ -47,6 +47,9 @@ pub fn init() {
 
     // Initialize default components.
     toxoid_api::components::init();
+
+    // Bootstrap singletons
+    toxoid_api::bootstrap::default();
     
     // Initialize network functionality.
     utils::network::init();
@@ -68,6 +71,7 @@ pub fn init() {
     #[cfg(not(target_os = "emscripten"))]
     toxoid_sokol::init(toxoid_engine_init, game_loop);
 
+    // If serverside, we will not init using sokol
     #[cfg(not(feature = "render"))]
     toxoid_engine_init();
 }

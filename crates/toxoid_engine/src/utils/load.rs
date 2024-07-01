@@ -269,7 +269,7 @@ pub extern "C" fn animation_load_callback(result: *const sfetch_response_t) {
             let data_ptr = data_ptr.as_ptr();
             skeleton_desc.atlas = spine_atlas;
             skeleton_desc.json_data = data_ptr as *const i8;
-            skeleton_desc.prescale = 0.8;
+            skeleton_desc.prescale = 1.0;
             skeleton_desc.anim_default_mix = 0.2;
 
             let spine_skeleton = sspine_make_skeleton(&skeleton_desc);
@@ -286,12 +286,20 @@ pub extern "C" fn animation_load_callback(result: *const sfetch_response_t) {
             let mut instance_component = (*entity).get::<SpineInstance>();
             let instance_ptr = Box::new(instance);
             let instance_ptr = Box::into_raw(instance_ptr) as *mut c_void;
+            let mut ctx_desc: sspine_context_desc = core::mem::MaybeUninit::zeroed().assume_init();
+            use toxoid_sokol::sokol::{app as sapp, gfx as sg, glue as sglue, gl as sgl};
+            ctx_desc.color_format = 0;
+            ctx_desc.depth_format = 0;
+            ctx_desc.sample_count = 1;
+            let ctx = sspine_make_context(&ctx_desc);
             instance_component.set_instance(Pointer::new(instance_ptr));
             instance_component.set_instantiated(true);
+            instance_component.set_ctx(Pointer::new(Box::into_raw(Box::new(ctx)) as *mut c_void));
             
             // configure a simple animation sequence
             sspine_add_animation(instance, sspine_anim_by_name(spine_skeleton, make_c_string("idle_down")), 0, true, 0.);
-            
+            sspine_set_animation(instance, sspine_anim_by_name(spine_skeleton, make_c_string("idle_down")), 0, true);
+        
             let atlas_images_num = sspine_num_images(spine_atlas);
 
             // load all atlas images
@@ -309,7 +317,7 @@ pub extern "C" fn animation_load_callback(result: *const sfetch_response_t) {
                 // channel to be serialized (not run in parallel). That way
                 // the same buffer can be reused even if there are multiple atlas images.
                 // The downside is that loading multiple images would take longer.
-                let file_path = format!("assets/{}", filename_c_str.to_str().unwrap());
+                let file_path = format!("assets/animations/{}", filename_c_str.to_str().unwrap());
                 let file_path = file_path.as_str();
                 let img_ptr = Box::new(img_info);
                 let img_ptr = Box::into_raw(img_ptr) as *mut c_void;
