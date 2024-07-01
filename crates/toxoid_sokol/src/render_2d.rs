@@ -291,6 +291,9 @@ impl Renderer2D for SokolRenderer2D {
             // Converts from PNG format to RGBA8 format
             stbi_load_from_memory(data as *const u8, size as core::ffi::c_int, &mut width, &mut height, &mut channels, 0)
         };
+        // Slice from image data from raw parts
+        // let image_data_slice = unsafe { std::slice::from_raw_parts(image_data, (width * height * 4) as usize) };
+        // println!("Image data: {:?}", image_data_slice);
         let image_desc = sg::ImageDesc {
             width,
             height,
@@ -315,7 +318,7 @@ impl Renderer2D for SokolRenderer2D {
     fn begin_rt(destination: &Box<dyn RenderTarget>, dw: f32, dh: f32) {
         unsafe {
             sgp_begin(dw as i32, dh as i32);
-            sgp_project(0., dw, dh, 0.);
+            // sgp_project(0., dw, dh, 0.);
             sgp_set_color(0., 0., 0., 0.);
             sgp_clear();
             sgp_reset_color();
@@ -332,7 +335,7 @@ impl Renderer2D for SokolRenderer2D {
             sgp_flush();
             sgp_end();
         }
-        // End the pass to apply the drawing commands to the framebuffer
+        // // End the pass to apply the drawing commands to the framebuffer
         sg::end_pass();
     }
 
@@ -344,11 +347,14 @@ impl Renderer2D for SokolRenderer2D {
         
             // Set the source image
             sgp_set_image(0, sg_image { id: sokol_source.image.id });
+            // println!("Image id: {:?}", sokol_source.image.id);
         
             // Draw the source sprite onto the destination sprite
             let src_rect = sgp_rect { x: sx, y: sy, w: sw, h: sh };
             let dest_rect = sgp_rect { x: dx, y: dy, w: sw, h: sh };
             sgp_draw_textured_rect(0, dest_rect, src_rect);
+            // println!("Source rect: {:?}", src_rect);
+            // println!("Dest rect: {:?}", dest_rect);
         }
     }
 
@@ -379,7 +385,7 @@ impl Renderer2D for SokolRenderer2D {
         unsafe {
             let game_config = World::get_singleton::<GameConfig>();
             let (window_width, _) = SokolRenderer2D::window_size();
-            let scale_factor = window_width as f32 / game_config.get_resolution_width() as f32;
+            // let scale_factor = window_width as f32 / game_config.get_resolution_width() as f32;
             let dest_rect = sgp_rect { 
                 x: 0., 
                 y: 0., 
@@ -409,10 +415,17 @@ impl Renderer2D for SokolRenderer2D {
             // Get scale factor for resolution
             let game_config = World::get_singleton::<GameConfig>();
             let (window_width, window_height) = SokolRenderer2D::window_size();
-            let scale_factor = window_width as f32 / game_config.get_resolution_width() as f32;
+            // println!("Window width {:?}, window height {:?}", window_width, window_height);
+            // let scale_factor = window_width as f32 / game_config.get_resolution_width() as f32;
+            let scale_factor = window_width as f32 / 720 as f32;
     
             let sokol_source = source.as_any().downcast_ref::<SokolRenderTarget>().unwrap();
             let sprite = sokol_source.sprite.as_any().downcast_ref::<SokolSprite>().unwrap();
+
+            // println!("Drawing render target! Sprite: {:?}", (*(sokol_source.sprite)).width());
+            // println!("Drawing render target! Depth image: {:?}", sokol_source.depth_image);
+            // println!("Drawing render target! Sampler: {:?}", sokol_source.sampler);
+            // println!("Drawing render target! Pass: {:?}", sokol_source.pass);
     
             // Define the source rectangle from the render target
             let src_rect = sgp_rect { x: sx, y: sy, w: sw, h: sh };
@@ -424,12 +437,23 @@ impl Renderer2D for SokolRenderer2D {
                 w: (dw as f32 * scale_factor).round(), 
                 h: (dh as f32 * scale_factor).round()
             };
+            // let mut dest_rect = sgp_rect { 
+            //     x: 0., 
+            //     y: 0., 
+            //     w: 18., 
+            //     h: 100.
+            // };
 
             // Set the source image for drawing, using the color attachment of the render target
             sgp_set_image(0, sg_image { id: sprite.image.id });
 
+            // println!("SPrite ID {:?}", sprite.image.id);
+
             // Draw the render target onto the canvas
             sgp_draw_textured_rect(0, dest_rect, src_rect);
+
+            // println!("Drawing render target! Dest rect: {:?}", dest_rect);
+            // println!("Drawing render target! Src rect: {:?}", src_rect);
         }
     }
 

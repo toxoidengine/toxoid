@@ -25,4 +25,7 @@ pub use load::*;
 pub fn init() {
     // Initialize events
     events::init();
+    
+    // Bootstrap
+    bootstrap::default();
 }

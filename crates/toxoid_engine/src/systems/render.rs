@@ -91,7 +91,10 @@ pub fn render_sprite_system(iter: &mut Iter) {
             let sprite_box = unsafe { Box::from_raw(sprite_ptr.ptr as *mut SokolSprite) };
             let sprite_trait_object: &Box<dyn toxoid_render::Sprite> = Box::leak(Box::new(sprite_box as Box<dyn toxoid_render::Sprite>));
 
-            let mut rt_entity = entity.children().get_mut(0).unwrap();
+            let mut rt_entity = entity
+                .children()
+                .get_mut(0)
+                .unwrap();
             let rt = rt_entity.get::<RenderTarget>().get_render_target().ptr as *mut SokolRenderTarget;
             let rt_box = unsafe { Box::from_raw(rt) };
             let rt_trait_object: &Box<dyn toxoid_render::RenderTarget> = Box::leak(Box::new(rt_box as Box<dyn toxoid_render::RenderTarget>));
@@ -129,7 +132,10 @@ pub fn render_rt_system(iter: &mut Iter) {
             let rt_box = unsafe { Box::from_raw(rt_ptr.ptr as *mut SokolRenderTarget) };
             let rt_trait_object: &Box<dyn toxoid_render::RenderTarget> = Box::leak(Box::new(rt_box as Box<dyn toxoid_render::RenderTarget>));
 
+            #[cfg(all(target_arch="wasm32", target_os="emscripten"))]
             let source_height = if rt.get_flip_y() { -size.get_height() as f32 } else { size.get_height() as f32 };
+            #[cfg(any(not(target_arch="wasm32"), all(target_arch="wasm32", target_os="unknown")))]
+            let source_height = size.get_height() as f32;
 
             let blend_mode = blend_mode.get_mode();
 
@@ -152,6 +158,7 @@ pub fn render_bone_animation(iter: &mut Iter) {
         if instantiated {
             unsafe {
                 let instance = spine_instance.get_instance().ptr as *mut sspine_instance;
+                let ctx = spine_instance.get_ctx().ptr as *mut sspine_context;
                 
                 // Advance the instance animation and draw the instance.
                 // Important to note here is that no actual sokol-gfx rendering happens yet,
@@ -159,18 +166,24 @@ pub fn render_bone_animation(iter: &mut Iter) {
                 // Also, all sokol-spine functions can be called with invalid or 'incomplete'
                 // handles, that way we don't need to care about whether the spine objects
                 // have actually been created yet (because their data might still be loading)
+
+                // Get render target
+                let mut rt_entity = entities[i].children().get_mut(0).unwrap();
+                let rt = rt_entity.get::<RenderTarget>().get_render_target().ptr as *mut SokolRenderTarget;
                 
-                let delta_time = sapp_frame_duration();
+                let mut delta_time = sapp_frame_duration();
+                // TODO: Make framerate independent
+                if delta_time < 0.016 {
+                    delta_time = delta_time / 8.
+                }
                 sspine_update_instance(*instance, delta_time as f32);
+               
+                // sspine_set_context(*ctx);
                 sspine_draw_instance_in_layer(*instance, 0);
                 
                 // Set position
                 let pos: &Position = positions.get(i).unwrap();
                 sspine_set_position(*instance, sspine_vec2 { x: pos.get_x() as f32, y: pos.get_y() as f32 });
-                
-                // Draw the animation
-                let mut rt_entity = entities[i].children().get_mut(0).unwrap();
-                let rt = rt_entity.get::<RenderTarget>().get_render_target().ptr as *mut SokolRenderTarget;
                 
                 let (window_width, window_height) = (sapp::width(), sapp::height());
                 let layer_transform = sspine_layer_transform {
@@ -184,10 +197,30 @@ pub fn render_bone_animation(iter: &mut Iter) {
                     }
                 };
 
+                // let rt_box = unsafe { Box::from_raw(rt) };
+                // let rt_trait_object: &Box<dyn toxoid_render::RenderTarget> = Box::leak(Box::new(rt_box as Box<dyn toxoid_render::RenderTarget>));
+                // SokolRenderer2D::begin_rt(&rt_trait_object, 1280., 720.);
+
+                // Draw the animation
                 sg::begin_pass(&(*rt).pass);
-                unsafe {                    
+                // // Ensure the render target is properly cleared
+                // sgp_begin(1280, 720);
+                // sgp_set_color(0., 0., 0., 0.);
+                // sgp_clear();
+                // sgp_reset_color();
+
+                // Set blend mode
+                // sgp_set_blend_mode(sgp_blend_mode_SGP_BLENDMODE_BLEND);
+                unsafe {                 
+                    // sspine_set_context(*ctx);   
                     sspine_draw_layer(0, &layer_transform);
                 }
+                // sgp_flush();
+                // sgp_end();
+                // SokolRenderer2D::end_rt();
+                // Flush and end the pass
+                // sgp_flush();
+                // sgp_end();
                 sg::end_pass();
                 rt_entity.add::<Renderable>();
             }
@@ -326,31 +359,31 @@ pub fn blit_cell_system(iter: &mut Iter) {
                                     }
                                 } else if layer.layer_type == "objectgroup" {
                                     layer
-                                    .objects
-                                    .as_ref()
-                                    .unwrap()
-                                    .iter()
-                                    .for_each(|object| {
-                                        object
-                                        .properties
+                                        .objects
                                         .as_ref()
                                         .unwrap()
                                         .iter()
-                                        .for_each(|property| {
-                                            if property.name == "entity" {
-                                                println!("Entity: {}", property.value.as_str());
-                                                // toxoid_json_to_entity(
-                                                //     make_c_string(
-                                                //         property.value.as_str()
-                                                //     )
-                                                // );
-                                            }
-                                            // if property.name == "filename" {
-                                                
-                                            // }
+                                        .for_each(|object| {
+                                            object
+                                            .properties
+                                            .as_ref()
+                                            .unwrap()
+                                            .iter()
+                                            .for_each(|property| {
+                                                if property.name == "entity" {
+                                                    // println!("Entity: {}", property.value.as_str());
+                                                    // toxoid_json_to_entity(
+                                                    //     make_c_string(
+                                                    //         property.value.as_str()
+                                                    //     )
+                                                    // );
+                                                }
+                                                // if property.name == "filename" {
+                                                    
+                                                // }
+                                                });
                                             });
-                                        });
-                                    }
+                                        }
                                 });
                             }
                         });
