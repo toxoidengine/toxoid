@@ -197,30 +197,12 @@ pub fn render_bone_animation(iter: &mut Iter) {
                     }
                 };
 
-                // let rt_box = unsafe { Box::from_raw(rt) };
-                // let rt_trait_object: &Box<dyn toxoid_render::RenderTarget> = Box::leak(Box::new(rt_box as Box<dyn toxoid_render::RenderTarget>));
-                // SokolRenderer2D::begin_rt(&rt_trait_object, 1280., 720.);
-
-                // Draw the animation
+                // Draw the animation on rendere target
                 sg::begin_pass(&(*rt).pass);
-                // // Ensure the render target is properly cleared
-                // sgp_begin(1280, 720);
-                // sgp_set_color(0., 0., 0., 0.);
-                // sgp_clear();
-                // sgp_reset_color();
-
-                // Set blend mode
-                // sgp_set_blend_mode(sgp_blend_mode_SGP_BLENDMODE_BLEND);
                 unsafe {                 
                     // sspine_set_context(*ctx);   
                     sspine_draw_layer(0, &layer_transform);
                 }
-                // sgp_flush();
-                // sgp_end();
-                // SokolRenderer2D::end_rt();
-                // Flush and end the pass
-                // sgp_flush();
-                // sgp_end();
                 sg::end_pass();
                 rt_entity.add::<Renderable>();
             }
