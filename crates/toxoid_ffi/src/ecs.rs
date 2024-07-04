@@ -1027,6 +1027,7 @@ pub unsafe extern "C" fn toxoid_component_lookup(name: *mut c_char) -> SplitU64 
 }
 
 #[no_mangle]
+#[cfg(any(not(target_arch="wasm32"), all(target_arch="wasm32", target_os="unknown")))]
 pub unsafe extern "C" fn toxoid_component_lookup(name: *mut c_char) -> u64 {
     split_u64(flecs_core::flecs_component_lookup(name))
 }
