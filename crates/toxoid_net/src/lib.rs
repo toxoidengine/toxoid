@@ -158,6 +158,7 @@ pub fn receive(data: Vec<u8>) {
 }
 
 #[no_mangle]
+#[cfg(any(not(target_arch="wasm32"), all(target_arch="wasm32", target_os="unknown")))]
 pub unsafe extern "C" fn toxoid_net_add_event(
     event_name: &str,
     mut callback: Box<dyn FnMut(&toxoid_api::net::MessageEntity) + Send + Sync>
@@ -168,18 +169,28 @@ pub unsafe extern "C" fn toxoid_net_add_event(
 //         components: &[]
 //     });
     let mut cache = NETWORK_EVENT_CACHE.lock().unwrap();
+    // cache.insert(event_name.to_string(), callback);
+}
+
+#[no_mangle]
+#[cfg(all(target_arch="wasm32", target_os="emscripten"))]
+pub unsafe extern "C" fn toxoid_net_add_event(
+    event_name: &'static str,
+    callback: extern "C" fn(message: &MessageEntity)
+) {
+    let mut cache = NETWORK_EVENT_CACHE.lock().unwrap();
     cache.insert(event_name.to_string(), callback);
 }
 
 #[no_mangle]
 #[cfg(all(target_arch="wasm32", target_os="emscripten"))]
 pub unsafe extern "C" fn toxoid_net_run_event(
-    event: String,
+    event_name: String,
     message: &NetworkMessageEntity
 ) {
     let mut cache = NETWORK_EVENT_CACHE.lock().unwrap();
-    if let Some(event_cb) = cache.get_mut(&event[..]) {
-        let event = Box::leak(event.into_boxed_str());
+    if let Some(event_cb) = cache.get(&event_name[..]) {
+        let event_name = Box::leak(event_name.into_boxed_str());
         let components: Vec<MessageComponent> = message
             .components
             .iter()
@@ -195,17 +206,19 @@ pub unsafe extern "C" fn toxoid_net_run_event(
             .collect();
         let message = MessageEntity {
             id: message.id,
-            event: event,
+            event: event_name,
             components: Box::leak(components.into_boxed_slice())
         };
-        let callback = event_cb.as_mut();
-        (*callback)(&message);
+
+        event_cb(&message);
+
         // // Convert the `&'static MessageEntity` back into a `Box<MessageEntity>`
         // let message_boxed = unsafe { Box::from_raw(&message as *const MessageEntity as *mut MessageEntity) };
+
         // // Dropping the box will also drop `components` and `event` inside `MessageEntity`
         // drop(message_boxed)
     } else {
-        eprintln!("Event not found: {:?}", event)
+        eprintln!("Event not found: {:?}", event_name)
     }
 }
 
@@ -302,6 +315,6 @@ pub unsafe extern "C" fn toxoid_net_send_components(
     event: &str
 ) {
     // send_components(combine_u32(entity_id), components, event.to_string());
-    unimplemented!()
+    // todo!("Implement toxoid_net_send_components");
 }
 
