@@ -63,7 +63,8 @@ pub fn init() {
     // Many graphics APIS require that the window and rendering context be created and managed on the main thread. This is a common restriction due to how these APIs interact with the operating system's windowing system. Same with the browser unless offscreen canvas is properly supported in Emscripten.
     #[cfg(feature = "render")]
     #[cfg(target_os = "emscripten")]
-    toxoid_sokol::init(toxoid_engine_init, std::ptr::null_mut());
+    // Null mut as function pointer
+    toxoid_sokol::init(toxoid_engine_init, game_loop);
 
     // If not emscripten, just run the game loop for now.
     // TODO: Use Flecs staging and pipelines to run the game loop on a separate thread.
