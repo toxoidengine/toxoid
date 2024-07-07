@@ -5,7 +5,7 @@ use std::os::raw::c_void;
 
 extern "C" {
     pub fn emscripten_set_main_loop_arg(
-        f: unsafe extern "C" fn(*mut std::ffi::c_void),
+        f: unsafe extern "C" fn(),
         arg: *mut std::ffi::c_void,
         fps: i32,
         sim_infinite_loop: i32,
@@ -152,7 +152,7 @@ pub const EMSCRIPTEN_FETCH_NO_DOWNLOAD: u32 = 32;
 pub const EMSCRIPTEN_FETCH_SYNCHRONOUS: u32 = 64;
 pub const EMSCRIPTEN_FETCH_WAITABLE: u32 = 128;
 
-pub fn start_loop(update_loop: unsafe extern "C" fn(*mut std::ffi::c_void)) {
+pub fn start_loop(update_loop: unsafe extern "C" fn()) {
     unsafe {
         emscripten_set_main_loop_arg(
             update_loop,
