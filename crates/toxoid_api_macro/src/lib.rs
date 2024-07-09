@@ -76,8 +76,6 @@ pub fn component(input: TokenStream) -> TokenStream {
                     current_offset = align_offset(current_offset, align);
                     let offset = current_offset;
                     current_offset += size;
-                    // Debug prints
-                    println!("Field: {:?}, Size: {}, Align: {}, Offset: {}", quote!(#field_type), size, align, offset);
                     offset
                 }
             );

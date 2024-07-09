@@ -318,7 +318,7 @@ impl Renderer2D for SokolRenderer2D {
     fn begin_rt(destination: &Box<dyn RenderTarget>, dw: f32, dh: f32) {
         unsafe {
             sgp_begin(dw as i32, dh as i32);
-            // sgp_project(0., dw, dh, 0.);
+            sgp_project(0., dw, dh, 0.);
             sgp_set_color(0., 0., 0., 0.);
             sgp_clear();
             sgp_reset_color();
