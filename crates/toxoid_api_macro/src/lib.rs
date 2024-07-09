@@ -76,6 +76,8 @@ pub fn component(input: TokenStream) -> TokenStream {
                     current_offset = align_offset(current_offset, align);
                     let offset = current_offset;
                     current_offset += size;
+                    // Debug prints
+                    println!("Field: {:?}, Size: {}, Align: {}, Offset: {}", quote!(#field_type), size, align, offset);
                     offset
                 }
             );
@@ -584,142 +586,140 @@ fn get_type_code(ty: &Type) -> u8 {
     }
 }
 
-#[cfg(target_arch = "wasm32")]
 fn get_type_size(ty: &Type) -> u32 {
-    match ty {
-        Type::Path(tp) if tp.path.is_ident("u8") => 1,
-        Type::Path(tp) if tp.path.is_ident("u16") => 2,
-        Type::Path(tp) if tp.path.is_ident("u32") => 4,
-        Type::Path(tp) if tp.path.is_ident("u64") => 8,
-        Type::Path(tp) if tp.path.is_ident("i8") => 1,
-        Type::Path(tp) if tp.path.is_ident("i16") => 2,
-        Type::Path(tp) if tp.path.is_ident("i32") => 4,
-        Type::Path(tp) if tp.path.is_ident("i64") => 8,
-        Type::Path(tp) if tp.path.is_ident("f32") => 4,
-        Type::Path(tp) if tp.path.is_ident("f64") => 8,
-        Type::Path(tp) if tp.path.is_ident("bool") => 1,
-        Type::Path(tp) if tp.path.is_ident("String") => 4,
-        Type::Path(tp) if tp.path.is_ident("U32Array") => 4,
-        Type::Path(tp) if tp.path.is_ident("F32Array") => 4,
-        Type::Path(tp) if tp.path.is_ident("Pointer") => 4,
-        Type::Path(tp) if tp.path.is_ident("StringPtr") => 4,
-        Type::Ptr(ptr) => {
-            match *ptr.elem {
-                Type::Path(ref tp) if tp.path.is_ident("u32") => {
-                    4
-                },
-                Type::Path(ref tp) if tp.path.is_ident("f32") => {
-                    4
-                },
-                Type::Path(ref tp) if tp.path.is_ident("c_void") => {
-                    4
-                },
-                _ => {
-                    println!("Unsupported pointer field type: {}", quote!(#ptr));
-                    panic!("Unsupported field type")
+    let target = std::env::var("TARGET").unwrap();
+    if target.contains("wasm32") {
+        match ty {
+            Type::Path(tp) if tp.path.is_ident("u8") => 1,
+            Type::Path(tp) if tp.path.is_ident("u16") => 2,
+            Type::Path(tp) if tp.path.is_ident("u32") => 4,
+            Type::Path(tp) if tp.path.is_ident("u64") => 8,
+            Type::Path(tp) if tp.path.is_ident("i8") => 1,
+            Type::Path(tp) if tp.path.is_ident("i16") => 2,
+            Type::Path(tp) if tp.path.is_ident("i32") => 4,
+            Type::Path(tp) if tp.path.is_ident("i64") => 8,
+            Type::Path(tp) if tp.path.is_ident("f32") => 4,
+            Type::Path(tp) if tp.path.is_ident("f64") => 8,
+            Type::Path(tp) if tp.path.is_ident("bool") => 1,
+            Type::Path(tp) if tp.path.is_ident("String") => 4,
+            Type::Path(tp) if tp.path.is_ident("U32Array") => 4,
+            Type::Path(tp) if tp.path.is_ident("F32Array") => 4,
+            Type::Path(tp) if tp.path.is_ident("Pointer") => 4,
+            Type::Path(tp) if tp.path.is_ident("StringPtr") => 4,
+            Type::Ptr(ptr) => {
+                match *ptr.elem {
+                    Type::Path(ref tp) if tp.path.is_ident("u32") => {
+                        4
+                    },
+                    Type::Path(ref tp) if tp.path.is_ident("f32") => {
+                        4
+                    },
+                    Type::Path(ref tp) if tp.path.is_ident("c_void") => {
+                        4
+                    },
+                    _ => {
+                        println!("Unsupported pointer field type: {}", quote!(#ptr));
+                        panic!("Unsupported field type")
+                    }
                 }
             }
-        }
-        _ => {
-            println!("Unsupported field type: {}", quote!(#ty));
-            panic!("Unsupported field type")
-        }
-    }
-}
-
-#[cfg(not(target_arch = "wasm32"))]
-fn get_type_size(ty: &Type) -> u32 {
-    match ty {
-        Type::Path(tp) if tp.path.is_ident("u8") => 1,
-        Type::Path(tp) if tp.path.is_ident("u16") => 2,
-        Type::Path(tp) if tp.path.is_ident("u32") => 4,
-        Type::Path(tp) if tp.path.is_ident("u64") => 8,
-        Type::Path(tp) if tp.path.is_ident("i8") => 1,
-        Type::Path(tp) if tp.path.is_ident("i16") => 2,
-        Type::Path(tp) if tp.path.is_ident("i32") => 4,
-        Type::Path(tp) if tp.path.is_ident("i64") => 8,
-        Type::Path(tp) if tp.path.is_ident("f32") => 4,
-        Type::Path(tp) if tp.path.is_ident("f64") => 8,
-        Type::Path(tp) if tp.path.is_ident("bool") => 1,
-        Type::Path(tp) if tp.path.is_ident("String") => 8,
-        Type::Path(tp) if tp.path.is_ident("U32Array") => 8,
-        Type::Path(tp) if tp.path.is_ident("F32Array") => 8,
-        Type::Path(tp) if tp.path.is_ident("Pointer") => 8,
-        Type::Path(tp) if tp.path.is_ident("StringPtr") => 8,
-        Type::Ptr(ptr) => {
-            match *ptr.elem {
-                Type::Path(ref tp) if tp.path.is_ident("u32") => {
-                    8
-                },
-                Type::Path(ref tp) if tp.path.is_ident("f32") => {
-                    8
-                },
-                Type::Path(ref tp) if tp.path.is_ident("c_void") => {
-                    8
-                },
-                _ => {
-                    println!("Unsupported pointer field type: {}", quote!(#ptr));
-                    panic!("Unsupported field type")
-                }
+            _ => {
+                println!("Unsupported field type: {}", quote!(#ty));
+                panic!("Unsupported field type")
             }
         }
-        _ => {
-            println!("Unsupported field type: {}", quote!(#ty));
-            panic!("Unsupported field type")
+    } else {
+        match ty {
+            Type::Path(tp) if tp.path.is_ident("u8") => 1,
+            Type::Path(tp) if tp.path.is_ident("u16") => 2,
+            Type::Path(tp) if tp.path.is_ident("u32") => 4,
+            Type::Path(tp) if tp.path.is_ident("u64") => 8,
+            Type::Path(tp) if tp.path.is_ident("i8") => 1,
+            Type::Path(tp) if tp.path.is_ident("i16") => 2,
+            Type::Path(tp) if tp.path.is_ident("i32") => 4,
+            Type::Path(tp) if tp.path.is_ident("i64") => 8,
+            Type::Path(tp) if tp.path.is_ident("f32") => 4,
+            Type::Path(tp) if tp.path.is_ident("f64") => 8,
+            Type::Path(tp) if tp.path.is_ident("bool") => 1,
+            Type::Path(tp) if tp.path.is_ident("String") => 8,
+            Type::Path(tp) if tp.path.is_ident("U32Array") => 8,
+            Type::Path(tp) if tp.path.is_ident("F32Array") => 8,
+            Type::Path(tp) if tp.path.is_ident("Pointer") => 8,
+            Type::Path(tp) if tp.path.is_ident("StringPtr") => 8,
+            Type::Ptr(ptr) => {
+                match *ptr.elem {
+                    Type::Path(ref tp) if tp.path.is_ident("u32") => {
+                        8
+                    },
+                    Type::Path(ref tp) if tp.path.is_ident("f32") => {
+                        8
+                    },
+                    Type::Path(ref tp) if tp.path.is_ident("c_void") => {
+                        8
+                    },
+                    _ => {
+                        println!("Unsupported pointer field type: {}", quote!(#ptr));
+                        panic!("Unsupported field type")
+                    }
+                }
+            }
+            _ => {
+                println!("Unsupported field type: {}", quote!(#ty));
+                panic!("Unsupported field type")
+            }
         }
-    }
+    }    
 }
 
-#[cfg(target_arch = "wasm32")]
 fn get_type_alignment(ty: &Type) -> u32 {
-    match ty {
-        Type::Path(tp) if tp.path.is_ident("u8") => 1,
-        Type::Path(tp) if tp.path.is_ident("u16") => 2,
-        Type::Path(tp) if tp.path.is_ident("u32") => 4,
-        Type::Path(tp) if tp.path.is_ident("u64") => 8,
-        Type::Path(tp) if tp.path.is_ident("i8") => 1,
-        Type::Path(tp) if tp.path.is_ident("i16") => 2,
-        Type::Path(tp) if tp.path.is_ident("i32") => 4,
-        Type::Path(tp) if tp.path.is_ident("i64") => 8,
-        Type::Path(tp) if tp.path.is_ident("f32") => 4,
-        Type::Path(tp) if tp.path.is_ident("f64") => 8,
-        Type::Path(tp) if tp.path.is_ident("bool") => 1,
-        Type::Path(tp) if tp.path.is_ident("String") => 4, // Assuming String is a pointer
-        Type::Path(tp) if tp.path.is_ident("U32Array") => 4, // Assuming U32Array is a pointer
-        Type::Path(tp) if tp.path.is_ident("F32Array") => 4, // Assuming F32Array is a pointer
-        Type::Path(tp) if tp.path.is_ident("Pointer") => 4, // Assuming Pointer is a pointer
-        Type::Path(tp) if tp.path.is_ident("StringPtr") => 4, // Assuming StringPtr is a pointer
-        Type::Ptr(_) => 4, // Pointers are 4 bytes in a 32-bit context
-        _ => {
-            println!("Unsupported field type: {}", quote!(#ty));
-            panic!("Unsupported field type")
+    let target = std::env::var("TARGET").unwrap();
+    if target.contains("wasm32") {
+        match ty {
+            Type::Path(tp) if tp.path.is_ident("u8") => 1,
+            Type::Path(tp) if tp.path.is_ident("u16") => 2,
+            Type::Path(tp) if tp.path.is_ident("u32") => 4,
+            Type::Path(tp) if tp.path.is_ident("u64") => 8,
+            Type::Path(tp) if tp.path.is_ident("i8") => 1,
+            Type::Path(tp) if tp.path.is_ident("i16") => 2,
+            Type::Path(tp) if tp.path.is_ident("i32") => 4,
+            Type::Path(tp) if tp.path.is_ident("i64") => 8,
+            Type::Path(tp) if tp.path.is_ident("f32") => 4,
+            Type::Path(tp) if tp.path.is_ident("f64") => 8,
+            Type::Path(tp) if tp.path.is_ident("bool") => 1,
+            Type::Path(tp) if tp.path.is_ident("String") => 4, // Assuming String is a pointer
+            Type::Path(tp) if tp.path.is_ident("U32Array") => 4, // Assuming U32Array is a pointer
+            Type::Path(tp) if tp.path.is_ident("F32Array") => 4, // Assuming F32Array is a pointer
+            Type::Path(tp) if tp.path.is_ident("Pointer") => 4, // Assuming Pointer is a pointer
+            Type::Path(tp) if tp.path.is_ident("StringPtr") => 4, // Assuming StringPtr is a pointer
+            Type::Ptr(_) => 4, // Pointers are 4 bytes in a 32-bit context
+            _ => {
+                println!("Unsupported field type: {}", quote!(#ty));
+                panic!("Unsupported field type")
+            }
         }
-    }
-}
-
-#[cfg(not(target_arch = "wasm32"))]
-fn get_type_alignment(ty: &Type) -> u32 {
-    match ty {
-        Type::Path(tp) if tp.path.is_ident("u8") => 1,
-        Type::Path(tp) if tp.path.is_ident("u16") => 2,
-        Type::Path(tp) if tp.path.is_ident("u32") => 4,
-        Type::Path(tp) if tp.path.is_ident("u64") => 8,
-        Type::Path(tp) if tp.path.is_ident("i8") => 1,
-        Type::Path(tp) if tp.path.is_ident("i16") => 2,
-        Type::Path(tp) if tp.path.is_ident("i32") => 4,
-        Type::Path(tp) if tp.path.is_ident("i64") => 8,
-        Type::Path(tp) if tp.path.is_ident("f32") => 4,
-        Type::Path(tp) if tp.path.is_ident("f64") => 8,
-        Type::Path(tp) if tp.path.is_ident("bool") => 1,
-        Type::Path(tp) if tp.path.is_ident("String") => 8, // Assuming String is a pointer
-        Type::Path(tp) if tp.path.is_ident("U32Array") => 8, // Assuming U32Array is a pointer
-        Type::Path(tp) if tp.path.is_ident("F32Array") => 8, // Assuming F32Array is a pointer
-        Type::Path(tp) if tp.path.is_ident("Pointer") => 8, // Assuming Pointer is a pointer
-        Type::Path(tp) if tp.path.is_ident("StringPtr") => 8, // Assuming StringPtr is a pointer
-        Type::Ptr(_) => 8, // Pointers are 8 bytes in a 64-bit context
-        _ => {
-            println!("Unsupported field type: {}", quote!(#ty));
-            panic!("Unsupported field type")
+    } else {
+        match ty {
+            Type::Path(tp) if tp.path.is_ident("u8") => 1,
+            Type::Path(tp) if tp.path.is_ident("u16") => 2,
+            Type::Path(tp) if tp.path.is_ident("u32") => 4,
+            Type::Path(tp) if tp.path.is_ident("u64") => 8,
+            Type::Path(tp) if tp.path.is_ident("i8") => 1,
+            Type::Path(tp) if tp.path.is_ident("i16") => 2,
+            Type::Path(tp) if tp.path.is_ident("i32") => 4,
+            Type::Path(tp) if tp.path.is_ident("i64") => 8,
+            Type::Path(tp) if tp.path.is_ident("f32") => 4,
+            Type::Path(tp) if tp.path.is_ident("f64") => 8,
+            Type::Path(tp) if tp.path.is_ident("bool") => 1,
+            Type::Path(tp) if tp.path.is_ident("String") => 8, // Assuming String is a pointer
+            Type::Path(tp) if tp.path.is_ident("U32Array") => 8, // Assuming U32Array is a pointer
+            Type::Path(tp) if tp.path.is_ident("F32Array") => 8, // Assuming F32Array is a pointer
+            Type::Path(tp) if tp.path.is_ident("Pointer") => 8, // Assuming Pointer is a pointer
+            Type::Path(tp) if tp.path.is_ident("StringPtr") => 8, // Assuming StringPtr is a pointer
+            Type::Ptr(_) => 8, // Pointers are 8 bytes in a 64-bit context
+            _ => {
+                println!("Unsupported field type: {}", quote!(#ty));
+                panic!("Unsupported field type")
+            }
         }
     }
 }
