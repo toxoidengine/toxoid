@@ -97,31 +97,6 @@ extern "C" fn sokol_cleanup() {
     sg::shutdown()
 }
 
-extern "C" fn sokol_event(event: *const Event) {
-    let event = unsafe { *event };
-    match event._type {
-        EventType::KeyDown => {
-            println!("Key down: {:?}", event.key_code);
-        },
-        EventType::KeyUp => {
-            println!("Key up: {:?}", event.key_code);
-            sokol::app::Keycode::RIGHT
-        },
-        // EventType::MouseDown => {
-        //     println!("Mouse down: {:?}", event.mouse_button);
-        // },
-        // EventType::MouseUp => {
-        //     println!("Mouse up: {:?}", event.mouse_button);
-        // },
-        // EventType::MouseMove => {
-        //     println!("Mouse move: {:?}", event.mouse_pos);
-        // },
-        // EventType::MouseWheel => {
-        //     println!("Mouse wheel: {:?}", event.mouse_wheel);
-        // },
-        _ => {}
-    }
-}
 
 #[cfg(feature = "render")]
 pub fn init(sokol_init: extern "C" fn(), sokol_frame: extern "C" fn(), sokol_event: extern "C" fn()) {
