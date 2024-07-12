@@ -20,6 +20,7 @@ use core::ffi::c_int;
 use core::ffi::c_char;
 use once_cell::sync::Lazy;
 use std::sync::Mutex;
+use sokol::app::{Event, EventType};
 
 pub static RENDERER_2D: Lazy<Mutex<SokolRenderer2D>> = Lazy::new(|| Mutex::new(SokolRenderer2D::new()));
 
@@ -96,8 +97,34 @@ extern "C" fn sokol_cleanup() {
     sg::shutdown()
 }
 
+extern "C" fn sokol_event(event: *const Event) {
+    let event = unsafe { *event };
+    match event._type {
+        EventType::KeyDown => {
+            println!("Key down: {:?}", event.key_code);
+        },
+        EventType::KeyUp => {
+            println!("Key up: {:?}", event.key_code);
+            sokol::app::Keycode::RIGHT
+        },
+        // EventType::MouseDown => {
+        //     println!("Mouse down: {:?}", event.mouse_button);
+        // },
+        // EventType::MouseUp => {
+        //     println!("Mouse up: {:?}", event.mouse_button);
+        // },
+        // EventType::MouseMove => {
+        //     println!("Mouse move: {:?}", event.mouse_pos);
+        // },
+        // EventType::MouseWheel => {
+        //     println!("Mouse wheel: {:?}", event.mouse_wheel);
+        // },
+        _ => {}
+    }
+}
+
 #[cfg(feature = "render")]
-pub fn init(sokol_init: extern "C" fn(), sokol_frame: extern "C" fn()) {
+pub fn init(sokol_init: extern "C" fn(), sokol_frame: extern "C" fn(), sokol_event: extern "C" fn()) {
     let game_config = World::get_singleton::<GameConfig>();
     let window_title = b"Toxoid Engine Demo\0".as_ptr() as _;
     let canvas_id = std::ffi::CString::new("canvas").unwrap();
@@ -112,6 +139,7 @@ pub fn init(sokol_init: extern "C" fn(), sokol_frame: extern "C" fn()) {
         sapp::run(&sapp::Desc {
             init_cb: Some(sokol_init),
             cleanup_cb: Some(sokol_cleanup),
+            event_cb: Some(sokol_event),
             window_title,
             width: game_config.get_resolution_width() as i32,
             height: game_config.get_resolution_height() as i32,
@@ -130,6 +158,7 @@ pub fn init(sokol_init: extern "C" fn(), sokol_frame: extern "C" fn()) {
             init_cb: Some(sokol_init),
             cleanup_cb: Some(sokol_cleanup),
             frame_cb: Some(sokol_frame),
+            event_cb: Some(sokol_event),
             window_title,
             width: game_config.get_resolution_width() as i32,
             height: game_config.get_resolution_height() as i32,
