@@ -4,3 +4,4 @@ pub mod load;
 pub mod input;
 pub mod futures;
 pub mod json;
+pub mod sokol_event;

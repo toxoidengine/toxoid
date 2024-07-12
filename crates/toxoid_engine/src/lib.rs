@@ -54,9 +54,6 @@ pub fn init() {
     // Initialize network functionality.
     utils::network::init();
 
-    // Initialize input functionality.
-    utils::input::init();
-
     // Initialize sokol
     // Add toxoid engine init to SOKOL init callback because
     // we need to initialize sokol on the main thread.
@@ -64,13 +61,13 @@ pub fn init() {
     #[cfg(feature = "render")]
     #[cfg(target_os = "emscripten")]
     // Null mut as function pointer
-    toxoid_sokol::init(toxoid_engine_init, game_loop);
+    toxoid_sokol::init(toxoid_engine_init, game_loop, utils::sokol_event::sokol_event);
 
     // If not emscripten, just run the game loop for now.
     // TODO: Use Flecs staging and pipelines to run the game loop on a separate thread.
     #[cfg(feature = "render")]
     #[cfg(not(target_os = "emscripten"))]
-    toxoid_sokol::init(toxoid_engine_init, game_loop);
+    toxoid_sokol::init(toxoid_engine_init, game_loop, utils::sokol_event::sokol_event);
 
     // If serverside, we will not init using sokol
     #[cfg(not(feature = "render"))]
