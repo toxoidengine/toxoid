@@ -99,7 +99,7 @@ extern "C" fn sokol_cleanup() {
 
 
 #[cfg(feature = "render")]
-pub fn init(sokol_init: extern "C" fn(), sokol_frame: extern "C" fn(), sokol_event: extern "C" fn()) {
+pub fn init(sokol_init: extern "C" fn(), sokol_frame: extern "C" fn(), sokol_event: extern "C" fn(*const Event)) {
     let game_config = World::get_singleton::<GameConfig>();
     let window_title = b"Toxoid Engine Demo\0".as_ptr() as _;
     let canvas_id = std::ffi::CString::new("canvas").unwrap();
