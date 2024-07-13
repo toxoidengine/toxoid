@@ -7,9 +7,9 @@ pub use systems::*;
 pub use update::*;
 pub use utils::*;
 pub use utils::rand::*;
+pub use toxoid_net::*;
 
-#[no_mangle]
-pub extern "C" fn toxoid_engine_init() {
+pub fn toxoid_engine_init() {
     // Initialize sokol
     #[cfg(feature = "render")]
     toxoid_sokol::sokol_init();
@@ -22,7 +22,9 @@ pub extern "C" fn toxoid_engine_init() {
 
     // Test WASM runtime
     // toxoid_wasm::wasm_init();
+}
 
+pub fn toxoid_engine_end() {
     #[cfg(target_os = "emscripten")]
     toxoid_ffi::emscripten::start_loop(game_loop);
 
@@ -41,7 +43,7 @@ pub extern "C" fn toxoid_engine_init() {
     // });
 }
 
-pub fn init() {
+pub fn init(init_cb: extern "C" fn()) {
     // Set up ECS (Currently just threads configuration)
     toxoid_ffi::flecs_core::init();
 
@@ -61,13 +63,13 @@ pub fn init() {
     #[cfg(feature = "render")]
     #[cfg(target_os = "emscripten")]
     // Null mut as function pointer
-    toxoid_sokol::init(toxoid_engine_init, game_loop, utils::sokol_event::sokol_event);
+    toxoid_sokol::init(init_cb, game_loop, utils::sokol_event::sokol_event);
 
     // If not emscripten, just run the game loop for now.
     // TODO: Use Flecs staging and pipelines to run the game loop on a separate thread.
     #[cfg(feature = "render")]
     #[cfg(not(target_os = "emscripten"))]
-    toxoid_sokol::init(toxoid_engine_init, game_loop, utils::sokol_event::sokol_event);
+    toxoid_sokol::init(init_cb, game_loop, utils::sokol_event::sokol_event);
 
     // If serverside, we will not init using sokol
     #[cfg(not(feature = "render"))]

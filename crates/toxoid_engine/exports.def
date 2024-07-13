@@ -103,3 +103,4 @@ EXPORTS
     gen_uuid
     host_alloc
     host_dealloc
+    toxoid_net_send_components
