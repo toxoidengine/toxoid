@@ -487,7 +487,6 @@ dependencies = [
  "cc",
  "once_cell",
  "toxoid_api",
- "winapi",
 ]
 
 [[package]]
