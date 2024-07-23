@@ -585,7 +585,7 @@ fn get_type_code(ty: &Type) -> u8 {
 }
 
 fn get_type_size(ty: &Type) -> u32 {
-    let target = std::env::var("TARGET").unwrap();
+    let target = std::env::var("TARGET").unwrap_or("wasm32".to_string());
     if target.contains("wasm32") {
         match ty {
             Type::Path(tp) if tp.path.is_ident("u8") => 1,
@@ -670,7 +670,7 @@ fn get_type_size(ty: &Type) -> u32 {
 }
 
 fn get_type_alignment(ty: &Type) -> u32 {
-    let target = std::env::var("TARGET").unwrap();
+    let target = std::env::var("TARGET").unwrap_or("wasm32".to_string());
     if target.contains("wasm32") {
         match ty {
             Type::Path(tp) if tp.path.is_ident("u8") => 1,
