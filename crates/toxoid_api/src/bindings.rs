@@ -522,7 +522,6 @@ extern "C" {
 }
 
 #[cfg(feature = "guest")]
-#[cfg(not(all(target_arch="wasm32", target_os="unknown")))]
 #[cfg(all(target_arch="wasm32", target_os="unknown"))]
 extern "C" {
     pub fn toxoid_print_i32(v: i32);
