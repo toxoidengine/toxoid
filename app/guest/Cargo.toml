@@ -1,0 +1,29 @@
+[package]
+name = "guest"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+wit-bindgen-rt = { version = "0.32.0", features = ["bitflags"] }
+toxoid_api_macro = { path = "../../crates/toxoid_api_macro" }
+toxoid_api = { path = "../../crates/toxoid_api" }
+rand = "0.8.5"
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[profile.release]
+codegen-units = 1
+opt-level = "s"
+debug = false
+strip = true
+lto = true
+
+[package.metadata.component]
+package = "component:toxoid-component"
+
+[package.metadata.component.dependencies]
+
+# Native dependencies
+[target.'cfg(not(target_arch = "wasm32"))'.dependencies]
+toxoid_host = { path = "../../crates/toxoid_host" }

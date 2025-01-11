@@ -1,22 +1,44 @@
-submodules:
-	git submodule update --init --recursive
+install:
+	cargo install cargo-component --locked
+	cargo install --locked wasm-tools
 
-fmt: 
-	cargo fmt
+submodule:
+	git submodule update --init
 
-clippy: 
-	cargo clippy
+submodule-add:
+	git submodule add -b docker_iter https://github.com/cimgui/cimgui.git crates/toxoid_sokol/lib/cimgui
 
-example-snake:
-	cargo run --package snake_runner
+	git submodule add -b 4.1 https://github.com/EsotericSoftware/spine-runtimes.git crates/toxoid_sokol/lib/spine-runtimes
 
-expand:
-	cargo expand --package snake > expanded.rs
+	git submodule add https://github.com/floooh/sokol.git crates/toxoid_sokol/lib/sokol && \
+	cd crates/toxoid_sokol/lib/sokol && \ 
+	git checkout 56e98211a2fbd906d37a1051475e04b22a4b62ee && \
+	cd ../../../.. && \
+	git add crates/toxoid_sokol/lib/sokol
 
-sfz:
-	cd /dev/toxoid/toxoid/examples/snake/dist && \
-	sfz --coi
+	git submodule add https://github.com/edubart/sokol_gp.git crates/toxoid_sokol/lib/sokol_gp && \
+	cd crates/toxoid_sokol/lib/sokol_gp && \
+	git checkout a6ce39f93fb2da2c47b70cdd4d1c0a35c0e756ef && \
+	cd ../../../.. && \
+	git add crates/toxoid_sokol/lib/sokol_gp
 
-# Generate .worker.js file from Rust .wasm file
-emcc_worker:
-	emcc snake_engine.wasm -o snake_engine_2.js -g -O0 -s MAIN_MODULE=2 -s FORCE_FILESYSTEM=1 -s ERROR_ON_UNDEFINED_SYMBOLS=0 -s EXPORT_ES6=1 -s MODULARIZE=1 -s USE_ES6_IMPORT_META=1 -s EXPORTED_RUNTIME_METHODS='[_free,_malloc,allocateUTF8,UTF8ToString,writeArrayToMemory,FS,loadDynamicLibrary]' -s ALLOW_MEMORY_GROWTH=1 -s MIN_WEBGL_VERSION=2 -s FETCH=1 -s STACK_SIZE=1mb -Wno-unused-command-line-argument -s USE_PTHREADS=1 -s PTHREAD_POOL_SIZE=12 -matomics -mbulk-memory -lwebsocket.js -pthread 
+build-wit:
+	cp app/guest/wit/world.wit crates/toxoid_guest/wit/world.wit
+	cd app/guest && cargo component check && cargo build
+	cd crates/toxoid_host && cargo component check && cargo build
+	cd crates/toxoid_guest && cargo component check && cargo build
+
+build:
+	cd app/guest && cargo component build
+	cp target/wasm32-wasip1/debug/guest.wasm app/host/guest.wasm
+
+build-host:
+	cd crates/toxoid_host && cargo component build
+
+run:
+	cd app/host && cargo run
+
+run-cli:
+	cargo run --package toxoid_cli -- watch
+
+
