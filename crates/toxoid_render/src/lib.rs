@@ -22,7 +22,7 @@ pub trait Renderer2D {
     // Begin render pass
     fn begin();
     // End render pass
-    fn end(&self);
+    fn end();
     // Begin render target pass
     fn begin_rt(destination: &Box<dyn RenderTarget>, dw: f32, dh: f32);
     // End render target pass

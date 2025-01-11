@@ -1,0 +1,146 @@
+package toxoid-component:component;
+
+interface ecs {
+    type ecs-entity-t = u64;
+
+    enum member-type {
+        u8-t,
+        u16-t,
+        u32-t,
+        u64-t,
+        i8-t,
+        i16-t,
+        i32-t,
+        i64-t,
+        f32-t,
+        f64-t,
+        bool-t,
+        string-t,
+        array-t,
+        u32array-t,
+        f32array-t,
+        pointer-t
+    }
+    
+    record component-desc {
+        name: string,
+        member-names: list<string>,
+        member-types: list<u8>
+    }
+
+    record entity-desc {
+        name: option<string>
+    }
+
+    record query-desc {
+        expr: string
+    }
+
+    resource component-type {
+        constructor(init: component-desc);
+        get-id: func() -> ecs-entity-t;
+    }
+
+    resource component {
+        constructor(ptr: s64);
+        // TODO: Change this to offset index instead of offset so that WASM guest does not have
+        // direct access to host memory.
+        set-member-u8: func(offset: u32, value: u8);
+        get-member-u8: func(offset: u32) -> u8;
+        set-member-u16: func(offset: u32, value: u16);
+        get-member-u16: func(offset: u32) -> u16;
+        set-member-u32: func(offset: u32, value: u32);
+        get-member-u32: func(offset: u32) -> u32;
+        set-member-u64: func(offset: u32, value: u64);
+        get-member-u64: func(offset: u32) -> u64;
+        set-member-i8: func(offset: u32, value: s8);
+        get-member-i8: func(offset: u32) -> s8;
+        set-member-i16: func(offset: u32, value: s16);
+        get-member-i16: func(offset: u32) -> s16;
+        set-member-i32: func(offset: u32, value: s32);
+        get-member-i32: func(offset: u32) -> s32;
+        set-member-i64: func(offset: u32, value: s64);
+        get-member-i64: func(offset: u32) -> s64;
+        set-member-f32: func(offset: u32, value: f32);
+        get-member-f32: func(offset: u32) -> f32;
+        set-member-f64: func(offset: u32, value: f64);
+        get-member-f64: func(offset: u32) -> f64;
+        set-member-bool: func(offset: u32, value: bool);
+        get-member-bool: func(offset: u32) -> bool;
+        set-member-string: func(offset: u32, value: string);
+        get-member-string: func(offset: u32) -> string;
+        set-member-u32list: func(offset: u32, value: list<u32>);
+        get-member-u32list: func(offset: u32) -> list<u32>;
+        set-member-u64list: func(offset: u32, value: list<u64>);
+        get-member-u64list: func(offset: u32) -> list<u64>;
+        set-member-f32list: func(offset: u32, value: list<f32>);
+        get-member-f32list: func(offset: u32) -> list<f32>;
+    }
+    
+    resource entity {
+        constructor(init: entity-desc);
+        from-id: static func(id: u64) -> entity;
+        get-id: func() -> ecs-entity-t;
+        get: func(component: ecs-entity-t) -> component;
+        add: func(component: ecs-entity-t);
+        remove: func(component: ecs-entity-t);
+    }
+
+    resource query {
+        constructor(desc: query-desc);
+        expr: func(expr: string);
+        build: func();
+        iter: func();
+        next: func() -> bool;
+        count: func() -> s32;
+        entities: func() -> list<entity>;
+    }
+
+    resource callback {
+        constructor(handle: s64);
+        run: func(iter: iter);
+        // This is prefixed because resources already have a `handle` method.
+        cb-handle: func() -> s64;
+    }
+
+    record system-desc {
+        name: option<string>,
+        tick-rate: option<s32>,
+        callback: callback,
+        query-desc: query-desc,
+        is-guest: bool
+    }
+
+    resource system {
+        constructor(desc: system-desc);
+        build: func();
+        callback: func() -> callback;
+    }
+
+    resource iter {
+        constructor(ptr: s64);
+        next: func() -> bool;
+        count: func() -> s32;
+        entities: func() -> list<entity>;
+    }
+
+    add-singleton: func(component: ecs-entity-t);
+    get-singleton: func(component: ecs-entity-t) -> component;
+    remove-singleton: func(component: ecs-entity-t);
+    add-entity: func(entity: ecs-entity-t);
+    // get-entity: func(entity: ecs-entity-t) -> entity;
+    remove-entity: func(entity: ecs-entity-t);
+    // get-entity-named: func(name: string) -> entity;
+    has-entity-named: func(name: string) -> bool;
+}
+
+interface callbacks {
+    use ecs.{iter};
+    run: func(iter: iter, handle: s64);
+}
+
+world toxoid-component-world {
+    import ecs;
+    export init: func();
+    export callbacks;
+}

@@ -2,8 +2,7 @@ use crate::bindings::*;
 use sokol::gfx::PassAction;
 use sokol::{app as sapp, gfx as sg, glue as sglue};
 use toxoid_render::{Renderer2D, RenderTarget, Sprite};
-use toxoid_api::components::{Position, Size, Color, GameConfig};
-use toxoid_api::World;
+use toxoid_api::components::{Position, Size, Color};
 use std::any::Any;
 use std::mem::MaybeUninit;
 
@@ -24,17 +23,17 @@ pub struct SokolRenderTarget {
     pub pass: sg::Pass,
 }
 
-pub struct SpineOffscreenCtx {
-    pub ctx: sspine_context,
-    pub img: sg::Image,
-    pub attachments: sg::Attachments,
-    pub pass_action: sg::PassAction,
-}
+// pub struct SpineOffscreenCtx {
+//     pub ctx: sspine_context,
+//     pub img: sg::Image,
+//     pub attachments: sg::Attachments,
+//     pub pass_action: sg::PassAction,
+// }
 
-fn filter_from_c_int(value: ::std::os::raw::c_int) -> Option<sg::Filter> {
+fn filter_from_c_int(value: u32) -> Option<sg::Filter> {
     match value {
         0 => Some(sg::Filter::Default),
-        1 => Some(sg::Filter::None),
+        1 => Some(sg::Filter::Default),
         2 => Some(sg::Filter::Nearest),
         3 => Some(sg::Filter::Linear),
         4 => Some(sg::Filter::Num),
@@ -42,7 +41,7 @@ fn filter_from_c_int(value: ::std::os::raw::c_int) -> Option<sg::Filter> {
     }
 }
 
-fn wrap_from_c_int(value: ::std::os::raw::c_int) -> Option<sg::Wrap> {
+fn wrap_from_c_int(value: u32) -> Option<sg::Wrap> {
     match value {
         0 => Some(sg::Wrap::Default),
         1 => Some(sg::Wrap::Repeat),
@@ -168,8 +167,7 @@ impl Renderer2D for SokolRenderer2D {
     fn begin() {
         // Get the size of the window
         let (window_width, window_height) = (sapp::width(), sapp::height());
-        let game_config = World::get_singleton::<GameConfig>();
-        let scale_factor = window_width as f32 / game_config.get_resolution_width() as f32;
+        let scale_factor = window_width as f32 / crate::GAME_WIDTH as f32;
         unsafe {
             // Begin recording draw commands for a frame buffer of size (width, height).
             sgp_begin(window_width, window_height);
@@ -178,17 +176,19 @@ impl Renderer2D for SokolRenderer2D {
             // Set drawing coordinate space to (left=0, right=width, top=0, bottom=height).
             sgp_project(0.0, window_width as f32, 0.0, window_height as f32);
             // Clear the frame buffer.
-            sgp_set_color(1., 1., 1., 1.);
+            // sgp_set_color(1., 1., 1., 1.);
+            // TODO: Make customizable
+            sgp_set_color(0.1, 0.1, 0.1, 1.0);
             sgp_clear();
         }
     }
 
-    fn end(&self) {
+    fn end() {
         // Get the size of the window
         let (window_width, window_height) = (sapp::width(), sapp::height());
         // Begin a render pass.
         sg::begin_pass(&sg::Pass {
-            action: self.pass_action,
+            action: *crate::PASS_ACTION,
             swapchain: sglue::swapchain(),
             ..Default::default()
         });
@@ -384,9 +384,8 @@ impl Renderer2D for SokolRenderer2D {
 
     fn draw_sprite(sprite: &Box<dyn Sprite>, x: f32, y: f32) {
         unsafe {
-            let game_config = World::get_singleton::<GameConfig>();
             let (window_width, _) = SokolRenderer2D::window_size();
-            // let scale_factor = window_width as f32 / game_config.get_resolution_width() as f32;
+            // let scale_factor = window_width as f32 / crate::GAME_WIDTH as f32;
             let dest_rect = sgp_rect { 
                 x: 0., 
                 y: 0., 
@@ -411,13 +410,12 @@ impl Renderer2D for SokolRenderer2D {
             if blend_mode == 0 {
                 sgp_set_blend_mode(sgp_blend_mode_SGP_BLENDMODE_BLEND);
             } else {
-                sgp_set_blend_mode(blend_mode as i32);
+                sgp_set_blend_mode(blend_mode as u32);
             }
             // Get scale factor for resolution
-            let game_config = World::get_singleton::<GameConfig>();
             let (window_width, window_height) = SokolRenderer2D::window_size();
             // println!("Window width {:?}, window height {:?}", window_width, window_height);
-            // let scale_factor = window_width as f32 / game_config.get_resolution_width() as f32;
+            // let scale_factor = window_width as f32 / crate::GAME_WIDTH as f32;
             let scale_factor = window_width as f32 / 720 as f32;
     
             let sokol_source = source.as_any().downcast_ref::<SokolRenderTarget>().unwrap();
@@ -460,9 +458,8 @@ impl Renderer2D for SokolRenderer2D {
 
     fn draw_filled_rect(pos: &Position, size: &Size, color: &Color) {
         unsafe {
-            let game_config = World::get_singleton::<GameConfig>();
             let (window_width, _) = SokolRenderer2D::window_size();
-            let scale_factor = window_width as f32 / game_config.get_resolution_width() as f32;
+            let scale_factor = window_width as f32 / crate::GAME_WIDTH as f32;
             sgp_reset_color();
             sgp_set_color(color.get_r(), color.get_g(), color.get_b(), color.get_a());
             sgp_draw_filled_rect(pos.get_x() as f32 * scale_factor, pos.get_y() as f32 * scale_factor, size.get_width() as f32 * scale_factor, size.get_height() as f32 * scale_factor);
@@ -471,9 +468,8 @@ impl Renderer2D for SokolRenderer2D {
 
     fn draw_line(ax: f32, ay: f32, bx: f32, by: f32) {
         unsafe {
-            let game_config = World::get_singleton::<GameConfig>();
             let (window_width, _) = SokolRenderer2D::window_size();
-            let scale_factor = window_width as f32 / game_config.get_resolution_width() as f32;
+            let scale_factor = window_width as f32 / crate::GAME_WIDTH as f32;
             sgp_draw_line(ax * scale_factor, ay * scale_factor, bx * scale_factor, by * scale_factor);
         }
     }

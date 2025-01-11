@@ -1,8 +1,3 @@
-[submodule "flecs-polyglot"]
-	path = libs/flecs-polyglot
-	url = https://github.com/flecs-hub/flecs-polyglot.git
-	branch = main
-
 [submodule "cimgui"]
 	path = crates/toxoid_sokol/lib/cimgui
 	url = https://github.com/cimgui/cimgui.git
@@ -16,9 +11,9 @@
 [submodule "sokol"]
 	path = crates/toxoid_sokol/lib/sokol
 	url = https://github.com/floooh/sokol.git
-	branch = 56e98211a2fbd906d37a1051475e04b22a4b62ee
+	# branch = 56e98211a2fbd906d37a1051475e04b22a4b62ee
 
 [submodule "sokol_gp"]
 	path = crates/toxoid_sokol/lib/sokol_gp
 	url = https://github.com/edubart/sokol_gp.git
-	branch = a6ce39f93fb2da2c47b70cdd4d1c0a35c0e756ef
+	# branch = a6ce39f93fb2da2c47b70cdd4d1c0a35c0e756ef
