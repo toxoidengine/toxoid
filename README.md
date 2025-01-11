@@ -3,16 +3,16 @@
 
 # Required Dependencies
 
-## Rust
+### Rust
 https://www.rust-lang.org/tools/install
 
-## Cargo Component
+### Cargo Component
 https://github.com/bytecodealliance/cargo-component
 
-## LLVM
+### LLVM
 https://github.com/llvm/llvm-project/releases
 
-## Emscripten (Web target only)
+### Emscripten (Web target only)
 https://emscripten.org/docs/getting_started/downloads.html
 
 # Examples
@@ -23,11 +23,12 @@ make build-host
 make run-cli
 ```
 
-## Snake:
+### Snake:
 
-https://github.com/toxoidengine/toxoid/assets/16667416/a9cf38da-bad2-4746-9f63-cfbfd5657b9c
+https://github.com/user-attachments/assets/e3123f2a-9965-4728-bdef-aae130ebeed9
 
-## Multiplayer Spine Bone Animation and ImGui:
+
+### Multiplayer Spine Bone Animation and ImGui:
 
 https://github.com/toxoidengine/toxoid/assets/16667416/4474e276-3675-462e-909a-7d9a5b1e649b
 
