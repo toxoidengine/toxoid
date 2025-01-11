@@ -1,0 +1,12 @@
+[package]
+name = "toxoid_bootstrap"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+toxoid_api = { path = "../toxoid_api" }
+toxoid_runtime = { path = "../toxoid_runtime" }
+toxoid_host = { path = "../toxoid_host" }
+toxoid_sokol = { path = "../toxoid_sokol" }
+toxoid_render = { path = "../toxoid_render" }
+rand = "0.8.5"

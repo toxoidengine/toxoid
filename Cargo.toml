@@ -1,40 +1,13 @@
-[package]
-name = "toxoid"
-version = "0.1.0"
-edition = "2021"
-# existing package info here
-build = "build.rs"
-
 [workspace]
-members = [
-    	# Crates
-		"crates/toxoid_api",
-		"crates/toxoid_api_macro",
-		"crates/toxoid_ffi",
-		"crates/toxoid_render",
-		"crates/toxoid_sokol",
-		"crates/toxoid_engine",
-		"crates/toxoid_net",
-		
-		# Examples
-		"examples/snake/snake",
-		"examples/snake/snake_runner",
-		"examples/snake/snake_engine", "crates/toxoid_serialize", "crates/toxoid_tiled", "crates/toxoid_wasm", "crates/toxoid_wasm_test", "crates/toxoid_json",
+name = "toxoid_app"
+members = [      
+     "crates/toxoid_cli",
+     "crates/toxoid_runtime",
+     "crates/toxoid_guest",
+     "crates/toxoid_api", 
+     "crates/toxoid_bootstrap",
+     "crates/toxoid_sokol",
+     "app/host", 
+     "app/guest",
 ]
-
-# Workspace ignore
-exclude = [
-	"crates/toxoid_sdl",
-	"crates/toxoid_wgpu",
-	"libs/flecs-polyglot/rust/flecs_core"
-]
-
-resolver = "2"
-
-[profile.dev]
-opt-level = 3
-debug = true
-
-[[bin]]
-name = "snake"
-path = "examples/snake/runner/src/main.rs"
+exclude = []

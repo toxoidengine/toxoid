@@ -1,0 +1,29 @@
+[package]
+name = "toxoid_host"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+wit-bindgen-rt = { version = "0.32.0", features = ["bitflags"] }
+toxoid_flecs = { path = "../toxoid_flecs" }
+once_cell = "1.19.0"
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[profile.release]
+codegen-units = 1
+opt-level = "s"
+debug = false
+strip = true
+lto = true
+
+[package.metadata.component]
+package = "toxoid:api"
+
+[package.metadata.component.dependencies]
+
+[features]
+default = []
+wasm-linking = []
+static-linking = []

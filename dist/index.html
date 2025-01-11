@@ -1,0 +1,11 @@
+<html>
+    <body>
+        <canvas id="canvas"></canvas>
+        <script type="module">
+            import engine_wasm from './toxoid_runtime.js'
+            const engine = await engine_wasm();
+            // engine._main()
+            console.log("WASM loaded")
+        </script>
+    </body>
+</html>

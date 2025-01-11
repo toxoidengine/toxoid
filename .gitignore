@@ -1,6 +1,2 @@
-target
-static
-dist
-SDL2-devel-2.28.2-VC
-SDL2-devel-2.28.2-VC.zip
-*.zip
+/target
+**/*.wasm

@@ -1,0 +1,11 @@
+[package]
+name = "toxoid_flecs"
+version = "0.1.0"
+edition = "2021"
+
+[build-dependencies]
+bindgen = "0.71.1"
+cc = "1.0"
+
+[dependencies]
+once_cell = "1.19.0"
