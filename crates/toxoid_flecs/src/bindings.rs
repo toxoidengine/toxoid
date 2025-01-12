@@ -278,7 +278,7 @@ pub const FLECS_SPARSE_PAGE_SIZE: u32 = 4096;
 pub const ECS_STACK_PAGE_SIZE: u32 = 4096;
 pub const ECS_STRBUF_SMALL_STRING_SIZE: u32 = 512;
 pub const ECS_STRBUF_MAX_LIST_DEPTH: u32 = 32;
-pub const _CRT_INTERNAL_STDIO_SYMBOL_PREFIX: &[u8; 2] = b"_\0";
+pub const _CRT_INTERNAL_STDIO_SYMBOL_PREFIX: &[u8; 1] = b"\0";
 pub const _CRT_INTERNAL_PRINTF_LEGACY_VSPRINTF_NULL_TERMINATION: u32 = 1;
 pub const _CRT_INTERNAL_PRINTF_STANDARD_SNPRINTF_BEHAVIOR: u32 = 2;
 pub const _CRT_INTERNAL_PRINTF_LEGACY_WIDE_SPECIFIERS: u32 = 4;
@@ -307,7 +307,7 @@ pub const TMP_MAX: u32 = 2147483647;
 pub const TMP_MAX_S: u32 = 2147483647;
 pub const _TMP_MAX_S: u32 = 2147483647;
 pub const SYS_OPEN: u32 = 20;
-pub const _HEAP_MAXREQ: u32 = 4294967264;
+pub const _HEAP_MAXREQ: i32 = -32;
 pub const _HEAPEMPTY: i32 = -1;
 pub const _HEAPOK: i32 = -2;
 pub const _HEAPBADBEGIN: i32 = -3;
@@ -319,7 +319,7 @@ pub const _USEDENTRY: u32 = 1;
 pub const _ALLOCA_S_THRESHOLD: u32 = 1024;
 pub const _ALLOCA_S_STACK_MARKER: u32 = 52428;
 pub const _ALLOCA_S_HEAP_MARKER: u32 = 56797;
-pub const _ALLOCA_S_MARKER_SIZE: u32 = 8;
+pub const _ALLOCA_S_MARKER_SIZE: u32 = 16;
 pub const EcsSelf: i64 = -9223372036854775808;
 pub const EcsUp: u64 = 4611686018427387904;
 pub const EcsTrav: u64 = 2305843009213693952;
@@ -399,16 +399,19 @@ pub const ECS_ALERT_MAX_SEVERITY_FILTERS: u32 = 4;
 pub const ECS_MEMBER_DESC_CACHE_SIZE: u32 = 32;
 pub const ECS_META_MAX_SCOPE_DEPTH: u32 = 32;
 pub type va_list = *mut ::std::os::raw::c_char;
+unsafe extern "C" {
+    pub fn __va_start(arg1: *mut *mut ::std::os::raw::c_char, ...);
+}
 pub type __vcrt_bool = bool;
 pub type wchar_t = ::std::os::raw::c_ushort;
 unsafe extern "C" {
     pub fn __security_init_cookie();
 }
-unsafe extern "fastcall" {
+unsafe extern "C" {
     pub fn __security_check_cookie(_StackCookie: usize);
 }
 unsafe extern "C" {
-    pub fn __report_gsfailure() -> !;
+    pub fn __report_gsfailure(_StackCookie: usize) -> !;
 }
 unsafe extern "C" {
     pub static mut __security_cookie: usize;
@@ -444,15 +447,15 @@ pub struct __crt_locale_data_public {
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of __crt_locale_data_public"]
-        [::std::mem::size_of::<__crt_locale_data_public>() - 12usize];
+        [::std::mem::size_of::<__crt_locale_data_public>() - 16usize];
     ["Alignment of __crt_locale_data_public"]
-        [::std::mem::align_of::<__crt_locale_data_public>() - 4usize];
+        [::std::mem::align_of::<__crt_locale_data_public>() - 8usize];
     ["Offset of field: __crt_locale_data_public::_locale_pctype"]
         [::std::mem::offset_of!(__crt_locale_data_public, _locale_pctype) - 0usize];
     ["Offset of field: __crt_locale_data_public::_locale_mb_cur_max"]
-        [::std::mem::offset_of!(__crt_locale_data_public, _locale_mb_cur_max) - 4usize];
+        [::std::mem::offset_of!(__crt_locale_data_public, _locale_mb_cur_max) - 8usize];
     ["Offset of field: __crt_locale_data_public::_locale_lc_codepage"]
-        [::std::mem::offset_of!(__crt_locale_data_public, _locale_lc_codepage) - 8usize];
+        [::std::mem::offset_of!(__crt_locale_data_public, _locale_lc_codepage) - 12usize];
 };
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
@@ -462,13 +465,13 @@ pub struct __crt_locale_pointers {
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of __crt_locale_pointers"][::std::mem::size_of::<__crt_locale_pointers>() - 8usize];
+    ["Size of __crt_locale_pointers"][::std::mem::size_of::<__crt_locale_pointers>() - 16usize];
     ["Alignment of __crt_locale_pointers"]
-        [::std::mem::align_of::<__crt_locale_pointers>() - 4usize];
+        [::std::mem::align_of::<__crt_locale_pointers>() - 8usize];
     ["Offset of field: __crt_locale_pointers::locinfo"]
         [::std::mem::offset_of!(__crt_locale_pointers, locinfo) - 0usize];
     ["Offset of field: __crt_locale_pointers::mbcinfo"]
-        [::std::mem::offset_of!(__crt_locale_pointers, mbcinfo) - 4usize];
+        [::std::mem::offset_of!(__crt_locale_pointers, mbcinfo) - 8usize];
 };
 pub type _locale_t = *mut __crt_locale_pointers;
 #[repr(C)]
@@ -515,35 +518,35 @@ unsafe extern "C" {
     pub fn memchr(
         _Buf: *const ::std::os::raw::c_void,
         _Val: ::std::os::raw::c_int,
-        _MaxCount: ::std::os::raw::c_uint,
+        _MaxCount: ::std::os::raw::c_ulonglong,
     ) -> *mut ::std::os::raw::c_void;
 }
 unsafe extern "C" {
     pub fn memcmp(
         _Buf1: *const ::std::os::raw::c_void,
         _Buf2: *const ::std::os::raw::c_void,
-        _Size: ::std::os::raw::c_uint,
+        _Size: ::std::os::raw::c_ulonglong,
     ) -> ::std::os::raw::c_int;
 }
 unsafe extern "C" {
     pub fn memcpy(
         _Dst: *mut ::std::os::raw::c_void,
         _Src: *const ::std::os::raw::c_void,
-        _Size: ::std::os::raw::c_uint,
+        _Size: ::std::os::raw::c_ulonglong,
     ) -> *mut ::std::os::raw::c_void;
 }
 unsafe extern "C" {
     pub fn memmove(
         _Dst: *mut ::std::os::raw::c_void,
         _Src: *const ::std::os::raw::c_void,
-        _Size: ::std::os::raw::c_uint,
+        _Size: ::std::os::raw::c_ulonglong,
     ) -> *mut ::std::os::raw::c_void;
 }
 unsafe extern "C" {
     pub fn memset(
         _Dst: *mut ::std::os::raw::c_void,
         _Val: ::std::os::raw::c_int,
-        _Size: ::std::os::raw::c_uint,
+        _Size: ::std::os::raw::c_ulonglong,
     ) -> *mut ::std::os::raw::c_void;
 }
 unsafe extern "C" {
@@ -596,7 +599,7 @@ unsafe extern "C" {
         _Dst: *mut ::std::os::raw::c_void,
         _Src: *const ::std::os::raw::c_void,
         _Val: ::std::os::raw::c_int,
-        _Size: ::std::os::raw::c_uint,
+        _Size: ::std::os::raw::c_ulonglong,
     ) -> *mut ::std::os::raw::c_void;
 }
 unsafe extern "C" {
@@ -662,7 +665,7 @@ unsafe extern "C" {
     pub fn wcscspn(_String: *const wchar_t, _Control: *const wchar_t) -> usize;
 }
 unsafe extern "C" {
-    pub fn wcslen(_String: *const ::std::os::raw::c_ushort) -> ::std::os::raw::c_uint;
+    pub fn wcslen(_String: *const ::std::os::raw::c_ushort) -> ::std::os::raw::c_ulonglong;
 }
 unsafe extern "C" {
     pub fn wcsnlen(_Source: *const wchar_t, _MaxCount: usize) -> usize;
@@ -678,7 +681,7 @@ unsafe extern "C" {
     pub fn wcsncmp(
         _String1: *const ::std::os::raw::c_ushort,
         _String2: *const ::std::os::raw::c_ushort,
-        _MaxCount: ::std::os::raw::c_uint,
+        _MaxCount: ::std::os::raw::c_ulonglong,
     ) -> ::std::os::raw::c_int;
 }
 unsafe extern "C" {
@@ -975,7 +978,7 @@ unsafe extern "C" {
     pub fn strcspn(
         _Str: *const ::std::os::raw::c_char,
         _Control: *const ::std::os::raw::c_char,
-    ) -> ::std::os::raw::c_uint;
+    ) -> ::std::os::raw::c_ulonglong;
 }
 unsafe extern "C" {
     pub fn _strdup(_Source: *const ::std::os::raw::c_char) -> *mut ::std::os::raw::c_char;
@@ -1020,7 +1023,7 @@ unsafe extern "C" {
     ) -> ::std::os::raw::c_int;
 }
 unsafe extern "C" {
-    pub fn strlen(_Str: *const ::std::os::raw::c_char) -> ::std::os::raw::c_uint;
+    pub fn strlen(_Str: *const ::std::os::raw::c_char) -> ::std::os::raw::c_ulonglong;
 }
 unsafe extern "C" {
     pub fn _strlwr_s(_String: *mut ::std::os::raw::c_char, _Size: usize) -> errno_t;
@@ -1045,14 +1048,14 @@ unsafe extern "C" {
     pub fn strncat(
         _Destination: *mut ::std::os::raw::c_char,
         _Source: *const ::std::os::raw::c_char,
-        _Count: ::std::os::raw::c_uint,
+        _Count: ::std::os::raw::c_ulonglong,
     ) -> *mut ::std::os::raw::c_char;
 }
 unsafe extern "C" {
     pub fn strncmp(
         _Str1: *const ::std::os::raw::c_char,
         _Str2: *const ::std::os::raw::c_char,
-        _MaxCount: ::std::os::raw::c_uint,
+        _MaxCount: ::std::os::raw::c_ulonglong,
     ) -> ::std::os::raw::c_int;
 }
 unsafe extern "C" {
@@ -1107,7 +1110,7 @@ unsafe extern "C" {
     pub fn strncpy(
         _Destination: *mut ::std::os::raw::c_char,
         _Source: *const ::std::os::raw::c_char,
-        _Count: ::std::os::raw::c_uint,
+        _Count: ::std::os::raw::c_ulonglong,
     ) -> *mut ::std::os::raw::c_char;
 }
 unsafe extern "C" {
@@ -1154,7 +1157,7 @@ unsafe extern "C" {
     pub fn strspn(
         _Str: *const ::std::os::raw::c_char,
         _Control: *const ::std::os::raw::c_char,
-    ) -> ::std::os::raw::c_uint;
+    ) -> ::std::os::raw::c_ulonglong;
 }
 unsafe extern "C" {
     pub fn strtok(
@@ -1185,8 +1188,8 @@ unsafe extern "C" {
     pub fn strxfrm(
         _Destination: *mut ::std::os::raw::c_char,
         _Source: *const ::std::os::raw::c_char,
-        _MaxCount: ::std::os::raw::c_uint,
-    ) -> ::std::os::raw::c_uint;
+        _MaxCount: ::std::os::raw::c_ulonglong,
+    ) -> ::std::os::raw::c_ulonglong;
 }
 unsafe extern "C" {
     pub fn _strxfrm_l(
@@ -1273,11 +1276,11 @@ pub struct ecs_vec_t {
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of ecs_vec_t"][::std::mem::size_of::<ecs_vec_t>() - 12usize];
-    ["Alignment of ecs_vec_t"][::std::mem::align_of::<ecs_vec_t>() - 4usize];
+    ["Size of ecs_vec_t"][::std::mem::size_of::<ecs_vec_t>() - 16usize];
+    ["Alignment of ecs_vec_t"][::std::mem::align_of::<ecs_vec_t>() - 8usize];
     ["Offset of field: ecs_vec_t::array"][::std::mem::offset_of!(ecs_vec_t, array) - 0usize];
-    ["Offset of field: ecs_vec_t::count"][::std::mem::offset_of!(ecs_vec_t, count) - 4usize];
-    ["Offset of field: ecs_vec_t::size"][::std::mem::offset_of!(ecs_vec_t, size) - 8usize];
+    ["Offset of field: ecs_vec_t::count"][::std::mem::offset_of!(ecs_vec_t, count) - 8usize];
+    ["Offset of field: ecs_vec_t::size"][::std::mem::offset_of!(ecs_vec_t, size) - 12usize];
 };
 unsafe extern "C" {
     pub fn ecs_vec_init(
@@ -1413,18 +1416,18 @@ pub struct ecs_sparse_t {
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of ecs_sparse_t"][::std::mem::size_of::<ecs_sparse_t>() - 48usize];
+    ["Size of ecs_sparse_t"][::std::mem::size_of::<ecs_sparse_t>() - 64usize];
     ["Alignment of ecs_sparse_t"][::std::mem::align_of::<ecs_sparse_t>() - 8usize];
     ["Offset of field: ecs_sparse_t::dense"][::std::mem::offset_of!(ecs_sparse_t, dense) - 0usize];
-    ["Offset of field: ecs_sparse_t::pages"][::std::mem::offset_of!(ecs_sparse_t, pages) - 12usize];
-    ["Offset of field: ecs_sparse_t::size"][::std::mem::offset_of!(ecs_sparse_t, size) - 24usize];
-    ["Offset of field: ecs_sparse_t::count"][::std::mem::offset_of!(ecs_sparse_t, count) - 28usize];
+    ["Offset of field: ecs_sparse_t::pages"][::std::mem::offset_of!(ecs_sparse_t, pages) - 16usize];
+    ["Offset of field: ecs_sparse_t::size"][::std::mem::offset_of!(ecs_sparse_t, size) - 32usize];
+    ["Offset of field: ecs_sparse_t::count"][::std::mem::offset_of!(ecs_sparse_t, count) - 36usize];
     ["Offset of field: ecs_sparse_t::max_id"]
-        [::std::mem::offset_of!(ecs_sparse_t, max_id) - 32usize];
+        [::std::mem::offset_of!(ecs_sparse_t, max_id) - 40usize];
     ["Offset of field: ecs_sparse_t::allocator"]
-        [::std::mem::offset_of!(ecs_sparse_t, allocator) - 40usize];
+        [::std::mem::offset_of!(ecs_sparse_t, allocator) - 48usize];
     ["Offset of field: ecs_sparse_t::page_allocator"]
-        [::std::mem::offset_of!(ecs_sparse_t, page_allocator) - 44usize];
+        [::std::mem::offset_of!(ecs_sparse_t, page_allocator) - 56usize];
 };
 unsafe extern "C" {
     #[doc = " Initialize sparse set"]
@@ -1567,13 +1570,13 @@ pub struct ecs_block_allocator_block_t {
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of ecs_block_allocator_block_t"]
-        [::std::mem::size_of::<ecs_block_allocator_block_t>() - 8usize];
+        [::std::mem::size_of::<ecs_block_allocator_block_t>() - 16usize];
     ["Alignment of ecs_block_allocator_block_t"]
-        [::std::mem::align_of::<ecs_block_allocator_block_t>() - 4usize];
+        [::std::mem::align_of::<ecs_block_allocator_block_t>() - 8usize];
     ["Offset of field: ecs_block_allocator_block_t::memory"]
         [::std::mem::offset_of!(ecs_block_allocator_block_t, memory) - 0usize];
     ["Offset of field: ecs_block_allocator_block_t::next"]
-        [::std::mem::offset_of!(ecs_block_allocator_block_t, next) - 4usize];
+        [::std::mem::offset_of!(ecs_block_allocator_block_t, next) - 8usize];
 };
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
@@ -1583,9 +1586,9 @@ pub struct ecs_block_allocator_chunk_header_t {
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of ecs_block_allocator_chunk_header_t"]
-        [::std::mem::size_of::<ecs_block_allocator_chunk_header_t>() - 4usize];
+        [::std::mem::size_of::<ecs_block_allocator_chunk_header_t>() - 8usize];
     ["Alignment of ecs_block_allocator_chunk_header_t"]
-        [::std::mem::align_of::<ecs_block_allocator_chunk_header_t>() - 4usize];
+        [::std::mem::align_of::<ecs_block_allocator_chunk_header_t>() - 8usize];
     ["Offset of field: ecs_block_allocator_chunk_header_t::next"]
         [::std::mem::offset_of!(ecs_block_allocator_chunk_header_t, next) - 0usize];
 };
@@ -1603,25 +1606,25 @@ pub struct ecs_block_allocator_t {
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of ecs_block_allocator_t"][::std::mem::size_of::<ecs_block_allocator_t>() - 32usize];
+    ["Size of ecs_block_allocator_t"][::std::mem::size_of::<ecs_block_allocator_t>() - 48usize];
     ["Alignment of ecs_block_allocator_t"]
-        [::std::mem::align_of::<ecs_block_allocator_t>() - 4usize];
+        [::std::mem::align_of::<ecs_block_allocator_t>() - 8usize];
     ["Offset of field: ecs_block_allocator_t::head"]
         [::std::mem::offset_of!(ecs_block_allocator_t, head) - 0usize];
     ["Offset of field: ecs_block_allocator_t::block_head"]
-        [::std::mem::offset_of!(ecs_block_allocator_t, block_head) - 4usize];
+        [::std::mem::offset_of!(ecs_block_allocator_t, block_head) - 8usize];
     ["Offset of field: ecs_block_allocator_t::block_tail"]
-        [::std::mem::offset_of!(ecs_block_allocator_t, block_tail) - 8usize];
+        [::std::mem::offset_of!(ecs_block_allocator_t, block_tail) - 16usize];
     ["Offset of field: ecs_block_allocator_t::chunk_size"]
-        [::std::mem::offset_of!(ecs_block_allocator_t, chunk_size) - 12usize];
+        [::std::mem::offset_of!(ecs_block_allocator_t, chunk_size) - 24usize];
     ["Offset of field: ecs_block_allocator_t::data_size"]
-        [::std::mem::offset_of!(ecs_block_allocator_t, data_size) - 16usize];
+        [::std::mem::offset_of!(ecs_block_allocator_t, data_size) - 28usize];
     ["Offset of field: ecs_block_allocator_t::chunks_per_block"]
-        [::std::mem::offset_of!(ecs_block_allocator_t, chunks_per_block) - 20usize];
+        [::std::mem::offset_of!(ecs_block_allocator_t, chunks_per_block) - 32usize];
     ["Offset of field: ecs_block_allocator_t::block_size"]
-        [::std::mem::offset_of!(ecs_block_allocator_t, block_size) - 24usize];
+        [::std::mem::offset_of!(ecs_block_allocator_t, block_size) - 36usize];
     ["Offset of field: ecs_block_allocator_t::alloc_count"]
-        [::std::mem::offset_of!(ecs_block_allocator_t, alloc_count) - 28usize];
+        [::std::mem::offset_of!(ecs_block_allocator_t, alloc_count) - 40usize];
 };
 unsafe extern "C" {
     pub fn flecs_ballocator_init(ba: *mut ecs_block_allocator_t, size: ecs_size_t);
@@ -1674,16 +1677,16 @@ pub struct ecs_stack_page_t {
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of ecs_stack_page_t"][::std::mem::size_of::<ecs_stack_page_t>() - 16usize];
-    ["Alignment of ecs_stack_page_t"][::std::mem::align_of::<ecs_stack_page_t>() - 4usize];
+    ["Size of ecs_stack_page_t"][::std::mem::size_of::<ecs_stack_page_t>() - 24usize];
+    ["Alignment of ecs_stack_page_t"][::std::mem::align_of::<ecs_stack_page_t>() - 8usize];
     ["Offset of field: ecs_stack_page_t::data"]
         [::std::mem::offset_of!(ecs_stack_page_t, data) - 0usize];
     ["Offset of field: ecs_stack_page_t::next"]
-        [::std::mem::offset_of!(ecs_stack_page_t, next) - 4usize];
+        [::std::mem::offset_of!(ecs_stack_page_t, next) - 8usize];
     ["Offset of field: ecs_stack_page_t::sp"]
-        [::std::mem::offset_of!(ecs_stack_page_t, sp) - 8usize];
+        [::std::mem::offset_of!(ecs_stack_page_t, sp) - 16usize];
     ["Offset of field: ecs_stack_page_t::id"]
-        [::std::mem::offset_of!(ecs_stack_page_t, id) - 12usize];
+        [::std::mem::offset_of!(ecs_stack_page_t, id) - 20usize];
 };
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
@@ -1696,18 +1699,18 @@ pub struct ecs_stack_cursor_t {
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of ecs_stack_cursor_t"][::std::mem::size_of::<ecs_stack_cursor_t>() - 16usize];
-    ["Alignment of ecs_stack_cursor_t"][::std::mem::align_of::<ecs_stack_cursor_t>() - 4usize];
+    ["Size of ecs_stack_cursor_t"][::std::mem::size_of::<ecs_stack_cursor_t>() - 32usize];
+    ["Alignment of ecs_stack_cursor_t"][::std::mem::align_of::<ecs_stack_cursor_t>() - 8usize];
     ["Offset of field: ecs_stack_cursor_t::prev"]
         [::std::mem::offset_of!(ecs_stack_cursor_t, prev) - 0usize];
     ["Offset of field: ecs_stack_cursor_t::page"]
-        [::std::mem::offset_of!(ecs_stack_cursor_t, page) - 4usize];
+        [::std::mem::offset_of!(ecs_stack_cursor_t, page) - 8usize];
     ["Offset of field: ecs_stack_cursor_t::sp"]
-        [::std::mem::offset_of!(ecs_stack_cursor_t, sp) - 8usize];
+        [::std::mem::offset_of!(ecs_stack_cursor_t, sp) - 16usize];
     ["Offset of field: ecs_stack_cursor_t::is_free"]
-        [::std::mem::offset_of!(ecs_stack_cursor_t, is_free) - 10usize];
+        [::std::mem::offset_of!(ecs_stack_cursor_t, is_free) - 18usize];
     ["Offset of field: ecs_stack_cursor_t::owner"]
-        [::std::mem::offset_of!(ecs_stack_cursor_t, owner) - 12usize];
+        [::std::mem::offset_of!(ecs_stack_cursor_t, owner) - 24usize];
 };
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
@@ -1719,15 +1722,15 @@ pub struct ecs_stack_t {
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of ecs_stack_t"][::std::mem::size_of::<ecs_stack_t>() - 28usize];
-    ["Alignment of ecs_stack_t"][::std::mem::align_of::<ecs_stack_t>() - 4usize];
+    ["Size of ecs_stack_t"][::std::mem::size_of::<ecs_stack_t>() - 48usize];
+    ["Alignment of ecs_stack_t"][::std::mem::align_of::<ecs_stack_t>() - 8usize];
     ["Offset of field: ecs_stack_t::first"][::std::mem::offset_of!(ecs_stack_t, first) - 0usize];
     ["Offset of field: ecs_stack_t::tail_page"]
-        [::std::mem::offset_of!(ecs_stack_t, tail_page) - 16usize];
+        [::std::mem::offset_of!(ecs_stack_t, tail_page) - 24usize];
     ["Offset of field: ecs_stack_t::tail_cursor"]
-        [::std::mem::offset_of!(ecs_stack_t, tail_cursor) - 20usize];
+        [::std::mem::offset_of!(ecs_stack_t, tail_cursor) - 32usize];
     ["Offset of field: ecs_stack_t::cursor_count"]
-        [::std::mem::offset_of!(ecs_stack_t, cursor_count) - 24usize];
+        [::std::mem::offset_of!(ecs_stack_t, cursor_count) - 40usize];
 };
 unsafe extern "C" {
     pub fn flecs_stack_init(stack: *mut ecs_stack_t);
@@ -1789,8 +1792,8 @@ pub struct ecs_bucket_t {
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of ecs_bucket_t"][::std::mem::size_of::<ecs_bucket_t>() - 4usize];
-    ["Alignment of ecs_bucket_t"][::std::mem::align_of::<ecs_bucket_t>() - 4usize];
+    ["Size of ecs_bucket_t"][::std::mem::size_of::<ecs_bucket_t>() - 8usize];
+    ["Alignment of ecs_bucket_t"][::std::mem::align_of::<ecs_bucket_t>() - 8usize];
     ["Offset of field: ecs_bucket_t::first"][::std::mem::offset_of!(ecs_bucket_t, first) - 0usize];
 };
 #[repr(C)]
@@ -1806,20 +1809,20 @@ pub struct ecs_map_t {
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of ecs_map_t"][::std::mem::size_of::<ecs_map_t>() - 24usize];
-    ["Alignment of ecs_map_t"][::std::mem::align_of::<ecs_map_t>() - 4usize];
+    ["Size of ecs_map_t"][::std::mem::size_of::<ecs_map_t>() - 40usize];
+    ["Alignment of ecs_map_t"][::std::mem::align_of::<ecs_map_t>() - 8usize];
     ["Offset of field: ecs_map_t::bucket_shift"]
         [::std::mem::offset_of!(ecs_map_t, bucket_shift) - 0usize];
     ["Offset of field: ecs_map_t::shared_allocator"]
         [::std::mem::offset_of!(ecs_map_t, shared_allocator) - 1usize];
-    ["Offset of field: ecs_map_t::buckets"][::std::mem::offset_of!(ecs_map_t, buckets) - 4usize];
+    ["Offset of field: ecs_map_t::buckets"][::std::mem::offset_of!(ecs_map_t, buckets) - 8usize];
     ["Offset of field: ecs_map_t::bucket_count"]
-        [::std::mem::offset_of!(ecs_map_t, bucket_count) - 8usize];
-    ["Offset of field: ecs_map_t::count"][::std::mem::offset_of!(ecs_map_t, count) - 12usize];
+        [::std::mem::offset_of!(ecs_map_t, bucket_count) - 16usize];
+    ["Offset of field: ecs_map_t::count"][::std::mem::offset_of!(ecs_map_t, count) - 20usize];
     ["Offset of field: ecs_map_t::entry_allocator"]
-        [::std::mem::offset_of!(ecs_map_t, entry_allocator) - 16usize];
+        [::std::mem::offset_of!(ecs_map_t, entry_allocator) - 24usize];
     ["Offset of field: ecs_map_t::allocator"]
-        [::std::mem::offset_of!(ecs_map_t, allocator) - 20usize];
+        [::std::mem::offset_of!(ecs_map_t, allocator) - 32usize];
 };
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
@@ -1831,14 +1834,14 @@ pub struct ecs_map_iter_t {
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of ecs_map_iter_t"][::std::mem::size_of::<ecs_map_iter_t>() - 16usize];
-    ["Alignment of ecs_map_iter_t"][::std::mem::align_of::<ecs_map_iter_t>() - 4usize];
+    ["Size of ecs_map_iter_t"][::std::mem::size_of::<ecs_map_iter_t>() - 32usize];
+    ["Alignment of ecs_map_iter_t"][::std::mem::align_of::<ecs_map_iter_t>() - 8usize];
     ["Offset of field: ecs_map_iter_t::map"][::std::mem::offset_of!(ecs_map_iter_t, map) - 0usize];
     ["Offset of field: ecs_map_iter_t::bucket"]
-        [::std::mem::offset_of!(ecs_map_iter_t, bucket) - 4usize];
+        [::std::mem::offset_of!(ecs_map_iter_t, bucket) - 8usize];
     ["Offset of field: ecs_map_iter_t::entry"]
-        [::std::mem::offset_of!(ecs_map_iter_t, entry) - 8usize];
-    ["Offset of field: ecs_map_iter_t::res"][::std::mem::offset_of!(ecs_map_iter_t, res) - 12usize];
+        [::std::mem::offset_of!(ecs_map_iter_t, entry) - 16usize];
+    ["Offset of field: ecs_map_iter_t::res"][::std::mem::offset_of!(ecs_map_iter_t, res) - 24usize];
 };
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
@@ -1848,12 +1851,12 @@ pub struct ecs_map_params_t {
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of ecs_map_params_t"][::std::mem::size_of::<ecs_map_params_t>() - 36usize];
-    ["Alignment of ecs_map_params_t"][::std::mem::align_of::<ecs_map_params_t>() - 4usize];
+    ["Size of ecs_map_params_t"][::std::mem::size_of::<ecs_map_params_t>() - 56usize];
+    ["Alignment of ecs_map_params_t"][::std::mem::align_of::<ecs_map_params_t>() - 8usize];
     ["Offset of field: ecs_map_params_t::allocator"]
         [::std::mem::offset_of!(ecs_map_params_t, allocator) - 0usize];
     ["Offset of field: ecs_map_params_t::entry_allocator"]
-        [::std::mem::offset_of!(ecs_map_params_t, entry_allocator) - 4usize];
+        [::std::mem::offset_of!(ecs_map_params_t, entry_allocator) - 8usize];
 };
 unsafe extern "C" {
     pub fn ecs_map_params_init(params: *mut ecs_map_params_t, allocator: *mut ecs_allocator_t);
@@ -1960,12 +1963,12 @@ pub struct ecs_switch_page_t {
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of ecs_switch_page_t"][::std::mem::size_of::<ecs_switch_page_t>() - 24usize];
-    ["Alignment of ecs_switch_page_t"][::std::mem::align_of::<ecs_switch_page_t>() - 4usize];
+    ["Size of ecs_switch_page_t"][::std::mem::size_of::<ecs_switch_page_t>() - 32usize];
+    ["Alignment of ecs_switch_page_t"][::std::mem::align_of::<ecs_switch_page_t>() - 8usize];
     ["Offset of field: ecs_switch_page_t::nodes"]
         [::std::mem::offset_of!(ecs_switch_page_t, nodes) - 0usize];
     ["Offset of field: ecs_switch_page_t::values"]
-        [::std::mem::offset_of!(ecs_switch_page_t, values) - 12usize];
+        [::std::mem::offset_of!(ecs_switch_page_t, values) - 16usize];
 };
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
@@ -1975,10 +1978,10 @@ pub struct ecs_switch_t {
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of ecs_switch_t"][::std::mem::size_of::<ecs_switch_t>() - 36usize];
-    ["Alignment of ecs_switch_t"][::std::mem::align_of::<ecs_switch_t>() - 4usize];
+    ["Size of ecs_switch_t"][::std::mem::size_of::<ecs_switch_t>() - 56usize];
+    ["Alignment of ecs_switch_t"][::std::mem::align_of::<ecs_switch_t>() - 8usize];
     ["Offset of field: ecs_switch_t::hdrs"][::std::mem::offset_of!(ecs_switch_t, hdrs) - 0usize];
-    ["Offset of field: ecs_switch_t::pages"][::std::mem::offset_of!(ecs_switch_t, pages) - 24usize];
+    ["Offset of field: ecs_switch_t::pages"][::std::mem::offset_of!(ecs_switch_t, pages) - 40usize];
 };
 unsafe extern "C" {
     #[doc = " Init new switch."]
@@ -2032,12 +2035,12 @@ pub struct ecs_allocator_t {
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of ecs_allocator_t"][::std::mem::size_of::<ecs_allocator_t>() - 80usize];
+    ["Size of ecs_allocator_t"][::std::mem::size_of::<ecs_allocator_t>() - 112usize];
     ["Alignment of ecs_allocator_t"][::std::mem::align_of::<ecs_allocator_t>() - 8usize];
     ["Offset of field: ecs_allocator_t::chunks"]
         [::std::mem::offset_of!(ecs_allocator_t, chunks) - 0usize];
     ["Offset of field: ecs_allocator_t::sizes"]
-        [::std::mem::offset_of!(ecs_allocator_t, sizes) - 32usize];
+        [::std::mem::offset_of!(ecs_allocator_t, sizes) - 48usize];
 };
 unsafe extern "C" {
     pub fn flecs_allocator_init(a: *mut ecs_allocator_t);
@@ -2075,12 +2078,12 @@ pub struct ecs_strbuf_list_elem {
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of ecs_strbuf_list_elem"][::std::mem::size_of::<ecs_strbuf_list_elem>() - 8usize];
-    ["Alignment of ecs_strbuf_list_elem"][::std::mem::align_of::<ecs_strbuf_list_elem>() - 4usize];
+    ["Size of ecs_strbuf_list_elem"][::std::mem::size_of::<ecs_strbuf_list_elem>() - 16usize];
+    ["Alignment of ecs_strbuf_list_elem"][::std::mem::align_of::<ecs_strbuf_list_elem>() - 8usize];
     ["Offset of field: ecs_strbuf_list_elem::count"]
         [::std::mem::offset_of!(ecs_strbuf_list_elem, count) - 0usize];
     ["Offset of field: ecs_strbuf_list_elem::separator"]
-        [::std::mem::offset_of!(ecs_strbuf_list_elem, separator) - 4usize];
+        [::std::mem::offset_of!(ecs_strbuf_list_elem, separator) - 8usize];
 };
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
@@ -2094,19 +2097,19 @@ pub struct ecs_strbuf_t {
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of ecs_strbuf_t"][::std::mem::size_of::<ecs_strbuf_t>() - 784usize];
-    ["Alignment of ecs_strbuf_t"][::std::mem::align_of::<ecs_strbuf_t>() - 4usize];
+    ["Size of ecs_strbuf_t"][::std::mem::size_of::<ecs_strbuf_t>() - 1048usize];
+    ["Alignment of ecs_strbuf_t"][::std::mem::align_of::<ecs_strbuf_t>() - 8usize];
     ["Offset of field: ecs_strbuf_t::content"]
         [::std::mem::offset_of!(ecs_strbuf_t, content) - 0usize];
     ["Offset of field: ecs_strbuf_t::length"]
-        [::std::mem::offset_of!(ecs_strbuf_t, length) - 4usize];
-    ["Offset of field: ecs_strbuf_t::size"][::std::mem::offset_of!(ecs_strbuf_t, size) - 8usize];
+        [::std::mem::offset_of!(ecs_strbuf_t, length) - 8usize];
+    ["Offset of field: ecs_strbuf_t::size"][::std::mem::offset_of!(ecs_strbuf_t, size) - 12usize];
     ["Offset of field: ecs_strbuf_t::list_stack"]
-        [::std::mem::offset_of!(ecs_strbuf_t, list_stack) - 12usize];
+        [::std::mem::offset_of!(ecs_strbuf_t, list_stack) - 16usize];
     ["Offset of field: ecs_strbuf_t::list_sp"]
-        [::std::mem::offset_of!(ecs_strbuf_t, list_sp) - 268usize];
+        [::std::mem::offset_of!(ecs_strbuf_t, list_sp) - 528usize];
     ["Offset of field: ecs_strbuf_t::small_string"]
-        [::std::mem::offset_of!(ecs_strbuf_t, small_string) - 272usize];
+        [::std::mem::offset_of!(ecs_strbuf_t, small_string) - 532usize];
 };
 unsafe extern "C" {
     pub fn ecs_strbuf_append(buffer: *mut ecs_strbuf_t, fmt: *const ::std::os::raw::c_char, ...);
@@ -2205,8 +2208,8 @@ pub struct _iobuf {
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of _iobuf"][::std::mem::size_of::<_iobuf>() - 4usize];
-    ["Alignment of _iobuf"][::std::mem::align_of::<_iobuf>() - 4usize];
+    ["Size of _iobuf"][::std::mem::size_of::<_iobuf>() - 8usize];
+    ["Alignment of _iobuf"][::std::mem::align_of::<_iobuf>() - 8usize];
     ["Offset of field: _iobuf::_Placeholder"]
         [::std::mem::offset_of!(_iobuf, _Placeholder) - 0usize];
 };
@@ -2527,10 +2530,10 @@ unsafe extern "C" {
 unsafe extern "C" {
     pub fn fread(
         _Buffer: *mut ::std::os::raw::c_void,
-        _ElementSize: ::std::os::raw::c_uint,
-        _ElementCount: ::std::os::raw::c_uint,
+        _ElementSize: ::std::os::raw::c_ulonglong,
+        _ElementCount: ::std::os::raw::c_ulonglong,
         _Stream: *mut FILE,
-    ) -> ::std::os::raw::c_uint;
+    ) -> ::std::os::raw::c_ulonglong;
 }
 unsafe extern "C" {
     pub fn freopen(
@@ -2572,10 +2575,10 @@ unsafe extern "C" {
 unsafe extern "C" {
     pub fn fwrite(
         _Buffer: *const ::std::os::raw::c_void,
-        _ElementSize: ::std::os::raw::c_uint,
-        _ElementCount: ::std::os::raw::c_uint,
+        _ElementSize: ::std::os::raw::c_ulonglong,
+        _ElementCount: ::std::os::raw::c_ulonglong,
         _Stream: *mut FILE,
-    ) -> ::std::os::raw::c_uint;
+    ) -> ::std::os::raw::c_ulonglong;
 }
 unsafe extern "C" {
     pub fn getc(_Stream: *mut FILE) -> ::std::os::raw::c_int;
@@ -2881,8 +2884,8 @@ unsafe extern "C" {
 }
 unsafe extern "C" {
     pub fn calloc(
-        _Count: ::std::os::raw::c_uint,
-        _Size: ::std::os::raw::c_uint,
+        _Count: ::std::os::raw::c_ulonglong,
+        _Size: ::std::os::raw::c_ulonglong,
     ) -> *mut ::std::os::raw::c_void;
 }
 unsafe extern "C" {
@@ -2904,7 +2907,7 @@ unsafe extern "C" {
     pub fn _malloc_base(_Size: usize) -> *mut ::std::os::raw::c_void;
 }
 unsafe extern "C" {
-    pub fn malloc(_Size: ::std::os::raw::c_uint) -> *mut ::std::os::raw::c_void;
+    pub fn malloc(_Size: ::std::os::raw::c_ulonglong) -> *mut ::std::os::raw::c_void;
 }
 unsafe extern "C" {
     pub fn _msize_base(_Block: *mut ::std::os::raw::c_void) -> usize;
@@ -2921,7 +2924,7 @@ unsafe extern "C" {
 unsafe extern "C" {
     pub fn realloc(
         _Block: *mut ::std::os::raw::c_void,
-        _Size: ::std::os::raw::c_uint,
+        _Size: ::std::os::raw::c_ulonglong,
     ) -> *mut ::std::os::raw::c_void;
 }
 unsafe extern "C" {
@@ -2999,15 +3002,15 @@ pub struct _heapinfo {
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of _heapinfo"][::std::mem::size_of::<_heapinfo>() - 12usize];
-    ["Alignment of _heapinfo"][::std::mem::align_of::<_heapinfo>() - 4usize];
+    ["Size of _heapinfo"][::std::mem::size_of::<_heapinfo>() - 24usize];
+    ["Alignment of _heapinfo"][::std::mem::align_of::<_heapinfo>() - 8usize];
     ["Offset of field: _heapinfo::_pentry"][::std::mem::offset_of!(_heapinfo, _pentry) - 0usize];
-    ["Offset of field: _heapinfo::_size"][::std::mem::offset_of!(_heapinfo, _size) - 4usize];
-    ["Offset of field: _heapinfo::_useflag"][::std::mem::offset_of!(_heapinfo, _useflag) - 8usize];
+    ["Offset of field: _heapinfo::_size"][::std::mem::offset_of!(_heapinfo, _size) - 8usize];
+    ["Offset of field: _heapinfo::_useflag"][::std::mem::offset_of!(_heapinfo, _useflag) - 16usize];
 };
 pub type _HEAPINFO = _heapinfo;
 unsafe extern "C" {
-    pub fn _alloca(_Size: ::std::os::raw::c_uint) -> *mut ::std::os::raw::c_void;
+    pub fn _alloca(_Size: ::std::os::raw::c_ulonglong) -> *mut ::std::os::raw::c_void;
 }
 unsafe extern "C" {
     pub fn _get_heap_handle() -> isize;
@@ -3273,83 +3276,84 @@ pub struct ecs_os_api_t {
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of ecs_os_api_t"][::std::mem::size_of::<ecs_os_api_t>() - 168usize];
+    ["Size of ecs_os_api_t"][::std::mem::size_of::<ecs_os_api_t>() - 320usize];
     ["Alignment of ecs_os_api_t"][::std::mem::align_of::<ecs_os_api_t>() - 8usize];
     ["Offset of field: ecs_os_api_t::init_"][::std::mem::offset_of!(ecs_os_api_t, init_) - 0usize];
-    ["Offset of field: ecs_os_api_t::fini_"][::std::mem::offset_of!(ecs_os_api_t, fini_) - 4usize];
+    ["Offset of field: ecs_os_api_t::fini_"][::std::mem::offset_of!(ecs_os_api_t, fini_) - 8usize];
     ["Offset of field: ecs_os_api_t::malloc_"]
-        [::std::mem::offset_of!(ecs_os_api_t, malloc_) - 8usize];
+        [::std::mem::offset_of!(ecs_os_api_t, malloc_) - 16usize];
     ["Offset of field: ecs_os_api_t::realloc_"]
-        [::std::mem::offset_of!(ecs_os_api_t, realloc_) - 12usize];
+        [::std::mem::offset_of!(ecs_os_api_t, realloc_) - 24usize];
     ["Offset of field: ecs_os_api_t::calloc_"]
-        [::std::mem::offset_of!(ecs_os_api_t, calloc_) - 16usize];
-    ["Offset of field: ecs_os_api_t::free_"][::std::mem::offset_of!(ecs_os_api_t, free_) - 20usize];
+        [::std::mem::offset_of!(ecs_os_api_t, calloc_) - 32usize];
+    ["Offset of field: ecs_os_api_t::free_"][::std::mem::offset_of!(ecs_os_api_t, free_) - 40usize];
     ["Offset of field: ecs_os_api_t::strdup_"]
-        [::std::mem::offset_of!(ecs_os_api_t, strdup_) - 24usize];
+        [::std::mem::offset_of!(ecs_os_api_t, strdup_) - 48usize];
     ["Offset of field: ecs_os_api_t::thread_new_"]
-        [::std::mem::offset_of!(ecs_os_api_t, thread_new_) - 28usize];
+        [::std::mem::offset_of!(ecs_os_api_t, thread_new_) - 56usize];
     ["Offset of field: ecs_os_api_t::thread_join_"]
-        [::std::mem::offset_of!(ecs_os_api_t, thread_join_) - 32usize];
+        [::std::mem::offset_of!(ecs_os_api_t, thread_join_) - 64usize];
     ["Offset of field: ecs_os_api_t::thread_self_"]
-        [::std::mem::offset_of!(ecs_os_api_t, thread_self_) - 36usize];
+        [::std::mem::offset_of!(ecs_os_api_t, thread_self_) - 72usize];
     ["Offset of field: ecs_os_api_t::task_new_"]
-        [::std::mem::offset_of!(ecs_os_api_t, task_new_) - 40usize];
+        [::std::mem::offset_of!(ecs_os_api_t, task_new_) - 80usize];
     ["Offset of field: ecs_os_api_t::task_join_"]
-        [::std::mem::offset_of!(ecs_os_api_t, task_join_) - 44usize];
-    ["Offset of field: ecs_os_api_t::ainc_"][::std::mem::offset_of!(ecs_os_api_t, ainc_) - 48usize];
-    ["Offset of field: ecs_os_api_t::adec_"][::std::mem::offset_of!(ecs_os_api_t, adec_) - 52usize];
+        [::std::mem::offset_of!(ecs_os_api_t, task_join_) - 88usize];
+    ["Offset of field: ecs_os_api_t::ainc_"][::std::mem::offset_of!(ecs_os_api_t, ainc_) - 96usize];
+    ["Offset of field: ecs_os_api_t::adec_"]
+        [::std::mem::offset_of!(ecs_os_api_t, adec_) - 104usize];
     ["Offset of field: ecs_os_api_t::lainc_"]
-        [::std::mem::offset_of!(ecs_os_api_t, lainc_) - 56usize];
+        [::std::mem::offset_of!(ecs_os_api_t, lainc_) - 112usize];
     ["Offset of field: ecs_os_api_t::ladec_"]
-        [::std::mem::offset_of!(ecs_os_api_t, ladec_) - 60usize];
+        [::std::mem::offset_of!(ecs_os_api_t, ladec_) - 120usize];
     ["Offset of field: ecs_os_api_t::mutex_new_"]
-        [::std::mem::offset_of!(ecs_os_api_t, mutex_new_) - 64usize];
+        [::std::mem::offset_of!(ecs_os_api_t, mutex_new_) - 128usize];
     ["Offset of field: ecs_os_api_t::mutex_free_"]
-        [::std::mem::offset_of!(ecs_os_api_t, mutex_free_) - 68usize];
+        [::std::mem::offset_of!(ecs_os_api_t, mutex_free_) - 136usize];
     ["Offset of field: ecs_os_api_t::mutex_lock_"]
-        [::std::mem::offset_of!(ecs_os_api_t, mutex_lock_) - 72usize];
+        [::std::mem::offset_of!(ecs_os_api_t, mutex_lock_) - 144usize];
     ["Offset of field: ecs_os_api_t::mutex_unlock_"]
-        [::std::mem::offset_of!(ecs_os_api_t, mutex_unlock_) - 76usize];
+        [::std::mem::offset_of!(ecs_os_api_t, mutex_unlock_) - 152usize];
     ["Offset of field: ecs_os_api_t::cond_new_"]
-        [::std::mem::offset_of!(ecs_os_api_t, cond_new_) - 80usize];
+        [::std::mem::offset_of!(ecs_os_api_t, cond_new_) - 160usize];
     ["Offset of field: ecs_os_api_t::cond_free_"]
-        [::std::mem::offset_of!(ecs_os_api_t, cond_free_) - 84usize];
+        [::std::mem::offset_of!(ecs_os_api_t, cond_free_) - 168usize];
     ["Offset of field: ecs_os_api_t::cond_signal_"]
-        [::std::mem::offset_of!(ecs_os_api_t, cond_signal_) - 88usize];
+        [::std::mem::offset_of!(ecs_os_api_t, cond_signal_) - 176usize];
     ["Offset of field: ecs_os_api_t::cond_broadcast_"]
-        [::std::mem::offset_of!(ecs_os_api_t, cond_broadcast_) - 92usize];
+        [::std::mem::offset_of!(ecs_os_api_t, cond_broadcast_) - 184usize];
     ["Offset of field: ecs_os_api_t::cond_wait_"]
-        [::std::mem::offset_of!(ecs_os_api_t, cond_wait_) - 96usize];
+        [::std::mem::offset_of!(ecs_os_api_t, cond_wait_) - 192usize];
     ["Offset of field: ecs_os_api_t::sleep_"]
-        [::std::mem::offset_of!(ecs_os_api_t, sleep_) - 100usize];
-    ["Offset of field: ecs_os_api_t::now_"][::std::mem::offset_of!(ecs_os_api_t, now_) - 104usize];
+        [::std::mem::offset_of!(ecs_os_api_t, sleep_) - 200usize];
+    ["Offset of field: ecs_os_api_t::now_"][::std::mem::offset_of!(ecs_os_api_t, now_) - 208usize];
     ["Offset of field: ecs_os_api_t::get_time_"]
-        [::std::mem::offset_of!(ecs_os_api_t, get_time_) - 108usize];
-    ["Offset of field: ecs_os_api_t::log_"][::std::mem::offset_of!(ecs_os_api_t, log_) - 112usize];
+        [::std::mem::offset_of!(ecs_os_api_t, get_time_) - 216usize];
+    ["Offset of field: ecs_os_api_t::log_"][::std::mem::offset_of!(ecs_os_api_t, log_) - 224usize];
     ["Offset of field: ecs_os_api_t::abort_"]
-        [::std::mem::offset_of!(ecs_os_api_t, abort_) - 116usize];
+        [::std::mem::offset_of!(ecs_os_api_t, abort_) - 232usize];
     ["Offset of field: ecs_os_api_t::dlopen_"]
-        [::std::mem::offset_of!(ecs_os_api_t, dlopen_) - 120usize];
+        [::std::mem::offset_of!(ecs_os_api_t, dlopen_) - 240usize];
     ["Offset of field: ecs_os_api_t::dlproc_"]
-        [::std::mem::offset_of!(ecs_os_api_t, dlproc_) - 124usize];
+        [::std::mem::offset_of!(ecs_os_api_t, dlproc_) - 248usize];
     ["Offset of field: ecs_os_api_t::dlclose_"]
-        [::std::mem::offset_of!(ecs_os_api_t, dlclose_) - 128usize];
+        [::std::mem::offset_of!(ecs_os_api_t, dlclose_) - 256usize];
     ["Offset of field: ecs_os_api_t::module_to_dl_"]
-        [::std::mem::offset_of!(ecs_os_api_t, module_to_dl_) - 132usize];
+        [::std::mem::offset_of!(ecs_os_api_t, module_to_dl_) - 264usize];
     ["Offset of field: ecs_os_api_t::module_to_etc_"]
-        [::std::mem::offset_of!(ecs_os_api_t, module_to_etc_) - 136usize];
+        [::std::mem::offset_of!(ecs_os_api_t, module_to_etc_) - 272usize];
     ["Offset of field: ecs_os_api_t::log_level_"]
-        [::std::mem::offset_of!(ecs_os_api_t, log_level_) - 140usize];
+        [::std::mem::offset_of!(ecs_os_api_t, log_level_) - 280usize];
     ["Offset of field: ecs_os_api_t::log_indent_"]
-        [::std::mem::offset_of!(ecs_os_api_t, log_indent_) - 144usize];
+        [::std::mem::offset_of!(ecs_os_api_t, log_indent_) - 284usize];
     ["Offset of field: ecs_os_api_t::log_last_error_"]
-        [::std::mem::offset_of!(ecs_os_api_t, log_last_error_) - 148usize];
+        [::std::mem::offset_of!(ecs_os_api_t, log_last_error_) - 288usize];
     ["Offset of field: ecs_os_api_t::log_last_timestamp_"]
-        [::std::mem::offset_of!(ecs_os_api_t, log_last_timestamp_) - 152usize];
+        [::std::mem::offset_of!(ecs_os_api_t, log_last_timestamp_) - 296usize];
     ["Offset of field: ecs_os_api_t::flags_"]
-        [::std::mem::offset_of!(ecs_os_api_t, flags_) - 160usize];
+        [::std::mem::offset_of!(ecs_os_api_t, flags_) - 304usize];
     ["Offset of field: ecs_os_api_t::log_out_"]
-        [::std::mem::offset_of!(ecs_os_api_t, log_out_) - 164usize];
+        [::std::mem::offset_of!(ecs_os_api_t, log_out_) - 312usize];
 };
 unsafe extern "C" {
     #[doc = " Static OS API variable with configured callbacks."]
@@ -3492,10 +3496,10 @@ pub struct ecs_type_t {
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of ecs_type_t"][::std::mem::size_of::<ecs_type_t>() - 8usize];
-    ["Alignment of ecs_type_t"][::std::mem::align_of::<ecs_type_t>() - 4usize];
+    ["Size of ecs_type_t"][::std::mem::size_of::<ecs_type_t>() - 16usize];
+    ["Alignment of ecs_type_t"][::std::mem::align_of::<ecs_type_t>() - 8usize];
     ["Offset of field: ecs_type_t::array"][::std::mem::offset_of!(ecs_type_t, array) - 0usize];
-    ["Offset of field: ecs_type_t::count"][::std::mem::offset_of!(ecs_type_t, count) - 4usize];
+    ["Offset of field: ecs_type_t::count"][::std::mem::offset_of!(ecs_type_t, count) - 8usize];
 };
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
@@ -3539,14 +3543,14 @@ pub struct ecs_header_t {
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of ecs_header_t"][::std::mem::size_of::<ecs_header_t>() - 16usize];
-    ["Alignment of ecs_header_t"][::std::mem::align_of::<ecs_header_t>() - 4usize];
+    ["Size of ecs_header_t"][::std::mem::size_of::<ecs_header_t>() - 24usize];
+    ["Alignment of ecs_header_t"][::std::mem::align_of::<ecs_header_t>() - 8usize];
     ["Offset of field: ecs_header_t::magic"][::std::mem::offset_of!(ecs_header_t, magic) - 0usize];
     ["Offset of field: ecs_header_t::type_"][::std::mem::offset_of!(ecs_header_t, type_) - 4usize];
     ["Offset of field: ecs_header_t::refcount"]
         [::std::mem::offset_of!(ecs_header_t, refcount) - 8usize];
     ["Offset of field: ecs_header_t::mixins"]
-        [::std::mem::offset_of!(ecs_header_t, mixins) - 12usize];
+        [::std::mem::offset_of!(ecs_header_t, mixins) - 16usize];
 };
 #[doc = " Record for entity index"]
 #[repr(C)]
@@ -3563,12 +3567,12 @@ pub struct ecs_record_t {
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of ecs_record_t"][::std::mem::size_of::<ecs_record_t>() - 16usize];
-    ["Alignment of ecs_record_t"][::std::mem::align_of::<ecs_record_t>() - 4usize];
+    ["Size of ecs_record_t"][::std::mem::size_of::<ecs_record_t>() - 24usize];
+    ["Alignment of ecs_record_t"][::std::mem::align_of::<ecs_record_t>() - 8usize];
     ["Offset of field: ecs_record_t::idr"][::std::mem::offset_of!(ecs_record_t, idr) - 0usize];
-    ["Offset of field: ecs_record_t::table"][::std::mem::offset_of!(ecs_record_t, table) - 4usize];
-    ["Offset of field: ecs_record_t::row"][::std::mem::offset_of!(ecs_record_t, row) - 8usize];
-    ["Offset of field: ecs_record_t::dense"][::std::mem::offset_of!(ecs_record_t, dense) - 12usize];
+    ["Offset of field: ecs_record_t::table"][::std::mem::offset_of!(ecs_record_t, table) - 8usize];
+    ["Offset of field: ecs_record_t::row"][::std::mem::offset_of!(ecs_record_t, row) - 16usize];
+    ["Offset of field: ecs_record_t::dense"][::std::mem::offset_of!(ecs_record_t, dense) - 20usize];
 };
 #[doc = " Header for table cache elements."]
 #[repr(C)]
@@ -3587,19 +3591,19 @@ pub struct ecs_table_cache_hdr_t {
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of ecs_table_cache_hdr_t"][::std::mem::size_of::<ecs_table_cache_hdr_t>() - 20usize];
+    ["Size of ecs_table_cache_hdr_t"][::std::mem::size_of::<ecs_table_cache_hdr_t>() - 40usize];
     ["Alignment of ecs_table_cache_hdr_t"]
-        [::std::mem::align_of::<ecs_table_cache_hdr_t>() - 4usize];
+        [::std::mem::align_of::<ecs_table_cache_hdr_t>() - 8usize];
     ["Offset of field: ecs_table_cache_hdr_t::cache"]
         [::std::mem::offset_of!(ecs_table_cache_hdr_t, cache) - 0usize];
     ["Offset of field: ecs_table_cache_hdr_t::table"]
-        [::std::mem::offset_of!(ecs_table_cache_hdr_t, table) - 4usize];
+        [::std::mem::offset_of!(ecs_table_cache_hdr_t, table) - 8usize];
     ["Offset of field: ecs_table_cache_hdr_t::prev"]
-        [::std::mem::offset_of!(ecs_table_cache_hdr_t, prev) - 8usize];
+        [::std::mem::offset_of!(ecs_table_cache_hdr_t, prev) - 16usize];
     ["Offset of field: ecs_table_cache_hdr_t::next"]
-        [::std::mem::offset_of!(ecs_table_cache_hdr_t, next) - 12usize];
+        [::std::mem::offset_of!(ecs_table_cache_hdr_t, next) - 24usize];
     ["Offset of field: ecs_table_cache_hdr_t::empty"]
-        [::std::mem::offset_of!(ecs_table_cache_hdr_t, empty) - 16usize];
+        [::std::mem::offset_of!(ecs_table_cache_hdr_t, empty) - 32usize];
 };
 #[doc = " Metadata describing where a component id is stored in a table.\n This type is used as element type for the component index table cache. One\n record exists per table/component in the table. Only records for wildcard ids\n can have a count > 1."]
 #[repr(C)]
@@ -3616,16 +3620,16 @@ pub struct ecs_table_record_t {
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of ecs_table_record_t"][::std::mem::size_of::<ecs_table_record_t>() - 28usize];
-    ["Alignment of ecs_table_record_t"][::std::mem::align_of::<ecs_table_record_t>() - 4usize];
+    ["Size of ecs_table_record_t"][::std::mem::size_of::<ecs_table_record_t>() - 48usize];
+    ["Alignment of ecs_table_record_t"][::std::mem::align_of::<ecs_table_record_t>() - 8usize];
     ["Offset of field: ecs_table_record_t::hdr"]
         [::std::mem::offset_of!(ecs_table_record_t, hdr) - 0usize];
     ["Offset of field: ecs_table_record_t::index"]
-        [::std::mem::offset_of!(ecs_table_record_t, index) - 20usize];
+        [::std::mem::offset_of!(ecs_table_record_t, index) - 40usize];
     ["Offset of field: ecs_table_record_t::count"]
-        [::std::mem::offset_of!(ecs_table_record_t, count) - 22usize];
+        [::std::mem::offset_of!(ecs_table_record_t, count) - 42usize];
     ["Offset of field: ecs_table_record_t::column"]
-        [::std::mem::offset_of!(ecs_table_record_t, column) - 24usize];
+        [::std::mem::offset_of!(ecs_table_record_t, column) - 44usize];
 };
 #[doc = " Function prototype for runnables (systems, observers).\n The run callback overrides the default behavior for iterating through the\n results of a runnable object.\n\n The default runnable iterates the iterator, and calls an iter_action (see\n below) for each returned result.\n\n @param it The iterator to be iterated by the runnable."]
 pub type ecs_run_action_t = ::std::option::Option<unsafe extern "C" fn(it: *mut ecs_iter_t)>;
@@ -3881,48 +3885,48 @@ pub struct ecs_query_t {
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of ecs_query_t"][::std::mem::size_of::<ecs_query_t>() - 2784usize];
+    ["Size of ecs_query_t"][::std::mem::size_of::<ecs_query_t>() - 2816usize];
     ["Alignment of ecs_query_t"][::std::mem::align_of::<ecs_query_t>() - 8usize];
     ["Offset of field: ecs_query_t::hdr"][::std::mem::offset_of!(ecs_query_t, hdr) - 0usize];
-    ["Offset of field: ecs_query_t::terms"][::std::mem::offset_of!(ecs_query_t, terms) - 16usize];
-    ["Offset of field: ecs_query_t::sizes"][::std::mem::offset_of!(ecs_query_t, sizes) - 2320usize];
-    ["Offset of field: ecs_query_t::ids"][::std::mem::offset_of!(ecs_query_t, ids) - 2448usize];
-    ["Offset of field: ecs_query_t::flags"][::std::mem::offset_of!(ecs_query_t, flags) - 2704usize];
+    ["Offset of field: ecs_query_t::terms"][::std::mem::offset_of!(ecs_query_t, terms) - 24usize];
+    ["Offset of field: ecs_query_t::sizes"][::std::mem::offset_of!(ecs_query_t, sizes) - 2328usize];
+    ["Offset of field: ecs_query_t::ids"][::std::mem::offset_of!(ecs_query_t, ids) - 2456usize];
+    ["Offset of field: ecs_query_t::flags"][::std::mem::offset_of!(ecs_query_t, flags) - 2712usize];
     ["Offset of field: ecs_query_t::var_count"]
-        [::std::mem::offset_of!(ecs_query_t, var_count) - 2708usize];
+        [::std::mem::offset_of!(ecs_query_t, var_count) - 2716usize];
     ["Offset of field: ecs_query_t::term_count"]
-        [::std::mem::offset_of!(ecs_query_t, term_count) - 2709usize];
+        [::std::mem::offset_of!(ecs_query_t, term_count) - 2717usize];
     ["Offset of field: ecs_query_t::field_count"]
-        [::std::mem::offset_of!(ecs_query_t, field_count) - 2710usize];
+        [::std::mem::offset_of!(ecs_query_t, field_count) - 2718usize];
     ["Offset of field: ecs_query_t::fixed_fields"]
-        [::std::mem::offset_of!(ecs_query_t, fixed_fields) - 2712usize];
+        [::std::mem::offset_of!(ecs_query_t, fixed_fields) - 2720usize];
     ["Offset of field: ecs_query_t::static_id_fields"]
-        [::std::mem::offset_of!(ecs_query_t, static_id_fields) - 2716usize];
+        [::std::mem::offset_of!(ecs_query_t, static_id_fields) - 2724usize];
     ["Offset of field: ecs_query_t::data_fields"]
-        [::std::mem::offset_of!(ecs_query_t, data_fields) - 2720usize];
+        [::std::mem::offset_of!(ecs_query_t, data_fields) - 2728usize];
     ["Offset of field: ecs_query_t::write_fields"]
-        [::std::mem::offset_of!(ecs_query_t, write_fields) - 2724usize];
+        [::std::mem::offset_of!(ecs_query_t, write_fields) - 2732usize];
     ["Offset of field: ecs_query_t::read_fields"]
-        [::std::mem::offset_of!(ecs_query_t, read_fields) - 2728usize];
+        [::std::mem::offset_of!(ecs_query_t, read_fields) - 2736usize];
     ["Offset of field: ecs_query_t::row_fields"]
-        [::std::mem::offset_of!(ecs_query_t, row_fields) - 2732usize];
+        [::std::mem::offset_of!(ecs_query_t, row_fields) - 2740usize];
     ["Offset of field: ecs_query_t::shared_readonly_fields"]
-        [::std::mem::offset_of!(ecs_query_t, shared_readonly_fields) - 2736usize];
+        [::std::mem::offset_of!(ecs_query_t, shared_readonly_fields) - 2744usize];
     ["Offset of field: ecs_query_t::set_fields"]
-        [::std::mem::offset_of!(ecs_query_t, set_fields) - 2740usize];
+        [::std::mem::offset_of!(ecs_query_t, set_fields) - 2748usize];
     ["Offset of field: ecs_query_t::cache_kind"]
-        [::std::mem::offset_of!(ecs_query_t, cache_kind) - 2744usize];
-    ["Offset of field: ecs_query_t::vars"][::std::mem::offset_of!(ecs_query_t, vars) - 2748usize];
-    ["Offset of field: ecs_query_t::ctx"][::std::mem::offset_of!(ecs_query_t, ctx) - 2752usize];
+        [::std::mem::offset_of!(ecs_query_t, cache_kind) - 2752usize];
+    ["Offset of field: ecs_query_t::vars"][::std::mem::offset_of!(ecs_query_t, vars) - 2760usize];
+    ["Offset of field: ecs_query_t::ctx"][::std::mem::offset_of!(ecs_query_t, ctx) - 2768usize];
     ["Offset of field: ecs_query_t::binding_ctx"]
-        [::std::mem::offset_of!(ecs_query_t, binding_ctx) - 2756usize];
+        [::std::mem::offset_of!(ecs_query_t, binding_ctx) - 2776usize];
     ["Offset of field: ecs_query_t::entity"]
-        [::std::mem::offset_of!(ecs_query_t, entity) - 2760usize];
+        [::std::mem::offset_of!(ecs_query_t, entity) - 2784usize];
     ["Offset of field: ecs_query_t::real_world"]
-        [::std::mem::offset_of!(ecs_query_t, real_world) - 2768usize];
-    ["Offset of field: ecs_query_t::world"][::std::mem::offset_of!(ecs_query_t, world) - 2772usize];
+        [::std::mem::offset_of!(ecs_query_t, real_world) - 2792usize];
+    ["Offset of field: ecs_query_t::world"][::std::mem::offset_of!(ecs_query_t, world) - 2800usize];
     ["Offset of field: ecs_query_t::eval_count"]
-        [::std::mem::offset_of!(ecs_query_t, eval_count) - 2776usize];
+        [::std::mem::offset_of!(ecs_query_t, eval_count) - 2808usize];
 };
 #[doc = " An observer reacts to events matching a query.\n Created with ecs_observer_init()."]
 #[repr(C)]
@@ -3961,36 +3965,37 @@ pub struct ecs_observer_t {
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of ecs_observer_t"][::std::mem::size_of::<ecs_observer_t>() - 144usize];
+    ["Size of ecs_observer_t"][::std::mem::size_of::<ecs_observer_t>() - 192usize];
     ["Alignment of ecs_observer_t"][::std::mem::align_of::<ecs_observer_t>() - 8usize];
     ["Offset of field: ecs_observer_t::hdr"][::std::mem::offset_of!(ecs_observer_t, hdr) - 0usize];
     ["Offset of field: ecs_observer_t::query"]
-        [::std::mem::offset_of!(ecs_observer_t, query) - 16usize];
+        [::std::mem::offset_of!(ecs_observer_t, query) - 24usize];
     ["Offset of field: ecs_observer_t::events"]
-        [::std::mem::offset_of!(ecs_observer_t, events) - 24usize];
+        [::std::mem::offset_of!(ecs_observer_t, events) - 32usize];
     ["Offset of field: ecs_observer_t::event_count"]
-        [::std::mem::offset_of!(ecs_observer_t, event_count) - 88usize];
+        [::std::mem::offset_of!(ecs_observer_t, event_count) - 96usize];
     ["Offset of field: ecs_observer_t::callback"]
-        [::std::mem::offset_of!(ecs_observer_t, callback) - 92usize];
-    ["Offset of field: ecs_observer_t::run"][::std::mem::offset_of!(ecs_observer_t, run) - 96usize];
+        [::std::mem::offset_of!(ecs_observer_t, callback) - 104usize];
+    ["Offset of field: ecs_observer_t::run"]
+        [::std::mem::offset_of!(ecs_observer_t, run) - 112usize];
     ["Offset of field: ecs_observer_t::ctx"]
-        [::std::mem::offset_of!(ecs_observer_t, ctx) - 100usize];
+        [::std::mem::offset_of!(ecs_observer_t, ctx) - 120usize];
     ["Offset of field: ecs_observer_t::callback_ctx"]
-        [::std::mem::offset_of!(ecs_observer_t, callback_ctx) - 104usize];
+        [::std::mem::offset_of!(ecs_observer_t, callback_ctx) - 128usize];
     ["Offset of field: ecs_observer_t::run_ctx"]
-        [::std::mem::offset_of!(ecs_observer_t, run_ctx) - 108usize];
+        [::std::mem::offset_of!(ecs_observer_t, run_ctx) - 136usize];
     ["Offset of field: ecs_observer_t::ctx_free"]
-        [::std::mem::offset_of!(ecs_observer_t, ctx_free) - 112usize];
+        [::std::mem::offset_of!(ecs_observer_t, ctx_free) - 144usize];
     ["Offset of field: ecs_observer_t::callback_ctx_free"]
-        [::std::mem::offset_of!(ecs_observer_t, callback_ctx_free) - 116usize];
+        [::std::mem::offset_of!(ecs_observer_t, callback_ctx_free) - 152usize];
     ["Offset of field: ecs_observer_t::run_ctx_free"]
-        [::std::mem::offset_of!(ecs_observer_t, run_ctx_free) - 120usize];
+        [::std::mem::offset_of!(ecs_observer_t, run_ctx_free) - 160usize];
     ["Offset of field: ecs_observer_t::observable"]
-        [::std::mem::offset_of!(ecs_observer_t, observable) - 124usize];
+        [::std::mem::offset_of!(ecs_observer_t, observable) - 168usize];
     ["Offset of field: ecs_observer_t::world"]
-        [::std::mem::offset_of!(ecs_observer_t, world) - 128usize];
+        [::std::mem::offset_of!(ecs_observer_t, world) - 176usize];
     ["Offset of field: ecs_observer_t::entity"]
-        [::std::mem::offset_of!(ecs_observer_t, entity) - 136usize];
+        [::std::mem::offset_of!(ecs_observer_t, entity) - 184usize];
 };
 #[doc = " Type that contains component lifecycle callbacks.\n\n @ingroup components"]
 #[repr(C)]
@@ -4029,38 +4034,38 @@ pub struct ecs_type_hooks_t {
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of ecs_type_hooks_t"][::std::mem::size_of::<ecs_type_hooks_t>() - 60usize];
-    ["Alignment of ecs_type_hooks_t"][::std::mem::align_of::<ecs_type_hooks_t>() - 4usize];
+    ["Size of ecs_type_hooks_t"][::std::mem::size_of::<ecs_type_hooks_t>() - 120usize];
+    ["Alignment of ecs_type_hooks_t"][::std::mem::align_of::<ecs_type_hooks_t>() - 8usize];
     ["Offset of field: ecs_type_hooks_t::ctor"]
         [::std::mem::offset_of!(ecs_type_hooks_t, ctor) - 0usize];
     ["Offset of field: ecs_type_hooks_t::dtor"]
-        [::std::mem::offset_of!(ecs_type_hooks_t, dtor) - 4usize];
+        [::std::mem::offset_of!(ecs_type_hooks_t, dtor) - 8usize];
     ["Offset of field: ecs_type_hooks_t::copy"]
-        [::std::mem::offset_of!(ecs_type_hooks_t, copy) - 8usize];
+        [::std::mem::offset_of!(ecs_type_hooks_t, copy) - 16usize];
     ["Offset of field: ecs_type_hooks_t::move_"]
-        [::std::mem::offset_of!(ecs_type_hooks_t, move_) - 12usize];
+        [::std::mem::offset_of!(ecs_type_hooks_t, move_) - 24usize];
     ["Offset of field: ecs_type_hooks_t::copy_ctor"]
-        [::std::mem::offset_of!(ecs_type_hooks_t, copy_ctor) - 16usize];
+        [::std::mem::offset_of!(ecs_type_hooks_t, copy_ctor) - 32usize];
     ["Offset of field: ecs_type_hooks_t::move_ctor"]
-        [::std::mem::offset_of!(ecs_type_hooks_t, move_ctor) - 20usize];
+        [::std::mem::offset_of!(ecs_type_hooks_t, move_ctor) - 40usize];
     ["Offset of field: ecs_type_hooks_t::ctor_move_dtor"]
-        [::std::mem::offset_of!(ecs_type_hooks_t, ctor_move_dtor) - 24usize];
+        [::std::mem::offset_of!(ecs_type_hooks_t, ctor_move_dtor) - 48usize];
     ["Offset of field: ecs_type_hooks_t::move_dtor"]
-        [::std::mem::offset_of!(ecs_type_hooks_t, move_dtor) - 28usize];
+        [::std::mem::offset_of!(ecs_type_hooks_t, move_dtor) - 56usize];
     ["Offset of field: ecs_type_hooks_t::on_add"]
-        [::std::mem::offset_of!(ecs_type_hooks_t, on_add) - 32usize];
+        [::std::mem::offset_of!(ecs_type_hooks_t, on_add) - 64usize];
     ["Offset of field: ecs_type_hooks_t::on_set"]
-        [::std::mem::offset_of!(ecs_type_hooks_t, on_set) - 36usize];
+        [::std::mem::offset_of!(ecs_type_hooks_t, on_set) - 72usize];
     ["Offset of field: ecs_type_hooks_t::on_remove"]
-        [::std::mem::offset_of!(ecs_type_hooks_t, on_remove) - 40usize];
+        [::std::mem::offset_of!(ecs_type_hooks_t, on_remove) - 80usize];
     ["Offset of field: ecs_type_hooks_t::ctx"]
-        [::std::mem::offset_of!(ecs_type_hooks_t, ctx) - 44usize];
+        [::std::mem::offset_of!(ecs_type_hooks_t, ctx) - 88usize];
     ["Offset of field: ecs_type_hooks_t::binding_ctx"]
-        [::std::mem::offset_of!(ecs_type_hooks_t, binding_ctx) - 48usize];
+        [::std::mem::offset_of!(ecs_type_hooks_t, binding_ctx) - 96usize];
     ["Offset of field: ecs_type_hooks_t::ctx_free"]
-        [::std::mem::offset_of!(ecs_type_hooks_t, ctx_free) - 52usize];
+        [::std::mem::offset_of!(ecs_type_hooks_t, ctx_free) - 104usize];
     ["Offset of field: ecs_type_hooks_t::binding_ctx_free"]
-        [::std::mem::offset_of!(ecs_type_hooks_t, binding_ctx_free) - 56usize];
+        [::std::mem::offset_of!(ecs_type_hooks_t, binding_ctx_free) - 112usize];
 };
 #[doc = " Type that contains component information (passed to ctors/dtors/...)\n\n @ingroup components"]
 #[repr(C)]
@@ -4079,7 +4084,7 @@ pub struct ecs_type_info_t {
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of ecs_type_info_t"][::std::mem::size_of::<ecs_type_info_t>() - 88usize];
+    ["Size of ecs_type_info_t"][::std::mem::size_of::<ecs_type_info_t>() - 144usize];
     ["Alignment of ecs_type_info_t"][::std::mem::align_of::<ecs_type_info_t>() - 8usize];
     ["Offset of field: ecs_type_info_t::size"]
         [::std::mem::offset_of!(ecs_type_info_t, size) - 0usize];
@@ -4088,9 +4093,9 @@ const _: () = {
     ["Offset of field: ecs_type_info_t::hooks"]
         [::std::mem::offset_of!(ecs_type_info_t, hooks) - 8usize];
     ["Offset of field: ecs_type_info_t::component"]
-        [::std::mem::offset_of!(ecs_type_info_t, component) - 72usize];
+        [::std::mem::offset_of!(ecs_type_info_t, component) - 128usize];
     ["Offset of field: ecs_type_info_t::name"]
-        [::std::mem::offset_of!(ecs_type_info_t, name) - 80usize];
+        [::std::mem::offset_of!(ecs_type_info_t, name) - 136usize];
 };
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
@@ -4114,18 +4119,18 @@ pub struct ecs_event_record_t {
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of ecs_event_record_t"][::std::mem::size_of::<ecs_event_record_t>() - 48usize];
+    ["Size of ecs_event_record_t"][::std::mem::size_of::<ecs_event_record_t>() - 72usize];
     ["Alignment of ecs_event_record_t"][::std::mem::align_of::<ecs_event_record_t>() - 8usize];
     ["Offset of field: ecs_event_record_t::any"]
         [::std::mem::offset_of!(ecs_event_record_t, any) - 0usize];
     ["Offset of field: ecs_event_record_t::wildcard"]
-        [::std::mem::offset_of!(ecs_event_record_t, wildcard) - 4usize];
+        [::std::mem::offset_of!(ecs_event_record_t, wildcard) - 8usize];
     ["Offset of field: ecs_event_record_t::wildcard_pair"]
-        [::std::mem::offset_of!(ecs_event_record_t, wildcard_pair) - 8usize];
+        [::std::mem::offset_of!(ecs_event_record_t, wildcard_pair) - 16usize];
     ["Offset of field: ecs_event_record_t::event_ids"]
-        [::std::mem::offset_of!(ecs_event_record_t, event_ids) - 12usize];
+        [::std::mem::offset_of!(ecs_event_record_t, event_ids) - 24usize];
     ["Offset of field: ecs_event_record_t::event"]
-        [::std::mem::offset_of!(ecs_event_record_t, event) - 40usize];
+        [::std::mem::offset_of!(ecs_event_record_t, event) - 64usize];
 };
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
@@ -4138,18 +4143,18 @@ pub struct ecs_observable_t {
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of ecs_observable_t"][::std::mem::size_of::<ecs_observable_t>() - 240usize];
+    ["Size of ecs_observable_t"][::std::mem::size_of::<ecs_observable_t>() - 352usize];
     ["Alignment of ecs_observable_t"][::std::mem::align_of::<ecs_observable_t>() - 8usize];
     ["Offset of field: ecs_observable_t::on_add"]
         [::std::mem::offset_of!(ecs_observable_t, on_add) - 0usize];
     ["Offset of field: ecs_observable_t::on_remove"]
-        [::std::mem::offset_of!(ecs_observable_t, on_remove) - 48usize];
+        [::std::mem::offset_of!(ecs_observable_t, on_remove) - 72usize];
     ["Offset of field: ecs_observable_t::on_set"]
-        [::std::mem::offset_of!(ecs_observable_t, on_set) - 96usize];
+        [::std::mem::offset_of!(ecs_observable_t, on_set) - 144usize];
     ["Offset of field: ecs_observable_t::on_wildcard"]
-        [::std::mem::offset_of!(ecs_observable_t, on_wildcard) - 144usize];
+        [::std::mem::offset_of!(ecs_observable_t, on_wildcard) - 216usize];
     ["Offset of field: ecs_observable_t::events"]
-        [::std::mem::offset_of!(ecs_observable_t, events) - 192usize];
+        [::std::mem::offset_of!(ecs_observable_t, events) - 288usize];
 };
 #[doc = " Range in table"]
 #[repr(C)]
@@ -4161,14 +4166,14 @@ pub struct ecs_table_range_t {
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of ecs_table_range_t"][::std::mem::size_of::<ecs_table_range_t>() - 12usize];
-    ["Alignment of ecs_table_range_t"][::std::mem::align_of::<ecs_table_range_t>() - 4usize];
+    ["Size of ecs_table_range_t"][::std::mem::size_of::<ecs_table_range_t>() - 16usize];
+    ["Alignment of ecs_table_range_t"][::std::mem::align_of::<ecs_table_range_t>() - 8usize];
     ["Offset of field: ecs_table_range_t::table"]
         [::std::mem::offset_of!(ecs_table_range_t, table) - 0usize];
     ["Offset of field: ecs_table_range_t::offset"]
-        [::std::mem::offset_of!(ecs_table_range_t, offset) - 4usize];
+        [::std::mem::offset_of!(ecs_table_range_t, offset) - 8usize];
     ["Offset of field: ecs_table_range_t::count"]
-        [::std::mem::offset_of!(ecs_table_range_t, count) - 8usize];
+        [::std::mem::offset_of!(ecs_table_range_t, count) - 12usize];
 };
 #[doc = " Value of query variable"]
 #[repr(C)]
@@ -4196,13 +4201,13 @@ pub struct ecs_ref_t {
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of ecs_ref_t"][::std::mem::size_of::<ecs_ref_t>() - 32usize];
+    ["Size of ecs_ref_t"][::std::mem::size_of::<ecs_ref_t>() - 40usize];
     ["Alignment of ecs_ref_t"][::std::mem::align_of::<ecs_ref_t>() - 8usize];
     ["Offset of field: ecs_ref_t::entity"][::std::mem::offset_of!(ecs_ref_t, entity) - 0usize];
     ["Offset of field: ecs_ref_t::id"][::std::mem::offset_of!(ecs_ref_t, id) - 8usize];
     ["Offset of field: ecs_ref_t::table_id"][::std::mem::offset_of!(ecs_ref_t, table_id) - 16usize];
     ["Offset of field: ecs_ref_t::tr"][::std::mem::offset_of!(ecs_ref_t, tr) - 24usize];
-    ["Offset of field: ecs_ref_t::record"][::std::mem::offset_of!(ecs_ref_t, record) - 28usize];
+    ["Offset of field: ecs_ref_t::record"][::std::mem::offset_of!(ecs_ref_t, record) - 32usize];
 };
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
@@ -4246,15 +4251,15 @@ pub struct ecs_table_cache_iter_t {
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of ecs_table_cache_iter_t"][::std::mem::size_of::<ecs_table_cache_iter_t>() - 12usize];
+    ["Size of ecs_table_cache_iter_t"][::std::mem::size_of::<ecs_table_cache_iter_t>() - 24usize];
     ["Alignment of ecs_table_cache_iter_t"]
-        [::std::mem::align_of::<ecs_table_cache_iter_t>() - 4usize];
+        [::std::mem::align_of::<ecs_table_cache_iter_t>() - 8usize];
     ["Offset of field: ecs_table_cache_iter_t::cur"]
         [::std::mem::offset_of!(ecs_table_cache_iter_t, cur) - 0usize];
     ["Offset of field: ecs_table_cache_iter_t::next"]
-        [::std::mem::offset_of!(ecs_table_cache_iter_t, next) - 4usize];
+        [::std::mem::offset_of!(ecs_table_cache_iter_t, next) - 8usize];
     ["Offset of field: ecs_table_cache_iter_t::next_list"]
-        [::std::mem::offset_of!(ecs_table_cache_iter_t, next_list) - 8usize];
+        [::std::mem::offset_of!(ecs_table_cache_iter_t, next_list) - 16usize];
 };
 #[doc = " Each iterator"]
 #[repr(C)]
@@ -4269,19 +4274,19 @@ pub struct ecs_each_iter_t {
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of ecs_each_iter_t"][::std::mem::size_of::<ecs_each_iter_t>() - 48usize];
+    ["Size of ecs_each_iter_t"][::std::mem::size_of::<ecs_each_iter_t>() - 56usize];
     ["Alignment of ecs_each_iter_t"][::std::mem::align_of::<ecs_each_iter_t>() - 8usize];
     ["Offset of field: ecs_each_iter_t::it"][::std::mem::offset_of!(ecs_each_iter_t, it) - 0usize];
     ["Offset of field: ecs_each_iter_t::ids"]
-        [::std::mem::offset_of!(ecs_each_iter_t, ids) - 16usize];
+        [::std::mem::offset_of!(ecs_each_iter_t, ids) - 24usize];
     ["Offset of field: ecs_each_iter_t::sources"]
-        [::std::mem::offset_of!(ecs_each_iter_t, sources) - 24usize];
+        [::std::mem::offset_of!(ecs_each_iter_t, sources) - 32usize];
     ["Offset of field: ecs_each_iter_t::sizes"]
-        [::std::mem::offset_of!(ecs_each_iter_t, sizes) - 32usize];
+        [::std::mem::offset_of!(ecs_each_iter_t, sizes) - 40usize];
     ["Offset of field: ecs_each_iter_t::columns"]
-        [::std::mem::offset_of!(ecs_each_iter_t, columns) - 36usize];
+        [::std::mem::offset_of!(ecs_each_iter_t, columns) - 44usize];
     ["Offset of field: ecs_each_iter_t::trs"]
-        [::std::mem::offset_of!(ecs_each_iter_t, trs) - 40usize];
+        [::std::mem::offset_of!(ecs_each_iter_t, trs) - 48usize];
 };
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
@@ -4316,34 +4321,34 @@ pub struct ecs_query_iter_t {
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of ecs_query_iter_t"][::std::mem::size_of::<ecs_query_iter_t>() - 48usize];
-    ["Alignment of ecs_query_iter_t"][::std::mem::align_of::<ecs_query_iter_t>() - 4usize];
+    ["Size of ecs_query_iter_t"][::std::mem::size_of::<ecs_query_iter_t>() - 96usize];
+    ["Alignment of ecs_query_iter_t"][::std::mem::align_of::<ecs_query_iter_t>() - 8usize];
     ["Offset of field: ecs_query_iter_t::query"]
         [::std::mem::offset_of!(ecs_query_iter_t, query) - 0usize];
     ["Offset of field: ecs_query_iter_t::vars"]
-        [::std::mem::offset_of!(ecs_query_iter_t, vars) - 4usize];
+        [::std::mem::offset_of!(ecs_query_iter_t, vars) - 8usize];
     ["Offset of field: ecs_query_iter_t::query_vars"]
-        [::std::mem::offset_of!(ecs_query_iter_t, query_vars) - 8usize];
+        [::std::mem::offset_of!(ecs_query_iter_t, query_vars) - 16usize];
     ["Offset of field: ecs_query_iter_t::ops"]
-        [::std::mem::offset_of!(ecs_query_iter_t, ops) - 12usize];
+        [::std::mem::offset_of!(ecs_query_iter_t, ops) - 24usize];
     ["Offset of field: ecs_query_iter_t::op_ctx"]
-        [::std::mem::offset_of!(ecs_query_iter_t, op_ctx) - 16usize];
+        [::std::mem::offset_of!(ecs_query_iter_t, op_ctx) - 32usize];
     ["Offset of field: ecs_query_iter_t::node"]
-        [::std::mem::offset_of!(ecs_query_iter_t, node) - 20usize];
+        [::std::mem::offset_of!(ecs_query_iter_t, node) - 40usize];
     ["Offset of field: ecs_query_iter_t::prev"]
-        [::std::mem::offset_of!(ecs_query_iter_t, prev) - 24usize];
+        [::std::mem::offset_of!(ecs_query_iter_t, prev) - 48usize];
     ["Offset of field: ecs_query_iter_t::last"]
-        [::std::mem::offset_of!(ecs_query_iter_t, last) - 28usize];
+        [::std::mem::offset_of!(ecs_query_iter_t, last) - 56usize];
     ["Offset of field: ecs_query_iter_t::written"]
-        [::std::mem::offset_of!(ecs_query_iter_t, written) - 32usize];
+        [::std::mem::offset_of!(ecs_query_iter_t, written) - 64usize];
     ["Offset of field: ecs_query_iter_t::skip_count"]
-        [::std::mem::offset_of!(ecs_query_iter_t, skip_count) - 36usize];
+        [::std::mem::offset_of!(ecs_query_iter_t, skip_count) - 72usize];
     ["Offset of field: ecs_query_iter_t::profile"]
-        [::std::mem::offset_of!(ecs_query_iter_t, profile) - 40usize];
+        [::std::mem::offset_of!(ecs_query_iter_t, profile) - 80usize];
     ["Offset of field: ecs_query_iter_t::op"]
-        [::std::mem::offset_of!(ecs_query_iter_t, op) - 44usize];
+        [::std::mem::offset_of!(ecs_query_iter_t, op) - 88usize];
     ["Offset of field: ecs_query_iter_t::sp"]
-        [::std::mem::offset_of!(ecs_query_iter_t, sp) - 46usize];
+        [::std::mem::offset_of!(ecs_query_iter_t, sp) - 90usize];
 };
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
@@ -4354,14 +4359,14 @@ pub struct ecs_iter_cache_t {
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of ecs_iter_cache_t"][::std::mem::size_of::<ecs_iter_cache_t>() - 8usize];
-    ["Alignment of ecs_iter_cache_t"][::std::mem::align_of::<ecs_iter_cache_t>() - 4usize];
+    ["Size of ecs_iter_cache_t"][::std::mem::size_of::<ecs_iter_cache_t>() - 16usize];
+    ["Alignment of ecs_iter_cache_t"][::std::mem::align_of::<ecs_iter_cache_t>() - 8usize];
     ["Offset of field: ecs_iter_cache_t::stack_cursor"]
         [::std::mem::offset_of!(ecs_iter_cache_t, stack_cursor) - 0usize];
     ["Offset of field: ecs_iter_cache_t::used"]
-        [::std::mem::offset_of!(ecs_iter_cache_t, used) - 4usize];
+        [::std::mem::offset_of!(ecs_iter_cache_t, used) - 8usize];
     ["Offset of field: ecs_iter_cache_t::allocated"]
-        [::std::mem::offset_of!(ecs_iter_cache_t, allocated) - 5usize];
+        [::std::mem::offset_of!(ecs_iter_cache_t, allocated) - 9usize];
 };
 #[repr(C)]
 #[derive(Copy, Clone)]
@@ -4381,7 +4386,7 @@ pub union ecs_iter_private_t__bindgen_ty_1 {
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of ecs_iter_private_t__bindgen_ty_1"]
-        [::std::mem::size_of::<ecs_iter_private_t__bindgen_ty_1>() - 48usize];
+        [::std::mem::size_of::<ecs_iter_private_t__bindgen_ty_1>() - 96usize];
     ["Alignment of ecs_iter_private_t__bindgen_ty_1"]
         [::std::mem::align_of::<ecs_iter_private_t__bindgen_ty_1>() - 8usize];
     ["Offset of field: ecs_iter_private_t__bindgen_ty_1::query"]
@@ -4395,14 +4400,14 @@ const _: () = {
 };
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of ecs_iter_private_t"][::std::mem::size_of::<ecs_iter_private_t>() - 64usize];
+    ["Size of ecs_iter_private_t"][::std::mem::size_of::<ecs_iter_private_t>() - 120usize];
     ["Alignment of ecs_iter_private_t"][::std::mem::align_of::<ecs_iter_private_t>() - 8usize];
     ["Offset of field: ecs_iter_private_t::iter"]
         [::std::mem::offset_of!(ecs_iter_private_t, iter) - 0usize];
     ["Offset of field: ecs_iter_private_t::entity_iter"]
-        [::std::mem::offset_of!(ecs_iter_private_t, entity_iter) - 48usize];
+        [::std::mem::offset_of!(ecs_iter_private_t, entity_iter) - 96usize];
     ["Offset of field: ecs_iter_private_t::cache"]
-        [::std::mem::offset_of!(ecs_iter_private_t, cache) - 52usize];
+        [::std::mem::offset_of!(ecs_iter_private_t, cache) - 104usize];
 };
 unsafe extern "C" {
     pub fn flecs_module_path_from_c(
@@ -4494,7 +4499,7 @@ pub struct ecs_suspend_readonly_state_t {
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of ecs_suspend_readonly_state_t"]
-        [::std::mem::size_of::<ecs_suspend_readonly_state_t>() - 72usize];
+        [::std::mem::size_of::<ecs_suspend_readonly_state_t>() - 96usize];
     ["Alignment of ecs_suspend_readonly_state_t"]
         [::std::mem::align_of::<ecs_suspend_readonly_state_t>() - 8usize];
     ["Offset of field: ecs_suspend_readonly_state_t::is_readonly"]
@@ -4510,9 +4515,9 @@ const _: () = {
     ["Offset of field: ecs_suspend_readonly_state_t::commands"]
         [::std::mem::offset_of!(ecs_suspend_readonly_state_t, commands) - 24usize];
     ["Offset of field: ecs_suspend_readonly_state_t::defer_stack"]
-        [::std::mem::offset_of!(ecs_suspend_readonly_state_t, defer_stack) - 36usize];
+        [::std::mem::offset_of!(ecs_suspend_readonly_state_t, defer_stack) - 40usize];
     ["Offset of field: ecs_suspend_readonly_state_t::stage"]
-        [::std::mem::offset_of!(ecs_suspend_readonly_state_t, stage) - 64usize];
+        [::std::mem::offset_of!(ecs_suspend_readonly_state_t, stage) - 88usize];
 };
 unsafe extern "C" {
     pub fn flecs_suspend_readonly(
@@ -4540,12 +4545,12 @@ pub struct ecs_hm_bucket_t {
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of ecs_hm_bucket_t"][::std::mem::size_of::<ecs_hm_bucket_t>() - 24usize];
-    ["Alignment of ecs_hm_bucket_t"][::std::mem::align_of::<ecs_hm_bucket_t>() - 4usize];
+    ["Size of ecs_hm_bucket_t"][::std::mem::size_of::<ecs_hm_bucket_t>() - 32usize];
+    ["Alignment of ecs_hm_bucket_t"][::std::mem::align_of::<ecs_hm_bucket_t>() - 8usize];
     ["Offset of field: ecs_hm_bucket_t::keys"]
         [::std::mem::offset_of!(ecs_hm_bucket_t, keys) - 0usize];
     ["Offset of field: ecs_hm_bucket_t::values"]
-        [::std::mem::offset_of!(ecs_hm_bucket_t, values) - 12usize];
+        [::std::mem::offset_of!(ecs_hm_bucket_t, values) - 16usize];
 };
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
@@ -4560,21 +4565,21 @@ pub struct ecs_hashmap_t {
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of ecs_hashmap_t"][::std::mem::size_of::<ecs_hashmap_t>() - 76usize];
-    ["Alignment of ecs_hashmap_t"][::std::mem::align_of::<ecs_hashmap_t>() - 4usize];
+    ["Size of ecs_hashmap_t"][::std::mem::size_of::<ecs_hashmap_t>() - 120usize];
+    ["Alignment of ecs_hashmap_t"][::std::mem::align_of::<ecs_hashmap_t>() - 8usize];
     ["Offset of field: ecs_hashmap_t::hash"][::std::mem::offset_of!(ecs_hashmap_t, hash) - 0usize];
     ["Offset of field: ecs_hashmap_t::compare"]
-        [::std::mem::offset_of!(ecs_hashmap_t, compare) - 4usize];
+        [::std::mem::offset_of!(ecs_hashmap_t, compare) - 8usize];
     ["Offset of field: ecs_hashmap_t::key_size"]
-        [::std::mem::offset_of!(ecs_hashmap_t, key_size) - 8usize];
+        [::std::mem::offset_of!(ecs_hashmap_t, key_size) - 16usize];
     ["Offset of field: ecs_hashmap_t::value_size"]
-        [::std::mem::offset_of!(ecs_hashmap_t, value_size) - 12usize];
+        [::std::mem::offset_of!(ecs_hashmap_t, value_size) - 20usize];
     ["Offset of field: ecs_hashmap_t::hashmap_allocator"]
-        [::std::mem::offset_of!(ecs_hashmap_t, hashmap_allocator) - 16usize];
+        [::std::mem::offset_of!(ecs_hashmap_t, hashmap_allocator) - 24usize];
     ["Offset of field: ecs_hashmap_t::bucket_allocator"]
-        [::std::mem::offset_of!(ecs_hashmap_t, bucket_allocator) - 20usize];
+        [::std::mem::offset_of!(ecs_hashmap_t, bucket_allocator) - 32usize];
     ["Offset of field: ecs_hashmap_t::impl_"]
-        [::std::mem::offset_of!(ecs_hashmap_t, impl_) - 52usize];
+        [::std::mem::offset_of!(ecs_hashmap_t, impl_) - 80usize];
 };
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
@@ -4585,14 +4590,14 @@ pub struct flecs_hashmap_iter_t {
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of flecs_hashmap_iter_t"][::std::mem::size_of::<flecs_hashmap_iter_t>() - 24usize];
-    ["Alignment of flecs_hashmap_iter_t"][::std::mem::align_of::<flecs_hashmap_iter_t>() - 4usize];
+    ["Size of flecs_hashmap_iter_t"][::std::mem::size_of::<flecs_hashmap_iter_t>() - 48usize];
+    ["Alignment of flecs_hashmap_iter_t"][::std::mem::align_of::<flecs_hashmap_iter_t>() - 8usize];
     ["Offset of field: flecs_hashmap_iter_t::it"]
         [::std::mem::offset_of!(flecs_hashmap_iter_t, it) - 0usize];
     ["Offset of field: flecs_hashmap_iter_t::bucket"]
-        [::std::mem::offset_of!(flecs_hashmap_iter_t, bucket) - 16usize];
+        [::std::mem::offset_of!(flecs_hashmap_iter_t, bucket) - 32usize];
     ["Offset of field: flecs_hashmap_iter_t::index"]
-        [::std::mem::offset_of!(flecs_hashmap_iter_t, index) - 20usize];
+        [::std::mem::offset_of!(flecs_hashmap_iter_t, index) - 40usize];
 };
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
@@ -4603,15 +4608,15 @@ pub struct flecs_hashmap_result_t {
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of flecs_hashmap_result_t"][::std::mem::size_of::<flecs_hashmap_result_t>() - 16usize];
+    ["Size of flecs_hashmap_result_t"][::std::mem::size_of::<flecs_hashmap_result_t>() - 24usize];
     ["Alignment of flecs_hashmap_result_t"]
         [::std::mem::align_of::<flecs_hashmap_result_t>() - 8usize];
     ["Offset of field: flecs_hashmap_result_t::key"]
         [::std::mem::offset_of!(flecs_hashmap_result_t, key) - 0usize];
     ["Offset of field: flecs_hashmap_result_t::value"]
-        [::std::mem::offset_of!(flecs_hashmap_result_t, value) - 4usize];
+        [::std::mem::offset_of!(flecs_hashmap_result_t, value) - 8usize];
     ["Offset of field: flecs_hashmap_result_t::hash"]
-        [::std::mem::offset_of!(flecs_hashmap_result_t, hash) - 8usize];
+        [::std::mem::offset_of!(flecs_hashmap_result_t, hash) - 16usize];
 };
 unsafe extern "C" {
     pub fn flecs_hashmap_init_(
@@ -4738,7 +4743,7 @@ pub struct ecs_entity_desc_t {
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of ecs_entity_desc_t"][::std::mem::size_of::<ecs_entity_desc_t>() - 56usize];
+    ["Size of ecs_entity_desc_t"][::std::mem::size_of::<ecs_entity_desc_t>() - 88usize];
     ["Alignment of ecs_entity_desc_t"][::std::mem::align_of::<ecs_entity_desc_t>() - 8usize];
     ["Offset of field: ecs_entity_desc_t::_canary"]
         [::std::mem::offset_of!(ecs_entity_desc_t, _canary) - 0usize];
@@ -4749,19 +4754,19 @@ const _: () = {
     ["Offset of field: ecs_entity_desc_t::name"]
         [::std::mem::offset_of!(ecs_entity_desc_t, name) - 24usize];
     ["Offset of field: ecs_entity_desc_t::sep"]
-        [::std::mem::offset_of!(ecs_entity_desc_t, sep) - 28usize];
+        [::std::mem::offset_of!(ecs_entity_desc_t, sep) - 32usize];
     ["Offset of field: ecs_entity_desc_t::root_sep"]
-        [::std::mem::offset_of!(ecs_entity_desc_t, root_sep) - 32usize];
+        [::std::mem::offset_of!(ecs_entity_desc_t, root_sep) - 40usize];
     ["Offset of field: ecs_entity_desc_t::symbol"]
-        [::std::mem::offset_of!(ecs_entity_desc_t, symbol) - 36usize];
+        [::std::mem::offset_of!(ecs_entity_desc_t, symbol) - 48usize];
     ["Offset of field: ecs_entity_desc_t::use_low_id"]
-        [::std::mem::offset_of!(ecs_entity_desc_t, use_low_id) - 40usize];
+        [::std::mem::offset_of!(ecs_entity_desc_t, use_low_id) - 56usize];
     ["Offset of field: ecs_entity_desc_t::add"]
-        [::std::mem::offset_of!(ecs_entity_desc_t, add) - 44usize];
+        [::std::mem::offset_of!(ecs_entity_desc_t, add) - 64usize];
     ["Offset of field: ecs_entity_desc_t::set"]
-        [::std::mem::offset_of!(ecs_entity_desc_t, set) - 48usize];
+        [::std::mem::offset_of!(ecs_entity_desc_t, set) - 72usize];
     ["Offset of field: ecs_entity_desc_t::add_expr"]
-        [::std::mem::offset_of!(ecs_entity_desc_t, add_expr) - 52usize];
+        [::std::mem::offset_of!(ecs_entity_desc_t, add_expr) - 80usize];
 };
 #[doc = " Used with ecs_bulk_init().\n\n @ingroup entities"]
 #[repr(C)]
@@ -4782,20 +4787,20 @@ pub struct ecs_bulk_desc_t {
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of ecs_bulk_desc_t"][::std::mem::size_of::<ecs_bulk_desc_t>() - 280usize];
+    ["Size of ecs_bulk_desc_t"][::std::mem::size_of::<ecs_bulk_desc_t>() - 296usize];
     ["Alignment of ecs_bulk_desc_t"][::std::mem::align_of::<ecs_bulk_desc_t>() - 8usize];
     ["Offset of field: ecs_bulk_desc_t::_canary"]
         [::std::mem::offset_of!(ecs_bulk_desc_t, _canary) - 0usize];
     ["Offset of field: ecs_bulk_desc_t::entities"]
-        [::std::mem::offset_of!(ecs_bulk_desc_t, entities) - 4usize];
+        [::std::mem::offset_of!(ecs_bulk_desc_t, entities) - 8usize];
     ["Offset of field: ecs_bulk_desc_t::count"]
-        [::std::mem::offset_of!(ecs_bulk_desc_t, count) - 8usize];
+        [::std::mem::offset_of!(ecs_bulk_desc_t, count) - 16usize];
     ["Offset of field: ecs_bulk_desc_t::ids"]
-        [::std::mem::offset_of!(ecs_bulk_desc_t, ids) - 16usize];
+        [::std::mem::offset_of!(ecs_bulk_desc_t, ids) - 24usize];
     ["Offset of field: ecs_bulk_desc_t::data"]
-        [::std::mem::offset_of!(ecs_bulk_desc_t, data) - 272usize];
+        [::std::mem::offset_of!(ecs_bulk_desc_t, data) - 280usize];
     ["Offset of field: ecs_bulk_desc_t::table"]
-        [::std::mem::offset_of!(ecs_bulk_desc_t, table) - 276usize];
+        [::std::mem::offset_of!(ecs_bulk_desc_t, table) - 288usize];
 };
 #[doc = " Used with ecs_component_init().\n\n @ingroup components"]
 #[repr(C)]
@@ -4810,7 +4815,7 @@ pub struct ecs_component_desc_t {
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of ecs_component_desc_t"][::std::mem::size_of::<ecs_component_desc_t>() - 104usize];
+    ["Size of ecs_component_desc_t"][::std::mem::size_of::<ecs_component_desc_t>() - 160usize];
     ["Alignment of ecs_component_desc_t"][::std::mem::align_of::<ecs_component_desc_t>() - 8usize];
     ["Offset of field: ecs_component_desc_t::_canary"]
         [::std::mem::offset_of!(ecs_component_desc_t, _canary) - 0usize];
@@ -4910,75 +4915,75 @@ pub struct ecs_iter_t {
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of ecs_iter_t"][::std::mem::size_of::<ecs_iter_t>() - 248usize];
+    ["Size of ecs_iter_t"][::std::mem::size_of::<ecs_iter_t>() - 384usize];
     ["Alignment of ecs_iter_t"][::std::mem::align_of::<ecs_iter_t>() - 8usize];
     ["Offset of field: ecs_iter_t::world"][::std::mem::offset_of!(ecs_iter_t, world) - 0usize];
     ["Offset of field: ecs_iter_t::real_world"]
-        [::std::mem::offset_of!(ecs_iter_t, real_world) - 4usize];
+        [::std::mem::offset_of!(ecs_iter_t, real_world) - 8usize];
     ["Offset of field: ecs_iter_t::entities"]
-        [::std::mem::offset_of!(ecs_iter_t, entities) - 8usize];
-    ["Offset of field: ecs_iter_t::sizes"][::std::mem::offset_of!(ecs_iter_t, sizes) - 12usize];
-    ["Offset of field: ecs_iter_t::table"][::std::mem::offset_of!(ecs_iter_t, table) - 16usize];
+        [::std::mem::offset_of!(ecs_iter_t, entities) - 16usize];
+    ["Offset of field: ecs_iter_t::sizes"][::std::mem::offset_of!(ecs_iter_t, sizes) - 24usize];
+    ["Offset of field: ecs_iter_t::table"][::std::mem::offset_of!(ecs_iter_t, table) - 32usize];
     ["Offset of field: ecs_iter_t::other_table"]
-        [::std::mem::offset_of!(ecs_iter_t, other_table) - 20usize];
-    ["Offset of field: ecs_iter_t::ids"][::std::mem::offset_of!(ecs_iter_t, ids) - 24usize];
+        [::std::mem::offset_of!(ecs_iter_t, other_table) - 40usize];
+    ["Offset of field: ecs_iter_t::ids"][::std::mem::offset_of!(ecs_iter_t, ids) - 48usize];
     ["Offset of field: ecs_iter_t::variables"]
-        [::std::mem::offset_of!(ecs_iter_t, variables) - 28usize];
-    ["Offset of field: ecs_iter_t::trs"][::std::mem::offset_of!(ecs_iter_t, trs) - 32usize];
-    ["Offset of field: ecs_iter_t::sources"][::std::mem::offset_of!(ecs_iter_t, sources) - 36usize];
+        [::std::mem::offset_of!(ecs_iter_t, variables) - 56usize];
+    ["Offset of field: ecs_iter_t::trs"][::std::mem::offset_of!(ecs_iter_t, trs) - 64usize];
+    ["Offset of field: ecs_iter_t::sources"][::std::mem::offset_of!(ecs_iter_t, sources) - 72usize];
     ["Offset of field: ecs_iter_t::constrained_vars"]
-        [::std::mem::offset_of!(ecs_iter_t, constrained_vars) - 40usize];
+        [::std::mem::offset_of!(ecs_iter_t, constrained_vars) - 80usize];
     ["Offset of field: ecs_iter_t::group_id"]
-        [::std::mem::offset_of!(ecs_iter_t, group_id) - 48usize];
+        [::std::mem::offset_of!(ecs_iter_t, group_id) - 88usize];
     ["Offset of field: ecs_iter_t::set_fields"]
-        [::std::mem::offset_of!(ecs_iter_t, set_fields) - 56usize];
+        [::std::mem::offset_of!(ecs_iter_t, set_fields) - 96usize];
     ["Offset of field: ecs_iter_t::ref_fields"]
-        [::std::mem::offset_of!(ecs_iter_t, ref_fields) - 60usize];
+        [::std::mem::offset_of!(ecs_iter_t, ref_fields) - 100usize];
     ["Offset of field: ecs_iter_t::row_fields"]
-        [::std::mem::offset_of!(ecs_iter_t, row_fields) - 64usize];
+        [::std::mem::offset_of!(ecs_iter_t, row_fields) - 104usize];
     ["Offset of field: ecs_iter_t::up_fields"]
-        [::std::mem::offset_of!(ecs_iter_t, up_fields) - 68usize];
-    ["Offset of field: ecs_iter_t::system"][::std::mem::offset_of!(ecs_iter_t, system) - 72usize];
-    ["Offset of field: ecs_iter_t::event"][::std::mem::offset_of!(ecs_iter_t, event) - 80usize];
+        [::std::mem::offset_of!(ecs_iter_t, up_fields) - 108usize];
+    ["Offset of field: ecs_iter_t::system"][::std::mem::offset_of!(ecs_iter_t, system) - 112usize];
+    ["Offset of field: ecs_iter_t::event"][::std::mem::offset_of!(ecs_iter_t, event) - 120usize];
     ["Offset of field: ecs_iter_t::event_id"]
-        [::std::mem::offset_of!(ecs_iter_t, event_id) - 88usize];
+        [::std::mem::offset_of!(ecs_iter_t, event_id) - 128usize];
     ["Offset of field: ecs_iter_t::event_cur"]
-        [::std::mem::offset_of!(ecs_iter_t, event_cur) - 96usize];
+        [::std::mem::offset_of!(ecs_iter_t, event_cur) - 136usize];
     ["Offset of field: ecs_iter_t::field_count"]
-        [::std::mem::offset_of!(ecs_iter_t, field_count) - 100usize];
+        [::std::mem::offset_of!(ecs_iter_t, field_count) - 140usize];
     ["Offset of field: ecs_iter_t::term_index"]
-        [::std::mem::offset_of!(ecs_iter_t, term_index) - 101usize];
+        [::std::mem::offset_of!(ecs_iter_t, term_index) - 141usize];
     ["Offset of field: ecs_iter_t::variable_count"]
-        [::std::mem::offset_of!(ecs_iter_t, variable_count) - 102usize];
-    ["Offset of field: ecs_iter_t::query"][::std::mem::offset_of!(ecs_iter_t, query) - 104usize];
+        [::std::mem::offset_of!(ecs_iter_t, variable_count) - 142usize];
+    ["Offset of field: ecs_iter_t::query"][::std::mem::offset_of!(ecs_iter_t, query) - 144usize];
     ["Offset of field: ecs_iter_t::variable_names"]
-        [::std::mem::offset_of!(ecs_iter_t, variable_names) - 108usize];
-    ["Offset of field: ecs_iter_t::param"][::std::mem::offset_of!(ecs_iter_t, param) - 112usize];
-    ["Offset of field: ecs_iter_t::ctx"][::std::mem::offset_of!(ecs_iter_t, ctx) - 116usize];
+        [::std::mem::offset_of!(ecs_iter_t, variable_names) - 152usize];
+    ["Offset of field: ecs_iter_t::param"][::std::mem::offset_of!(ecs_iter_t, param) - 160usize];
+    ["Offset of field: ecs_iter_t::ctx"][::std::mem::offset_of!(ecs_iter_t, ctx) - 168usize];
     ["Offset of field: ecs_iter_t::binding_ctx"]
-        [::std::mem::offset_of!(ecs_iter_t, binding_ctx) - 120usize];
+        [::std::mem::offset_of!(ecs_iter_t, binding_ctx) - 176usize];
     ["Offset of field: ecs_iter_t::callback_ctx"]
-        [::std::mem::offset_of!(ecs_iter_t, callback_ctx) - 124usize];
+        [::std::mem::offset_of!(ecs_iter_t, callback_ctx) - 184usize];
     ["Offset of field: ecs_iter_t::run_ctx"]
-        [::std::mem::offset_of!(ecs_iter_t, run_ctx) - 128usize];
+        [::std::mem::offset_of!(ecs_iter_t, run_ctx) - 192usize];
     ["Offset of field: ecs_iter_t::delta_time"]
-        [::std::mem::offset_of!(ecs_iter_t, delta_time) - 132usize];
+        [::std::mem::offset_of!(ecs_iter_t, delta_time) - 200usize];
     ["Offset of field: ecs_iter_t::delta_system_time"]
-        [::std::mem::offset_of!(ecs_iter_t, delta_system_time) - 136usize];
+        [::std::mem::offset_of!(ecs_iter_t, delta_system_time) - 204usize];
     ["Offset of field: ecs_iter_t::frame_offset"]
-        [::std::mem::offset_of!(ecs_iter_t, frame_offset) - 140usize];
-    ["Offset of field: ecs_iter_t::offset"][::std::mem::offset_of!(ecs_iter_t, offset) - 144usize];
-    ["Offset of field: ecs_iter_t::count"][::std::mem::offset_of!(ecs_iter_t, count) - 148usize];
-    ["Offset of field: ecs_iter_t::flags"][::std::mem::offset_of!(ecs_iter_t, flags) - 152usize];
+        [::std::mem::offset_of!(ecs_iter_t, frame_offset) - 208usize];
+    ["Offset of field: ecs_iter_t::offset"][::std::mem::offset_of!(ecs_iter_t, offset) - 212usize];
+    ["Offset of field: ecs_iter_t::count"][::std::mem::offset_of!(ecs_iter_t, count) - 216usize];
+    ["Offset of field: ecs_iter_t::flags"][::std::mem::offset_of!(ecs_iter_t, flags) - 220usize];
     ["Offset of field: ecs_iter_t::interrupted_by"]
-        [::std::mem::offset_of!(ecs_iter_t, interrupted_by) - 160usize];
-    ["Offset of field: ecs_iter_t::priv_"][::std::mem::offset_of!(ecs_iter_t, priv_) - 168usize];
-    ["Offset of field: ecs_iter_t::next"][::std::mem::offset_of!(ecs_iter_t, next) - 232usize];
+        [::std::mem::offset_of!(ecs_iter_t, interrupted_by) - 224usize];
+    ["Offset of field: ecs_iter_t::priv_"][::std::mem::offset_of!(ecs_iter_t, priv_) - 232usize];
+    ["Offset of field: ecs_iter_t::next"][::std::mem::offset_of!(ecs_iter_t, next) - 352usize];
     ["Offset of field: ecs_iter_t::callback"]
-        [::std::mem::offset_of!(ecs_iter_t, callback) - 236usize];
-    ["Offset of field: ecs_iter_t::fini"][::std::mem::offset_of!(ecs_iter_t, fini) - 240usize];
+        [::std::mem::offset_of!(ecs_iter_t, callback) - 360usize];
+    ["Offset of field: ecs_iter_t::fini"][::std::mem::offset_of!(ecs_iter_t, fini) - 368usize];
     ["Offset of field: ecs_iter_t::chain_it"]
-        [::std::mem::offset_of!(ecs_iter_t, chain_it) - 244usize];
+        [::std::mem::offset_of!(ecs_iter_t, chain_it) - 376usize];
 };
 #[doc = " Used with ecs_query_init().\n\n \\ingroup queries"]
 #[repr(C)]
@@ -5025,7 +5030,7 @@ pub struct ecs_query_desc_t {
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of ecs_query_desc_t"][::std::mem::size_of::<ecs_query_desc_t>() - 2400usize];
+    ["Size of ecs_query_desc_t"][::std::mem::size_of::<ecs_query_desc_t>() - 2440usize];
     ["Alignment of ecs_query_desc_t"][::std::mem::align_of::<ecs_query_desc_t>() - 8usize];
     ["Offset of field: ecs_query_desc_t::_canary"]
         [::std::mem::offset_of!(ecs_query_desc_t, _canary) - 0usize];
@@ -5034,37 +5039,37 @@ const _: () = {
     ["Offset of field: ecs_query_desc_t::expr"]
         [::std::mem::offset_of!(ecs_query_desc_t, expr) - 2312usize];
     ["Offset of field: ecs_query_desc_t::cache_kind"]
-        [::std::mem::offset_of!(ecs_query_desc_t, cache_kind) - 2316usize];
+        [::std::mem::offset_of!(ecs_query_desc_t, cache_kind) - 2320usize];
     ["Offset of field: ecs_query_desc_t::flags"]
-        [::std::mem::offset_of!(ecs_query_desc_t, flags) - 2320usize];
+        [::std::mem::offset_of!(ecs_query_desc_t, flags) - 2324usize];
     ["Offset of field: ecs_query_desc_t::order_by_callback"]
-        [::std::mem::offset_of!(ecs_query_desc_t, order_by_callback) - 2324usize];
+        [::std::mem::offset_of!(ecs_query_desc_t, order_by_callback) - 2328usize];
     ["Offset of field: ecs_query_desc_t::order_by_table_callback"]
-        [::std::mem::offset_of!(ecs_query_desc_t, order_by_table_callback) - 2328usize];
+        [::std::mem::offset_of!(ecs_query_desc_t, order_by_table_callback) - 2336usize];
     ["Offset of field: ecs_query_desc_t::order_by"]
-        [::std::mem::offset_of!(ecs_query_desc_t, order_by) - 2336usize];
+        [::std::mem::offset_of!(ecs_query_desc_t, order_by) - 2344usize];
     ["Offset of field: ecs_query_desc_t::group_by"]
-        [::std::mem::offset_of!(ecs_query_desc_t, group_by) - 2344usize];
+        [::std::mem::offset_of!(ecs_query_desc_t, group_by) - 2352usize];
     ["Offset of field: ecs_query_desc_t::group_by_callback"]
-        [::std::mem::offset_of!(ecs_query_desc_t, group_by_callback) - 2352usize];
+        [::std::mem::offset_of!(ecs_query_desc_t, group_by_callback) - 2360usize];
     ["Offset of field: ecs_query_desc_t::on_group_create"]
-        [::std::mem::offset_of!(ecs_query_desc_t, on_group_create) - 2356usize];
+        [::std::mem::offset_of!(ecs_query_desc_t, on_group_create) - 2368usize];
     ["Offset of field: ecs_query_desc_t::on_group_delete"]
-        [::std::mem::offset_of!(ecs_query_desc_t, on_group_delete) - 2360usize];
+        [::std::mem::offset_of!(ecs_query_desc_t, on_group_delete) - 2376usize];
     ["Offset of field: ecs_query_desc_t::group_by_ctx"]
-        [::std::mem::offset_of!(ecs_query_desc_t, group_by_ctx) - 2364usize];
+        [::std::mem::offset_of!(ecs_query_desc_t, group_by_ctx) - 2384usize];
     ["Offset of field: ecs_query_desc_t::group_by_ctx_free"]
-        [::std::mem::offset_of!(ecs_query_desc_t, group_by_ctx_free) - 2368usize];
+        [::std::mem::offset_of!(ecs_query_desc_t, group_by_ctx_free) - 2392usize];
     ["Offset of field: ecs_query_desc_t::ctx"]
-        [::std::mem::offset_of!(ecs_query_desc_t, ctx) - 2372usize];
+        [::std::mem::offset_of!(ecs_query_desc_t, ctx) - 2400usize];
     ["Offset of field: ecs_query_desc_t::binding_ctx"]
-        [::std::mem::offset_of!(ecs_query_desc_t, binding_ctx) - 2376usize];
+        [::std::mem::offset_of!(ecs_query_desc_t, binding_ctx) - 2408usize];
     ["Offset of field: ecs_query_desc_t::ctx_free"]
-        [::std::mem::offset_of!(ecs_query_desc_t, ctx_free) - 2380usize];
+        [::std::mem::offset_of!(ecs_query_desc_t, ctx_free) - 2416usize];
     ["Offset of field: ecs_query_desc_t::binding_ctx_free"]
-        [::std::mem::offset_of!(ecs_query_desc_t, binding_ctx_free) - 2384usize];
+        [::std::mem::offset_of!(ecs_query_desc_t, binding_ctx_free) - 2424usize];
     ["Offset of field: ecs_query_desc_t::entity"]
-        [::std::mem::offset_of!(ecs_query_desc_t, entity) - 2392usize];
+        [::std::mem::offset_of!(ecs_query_desc_t, entity) - 2432usize];
 };
 #[doc = " Used with ecs_observer_init().\n\n @ingroup observers"]
 #[repr(C)]
@@ -5106,7 +5111,7 @@ pub struct ecs_observer_desc_t {
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of ecs_observer_desc_t"][::std::mem::size_of::<ecs_observer_desc_t>() - 2536usize];
+    ["Size of ecs_observer_desc_t"][::std::mem::size_of::<ecs_observer_desc_t>() - 2616usize];
     ["Alignment of ecs_observer_desc_t"][::std::mem::align_of::<ecs_observer_desc_t>() - 8usize];
     ["Offset of field: ecs_observer_desc_t::_canary"]
         [::std::mem::offset_of!(ecs_observer_desc_t, _canary) - 0usize];
@@ -5115,33 +5120,33 @@ const _: () = {
     ["Offset of field: ecs_observer_desc_t::query"]
         [::std::mem::offset_of!(ecs_observer_desc_t, query) - 16usize];
     ["Offset of field: ecs_observer_desc_t::events"]
-        [::std::mem::offset_of!(ecs_observer_desc_t, events) - 2416usize];
+        [::std::mem::offset_of!(ecs_observer_desc_t, events) - 2456usize];
     ["Offset of field: ecs_observer_desc_t::yield_existing"]
-        [::std::mem::offset_of!(ecs_observer_desc_t, yield_existing) - 2480usize];
+        [::std::mem::offset_of!(ecs_observer_desc_t, yield_existing) - 2520usize];
     ["Offset of field: ecs_observer_desc_t::callback"]
-        [::std::mem::offset_of!(ecs_observer_desc_t, callback) - 2484usize];
+        [::std::mem::offset_of!(ecs_observer_desc_t, callback) - 2528usize];
     ["Offset of field: ecs_observer_desc_t::run"]
-        [::std::mem::offset_of!(ecs_observer_desc_t, run) - 2488usize];
+        [::std::mem::offset_of!(ecs_observer_desc_t, run) - 2536usize];
     ["Offset of field: ecs_observer_desc_t::ctx"]
-        [::std::mem::offset_of!(ecs_observer_desc_t, ctx) - 2492usize];
+        [::std::mem::offset_of!(ecs_observer_desc_t, ctx) - 2544usize];
     ["Offset of field: ecs_observer_desc_t::ctx_free"]
-        [::std::mem::offset_of!(ecs_observer_desc_t, ctx_free) - 2496usize];
+        [::std::mem::offset_of!(ecs_observer_desc_t, ctx_free) - 2552usize];
     ["Offset of field: ecs_observer_desc_t::callback_ctx"]
-        [::std::mem::offset_of!(ecs_observer_desc_t, callback_ctx) - 2500usize];
+        [::std::mem::offset_of!(ecs_observer_desc_t, callback_ctx) - 2560usize];
     ["Offset of field: ecs_observer_desc_t::callback_ctx_free"]
-        [::std::mem::offset_of!(ecs_observer_desc_t, callback_ctx_free) - 2504usize];
+        [::std::mem::offset_of!(ecs_observer_desc_t, callback_ctx_free) - 2568usize];
     ["Offset of field: ecs_observer_desc_t::run_ctx"]
-        [::std::mem::offset_of!(ecs_observer_desc_t, run_ctx) - 2508usize];
+        [::std::mem::offset_of!(ecs_observer_desc_t, run_ctx) - 2576usize];
     ["Offset of field: ecs_observer_desc_t::run_ctx_free"]
-        [::std::mem::offset_of!(ecs_observer_desc_t, run_ctx_free) - 2512usize];
+        [::std::mem::offset_of!(ecs_observer_desc_t, run_ctx_free) - 2584usize];
     ["Offset of field: ecs_observer_desc_t::observable"]
-        [::std::mem::offset_of!(ecs_observer_desc_t, observable) - 2516usize];
+        [::std::mem::offset_of!(ecs_observer_desc_t, observable) - 2592usize];
     ["Offset of field: ecs_observer_desc_t::last_event_id"]
-        [::std::mem::offset_of!(ecs_observer_desc_t, last_event_id) - 2520usize];
+        [::std::mem::offset_of!(ecs_observer_desc_t, last_event_id) - 2600usize];
     ["Offset of field: ecs_observer_desc_t::term_index_"]
-        [::std::mem::offset_of!(ecs_observer_desc_t, term_index_) - 2524usize];
+        [::std::mem::offset_of!(ecs_observer_desc_t, term_index_) - 2608usize];
     ["Offset of field: ecs_observer_desc_t::flags_"]
-        [::std::mem::offset_of!(ecs_observer_desc_t, flags_) - 2528usize];
+        [::std::mem::offset_of!(ecs_observer_desc_t, flags_) - 2612usize];
 };
 #[doc = " Used with ecs_emit().\n\n @ingroup observers"]
 #[repr(C)]
@@ -5172,30 +5177,30 @@ pub struct ecs_event_desc_t {
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of ecs_event_desc_t"][::std::mem::size_of::<ecs_event_desc_t>() - 56usize];
+    ["Size of ecs_event_desc_t"][::std::mem::size_of::<ecs_event_desc_t>() - 80usize];
     ["Alignment of ecs_event_desc_t"][::std::mem::align_of::<ecs_event_desc_t>() - 8usize];
     ["Offset of field: ecs_event_desc_t::event"]
         [::std::mem::offset_of!(ecs_event_desc_t, event) - 0usize];
     ["Offset of field: ecs_event_desc_t::ids"]
         [::std::mem::offset_of!(ecs_event_desc_t, ids) - 8usize];
     ["Offset of field: ecs_event_desc_t::table"]
-        [::std::mem::offset_of!(ecs_event_desc_t, table) - 12usize];
+        [::std::mem::offset_of!(ecs_event_desc_t, table) - 16usize];
     ["Offset of field: ecs_event_desc_t::other_table"]
-        [::std::mem::offset_of!(ecs_event_desc_t, other_table) - 16usize];
+        [::std::mem::offset_of!(ecs_event_desc_t, other_table) - 24usize];
     ["Offset of field: ecs_event_desc_t::offset"]
-        [::std::mem::offset_of!(ecs_event_desc_t, offset) - 20usize];
+        [::std::mem::offset_of!(ecs_event_desc_t, offset) - 32usize];
     ["Offset of field: ecs_event_desc_t::count"]
-        [::std::mem::offset_of!(ecs_event_desc_t, count) - 24usize];
+        [::std::mem::offset_of!(ecs_event_desc_t, count) - 36usize];
     ["Offset of field: ecs_event_desc_t::entity"]
-        [::std::mem::offset_of!(ecs_event_desc_t, entity) - 32usize];
+        [::std::mem::offset_of!(ecs_event_desc_t, entity) - 40usize];
     ["Offset of field: ecs_event_desc_t::param"]
-        [::std::mem::offset_of!(ecs_event_desc_t, param) - 40usize];
+        [::std::mem::offset_of!(ecs_event_desc_t, param) - 48usize];
     ["Offset of field: ecs_event_desc_t::const_param"]
-        [::std::mem::offset_of!(ecs_event_desc_t, const_param) - 44usize];
+        [::std::mem::offset_of!(ecs_event_desc_t, const_param) - 56usize];
     ["Offset of field: ecs_event_desc_t::observable"]
-        [::std::mem::offset_of!(ecs_event_desc_t, observable) - 48usize];
+        [::std::mem::offset_of!(ecs_event_desc_t, observable) - 64usize];
     ["Offset of field: ecs_event_desc_t::flags"]
-        [::std::mem::offset_of!(ecs_event_desc_t, flags) - 52usize];
+        [::std::mem::offset_of!(ecs_event_desc_t, flags) - 72usize];
 };
 #[doc = " Type with information about the current Flecs build"]
 #[repr(C)]
@@ -5222,26 +5227,26 @@ pub struct ecs_build_info_t {
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of ecs_build_info_t"][::std::mem::size_of::<ecs_build_info_t>() - 24usize];
-    ["Alignment of ecs_build_info_t"][::std::mem::align_of::<ecs_build_info_t>() - 4usize];
+    ["Size of ecs_build_info_t"][::std::mem::size_of::<ecs_build_info_t>() - 40usize];
+    ["Alignment of ecs_build_info_t"][::std::mem::align_of::<ecs_build_info_t>() - 8usize];
     ["Offset of field: ecs_build_info_t::compiler"]
         [::std::mem::offset_of!(ecs_build_info_t, compiler) - 0usize];
     ["Offset of field: ecs_build_info_t::addons"]
-        [::std::mem::offset_of!(ecs_build_info_t, addons) - 4usize];
+        [::std::mem::offset_of!(ecs_build_info_t, addons) - 8usize];
     ["Offset of field: ecs_build_info_t::version"]
-        [::std::mem::offset_of!(ecs_build_info_t, version) - 8usize];
+        [::std::mem::offset_of!(ecs_build_info_t, version) - 16usize];
     ["Offset of field: ecs_build_info_t::version_major"]
-        [::std::mem::offset_of!(ecs_build_info_t, version_major) - 12usize];
+        [::std::mem::offset_of!(ecs_build_info_t, version_major) - 24usize];
     ["Offset of field: ecs_build_info_t::version_minor"]
-        [::std::mem::offset_of!(ecs_build_info_t, version_minor) - 14usize];
+        [::std::mem::offset_of!(ecs_build_info_t, version_minor) - 26usize];
     ["Offset of field: ecs_build_info_t::version_patch"]
-        [::std::mem::offset_of!(ecs_build_info_t, version_patch) - 16usize];
+        [::std::mem::offset_of!(ecs_build_info_t, version_patch) - 28usize];
     ["Offset of field: ecs_build_info_t::debug"]
-        [::std::mem::offset_of!(ecs_build_info_t, debug) - 18usize];
+        [::std::mem::offset_of!(ecs_build_info_t, debug) - 30usize];
     ["Offset of field: ecs_build_info_t::sanitize"]
-        [::std::mem::offset_of!(ecs_build_info_t, sanitize) - 19usize];
+        [::std::mem::offset_of!(ecs_build_info_t, sanitize) - 31usize];
     ["Offset of field: ecs_build_info_t::perf_trace"]
-        [::std::mem::offset_of!(ecs_build_info_t, perf_trace) - 20usize];
+        [::std::mem::offset_of!(ecs_build_info_t, perf_trace) - 32usize];
 };
 #[doc = " Type that contains information about the world."]
 #[repr(C)]
@@ -5449,9 +5454,9 @@ pub struct ecs_query_group_info_t {
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of ecs_query_group_info_t"][::std::mem::size_of::<ecs_query_group_info_t>() - 12usize];
+    ["Size of ecs_query_group_info_t"][::std::mem::size_of::<ecs_query_group_info_t>() - 16usize];
     ["Alignment of ecs_query_group_info_t"]
-        [::std::mem::align_of::<ecs_query_group_info_t>() - 4usize];
+        [::std::mem::align_of::<ecs_query_group_info_t>() - 8usize];
     ["Offset of field: ecs_query_group_info_t::match_count"]
         [::std::mem::offset_of!(ecs_query_group_info_t, match_count) - 0usize];
     ["Offset of field: ecs_query_group_info_t::table_count"]
@@ -5476,17 +5481,17 @@ pub struct EcsIdentifier {
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of EcsIdentifier"][::std::mem::size_of::<EcsIdentifier>() - 32usize];
+    ["Size of EcsIdentifier"][::std::mem::size_of::<EcsIdentifier>() - 40usize];
     ["Alignment of EcsIdentifier"][::std::mem::align_of::<EcsIdentifier>() - 8usize];
     ["Offset of field: EcsIdentifier::value"]
         [::std::mem::offset_of!(EcsIdentifier, value) - 0usize];
     ["Offset of field: EcsIdentifier::length"]
-        [::std::mem::offset_of!(EcsIdentifier, length) - 4usize];
-    ["Offset of field: EcsIdentifier::hash"][::std::mem::offset_of!(EcsIdentifier, hash) - 8usize];
+        [::std::mem::offset_of!(EcsIdentifier, length) - 8usize];
+    ["Offset of field: EcsIdentifier::hash"][::std::mem::offset_of!(EcsIdentifier, hash) - 16usize];
     ["Offset of field: EcsIdentifier::index_hash"]
-        [::std::mem::offset_of!(EcsIdentifier, index_hash) - 16usize];
+        [::std::mem::offset_of!(EcsIdentifier, index_hash) - 24usize];
     ["Offset of field: EcsIdentifier::index"]
-        [::std::mem::offset_of!(EcsIdentifier, index) - 24usize];
+        [::std::mem::offset_of!(EcsIdentifier, index) - 32usize];
 };
 #[doc = " Component information."]
 #[repr(C)]
@@ -5514,8 +5519,8 @@ pub struct EcsPoly {
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of EcsPoly"][::std::mem::size_of::<EcsPoly>() - 4usize];
-    ["Alignment of EcsPoly"][::std::mem::align_of::<EcsPoly>() - 4usize];
+    ["Size of EcsPoly"][::std::mem::size_of::<EcsPoly>() - 8usize];
+    ["Alignment of EcsPoly"][::std::mem::align_of::<EcsPoly>() - 8usize];
     ["Offset of field: EcsPoly::poly"][::std::mem::offset_of!(EcsPoly, poly) - 0usize];
 };
 #[doc = " When added to an entity this informs serialization formats which component\n to use when a value is assigned to an entity without specifying the\n component. This is intended as a hint, serialization formats are not required\n to use it. Adding this component does not change the behavior of core ECS\n operations."]
@@ -5918,13 +5923,13 @@ pub struct ecs_entities_t {
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of ecs_entities_t"][::std::mem::size_of::<ecs_entities_t>() - 12usize];
-    ["Alignment of ecs_entities_t"][::std::mem::align_of::<ecs_entities_t>() - 4usize];
+    ["Size of ecs_entities_t"][::std::mem::size_of::<ecs_entities_t>() - 16usize];
+    ["Alignment of ecs_entities_t"][::std::mem::align_of::<ecs_entities_t>() - 8usize];
     ["Offset of field: ecs_entities_t::ids"][::std::mem::offset_of!(ecs_entities_t, ids) - 0usize];
     ["Offset of field: ecs_entities_t::count"]
-        [::std::mem::offset_of!(ecs_entities_t, count) - 4usize];
+        [::std::mem::offset_of!(ecs_entities_t, count) - 8usize];
     ["Offset of field: ecs_entities_t::alive_count"]
-        [::std::mem::offset_of!(ecs_entities_t, alive_count) - 8usize];
+        [::std::mem::offset_of!(ecs_entities_t, alive_count) - 12usize];
 };
 unsafe extern "C" {
     #[doc = " Return entity identifiers in world.\n This operation returns an array with all entity ids that exist in the world.\n Note that the returned array will change and may get invalidated as a result\n of entity creation & deletion.\n\n To iterate all alive entity ids, do:\n @code\n ecs_entities_t entities = ecs_get_entities(world);\n for (int i = 0; i < entities.alive_count; i ++) {\n   ecs_entity_t id = entities.ids[i];\n }\n @endcode\n\n To iterate not-alive ids, do:\n @code\n for (int i = entities.alive_count + 1; i < entities.count; i ++) {\n   ecs_entity_t id = entities.ids[i];\n }\n @endcode\n\n The returned array does not need to be freed. Mutating the returned array\n will return in undefined behavior (and likely crashes).\n\n @param world The world.\n @return Struct with entity id array."]
@@ -7429,8 +7434,8 @@ pub struct ecs_app_desc_t {
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of ecs_app_desc_t"][::std::mem::size_of::<ecs_app_desc_t>() - 28usize];
-    ["Alignment of ecs_app_desc_t"][::std::mem::align_of::<ecs_app_desc_t>() - 4usize];
+    ["Size of ecs_app_desc_t"][::std::mem::size_of::<ecs_app_desc_t>() - 40usize];
+    ["Alignment of ecs_app_desc_t"][::std::mem::align_of::<ecs_app_desc_t>() - 8usize];
     ["Offset of field: ecs_app_desc_t::target_fps"]
         [::std::mem::offset_of!(ecs_app_desc_t, target_fps) - 0usize];
     ["Offset of field: ecs_app_desc_t::delta_time"]
@@ -7446,8 +7451,8 @@ const _: () = {
     ["Offset of field: ecs_app_desc_t::port"]
         [::std::mem::offset_of!(ecs_app_desc_t, port) - 18usize];
     ["Offset of field: ecs_app_desc_t::init"]
-        [::std::mem::offset_of!(ecs_app_desc_t, init) - 20usize];
-    ["Offset of field: ecs_app_desc_t::ctx"][::std::mem::offset_of!(ecs_app_desc_t, ctx) - 24usize];
+        [::std::mem::offset_of!(ecs_app_desc_t, init) - 24usize];
+    ["Offset of field: ecs_app_desc_t::ctx"][::std::mem::offset_of!(ecs_app_desc_t, ctx) - 32usize];
 };
 #[doc = " Callback type for run action."]
 pub type ecs_app_run_action_t = ::std::option::Option<
@@ -7507,9 +7512,9 @@ const _: () = {
     ["Offset of field: ecs_http_connection_t::server"]
         [::std::mem::offset_of!(ecs_http_connection_t, server) - 8usize];
     ["Offset of field: ecs_http_connection_t::host"]
-        [::std::mem::offset_of!(ecs_http_connection_t, host) - 12usize];
+        [::std::mem::offset_of!(ecs_http_connection_t, host) - 16usize];
     ["Offset of field: ecs_http_connection_t::port"]
-        [::std::mem::offset_of!(ecs_http_connection_t, port) - 140usize];
+        [::std::mem::offset_of!(ecs_http_connection_t, port) - 144usize];
 };
 #[doc = " Helper type used for headers & URL query parameters."]
 #[repr(C)]
@@ -7520,12 +7525,12 @@ pub struct ecs_http_key_value_t {
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of ecs_http_key_value_t"][::std::mem::size_of::<ecs_http_key_value_t>() - 8usize];
-    ["Alignment of ecs_http_key_value_t"][::std::mem::align_of::<ecs_http_key_value_t>() - 4usize];
+    ["Size of ecs_http_key_value_t"][::std::mem::size_of::<ecs_http_key_value_t>() - 16usize];
+    ["Alignment of ecs_http_key_value_t"][::std::mem::align_of::<ecs_http_key_value_t>() - 8usize];
     ["Offset of field: ecs_http_key_value_t::key"]
         [::std::mem::offset_of!(ecs_http_key_value_t, key) - 0usize];
     ["Offset of field: ecs_http_key_value_t::value"]
-        [::std::mem::offset_of!(ecs_http_key_value_t, value) - 4usize];
+        [::std::mem::offset_of!(ecs_http_key_value_t, value) - 8usize];
 };
 pub const ecs_http_method_t_EcsHttpGet: ecs_http_method_t = 0;
 pub const ecs_http_method_t_EcsHttpPost: ecs_http_method_t = 1;
@@ -7551,26 +7556,26 @@ pub struct ecs_http_request_t {
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of ecs_http_request_t"][::std::mem::size_of::<ecs_http_request_t>() - 544usize];
+    ["Size of ecs_http_request_t"][::std::mem::size_of::<ecs_http_request_t>() - 1072usize];
     ["Alignment of ecs_http_request_t"][::std::mem::align_of::<ecs_http_request_t>() - 8usize];
     ["Offset of field: ecs_http_request_t::id"]
         [::std::mem::offset_of!(ecs_http_request_t, id) - 0usize];
     ["Offset of field: ecs_http_request_t::method"]
         [::std::mem::offset_of!(ecs_http_request_t, method) - 8usize];
     ["Offset of field: ecs_http_request_t::path"]
-        [::std::mem::offset_of!(ecs_http_request_t, path) - 12usize];
+        [::std::mem::offset_of!(ecs_http_request_t, path) - 16usize];
     ["Offset of field: ecs_http_request_t::body"]
-        [::std::mem::offset_of!(ecs_http_request_t, body) - 16usize];
+        [::std::mem::offset_of!(ecs_http_request_t, body) - 24usize];
     ["Offset of field: ecs_http_request_t::headers"]
-        [::std::mem::offset_of!(ecs_http_request_t, headers) - 20usize];
+        [::std::mem::offset_of!(ecs_http_request_t, headers) - 32usize];
     ["Offset of field: ecs_http_request_t::params"]
-        [::std::mem::offset_of!(ecs_http_request_t, params) - 276usize];
+        [::std::mem::offset_of!(ecs_http_request_t, params) - 544usize];
     ["Offset of field: ecs_http_request_t::header_count"]
-        [::std::mem::offset_of!(ecs_http_request_t, header_count) - 532usize];
+        [::std::mem::offset_of!(ecs_http_request_t, header_count) - 1056usize];
     ["Offset of field: ecs_http_request_t::param_count"]
-        [::std::mem::offset_of!(ecs_http_request_t, param_count) - 536usize];
+        [::std::mem::offset_of!(ecs_http_request_t, param_count) - 1060usize];
     ["Offset of field: ecs_http_request_t::conn"]
-        [::std::mem::offset_of!(ecs_http_request_t, conn) - 540usize];
+        [::std::mem::offset_of!(ecs_http_request_t, conn) - 1064usize];
 };
 #[doc = " An HTTP reply."]
 #[repr(C)]
@@ -7589,18 +7594,18 @@ pub struct ecs_http_reply_t {
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of ecs_http_reply_t"][::std::mem::size_of::<ecs_http_reply_t>() - 1580usize];
-    ["Alignment of ecs_http_reply_t"][::std::mem::align_of::<ecs_http_reply_t>() - 4usize];
+    ["Size of ecs_http_reply_t"][::std::mem::size_of::<ecs_http_reply_t>() - 2120usize];
+    ["Alignment of ecs_http_reply_t"][::std::mem::align_of::<ecs_http_reply_t>() - 8usize];
     ["Offset of field: ecs_http_reply_t::code"]
         [::std::mem::offset_of!(ecs_http_reply_t, code) - 0usize];
     ["Offset of field: ecs_http_reply_t::body"]
-        [::std::mem::offset_of!(ecs_http_reply_t, body) - 4usize];
+        [::std::mem::offset_of!(ecs_http_reply_t, body) - 8usize];
     ["Offset of field: ecs_http_reply_t::status"]
-        [::std::mem::offset_of!(ecs_http_reply_t, status) - 788usize];
+        [::std::mem::offset_of!(ecs_http_reply_t, status) - 1056usize];
     ["Offset of field: ecs_http_reply_t::content_type"]
-        [::std::mem::offset_of!(ecs_http_reply_t, content_type) - 792usize];
+        [::std::mem::offset_of!(ecs_http_reply_t, content_type) - 1064usize];
     ["Offset of field: ecs_http_reply_t::headers"]
-        [::std::mem::offset_of!(ecs_http_reply_t, headers) - 796usize];
+        [::std::mem::offset_of!(ecs_http_reply_t, headers) - 1072usize];
 };
 unsafe extern "C" {
     #[doc = "< Total number of HTTP requests received."]
@@ -7667,23 +7672,23 @@ pub struct ecs_http_server_desc_t {
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of ecs_http_server_desc_t"][::std::mem::size_of::<ecs_http_server_desc_t>() - 40usize];
+    ["Size of ecs_http_server_desc_t"][::std::mem::size_of::<ecs_http_server_desc_t>() - 56usize];
     ["Alignment of ecs_http_server_desc_t"]
         [::std::mem::align_of::<ecs_http_server_desc_t>() - 8usize];
     ["Offset of field: ecs_http_server_desc_t::callback"]
         [::std::mem::offset_of!(ecs_http_server_desc_t, callback) - 0usize];
     ["Offset of field: ecs_http_server_desc_t::ctx"]
-        [::std::mem::offset_of!(ecs_http_server_desc_t, ctx) - 4usize];
+        [::std::mem::offset_of!(ecs_http_server_desc_t, ctx) - 8usize];
     ["Offset of field: ecs_http_server_desc_t::port"]
-        [::std::mem::offset_of!(ecs_http_server_desc_t, port) - 8usize];
+        [::std::mem::offset_of!(ecs_http_server_desc_t, port) - 16usize];
     ["Offset of field: ecs_http_server_desc_t::ipaddr"]
-        [::std::mem::offset_of!(ecs_http_server_desc_t, ipaddr) - 12usize];
+        [::std::mem::offset_of!(ecs_http_server_desc_t, ipaddr) - 24usize];
     ["Offset of field: ecs_http_server_desc_t::send_queue_wait_ms"]
-        [::std::mem::offset_of!(ecs_http_server_desc_t, send_queue_wait_ms) - 16usize];
+        [::std::mem::offset_of!(ecs_http_server_desc_t, send_queue_wait_ms) - 32usize];
     ["Offset of field: ecs_http_server_desc_t::cache_timeout"]
-        [::std::mem::offset_of!(ecs_http_server_desc_t, cache_timeout) - 24usize];
+        [::std::mem::offset_of!(ecs_http_server_desc_t, cache_timeout) - 40usize];
     ["Offset of field: ecs_http_server_desc_t::cache_purge_timeout"]
-        [::std::mem::offset_of!(ecs_http_server_desc_t, cache_purge_timeout) - 32usize];
+        [::std::mem::offset_of!(ecs_http_server_desc_t, cache_purge_timeout) - 48usize];
 };
 unsafe extern "C" {
     #[doc = " Create server.\n Use ecs_http_server_start() to start receiving requests.\n\n @param desc Server configuration parameters.\n @return The new server, or NULL if creation failed."]
@@ -7757,11 +7762,11 @@ pub struct EcsRest {
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of EcsRest"][::std::mem::size_of::<EcsRest>() - 12usize];
-    ["Alignment of EcsRest"][::std::mem::align_of::<EcsRest>() - 4usize];
+    ["Size of EcsRest"][::std::mem::size_of::<EcsRest>() - 24usize];
+    ["Alignment of EcsRest"][::std::mem::align_of::<EcsRest>() - 8usize];
     ["Offset of field: EcsRest::port"][::std::mem::offset_of!(EcsRest, port) - 0usize];
-    ["Offset of field: EcsRest::ipaddr"][::std::mem::offset_of!(EcsRest, ipaddr) - 4usize];
-    ["Offset of field: EcsRest::impl_"][::std::mem::offset_of!(EcsRest, impl_) - 8usize];
+    ["Offset of field: EcsRest::ipaddr"][::std::mem::offset_of!(EcsRest, ipaddr) - 8usize];
+    ["Offset of field: EcsRest::impl_"][::std::mem::offset_of!(EcsRest, impl_) - 16usize];
 };
 unsafe extern "C" {
     #[doc = " Create HTTP server for REST API.\n This allows for the creation of a REST server that can be managed by the\n application without using Flecs systems.\n\n @param world The world.\n @param desc The HTTP server descriptor.\n @return The HTTP server, or NULL if failed."]
@@ -7904,7 +7909,7 @@ pub struct ecs_pipeline_desc_t {
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of ecs_pipeline_desc_t"][::std::mem::size_of::<ecs_pipeline_desc_t>() - 2408usize];
+    ["Size of ecs_pipeline_desc_t"][::std::mem::size_of::<ecs_pipeline_desc_t>() - 2448usize];
     ["Alignment of ecs_pipeline_desc_t"][::std::mem::align_of::<ecs_pipeline_desc_t>() - 8usize];
     ["Offset of field: ecs_pipeline_desc_t::entity"]
         [::std::mem::offset_of!(ecs_pipeline_desc_t, entity) - 0usize];
@@ -8013,7 +8018,7 @@ pub struct ecs_system_desc_t {
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of ecs_system_desc_t"][::std::mem::size_of::<ecs_system_desc_t>() - 2472usize];
+    ["Size of ecs_system_desc_t"][::std::mem::size_of::<ecs_system_desc_t>() - 2544usize];
     ["Alignment of ecs_system_desc_t"][::std::mem::align_of::<ecs_system_desc_t>() - 8usize];
     ["Offset of field: ecs_system_desc_t::_canary"]
         [::std::mem::offset_of!(ecs_system_desc_t, _canary) - 0usize];
@@ -8022,31 +8027,31 @@ const _: () = {
     ["Offset of field: ecs_system_desc_t::query"]
         [::std::mem::offset_of!(ecs_system_desc_t, query) - 16usize];
     ["Offset of field: ecs_system_desc_t::callback"]
-        [::std::mem::offset_of!(ecs_system_desc_t, callback) - 2416usize];
+        [::std::mem::offset_of!(ecs_system_desc_t, callback) - 2456usize];
     ["Offset of field: ecs_system_desc_t::run"]
-        [::std::mem::offset_of!(ecs_system_desc_t, run) - 2420usize];
+        [::std::mem::offset_of!(ecs_system_desc_t, run) - 2464usize];
     ["Offset of field: ecs_system_desc_t::ctx"]
-        [::std::mem::offset_of!(ecs_system_desc_t, ctx) - 2424usize];
+        [::std::mem::offset_of!(ecs_system_desc_t, ctx) - 2472usize];
     ["Offset of field: ecs_system_desc_t::ctx_free"]
-        [::std::mem::offset_of!(ecs_system_desc_t, ctx_free) - 2428usize];
+        [::std::mem::offset_of!(ecs_system_desc_t, ctx_free) - 2480usize];
     ["Offset of field: ecs_system_desc_t::callback_ctx"]
-        [::std::mem::offset_of!(ecs_system_desc_t, callback_ctx) - 2432usize];
+        [::std::mem::offset_of!(ecs_system_desc_t, callback_ctx) - 2488usize];
     ["Offset of field: ecs_system_desc_t::callback_ctx_free"]
-        [::std::mem::offset_of!(ecs_system_desc_t, callback_ctx_free) - 2436usize];
+        [::std::mem::offset_of!(ecs_system_desc_t, callback_ctx_free) - 2496usize];
     ["Offset of field: ecs_system_desc_t::run_ctx"]
-        [::std::mem::offset_of!(ecs_system_desc_t, run_ctx) - 2440usize];
+        [::std::mem::offset_of!(ecs_system_desc_t, run_ctx) - 2504usize];
     ["Offset of field: ecs_system_desc_t::run_ctx_free"]
-        [::std::mem::offset_of!(ecs_system_desc_t, run_ctx_free) - 2444usize];
+        [::std::mem::offset_of!(ecs_system_desc_t, run_ctx_free) - 2512usize];
     ["Offset of field: ecs_system_desc_t::interval"]
-        [::std::mem::offset_of!(ecs_system_desc_t, interval) - 2448usize];
+        [::std::mem::offset_of!(ecs_system_desc_t, interval) - 2520usize];
     ["Offset of field: ecs_system_desc_t::rate"]
-        [::std::mem::offset_of!(ecs_system_desc_t, rate) - 2452usize];
+        [::std::mem::offset_of!(ecs_system_desc_t, rate) - 2524usize];
     ["Offset of field: ecs_system_desc_t::tick_source"]
-        [::std::mem::offset_of!(ecs_system_desc_t, tick_source) - 2456usize];
+        [::std::mem::offset_of!(ecs_system_desc_t, tick_source) - 2528usize];
     ["Offset of field: ecs_system_desc_t::multi_threaded"]
-        [::std::mem::offset_of!(ecs_system_desc_t, multi_threaded) - 2464usize];
+        [::std::mem::offset_of!(ecs_system_desc_t, multi_threaded) - 2536usize];
     ["Offset of field: ecs_system_desc_t::immediate"]
-        [::std::mem::offset_of!(ecs_system_desc_t, immediate) - 2465usize];
+        [::std::mem::offset_of!(ecs_system_desc_t, immediate) - 2537usize];
 };
 unsafe extern "C" {
     #[doc = " Create a system"]
@@ -8096,42 +8101,43 @@ pub struct ecs_system_t {
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of ecs_system_t"][::std::mem::size_of::<ecs_system_t>() - 120usize];
+    ["Size of ecs_system_t"][::std::mem::size_of::<ecs_system_t>() - 160usize];
     ["Alignment of ecs_system_t"][::std::mem::align_of::<ecs_system_t>() - 8usize];
     ["Offset of field: ecs_system_t::hdr"][::std::mem::offset_of!(ecs_system_t, hdr) - 0usize];
-    ["Offset of field: ecs_system_t::run"][::std::mem::offset_of!(ecs_system_t, run) - 16usize];
+    ["Offset of field: ecs_system_t::run"][::std::mem::offset_of!(ecs_system_t, run) - 24usize];
     ["Offset of field: ecs_system_t::action"]
-        [::std::mem::offset_of!(ecs_system_t, action) - 20usize];
-    ["Offset of field: ecs_system_t::query"][::std::mem::offset_of!(ecs_system_t, query) - 24usize];
+        [::std::mem::offset_of!(ecs_system_t, action) - 32usize];
+    ["Offset of field: ecs_system_t::query"][::std::mem::offset_of!(ecs_system_t, query) - 40usize];
     ["Offset of field: ecs_system_t::query_entity"]
-        [::std::mem::offset_of!(ecs_system_t, query_entity) - 32usize];
+        [::std::mem::offset_of!(ecs_system_t, query_entity) - 48usize];
     ["Offset of field: ecs_system_t::tick_source"]
-        [::std::mem::offset_of!(ecs_system_t, tick_source) - 40usize];
+        [::std::mem::offset_of!(ecs_system_t, tick_source) - 56usize];
     ["Offset of field: ecs_system_t::multi_threaded"]
-        [::std::mem::offset_of!(ecs_system_t, multi_threaded) - 48usize];
+        [::std::mem::offset_of!(ecs_system_t, multi_threaded) - 64usize];
     ["Offset of field: ecs_system_t::immediate"]
-        [::std::mem::offset_of!(ecs_system_t, immediate) - 49usize];
-    ["Offset of field: ecs_system_t::ctx"][::std::mem::offset_of!(ecs_system_t, ctx) - 52usize];
+        [::std::mem::offset_of!(ecs_system_t, immediate) - 65usize];
+    ["Offset of field: ecs_system_t::ctx"][::std::mem::offset_of!(ecs_system_t, ctx) - 72usize];
     ["Offset of field: ecs_system_t::callback_ctx"]
-        [::std::mem::offset_of!(ecs_system_t, callback_ctx) - 56usize];
+        [::std::mem::offset_of!(ecs_system_t, callback_ctx) - 80usize];
     ["Offset of field: ecs_system_t::run_ctx"]
-        [::std::mem::offset_of!(ecs_system_t, run_ctx) - 60usize];
+        [::std::mem::offset_of!(ecs_system_t, run_ctx) - 88usize];
     ["Offset of field: ecs_system_t::ctx_free"]
-        [::std::mem::offset_of!(ecs_system_t, ctx_free) - 64usize];
+        [::std::mem::offset_of!(ecs_system_t, ctx_free) - 96usize];
     ["Offset of field: ecs_system_t::callback_ctx_free"]
-        [::std::mem::offset_of!(ecs_system_t, callback_ctx_free) - 68usize];
+        [::std::mem::offset_of!(ecs_system_t, callback_ctx_free) - 104usize];
     ["Offset of field: ecs_system_t::run_ctx_free"]
-        [::std::mem::offset_of!(ecs_system_t, run_ctx_free) - 72usize];
+        [::std::mem::offset_of!(ecs_system_t, run_ctx_free) - 112usize];
     ["Offset of field: ecs_system_t::time_spent"]
-        [::std::mem::offset_of!(ecs_system_t, time_spent) - 76usize];
+        [::std::mem::offset_of!(ecs_system_t, time_spent) - 120usize];
     ["Offset of field: ecs_system_t::time_passed"]
-        [::std::mem::offset_of!(ecs_system_t, time_passed) - 80usize];
+        [::std::mem::offset_of!(ecs_system_t, time_passed) - 124usize];
     ["Offset of field: ecs_system_t::last_frame"]
-        [::std::mem::offset_of!(ecs_system_t, last_frame) - 88usize];
-    ["Offset of field: ecs_system_t::world"][::std::mem::offset_of!(ecs_system_t, world) - 96usize];
+        [::std::mem::offset_of!(ecs_system_t, last_frame) - 128usize];
+    ["Offset of field: ecs_system_t::world"]
+        [::std::mem::offset_of!(ecs_system_t, world) - 136usize];
     ["Offset of field: ecs_system_t::entity"]
-        [::std::mem::offset_of!(ecs_system_t, entity) - 104usize];
-    ["Offset of field: ecs_system_t::dtor"][::std::mem::offset_of!(ecs_system_t, dtor) - 112usize];
+        [::std::mem::offset_of!(ecs_system_t, entity) - 144usize];
+    ["Offset of field: ecs_system_t::dtor"][::std::mem::offset_of!(ecs_system_t, dtor) - 152usize];
 };
 unsafe extern "C" {
     #[doc = " Get system object.\n Returns the system object. Can be used to access various information about\n the system, like the query and context.\n\n @param world The world.\n @param system The system.\n @return The system object."]
@@ -8708,22 +8714,22 @@ pub struct ecs_pipeline_stats_t {
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of ecs_pipeline_stats_t"][::std::mem::size_of::<ecs_pipeline_stats_t>() - 44usize];
-    ["Alignment of ecs_pipeline_stats_t"][::std::mem::align_of::<ecs_pipeline_stats_t>() - 4usize];
+    ["Size of ecs_pipeline_stats_t"][::std::mem::size_of::<ecs_pipeline_stats_t>() - 56usize];
+    ["Alignment of ecs_pipeline_stats_t"][::std::mem::align_of::<ecs_pipeline_stats_t>() - 8usize];
     ["Offset of field: ecs_pipeline_stats_t::canary_"]
         [::std::mem::offset_of!(ecs_pipeline_stats_t, canary_) - 0usize];
     ["Offset of field: ecs_pipeline_stats_t::systems"]
-        [::std::mem::offset_of!(ecs_pipeline_stats_t, systems) - 4usize];
+        [::std::mem::offset_of!(ecs_pipeline_stats_t, systems) - 8usize];
     ["Offset of field: ecs_pipeline_stats_t::sync_points"]
-        [::std::mem::offset_of!(ecs_pipeline_stats_t, sync_points) - 16usize];
+        [::std::mem::offset_of!(ecs_pipeline_stats_t, sync_points) - 24usize];
     ["Offset of field: ecs_pipeline_stats_t::t"]
-        [::std::mem::offset_of!(ecs_pipeline_stats_t, t) - 28usize];
+        [::std::mem::offset_of!(ecs_pipeline_stats_t, t) - 40usize];
     ["Offset of field: ecs_pipeline_stats_t::system_count"]
-        [::std::mem::offset_of!(ecs_pipeline_stats_t, system_count) - 32usize];
+        [::std::mem::offset_of!(ecs_pipeline_stats_t, system_count) - 44usize];
     ["Offset of field: ecs_pipeline_stats_t::active_system_count"]
-        [::std::mem::offset_of!(ecs_pipeline_stats_t, active_system_count) - 36usize];
+        [::std::mem::offset_of!(ecs_pipeline_stats_t, active_system_count) - 48usize];
     ["Offset of field: ecs_pipeline_stats_t::rebuild_count"]
-        [::std::mem::offset_of!(ecs_pipeline_stats_t, rebuild_count) - 40usize];
+        [::std::mem::offset_of!(ecs_pipeline_stats_t, rebuild_count) - 52usize];
 };
 unsafe extern "C" {
     #[doc = " Get world statistics.\n\n @param world The world.\n @param stats Out parameter for statistics."]
@@ -8946,8 +8952,8 @@ pub struct EcsSystemStats {
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of EcsSystemStats"][::std::mem::size_of::<EcsSystemStats>() - 32usize];
-    ["Alignment of EcsSystemStats"][::std::mem::align_of::<EcsSystemStats>() - 4usize];
+    ["Size of EcsSystemStats"][::std::mem::size_of::<EcsSystemStats>() - 48usize];
+    ["Alignment of EcsSystemStats"][::std::mem::align_of::<EcsSystemStats>() - 8usize];
     ["Offset of field: EcsSystemStats::hdr"][::std::mem::offset_of!(EcsSystemStats, hdr) - 0usize];
     ["Offset of field: EcsSystemStats::stats"]
         [::std::mem::offset_of!(EcsSystemStats, stats) - 8usize];
@@ -8961,8 +8967,8 @@ pub struct EcsPipelineStats {
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of EcsPipelineStats"][::std::mem::size_of::<EcsPipelineStats>() - 32usize];
-    ["Alignment of EcsPipelineStats"][::std::mem::align_of::<EcsPipelineStats>() - 4usize];
+    ["Size of EcsPipelineStats"][::std::mem::size_of::<EcsPipelineStats>() - 48usize];
+    ["Alignment of EcsPipelineStats"][::std::mem::align_of::<EcsPipelineStats>() - 8usize];
     ["Offset of field: EcsPipelineStats::hdr"]
         [::std::mem::offset_of!(EcsPipelineStats, hdr) - 0usize];
     ["Offset of field: EcsPipelineStats::stats"]
@@ -8997,7 +9003,7 @@ pub struct EcsWorldSummary {
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of EcsWorldSummary"][::std::mem::size_of::<EcsWorldSummary>() - 104usize];
+    ["Size of EcsWorldSummary"][::std::mem::size_of::<EcsWorldSummary>() - 120usize];
     ["Alignment of EcsWorldSummary"][::std::mem::align_of::<EcsWorldSummary>() - 8usize];
     ["Offset of field: EcsWorldSummary::target_fps"]
         [::std::mem::offset_of!(EcsWorldSummary, target_fps) - 0usize];
@@ -9222,8 +9228,8 @@ pub struct EcsAlertInstance {
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of EcsAlertInstance"][::std::mem::size_of::<EcsAlertInstance>() - 4usize];
-    ["Alignment of EcsAlertInstance"][::std::mem::align_of::<EcsAlertInstance>() - 4usize];
+    ["Size of EcsAlertInstance"][::std::mem::size_of::<EcsAlertInstance>() - 8usize];
+    ["Alignment of EcsAlertInstance"][::std::mem::align_of::<EcsAlertInstance>() - 8usize];
     ["Offset of field: EcsAlertInstance::message"]
         [::std::mem::offset_of!(EcsAlertInstance, message) - 0usize];
 };
@@ -9241,8 +9247,8 @@ pub struct EcsAlertsActive {
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of EcsAlertsActive"][::std::mem::size_of::<EcsAlertsActive>() - 36usize];
-    ["Alignment of EcsAlertsActive"][::std::mem::align_of::<EcsAlertsActive>() - 4usize];
+    ["Size of EcsAlertsActive"][::std::mem::size_of::<EcsAlertsActive>() - 56usize];
+    ["Alignment of EcsAlertsActive"][::std::mem::align_of::<EcsAlertsActive>() - 8usize];
     ["Offset of field: EcsAlertsActive::info_count"]
         [::std::mem::offset_of!(EcsAlertsActive, info_count) - 0usize];
     ["Offset of field: EcsAlertsActive::warning_count"]
@@ -9250,7 +9256,7 @@ const _: () = {
     ["Offset of field: EcsAlertsActive::error_count"]
         [::std::mem::offset_of!(EcsAlertsActive, error_count) - 8usize];
     ["Offset of field: EcsAlertsActive::alerts"]
-        [::std::mem::offset_of!(EcsAlertsActive, alerts) - 12usize];
+        [::std::mem::offset_of!(EcsAlertsActive, alerts) - 16usize];
 };
 #[doc = " Alert severity filter.\n A severity filter can adjust the severity of an alert based on whether an\n entity in the alert query has a specific component. For example, a filter\n could check if an entity has the \"Production\" tag, and increase the default\n severity of an alert from Warning to Error."]
 #[repr(C)]
@@ -9264,7 +9270,7 @@ pub struct ecs_alert_severity_filter_t {
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of ecs_alert_severity_filter_t"]
-        [::std::mem::size_of::<ecs_alert_severity_filter_t>() - 24usize];
+        [::std::mem::size_of::<ecs_alert_severity_filter_t>() - 32usize];
     ["Alignment of ecs_alert_severity_filter_t"]
         [::std::mem::align_of::<ecs_alert_severity_filter_t>() - 8usize];
     ["Offset of field: ecs_alert_severity_filter_t::severity"]
@@ -9274,7 +9280,7 @@ const _: () = {
     ["Offset of field: ecs_alert_severity_filter_t::var"]
         [::std::mem::offset_of!(ecs_alert_severity_filter_t, var) - 16usize];
     ["Offset of field: ecs_alert_severity_filter_t::_var_index"]
-        [::std::mem::offset_of!(ecs_alert_severity_filter_t, _var_index) - 20usize];
+        [::std::mem::offset_of!(ecs_alert_severity_filter_t, _var_index) - 24usize];
 };
 #[doc = " Alert descriptor, used with ecs_alert_init()."]
 #[repr(C)]
@@ -9306,7 +9312,7 @@ pub struct ecs_alert_desc_t {
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of ecs_alert_desc_t"][::std::mem::size_of::<ecs_alert_desc_t>() - 2568usize];
+    ["Size of ecs_alert_desc_t"][::std::mem::size_of::<ecs_alert_desc_t>() - 2648usize];
     ["Alignment of ecs_alert_desc_t"][::std::mem::align_of::<ecs_alert_desc_t>() - 8usize];
     ["Offset of field: ecs_alert_desc_t::_canary"]
         [::std::mem::offset_of!(ecs_alert_desc_t, _canary) - 0usize];
@@ -9315,23 +9321,23 @@ const _: () = {
     ["Offset of field: ecs_alert_desc_t::query"]
         [::std::mem::offset_of!(ecs_alert_desc_t, query) - 16usize];
     ["Offset of field: ecs_alert_desc_t::message"]
-        [::std::mem::offset_of!(ecs_alert_desc_t, message) - 2416usize];
+        [::std::mem::offset_of!(ecs_alert_desc_t, message) - 2456usize];
     ["Offset of field: ecs_alert_desc_t::doc_name"]
-        [::std::mem::offset_of!(ecs_alert_desc_t, doc_name) - 2420usize];
+        [::std::mem::offset_of!(ecs_alert_desc_t, doc_name) - 2464usize];
     ["Offset of field: ecs_alert_desc_t::brief"]
-        [::std::mem::offset_of!(ecs_alert_desc_t, brief) - 2424usize];
+        [::std::mem::offset_of!(ecs_alert_desc_t, brief) - 2472usize];
     ["Offset of field: ecs_alert_desc_t::severity"]
-        [::std::mem::offset_of!(ecs_alert_desc_t, severity) - 2432usize];
+        [::std::mem::offset_of!(ecs_alert_desc_t, severity) - 2480usize];
     ["Offset of field: ecs_alert_desc_t::severity_filters"]
-        [::std::mem::offset_of!(ecs_alert_desc_t, severity_filters) - 2440usize];
+        [::std::mem::offset_of!(ecs_alert_desc_t, severity_filters) - 2488usize];
     ["Offset of field: ecs_alert_desc_t::retain_period"]
-        [::std::mem::offset_of!(ecs_alert_desc_t, retain_period) - 2536usize];
+        [::std::mem::offset_of!(ecs_alert_desc_t, retain_period) - 2616usize];
     ["Offset of field: ecs_alert_desc_t::member"]
-        [::std::mem::offset_of!(ecs_alert_desc_t, member) - 2544usize];
+        [::std::mem::offset_of!(ecs_alert_desc_t, member) - 2624usize];
     ["Offset of field: ecs_alert_desc_t::id"]
-        [::std::mem::offset_of!(ecs_alert_desc_t, id) - 2552usize];
+        [::std::mem::offset_of!(ecs_alert_desc_t, id) - 2632usize];
     ["Offset of field: ecs_alert_desc_t::var"]
-        [::std::mem::offset_of!(ecs_alert_desc_t, var) - 2560usize];
+        [::std::mem::offset_of!(ecs_alert_desc_t, var) - 2640usize];
 };
 unsafe extern "C" {
     #[doc = " Create a new alert.\n An alert is a query that is evaluated periodically and creates alert\n instances for each entity that matches the query. Alerts can be used to\n automate detection of errors in an application.\n\n Alerts are automatically cleared when a query is no longer true for an alert\n instance. At most one alert instance will be created per matched entity.\n\n Alert instances have three components:\n - AlertInstance: contains the alert message for the instance\n - MetricSource: contains the entity that triggered the alert\n - MetricValue: contains how long the alert has been active\n\n Alerts reuse components from the metrics addon so that alert instances can be\n tracked and discovered as metrics. Just like metrics, alert instances are\n created as children of the alert.\n\n When an entity has active alerts, it will have the EcsAlertsActive component\n which contains a map with active alerts for the entity. This component\n will be automatically removed once all alerts are cleared for the entity.\n\n @param world The world.\n @param desc Alert description.\n @return The alert entity."]
@@ -9379,18 +9385,18 @@ pub struct ecs_from_json_desc_t {
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of ecs_from_json_desc_t"][::std::mem::size_of::<ecs_from_json_desc_t>() - 20usize];
-    ["Alignment of ecs_from_json_desc_t"][::std::mem::align_of::<ecs_from_json_desc_t>() - 4usize];
+    ["Size of ecs_from_json_desc_t"][::std::mem::size_of::<ecs_from_json_desc_t>() - 40usize];
+    ["Alignment of ecs_from_json_desc_t"][::std::mem::align_of::<ecs_from_json_desc_t>() - 8usize];
     ["Offset of field: ecs_from_json_desc_t::name"]
         [::std::mem::offset_of!(ecs_from_json_desc_t, name) - 0usize];
     ["Offset of field: ecs_from_json_desc_t::expr"]
-        [::std::mem::offset_of!(ecs_from_json_desc_t, expr) - 4usize];
+        [::std::mem::offset_of!(ecs_from_json_desc_t, expr) - 8usize];
     ["Offset of field: ecs_from_json_desc_t::lookup_action"]
-        [::std::mem::offset_of!(ecs_from_json_desc_t, lookup_action) - 8usize];
+        [::std::mem::offset_of!(ecs_from_json_desc_t, lookup_action) - 16usize];
     ["Offset of field: ecs_from_json_desc_t::lookup_ctx"]
-        [::std::mem::offset_of!(ecs_from_json_desc_t, lookup_ctx) - 12usize];
+        [::std::mem::offset_of!(ecs_from_json_desc_t, lookup_ctx) - 24usize];
     ["Offset of field: ecs_from_json_desc_t::strict"]
-        [::std::mem::offset_of!(ecs_from_json_desc_t, strict) - 16usize];
+        [::std::mem::offset_of!(ecs_from_json_desc_t, strict) - 32usize];
 };
 unsafe extern "C" {
     #[doc = " Parse JSON string into value.\n This operation parses a JSON expression into the provided pointer. The\n memory pointed to must be large enough to contain a value of the used type.\n\n @param world The world.\n @param type The type of the expression to parse.\n @param ptr Pointer to the memory to write to.\n @param json The JSON expression to parse.\n @param desc Configuration parameters for deserializer.\n @return Pointer to the character after the last one read, or NULL if failed."]
@@ -9590,7 +9596,7 @@ pub struct ecs_iter_to_json_desc_t {
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of ecs_iter_to_json_desc_t"][::std::mem::size_of::<ecs_iter_to_json_desc_t>() - 32usize];
+    ["Size of ecs_iter_to_json_desc_t"][::std::mem::size_of::<ecs_iter_to_json_desc_t>() - 40usize];
     ["Alignment of ecs_iter_to_json_desc_t"]
         [::std::mem::align_of::<ecs_iter_to_json_desc_t>() - 8usize];
     ["Offset of field: ecs_iter_to_json_desc_t::serialize_entity_ids"]
@@ -9628,7 +9634,7 @@ const _: () = {
     ["Offset of field: ecs_iter_to_json_desc_t::serialize_matches"]
         [::std::mem::offset_of!(ecs_iter_to_json_desc_t, serialize_matches) - 24usize];
     ["Offset of field: ecs_iter_to_json_desc_t::query"]
-        [::std::mem::offset_of!(ecs_iter_to_json_desc_t, query) - 28usize];
+        [::std::mem::offset_of!(ecs_iter_to_json_desc_t, query) - 32usize];
 };
 unsafe extern "C" {
     #[doc = " Serialize iterator into JSON string.\n This operation will iterate the contents of the iterator and serialize them\n to JSON. The function accepts iterators from any source.\n\n @param iter The iterator to serialize to JSON.\n @return A JSON string with the serialized iterator data, or NULL if failed."]
@@ -10637,22 +10643,22 @@ pub struct ecs_script_vars_t {
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of ecs_script_vars_t"][::std::mem::size_of::<ecs_script_vars_t>() - 108usize];
-    ["Alignment of ecs_script_vars_t"][::std::mem::align_of::<ecs_script_vars_t>() - 4usize];
+    ["Size of ecs_script_vars_t"][::std::mem::size_of::<ecs_script_vars_t>() - 176usize];
+    ["Alignment of ecs_script_vars_t"][::std::mem::align_of::<ecs_script_vars_t>() - 8usize];
     ["Offset of field: ecs_script_vars_t::parent"]
         [::std::mem::offset_of!(ecs_script_vars_t, parent) - 0usize];
     ["Offset of field: ecs_script_vars_t::var_index"]
-        [::std::mem::offset_of!(ecs_script_vars_t, var_index) - 4usize];
+        [::std::mem::offset_of!(ecs_script_vars_t, var_index) - 8usize];
     ["Offset of field: ecs_script_vars_t::vars"]
-        [::std::mem::offset_of!(ecs_script_vars_t, vars) - 80usize];
+        [::std::mem::offset_of!(ecs_script_vars_t, vars) - 128usize];
     ["Offset of field: ecs_script_vars_t::world"]
-        [::std::mem::offset_of!(ecs_script_vars_t, world) - 92usize];
+        [::std::mem::offset_of!(ecs_script_vars_t, world) - 144usize];
     ["Offset of field: ecs_script_vars_t::stack"]
-        [::std::mem::offset_of!(ecs_script_vars_t, stack) - 96usize];
+        [::std::mem::offset_of!(ecs_script_vars_t, stack) - 152usize];
     ["Offset of field: ecs_script_vars_t::cursor"]
-        [::std::mem::offset_of!(ecs_script_vars_t, cursor) - 100usize];
+        [::std::mem::offset_of!(ecs_script_vars_t, cursor) - 160usize];
     ["Offset of field: ecs_script_vars_t::allocator"]
-        [::std::mem::offset_of!(ecs_script_vars_t, allocator) - 104usize];
+        [::std::mem::offset_of!(ecs_script_vars_t, allocator) - 168usize];
 };
 #[doc = " Script object."]
 #[repr(C)]
@@ -10664,11 +10670,11 @@ pub struct ecs_script_t {
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of ecs_script_t"][::std::mem::size_of::<ecs_script_t>() - 12usize];
-    ["Alignment of ecs_script_t"][::std::mem::align_of::<ecs_script_t>() - 4usize];
+    ["Size of ecs_script_t"][::std::mem::size_of::<ecs_script_t>() - 24usize];
+    ["Alignment of ecs_script_t"][::std::mem::align_of::<ecs_script_t>() - 8usize];
     ["Offset of field: ecs_script_t::world"][::std::mem::offset_of!(ecs_script_t, world) - 0usize];
-    ["Offset of field: ecs_script_t::name"][::std::mem::offset_of!(ecs_script_t, name) - 4usize];
-    ["Offset of field: ecs_script_t::code"][::std::mem::offset_of!(ecs_script_t, code) - 8usize];
+    ["Offset of field: ecs_script_t::name"][::std::mem::offset_of!(ecs_script_t, name) - 8usize];
+    ["Offset of field: ecs_script_t::code"][::std::mem::offset_of!(ecs_script_t, code) - 16usize];
 };
 #[doc = " Script component.\n This component is added to the entities of managed scripts and templates."]
 #[repr(C)]
@@ -10679,11 +10685,11 @@ pub struct EcsScript {
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of EcsScript"][::std::mem::size_of::<EcsScript>() - 8usize];
-    ["Alignment of EcsScript"][::std::mem::align_of::<EcsScript>() - 4usize];
+    ["Size of EcsScript"][::std::mem::size_of::<EcsScript>() - 16usize];
+    ["Alignment of EcsScript"][::std::mem::align_of::<EcsScript>() - 8usize];
     ["Offset of field: EcsScript::script"][::std::mem::offset_of!(EcsScript, script) - 0usize];
     ["Offset of field: EcsScript::template_"]
-        [::std::mem::offset_of!(EcsScript, template_) - 4usize];
+        [::std::mem::offset_of!(EcsScript, template_) - 8usize];
 };
 unsafe extern "C" {
     #[doc = " Parse script.\n This operation parses a script and returns a script object upon success. To\n run the script, call ecs_script_eval().\n\n @param world The world.\n @param name Name of the script (typically a file/module name).\n @param code The script code.\n @return Script object if success, NULL if failed."]
@@ -10737,14 +10743,14 @@ pub struct ecs_script_desc_t {
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of ecs_script_desc_t"][::std::mem::size_of::<ecs_script_desc_t>() - 16usize];
+    ["Size of ecs_script_desc_t"][::std::mem::size_of::<ecs_script_desc_t>() - 24usize];
     ["Alignment of ecs_script_desc_t"][::std::mem::align_of::<ecs_script_desc_t>() - 8usize];
     ["Offset of field: ecs_script_desc_t::entity"]
         [::std::mem::offset_of!(ecs_script_desc_t, entity) - 0usize];
     ["Offset of field: ecs_script_desc_t::filename"]
         [::std::mem::offset_of!(ecs_script_desc_t, filename) - 8usize];
     ["Offset of field: ecs_script_desc_t::code"]
-        [::std::mem::offset_of!(ecs_script_desc_t, code) - 12usize];
+        [::std::mem::offset_of!(ecs_script_desc_t, code) - 16usize];
 };
 unsafe extern "C" {
     #[doc = " Load managed script.\n A managed script tracks which entities it creates, and keeps those entities\n synchronized when the contents of the script are updated. When the script is\n updated, entities that are no longer in the new version will be deleted.\n\n This feature is experimental.\n\n @param world The world.\n @param desc Script descriptor."]
@@ -10829,19 +10835,19 @@ pub struct ecs_script_expr_run_desc_t {
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of ecs_script_expr_run_desc_t"]
-        [::std::mem::size_of::<ecs_script_expr_run_desc_t>() - 20usize];
+        [::std::mem::size_of::<ecs_script_expr_run_desc_t>() - 40usize];
     ["Alignment of ecs_script_expr_run_desc_t"]
-        [::std::mem::align_of::<ecs_script_expr_run_desc_t>() - 4usize];
+        [::std::mem::align_of::<ecs_script_expr_run_desc_t>() - 8usize];
     ["Offset of field: ecs_script_expr_run_desc_t::name"]
         [::std::mem::offset_of!(ecs_script_expr_run_desc_t, name) - 0usize];
     ["Offset of field: ecs_script_expr_run_desc_t::expr"]
-        [::std::mem::offset_of!(ecs_script_expr_run_desc_t, expr) - 4usize];
+        [::std::mem::offset_of!(ecs_script_expr_run_desc_t, expr) - 8usize];
     ["Offset of field: ecs_script_expr_run_desc_t::lookup_action"]
-        [::std::mem::offset_of!(ecs_script_expr_run_desc_t, lookup_action) - 8usize];
+        [::std::mem::offset_of!(ecs_script_expr_run_desc_t, lookup_action) - 16usize];
     ["Offset of field: ecs_script_expr_run_desc_t::lookup_ctx"]
-        [::std::mem::offset_of!(ecs_script_expr_run_desc_t, lookup_ctx) - 12usize];
+        [::std::mem::offset_of!(ecs_script_expr_run_desc_t, lookup_ctx) - 24usize];
     ["Offset of field: ecs_script_expr_run_desc_t::vars"]
-        [::std::mem::offset_of!(ecs_script_expr_run_desc_t, vars) - 16usize];
+        [::std::mem::offset_of!(ecs_script_expr_run_desc_t, vars) - 32usize];
 };
 unsafe extern "C" {
     #[doc = " Parse standalone expression into value.\n This operation parses a flecs expression into the provided pointer. The\n memory pointed to must be large enough to contain a value of the used type.\n\n If no type and pointer are provided for the value argument, the operation\n will discover the type from the expression and allocate storage for the\n value. The allocated value must be freed with ecs_value_free().\n\n @param world The world.\n @param ptr The pointer to the expression to parse.\n @param value The value containing type & pointer to write to.\n @param desc Configuration parameters for deserializer.\n @return Pointer to the character after the last one read, or NULL if failed."]
@@ -10926,8 +10932,8 @@ pub struct EcsDocDescription {
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of EcsDocDescription"][::std::mem::size_of::<EcsDocDescription>() - 4usize];
-    ["Alignment of EcsDocDescription"][::std::mem::align_of::<EcsDocDescription>() - 4usize];
+    ["Size of EcsDocDescription"][::std::mem::size_of::<EcsDocDescription>() - 8usize];
+    ["Alignment of EcsDocDescription"][::std::mem::align_of::<EcsDocDescription>() - 8usize];
     ["Offset of field: EcsDocDescription::value"]
         [::std::mem::offset_of!(EcsDocDescription, value) - 0usize];
 };
@@ -11348,8 +11354,8 @@ pub struct EcsStruct {
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of EcsStruct"][::std::mem::size_of::<EcsStruct>() - 12usize];
-    ["Alignment of EcsStruct"][::std::mem::align_of::<EcsStruct>() - 4usize];
+    ["Size of EcsStruct"][::std::mem::size_of::<EcsStruct>() - 16usize];
+    ["Alignment of EcsStruct"][::std::mem::align_of::<EcsStruct>() - 8usize];
     ["Offset of field: EcsStruct::members"][::std::mem::offset_of!(EcsStruct, members) - 0usize];
 };
 #[doc = " Type that describes an enum constant"]
@@ -11365,14 +11371,14 @@ pub struct ecs_enum_constant_t {
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of ecs_enum_constant_t"][::std::mem::size_of::<ecs_enum_constant_t>() - 16usize];
+    ["Size of ecs_enum_constant_t"][::std::mem::size_of::<ecs_enum_constant_t>() - 24usize];
     ["Alignment of ecs_enum_constant_t"][::std::mem::align_of::<ecs_enum_constant_t>() - 8usize];
     ["Offset of field: ecs_enum_constant_t::name"]
         [::std::mem::offset_of!(ecs_enum_constant_t, name) - 0usize];
     ["Offset of field: ecs_enum_constant_t::value"]
-        [::std::mem::offset_of!(ecs_enum_constant_t, value) - 4usize];
+        [::std::mem::offset_of!(ecs_enum_constant_t, value) - 8usize];
     ["Offset of field: ecs_enum_constant_t::constant"]
-        [::std::mem::offset_of!(ecs_enum_constant_t, constant) - 8usize];
+        [::std::mem::offset_of!(ecs_enum_constant_t, constant) - 16usize];
 };
 #[doc = " Component added to enum type entities"]
 #[repr(C)]
@@ -11383,8 +11389,8 @@ pub struct EcsEnum {
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of EcsEnum"][::std::mem::size_of::<EcsEnum>() - 24usize];
-    ["Alignment of EcsEnum"][::std::mem::align_of::<EcsEnum>() - 4usize];
+    ["Size of EcsEnum"][::std::mem::size_of::<EcsEnum>() - 40usize];
+    ["Alignment of EcsEnum"][::std::mem::align_of::<EcsEnum>() - 8usize];
     ["Offset of field: EcsEnum::constants"][::std::mem::offset_of!(EcsEnum, constants) - 0usize];
 };
 #[doc = " Type that describes an bitmask constant"]
@@ -11400,15 +11406,15 @@ pub struct ecs_bitmask_constant_t {
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of ecs_bitmask_constant_t"][::std::mem::size_of::<ecs_bitmask_constant_t>() - 16usize];
+    ["Size of ecs_bitmask_constant_t"][::std::mem::size_of::<ecs_bitmask_constant_t>() - 24usize];
     ["Alignment of ecs_bitmask_constant_t"]
         [::std::mem::align_of::<ecs_bitmask_constant_t>() - 8usize];
     ["Offset of field: ecs_bitmask_constant_t::name"]
         [::std::mem::offset_of!(ecs_bitmask_constant_t, name) - 0usize];
     ["Offset of field: ecs_bitmask_constant_t::value"]
-        [::std::mem::offset_of!(ecs_bitmask_constant_t, value) - 4usize];
+        [::std::mem::offset_of!(ecs_bitmask_constant_t, value) - 8usize];
     ["Offset of field: ecs_bitmask_constant_t::constant"]
-        [::std::mem::offset_of!(ecs_bitmask_constant_t, constant) - 8usize];
+        [::std::mem::offset_of!(ecs_bitmask_constant_t, constant) - 16usize];
 };
 #[doc = " Component added to bitmask type entities"]
 #[repr(C)]
@@ -11419,8 +11425,8 @@ pub struct EcsBitmask {
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of EcsBitmask"][::std::mem::size_of::<EcsBitmask>() - 24usize];
-    ["Alignment of EcsBitmask"][::std::mem::align_of::<EcsBitmask>() - 4usize];
+    ["Size of EcsBitmask"][::std::mem::size_of::<EcsBitmask>() - 40usize];
+    ["Alignment of EcsBitmask"][::std::mem::align_of::<EcsBitmask>() - 8usize];
     ["Offset of field: EcsBitmask::constants"]
         [::std::mem::offset_of!(EcsBitmask, constants) - 0usize];
 };
@@ -11477,16 +11483,16 @@ pub struct ecs_serializer_t {
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of ecs_serializer_t"][::std::mem::size_of::<ecs_serializer_t>() - 16usize];
-    ["Alignment of ecs_serializer_t"][::std::mem::align_of::<ecs_serializer_t>() - 4usize];
+    ["Size of ecs_serializer_t"][::std::mem::size_of::<ecs_serializer_t>() - 32usize];
+    ["Alignment of ecs_serializer_t"][::std::mem::align_of::<ecs_serializer_t>() - 8usize];
     ["Offset of field: ecs_serializer_t::value"]
         [::std::mem::offset_of!(ecs_serializer_t, value) - 0usize];
     ["Offset of field: ecs_serializer_t::member"]
-        [::std::mem::offset_of!(ecs_serializer_t, member) - 4usize];
+        [::std::mem::offset_of!(ecs_serializer_t, member) - 8usize];
     ["Offset of field: ecs_serializer_t::world"]
-        [::std::mem::offset_of!(ecs_serializer_t, world) - 8usize];
+        [::std::mem::offset_of!(ecs_serializer_t, world) - 16usize];
     ["Offset of field: ecs_serializer_t::ctx"]
-        [::std::mem::offset_of!(ecs_serializer_t, ctx) - 12usize];
+        [::std::mem::offset_of!(ecs_serializer_t, ctx) - 24usize];
 };
 #[doc = " Callback invoked serializing an opaque type."]
 pub type ecs_meta_serialize_t = ::std::option::Option<
@@ -11569,36 +11575,36 @@ pub struct EcsOpaque {
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of EcsOpaque"][::std::mem::size_of::<EcsOpaque>() - 72usize];
+    ["Size of EcsOpaque"][::std::mem::size_of::<EcsOpaque>() - 128usize];
     ["Alignment of EcsOpaque"][::std::mem::align_of::<EcsOpaque>() - 8usize];
     ["Offset of field: EcsOpaque::as_type"][::std::mem::offset_of!(EcsOpaque, as_type) - 0usize];
     ["Offset of field: EcsOpaque::serialize"]
         [::std::mem::offset_of!(EcsOpaque, serialize) - 8usize];
     ["Offset of field: EcsOpaque::assign_bool"]
-        [::std::mem::offset_of!(EcsOpaque, assign_bool) - 12usize];
+        [::std::mem::offset_of!(EcsOpaque, assign_bool) - 16usize];
     ["Offset of field: EcsOpaque::assign_char"]
-        [::std::mem::offset_of!(EcsOpaque, assign_char) - 16usize];
+        [::std::mem::offset_of!(EcsOpaque, assign_char) - 24usize];
     ["Offset of field: EcsOpaque::assign_int"]
-        [::std::mem::offset_of!(EcsOpaque, assign_int) - 20usize];
+        [::std::mem::offset_of!(EcsOpaque, assign_int) - 32usize];
     ["Offset of field: EcsOpaque::assign_uint"]
-        [::std::mem::offset_of!(EcsOpaque, assign_uint) - 24usize];
+        [::std::mem::offset_of!(EcsOpaque, assign_uint) - 40usize];
     ["Offset of field: EcsOpaque::assign_float"]
-        [::std::mem::offset_of!(EcsOpaque, assign_float) - 28usize];
+        [::std::mem::offset_of!(EcsOpaque, assign_float) - 48usize];
     ["Offset of field: EcsOpaque::assign_string"]
-        [::std::mem::offset_of!(EcsOpaque, assign_string) - 32usize];
+        [::std::mem::offset_of!(EcsOpaque, assign_string) - 56usize];
     ["Offset of field: EcsOpaque::assign_entity"]
-        [::std::mem::offset_of!(EcsOpaque, assign_entity) - 36usize];
+        [::std::mem::offset_of!(EcsOpaque, assign_entity) - 64usize];
     ["Offset of field: EcsOpaque::assign_id"]
-        [::std::mem::offset_of!(EcsOpaque, assign_id) - 40usize];
+        [::std::mem::offset_of!(EcsOpaque, assign_id) - 72usize];
     ["Offset of field: EcsOpaque::assign_null"]
-        [::std::mem::offset_of!(EcsOpaque, assign_null) - 44usize];
-    ["Offset of field: EcsOpaque::clear"][::std::mem::offset_of!(EcsOpaque, clear) - 48usize];
+        [::std::mem::offset_of!(EcsOpaque, assign_null) - 80usize];
+    ["Offset of field: EcsOpaque::clear"][::std::mem::offset_of!(EcsOpaque, clear) - 88usize];
     ["Offset of field: EcsOpaque::ensure_element"]
-        [::std::mem::offset_of!(EcsOpaque, ensure_element) - 52usize];
+        [::std::mem::offset_of!(EcsOpaque, ensure_element) - 96usize];
     ["Offset of field: EcsOpaque::ensure_member"]
-        [::std::mem::offset_of!(EcsOpaque, ensure_member) - 56usize];
-    ["Offset of field: EcsOpaque::count"][::std::mem::offset_of!(EcsOpaque, count) - 60usize];
-    ["Offset of field: EcsOpaque::resize"][::std::mem::offset_of!(EcsOpaque, resize) - 64usize];
+        [::std::mem::offset_of!(EcsOpaque, ensure_member) - 104usize];
+    ["Offset of field: EcsOpaque::count"][::std::mem::offset_of!(EcsOpaque, count) - 112usize];
+    ["Offset of field: EcsOpaque::resize"][::std::mem::offset_of!(EcsOpaque, resize) - 120usize];
 };
 #[doc = " Helper type to describe translation between two units. Note that this\n is not intended as a generic approach to unit conversions (e.g. from celsius\n to fahrenheit) but to translate between units that derive from the same base\n (e.g. meters to kilometers).\n\n Note that power is applied to the factor. When describing a translation of\n 1000, either use {factor = 1000, power = 1} or {factor = 1, power = 3}."]
 #[repr(C)]
@@ -11656,12 +11662,12 @@ pub struct EcsUnitPrefix {
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of EcsUnitPrefix"][::std::mem::size_of::<EcsUnitPrefix>() - 12usize];
-    ["Alignment of EcsUnitPrefix"][::std::mem::align_of::<EcsUnitPrefix>() - 4usize];
+    ["Size of EcsUnitPrefix"][::std::mem::size_of::<EcsUnitPrefix>() - 16usize];
+    ["Alignment of EcsUnitPrefix"][::std::mem::align_of::<EcsUnitPrefix>() - 8usize];
     ["Offset of field: EcsUnitPrefix::symbol"]
         [::std::mem::offset_of!(EcsUnitPrefix, symbol) - 0usize];
     ["Offset of field: EcsUnitPrefix::translation"]
-        [::std::mem::offset_of!(EcsUnitPrefix, translation) - 4usize];
+        [::std::mem::offset_of!(EcsUnitPrefix, translation) - 8usize];
 };
 pub const ecs_meta_type_op_kind_t_EcsOpArray: ecs_meta_type_op_kind_t = 0;
 pub const ecs_meta_type_op_kind_t_EcsOpVector: ecs_meta_type_op_kind_t = 1;
@@ -11720,7 +11726,7 @@ pub struct ecs_meta_type_op_t {
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of ecs_meta_type_op_t"][::std::mem::size_of::<ecs_meta_type_op_t>() - 40usize];
+    ["Size of ecs_meta_type_op_t"][::std::mem::size_of::<ecs_meta_type_op_t>() - 56usize];
     ["Alignment of ecs_meta_type_op_t"][::std::mem::align_of::<ecs_meta_type_op_t>() - 8usize];
     ["Offset of field: ecs_meta_type_op_t::kind"]
         [::std::mem::offset_of!(ecs_meta_type_op_t, kind) - 0usize];
@@ -11729,17 +11735,17 @@ const _: () = {
     ["Offset of field: ecs_meta_type_op_t::count"]
         [::std::mem::offset_of!(ecs_meta_type_op_t, count) - 8usize];
     ["Offset of field: ecs_meta_type_op_t::name"]
-        [::std::mem::offset_of!(ecs_meta_type_op_t, name) - 12usize];
+        [::std::mem::offset_of!(ecs_meta_type_op_t, name) - 16usize];
     ["Offset of field: ecs_meta_type_op_t::op_count"]
-        [::std::mem::offset_of!(ecs_meta_type_op_t, op_count) - 16usize];
+        [::std::mem::offset_of!(ecs_meta_type_op_t, op_count) - 24usize];
     ["Offset of field: ecs_meta_type_op_t::size"]
-        [::std::mem::offset_of!(ecs_meta_type_op_t, size) - 20usize];
+        [::std::mem::offset_of!(ecs_meta_type_op_t, size) - 28usize];
     ["Offset of field: ecs_meta_type_op_t::type_"]
-        [::std::mem::offset_of!(ecs_meta_type_op_t, type_) - 24usize];
+        [::std::mem::offset_of!(ecs_meta_type_op_t, type_) - 32usize];
     ["Offset of field: ecs_meta_type_op_t::member_index"]
-        [::std::mem::offset_of!(ecs_meta_type_op_t, member_index) - 32usize];
+        [::std::mem::offset_of!(ecs_meta_type_op_t, member_index) - 40usize];
     ["Offset of field: ecs_meta_type_op_t::members"]
-        [::std::mem::offset_of!(ecs_meta_type_op_t, members) - 36usize];
+        [::std::mem::offset_of!(ecs_meta_type_op_t, members) - 48usize];
 };
 #[doc = " Component that stores the type serializer.\n Added to all types with reflection data."]
 #[repr(C)]
@@ -11750,8 +11756,8 @@ pub struct EcsTypeSerializer {
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of EcsTypeSerializer"][::std::mem::size_of::<EcsTypeSerializer>() - 12usize];
-    ["Alignment of EcsTypeSerializer"][::std::mem::align_of::<EcsTypeSerializer>() - 4usize];
+    ["Size of EcsTypeSerializer"][::std::mem::size_of::<EcsTypeSerializer>() - 16usize];
+    ["Alignment of EcsTypeSerializer"][::std::mem::align_of::<EcsTypeSerializer>() - 8usize];
     ["Offset of field: EcsTypeSerializer::ops"]
         [::std::mem::offset_of!(EcsTypeSerializer, ops) - 0usize];
 };
@@ -11790,36 +11796,36 @@ pub struct ecs_meta_scope_t {
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of ecs_meta_scope_t"][::std::mem::size_of::<ecs_meta_scope_t>() - 56usize];
+    ["Size of ecs_meta_scope_t"][::std::mem::size_of::<ecs_meta_scope_t>() - 80usize];
     ["Alignment of ecs_meta_scope_t"][::std::mem::align_of::<ecs_meta_scope_t>() - 8usize];
     ["Offset of field: ecs_meta_scope_t::type_"]
         [::std::mem::offset_of!(ecs_meta_scope_t, type_) - 0usize];
     ["Offset of field: ecs_meta_scope_t::ops"]
         [::std::mem::offset_of!(ecs_meta_scope_t, ops) - 8usize];
     ["Offset of field: ecs_meta_scope_t::op_count"]
-        [::std::mem::offset_of!(ecs_meta_scope_t, op_count) - 12usize];
+        [::std::mem::offset_of!(ecs_meta_scope_t, op_count) - 16usize];
     ["Offset of field: ecs_meta_scope_t::op_cur"]
-        [::std::mem::offset_of!(ecs_meta_scope_t, op_cur) - 16usize];
+        [::std::mem::offset_of!(ecs_meta_scope_t, op_cur) - 20usize];
     ["Offset of field: ecs_meta_scope_t::elem_cur"]
-        [::std::mem::offset_of!(ecs_meta_scope_t, elem_cur) - 20usize];
+        [::std::mem::offset_of!(ecs_meta_scope_t, elem_cur) - 24usize];
     ["Offset of field: ecs_meta_scope_t::prev_depth"]
-        [::std::mem::offset_of!(ecs_meta_scope_t, prev_depth) - 24usize];
+        [::std::mem::offset_of!(ecs_meta_scope_t, prev_depth) - 28usize];
     ["Offset of field: ecs_meta_scope_t::ptr"]
-        [::std::mem::offset_of!(ecs_meta_scope_t, ptr) - 28usize];
+        [::std::mem::offset_of!(ecs_meta_scope_t, ptr) - 32usize];
     ["Offset of field: ecs_meta_scope_t::comp"]
-        [::std::mem::offset_of!(ecs_meta_scope_t, comp) - 32usize];
+        [::std::mem::offset_of!(ecs_meta_scope_t, comp) - 40usize];
     ["Offset of field: ecs_meta_scope_t::opaque"]
-        [::std::mem::offset_of!(ecs_meta_scope_t, opaque) - 36usize];
+        [::std::mem::offset_of!(ecs_meta_scope_t, opaque) - 48usize];
     ["Offset of field: ecs_meta_scope_t::vector"]
-        [::std::mem::offset_of!(ecs_meta_scope_t, vector) - 40usize];
+        [::std::mem::offset_of!(ecs_meta_scope_t, vector) - 56usize];
     ["Offset of field: ecs_meta_scope_t::members"]
-        [::std::mem::offset_of!(ecs_meta_scope_t, members) - 44usize];
+        [::std::mem::offset_of!(ecs_meta_scope_t, members) - 64usize];
     ["Offset of field: ecs_meta_scope_t::is_collection"]
-        [::std::mem::offset_of!(ecs_meta_scope_t, is_collection) - 48usize];
+        [::std::mem::offset_of!(ecs_meta_scope_t, is_collection) - 72usize];
     ["Offset of field: ecs_meta_scope_t::is_inline_array"]
-        [::std::mem::offset_of!(ecs_meta_scope_t, is_inline_array) - 49usize];
+        [::std::mem::offset_of!(ecs_meta_scope_t, is_inline_array) - 73usize];
     ["Offset of field: ecs_meta_scope_t::is_empty_scope"]
-        [::std::mem::offset_of!(ecs_meta_scope_t, is_empty_scope) - 50usize];
+        [::std::mem::offset_of!(ecs_meta_scope_t, is_empty_scope) - 74usize];
 };
 #[doc = " Type that enables iterating/populating a value using reflection data."]
 #[repr(C)]
@@ -11848,22 +11854,22 @@ pub struct ecs_meta_cursor_t {
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of ecs_meta_cursor_t"][::std::mem::size_of::<ecs_meta_cursor_t>() - 1816usize];
+    ["Size of ecs_meta_cursor_t"][::std::mem::size_of::<ecs_meta_cursor_t>() - 2592usize];
     ["Alignment of ecs_meta_cursor_t"][::std::mem::align_of::<ecs_meta_cursor_t>() - 8usize];
     ["Offset of field: ecs_meta_cursor_t::world"]
         [::std::mem::offset_of!(ecs_meta_cursor_t, world) - 0usize];
     ["Offset of field: ecs_meta_cursor_t::scope"]
         [::std::mem::offset_of!(ecs_meta_cursor_t, scope) - 8usize];
     ["Offset of field: ecs_meta_cursor_t::depth"]
-        [::std::mem::offset_of!(ecs_meta_cursor_t, depth) - 1800usize];
+        [::std::mem::offset_of!(ecs_meta_cursor_t, depth) - 2568usize];
     ["Offset of field: ecs_meta_cursor_t::valid"]
-        [::std::mem::offset_of!(ecs_meta_cursor_t, valid) - 1804usize];
+        [::std::mem::offset_of!(ecs_meta_cursor_t, valid) - 2572usize];
     ["Offset of field: ecs_meta_cursor_t::is_primitive_scope"]
-        [::std::mem::offset_of!(ecs_meta_cursor_t, is_primitive_scope) - 1805usize];
+        [::std::mem::offset_of!(ecs_meta_cursor_t, is_primitive_scope) - 2573usize];
     ["Offset of field: ecs_meta_cursor_t::lookup_action"]
-        [::std::mem::offset_of!(ecs_meta_cursor_t, lookup_action) - 1808usize];
+        [::std::mem::offset_of!(ecs_meta_cursor_t, lookup_action) - 2576usize];
     ["Offset of field: ecs_meta_cursor_t::lookup_ctx"]
-        [::std::mem::offset_of!(ecs_meta_cursor_t, lookup_ctx) - 1812usize];
+        [::std::mem::offset_of!(ecs_meta_cursor_t, lookup_ctx) - 2584usize];
 };
 unsafe extern "C" {
     #[doc = " Create meta cursor.\n A meta cursor allows for walking over, reading and writing a value without\n having to know its type at compile time.\n\n When a value is assigned through the cursor API, it will get converted to\n the actual value of the underlying type. This allows the underlying type to\n change without having to update the serialized data. For example, an integer\n field can be set by a string, a floating point can be set as integer etc.\n\n @param world The world.\n @param type The type of the value.\n @param ptr Pointer to the value.\n @return A meta cursor for the value."]
@@ -12064,7 +12070,7 @@ pub struct ecs_enum_desc_t {
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of ecs_enum_desc_t"][::std::mem::size_of::<ecs_enum_desc_t>() - 520usize];
+    ["Size of ecs_enum_desc_t"][::std::mem::size_of::<ecs_enum_desc_t>() - 776usize];
     ["Alignment of ecs_enum_desc_t"][::std::mem::align_of::<ecs_enum_desc_t>() - 8usize];
     ["Offset of field: ecs_enum_desc_t::entity"]
         [::std::mem::offset_of!(ecs_enum_desc_t, entity) - 0usize];
@@ -12086,7 +12092,7 @@ pub struct ecs_bitmask_desc_t {
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of ecs_bitmask_desc_t"][::std::mem::size_of::<ecs_bitmask_desc_t>() - 520usize];
+    ["Size of ecs_bitmask_desc_t"][::std::mem::size_of::<ecs_bitmask_desc_t>() - 776usize];
     ["Alignment of ecs_bitmask_desc_t"][::std::mem::align_of::<ecs_bitmask_desc_t>() - 8usize];
     ["Offset of field: ecs_bitmask_desc_t::entity"]
         [::std::mem::offset_of!(ecs_bitmask_desc_t, entity) - 0usize];
@@ -12183,7 +12189,7 @@ pub struct ecs_opaque_desc_t {
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of ecs_opaque_desc_t"][::std::mem::size_of::<ecs_opaque_desc_t>() - 80usize];
+    ["Size of ecs_opaque_desc_t"][::std::mem::size_of::<ecs_opaque_desc_t>() - 136usize];
     ["Alignment of ecs_opaque_desc_t"][::std::mem::align_of::<ecs_opaque_desc_t>() - 8usize];
     ["Offset of field: ecs_opaque_desc_t::entity"]
         [::std::mem::offset_of!(ecs_opaque_desc_t, entity) - 0usize];
@@ -12258,7 +12264,7 @@ const _: () = {
     ["Offset of field: ecs_unit_prefix_desc_t::symbol"]
         [::std::mem::offset_of!(ecs_unit_prefix_desc_t, symbol) - 8usize];
     ["Offset of field: ecs_unit_prefix_desc_t::translation"]
-        [::std::mem::offset_of!(ecs_unit_prefix_desc_t, translation) - 12usize];
+        [::std::mem::offset_of!(ecs_unit_prefix_desc_t, translation) - 16usize];
 };
 unsafe extern "C" {
     #[doc = " Create a new unit prefix.\n\n @param world The world.\n @param desc The type descriptor.\n @return The new unit prefix, 0 if failed."]

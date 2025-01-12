@@ -5,6 +5,7 @@ fn main() {
     println!("cargo:rerun-if-changed=build.rs");
     println!("cargo:rerun-if-changed=flecs.h");
     println!("cargo:rerun-if-changed=flecs.c");
+    // println!("cargo:rustc-link-arg=-sUSE_WEBGL2");
 
     let target = std::env::var("TARGET").unwrap();
     // if target.contains("emscripten") {
