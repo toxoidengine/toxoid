@@ -2940,7 +2940,7 @@ macro_rules! __export_toxoid_engine_world_impl {
 #[doc(inline)]
 pub(crate) use __export_toxoid_engine_world_impl as export;
 #[cfg(target_arch = "wasm32")]
-#[link_section = "component-type:wit-bindgen:0.31.0:toxoid:engine:toxoid-engine-world:encoded world"]
+#[link_section = "component-type:wit-bindgen:0.35.0:toxoid:engine:toxoid-engine-world:encoded world"]
 #[doc(hidden)]
 pub static __WIT_BINDGEN_COMPONENT_TYPE: [u8; 3660] = *b"\
 \0asm\x0d\0\x01\0\0\x19\x16wit-component-encoding\x04\0\x07\xc2\x1b\x01A\x02\x01\
@@ -3012,10 +3012,10 @@ V\x01h\x15\x01@\x01\x04self\xd7\0\x01\0\x04\0\x14[method]system.build\x01X\x01@\
 component-id\x01\x01\0\x04\0\x0dadd-singleton\x01_\x01@\x01\x0ccomponent-id\x01\0\
 x\x04\0\x0dget-singleton\x01`\x04\0\x10remove-singleton\x01_\x01@\x01\x09entity-\
 id\x01\x01\0\x04\0\x0aadd-entity\x01a\x04\0\x0dremove-entity\x01a\x01@\x01\x04na\
-mes\0\x7f\x04\0\x10has-entity-named\x01b\x04\x01\x11toxoid:engine/ecs\x05\0\x04\x01\
-!toxoid:engine/toxoid-engine-world\x04\0\x0b\x19\x01\0\x13toxoid-engine-world\x03\
-\0\0\0G\x09producers\x01\x0cprocessed-by\x02\x0dwit-component\x070.216.0\x10wit-\
-bindgen-rust\x060.31.0";
+mes\0\x7f\x04\0\x10has-entity-named\x01b\x04\0\x11toxoid:engine/ecs\x05\0\x04\0!\
+toxoid:engine/toxoid-engine-world\x04\0\x0b\x19\x01\0\x13toxoid-engine-world\x03\
+\0\0\0G\x09producers\x01\x0cprocessed-by\x02\x0dwit-component\x070.220.0\x10wit-\
+bindgen-rust\x060.35.0";
 #[inline(never)]
 #[doc(hidden)]
 pub fn __link_custom_section_describing_imports() {
