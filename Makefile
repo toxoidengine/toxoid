@@ -35,8 +35,24 @@ build:
 build-host:
 	cd crates/toxoid_host && cargo component build
 
+build-em:
+	EMCC_FLAGS="-s EXPORTED_FUNCTIONS=['_main','_cabi_realloc'] \
+		-s EXPORT_ES6=1 \
+		-s MODULARIZE=1 \
+		-s STACK_SIZE=1mb \
+		-s FETCH=1 \
+		-s MIN_WEBGL_VERSION=2 \
+		-s USE_GETADDRINFO=1 \
+		-s ALLOW_MEMORY_GROWTH=1 \
+		-s FORCE_FILESYSTEM=1 \
+		-s ERROR_ON_UNDEFINED_SYMBOLS=1 \
+		-s STANDALONE_WASM=1 \
+		-s EXPORTED_RUNTIME_METHODS=['ccall','cwrap'] \
+		-s NO_EXIT_RUNTIME=1" \
+	cd app/host && cargo build --target wasm32-unknown-emscripten
+
 run:
-	cd app/host && cargo run
+	cd app/host && cargo run --target wasm32-unknown-emscripten
 
 run-cli:
 	cargo run --package toxoid_cli -- watch

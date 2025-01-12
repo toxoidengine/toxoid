@@ -2755,7 +2755,11 @@ mod _rt {
     pub use alloc_crate::boxed::Box;
     #[cfg(target_arch = "wasm32")]
     pub fn run_ctors_once() {
-        wit_bindgen_rt::run_ctors_once();
+        #[cfg(not(target_os = "emscripten"))]
+#[cfg(not(target_os = "emscripten"))]
+#[cfg(not(target_os = "emscripten"))]
+#[cfg(not(target_os = "emscripten"))]
+wit_bindgen_rt::run_ctors_once();
     }
     pub unsafe fn string_lift(bytes: Vec<u8>) -> String {
         if cfg!(debug_assertions) {
@@ -3018,5 +3022,9 @@ bindgen-rust\x060.35.0";
 #[inline(never)]
 #[doc(hidden)]
 pub fn __link_custom_section_describing_imports() {
-    wit_bindgen_rt::maybe_link_cabi_realloc();
+    #[cfg(not(target_os = "emscripten"))]
+#[cfg(not(target_os = "emscripten"))]
+#[cfg(not(target_os = "emscripten"))]
+#[cfg(not(target_os = "emscripten"))]
+wit_bindgen_rt::maybe_link_cabi_realloc();
 }
