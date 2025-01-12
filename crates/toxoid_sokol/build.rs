@@ -40,10 +40,9 @@ fn main() {
         .flag_if_supported("-Wno-unused-parameter")
         .flag_if_supported("-Wno-missing-field-initializers");
 
-    build.define("SOKOL_IMPL", None);
     // For Metal on macOS, we need to compile as Objective-C
     if target.contains("darwin") {
-        build
+        build//
             .define("SOKOL_METAL", None)
             .flag("-x")
             .flag("objective-c");

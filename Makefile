@@ -42,6 +42,9 @@ build-em:
 		-s STACK_SIZE=1mb \
 		-s FETCH=1 \
 		-s MIN_WEBGL_VERSION=2 \
+		-s MAX_WEBGL_VERSION=2 \
+		-s USE_WEBGL2=1 \
+		-s FULL_ES3=1 \
 		-s USE_GETADDRINFO=1 \
 		-s ALLOW_MEMORY_GROWTH=1 \
 		-s FORCE_FILESYSTEM=1 \
@@ -52,7 +55,7 @@ build-em:
 	cd app/host && cargo build --target wasm32-unknown-emscripten
 
 run:
-	cd app/host && cargo run --target wasm32-unknown-emscripten
+	cd app/host && cargo run
 
 run-cli:
 	cargo run --package toxoid_cli -- watch
