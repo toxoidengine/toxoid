@@ -118,11 +118,11 @@ impl SokolRenderer2D {
     
     pub fn init_sampler(sgsampler: sg_sampler, min_filter: sg_filter, mag_filter: sg_filter, mipmap_filter: sg_filter, wrap_u: sg_wrap, wrap_v: sg_wrap, label: *const i8) {
         let sampler_desc = sg::SamplerDesc {
-            min_filter: filter_from_c_int(min_filter).unwrap(),
-            mag_filter: filter_from_c_int(mag_filter).unwrap(),
-            mipmap_filter: filter_from_c_int(mipmap_filter).unwrap(),
-            wrap_u: wrap_from_c_int(wrap_u).unwrap(),
-            wrap_v: wrap_from_c_int(wrap_v).unwrap(),
+            min_filter: filter_from_c_int(min_filter.try_into().unwrap()).unwrap(),
+            mag_filter: filter_from_c_int(mag_filter.try_into().unwrap()).unwrap(),
+            mipmap_filter: filter_from_c_int(mipmap_filter.try_into().unwrap()).unwrap(),
+            wrap_u: wrap_from_c_int(wrap_u.try_into().unwrap()).unwrap(),
+            wrap_v: wrap_from_c_int(wrap_v.try_into().unwrap()).unwrap(),
             label,
             ..Default::default()
         };
@@ -410,7 +410,7 @@ impl Renderer2D for SokolRenderer2D {
             if blend_mode == 0 {
                 sgp_set_blend_mode(sgp_blend_mode_SGP_BLENDMODE_BLEND);
             } else {
-                sgp_set_blend_mode(blend_mode as u32);
+                sgp_set_blend_mode((blend_mode as u32).try_into().unwrap());
             }
             // Get scale factor for resolution
             let (window_width, window_height) = SokolRenderer2D::window_size();
