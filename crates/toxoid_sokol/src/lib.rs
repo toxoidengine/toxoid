@@ -6,7 +6,14 @@
 #![allow(deref_nullptr)]
 #![allow(improper_ctypes)]
 
+#[cfg(not(target_os = "emscripten"))]
 pub mod bindings;
+#[cfg(target_os = "emscripten")]
+pub mod bindings_x86;
+#[cfg(not(target_os = "emscripten"))]
+use bindings::*;
+#[cfg(target_os = "emscripten")]
+use bindings_x64::*;
 pub mod render_2d;
 // include!(concat!(env!("OUT_DIR"), "/bindings.rs"));
 pub use render_2d::*;
@@ -14,7 +21,7 @@ pub use sokol;
 // use toxoid_api::components::GameConfig;
 // use toxoid_api::World;
 // use toxoid_render::Renderer2D;
-use bindings::*;
+
 use sokol::{app as sapp, gfx as sg, glue as sglue};
 // use core::ffi::c_int;
 // use core::ffi::c_char;
@@ -28,7 +35,7 @@ pub static PASS_ACTION: Lazy<sg::PassAction> = Lazy::new(|| sg::PassAction::new(
 
 #[cfg(target_os = "emscripten")]
 extern "C" {
-    fn emscripten_set_canvas_element_size(id: *const c_char, width: c_int, height: c_int) -> c_int;
+    fn emscripten_set_canvas_element_size(id: *const core::ffi::c_char, width: core::ffi::c_int, height: core::ffi::c_int) -> core::ffi::c_int;
 }
 
 const SOKOL_POOL_MODIFIER: i32 = 100;

@@ -5,9 +5,10 @@ edition = "2021"
 
 [dependencies]
 toxoid_bootstrap = { path = "../../crates/toxoid_bootstrap" }
-guest = { path = "../guest", optional = true }
+# guest = { path = "../guest", optional = true }
 
 [features]
-default = ["wasm-linking"]
-wasm-linking = []
-static-linking = ["guest"]
+# default = ["wasm-linking"]
+# default = ["static-linking"]
+# wasm-linking = []
+# static-linking = ["guest"]
