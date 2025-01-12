@@ -1,10 +1,6 @@
-#[cfg(feature = "static-linking")]
-use guest::bindings::Guest;
-
 fn main() {
-    #[cfg(feature = "wasm-linking")]
-    toxoid_bootstrap::init();
-
+    toxoid_bootstrap::init_ecs();
     #[cfg(feature = "static-linking")]
-    println!("{}", guest::ToxoidWasmComponent::init());
+    guest::init();
+    toxoid_bootstrap::init_renderer();
 }
