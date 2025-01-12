@@ -143,459 +143,121 @@ pub const EcsTableHasRemoveActions: u32 = 133128;
 pub const EcsAperiodicEmptyTables: u32 = 2;
 pub const EcsAperiodicComponentMonitors: u32 = 4;
 pub const EcsAperiodicEmptyQueries: u32 = 16;
-pub const __has_safe_buffers: u32 = 1;
-pub const __DARWIN_ONLY_64_BIT_INO_T: u32 = 1;
-pub const __DARWIN_ONLY_UNIX_CONFORMANCE: u32 = 1;
-pub const __DARWIN_ONLY_VERS_1050: u32 = 1;
-pub const __DARWIN_UNIX03: u32 = 1;
-pub const __DARWIN_64_BIT_INO_T: u32 = 1;
-pub const __DARWIN_VERS_1050: u32 = 1;
-pub const __DARWIN_NON_CANCELABLE: u32 = 0;
-pub const __DARWIN_SUF_EXTSN: &[u8; 14] = b"$DARWIN_EXTSN\0";
-pub const __DARWIN_C_ANSI: u32 = 4096;
-pub const __DARWIN_C_FULL: u32 = 900000;
-pub const __DARWIN_C_LEVEL: u32 = 900000;
-pub const __STDC_WANT_LIB_EXT1__: u32 = 1;
-pub const __DARWIN_NO_LONG_LONG: u32 = 0;
-pub const _DARWIN_FEATURE_64_BIT_INODE: u32 = 1;
-pub const _DARWIN_FEATURE_ONLY_64_BIT_INODE: u32 = 1;
-pub const _DARWIN_FEATURE_ONLY_VERS_1050: u32 = 1;
-pub const _DARWIN_FEATURE_ONLY_UNIX_CONFORMANCE: u32 = 1;
-pub const _DARWIN_FEATURE_UNIX_CONFORMANCE: u32 = 3;
-pub const __has_ptrcheck: u32 = 0;
-pub const USE_CLANG_TYPES: u32 = 0;
-pub const __PTHREAD_SIZE__: u32 = 8176;
-pub const __PTHREAD_ATTR_SIZE__: u32 = 56;
-pub const __PTHREAD_MUTEXATTR_SIZE__: u32 = 8;
-pub const __PTHREAD_MUTEX_SIZE__: u32 = 56;
-pub const __PTHREAD_CONDATTR_SIZE__: u32 = 8;
-pub const __PTHREAD_COND_SIZE__: u32 = 40;
-pub const __PTHREAD_ONCE_SIZE__: u32 = 8;
-pub const __PTHREAD_RWLOCK_SIZE__: u32 = 192;
-pub const __PTHREAD_RWLOCKATTR_SIZE__: u32 = 16;
-pub const __DARWIN_WCHAR_MIN: i32 = -2147483648;
-pub const _FORTIFY_SOURCE: u32 = 2;
-pub const __API_TO_BE_DEPRECATED: u32 = 100000;
-pub const __API_TO_BE_DEPRECATED_MACOS: u32 = 100000;
-pub const __API_TO_BE_DEPRECATED_IOS: u32 = 100000;
-pub const __API_TO_BE_DEPRECATED_MACCATALYST: u32 = 100000;
-pub const __API_TO_BE_DEPRECATED_WATCHOS: u32 = 100000;
-pub const __API_TO_BE_DEPRECATED_TVOS: u32 = 100000;
-pub const __API_TO_BE_DEPRECATED_DRIVERKIT: u32 = 100000;
-pub const __API_TO_BE_DEPRECATED_VISIONOS: u32 = 100000;
-pub const __MAC_10_0: u32 = 1000;
-pub const __MAC_10_1: u32 = 1010;
-pub const __MAC_10_2: u32 = 1020;
-pub const __MAC_10_3: u32 = 1030;
-pub const __MAC_10_4: u32 = 1040;
-pub const __MAC_10_5: u32 = 1050;
-pub const __MAC_10_6: u32 = 1060;
-pub const __MAC_10_7: u32 = 1070;
-pub const __MAC_10_8: u32 = 1080;
-pub const __MAC_10_9: u32 = 1090;
-pub const __MAC_10_10: u32 = 101000;
-pub const __MAC_10_10_2: u32 = 101002;
-pub const __MAC_10_10_3: u32 = 101003;
-pub const __MAC_10_11: u32 = 101100;
-pub const __MAC_10_11_2: u32 = 101102;
-pub const __MAC_10_11_3: u32 = 101103;
-pub const __MAC_10_11_4: u32 = 101104;
-pub const __MAC_10_12: u32 = 101200;
-pub const __MAC_10_12_1: u32 = 101201;
-pub const __MAC_10_12_2: u32 = 101202;
-pub const __MAC_10_12_4: u32 = 101204;
-pub const __MAC_10_13: u32 = 101300;
-pub const __MAC_10_13_1: u32 = 101301;
-pub const __MAC_10_13_2: u32 = 101302;
-pub const __MAC_10_13_4: u32 = 101304;
-pub const __MAC_10_14: u32 = 101400;
-pub const __MAC_10_14_1: u32 = 101401;
-pub const __MAC_10_14_4: u32 = 101404;
-pub const __MAC_10_14_5: u32 = 101405;
-pub const __MAC_10_14_6: u32 = 101406;
-pub const __MAC_10_15: u32 = 101500;
-pub const __MAC_10_15_1: u32 = 101501;
-pub const __MAC_10_15_4: u32 = 101504;
-pub const __MAC_10_16: u32 = 101600;
-pub const __MAC_11_0: u32 = 110000;
-pub const __MAC_11_1: u32 = 110100;
-pub const __MAC_11_3: u32 = 110300;
-pub const __MAC_11_4: u32 = 110400;
-pub const __MAC_11_5: u32 = 110500;
-pub const __MAC_11_6: u32 = 110600;
-pub const __MAC_12_0: u32 = 120000;
-pub const __MAC_12_1: u32 = 120100;
-pub const __MAC_12_2: u32 = 120200;
-pub const __MAC_12_3: u32 = 120300;
-pub const __MAC_12_4: u32 = 120400;
-pub const __MAC_12_5: u32 = 120500;
-pub const __MAC_12_6: u32 = 120600;
-pub const __MAC_12_7: u32 = 120700;
-pub const __MAC_13_0: u32 = 130000;
-pub const __MAC_13_1: u32 = 130100;
-pub const __MAC_13_2: u32 = 130200;
-pub const __MAC_13_3: u32 = 130300;
-pub const __MAC_13_4: u32 = 130400;
-pub const __MAC_13_5: u32 = 130500;
-pub const __MAC_13_6: u32 = 130600;
-pub const __MAC_14_0: u32 = 140000;
-pub const __MAC_14_1: u32 = 140100;
-pub const __MAC_14_2: u32 = 140200;
-pub const __MAC_14_3: u32 = 140300;
-pub const __MAC_14_4: u32 = 140400;
-pub const __MAC_14_5: u32 = 140500;
-pub const __MAC_15_0: u32 = 150000;
-pub const __MAC_15_1: u32 = 150100;
-pub const __MAC_15_2: u32 = 150200;
-pub const __IPHONE_2_0: u32 = 20000;
-pub const __IPHONE_2_1: u32 = 20100;
-pub const __IPHONE_2_2: u32 = 20200;
-pub const __IPHONE_3_0: u32 = 30000;
-pub const __IPHONE_3_1: u32 = 30100;
-pub const __IPHONE_3_2: u32 = 30200;
-pub const __IPHONE_4_0: u32 = 40000;
-pub const __IPHONE_4_1: u32 = 40100;
-pub const __IPHONE_4_2: u32 = 40200;
-pub const __IPHONE_4_3: u32 = 40300;
-pub const __IPHONE_5_0: u32 = 50000;
-pub const __IPHONE_5_1: u32 = 50100;
-pub const __IPHONE_6_0: u32 = 60000;
-pub const __IPHONE_6_1: u32 = 60100;
-pub const __IPHONE_7_0: u32 = 70000;
-pub const __IPHONE_7_1: u32 = 70100;
-pub const __IPHONE_8_0: u32 = 80000;
-pub const __IPHONE_8_1: u32 = 80100;
-pub const __IPHONE_8_2: u32 = 80200;
-pub const __IPHONE_8_3: u32 = 80300;
-pub const __IPHONE_8_4: u32 = 80400;
-pub const __IPHONE_9_0: u32 = 90000;
-pub const __IPHONE_9_1: u32 = 90100;
-pub const __IPHONE_9_2: u32 = 90200;
-pub const __IPHONE_9_3: u32 = 90300;
-pub const __IPHONE_10_0: u32 = 100000;
-pub const __IPHONE_10_1: u32 = 100100;
-pub const __IPHONE_10_2: u32 = 100200;
-pub const __IPHONE_10_3: u32 = 100300;
-pub const __IPHONE_11_0: u32 = 110000;
-pub const __IPHONE_11_1: u32 = 110100;
-pub const __IPHONE_11_2: u32 = 110200;
-pub const __IPHONE_11_3: u32 = 110300;
-pub const __IPHONE_11_4: u32 = 110400;
-pub const __IPHONE_12_0: u32 = 120000;
-pub const __IPHONE_12_1: u32 = 120100;
-pub const __IPHONE_12_2: u32 = 120200;
-pub const __IPHONE_12_3: u32 = 120300;
-pub const __IPHONE_12_4: u32 = 120400;
-pub const __IPHONE_13_0: u32 = 130000;
-pub const __IPHONE_13_1: u32 = 130100;
-pub const __IPHONE_13_2: u32 = 130200;
-pub const __IPHONE_13_3: u32 = 130300;
-pub const __IPHONE_13_4: u32 = 130400;
-pub const __IPHONE_13_5: u32 = 130500;
-pub const __IPHONE_13_6: u32 = 130600;
-pub const __IPHONE_13_7: u32 = 130700;
-pub const __IPHONE_14_0: u32 = 140000;
-pub const __IPHONE_14_1: u32 = 140100;
-pub const __IPHONE_14_2: u32 = 140200;
-pub const __IPHONE_14_3: u32 = 140300;
-pub const __IPHONE_14_5: u32 = 140500;
-pub const __IPHONE_14_4: u32 = 140400;
-pub const __IPHONE_14_6: u32 = 140600;
-pub const __IPHONE_14_7: u32 = 140700;
-pub const __IPHONE_14_8: u32 = 140800;
-pub const __IPHONE_15_0: u32 = 150000;
-pub const __IPHONE_15_1: u32 = 150100;
-pub const __IPHONE_15_2: u32 = 150200;
-pub const __IPHONE_15_3: u32 = 150300;
-pub const __IPHONE_15_4: u32 = 150400;
-pub const __IPHONE_15_5: u32 = 150500;
-pub const __IPHONE_15_6: u32 = 150600;
-pub const __IPHONE_15_7: u32 = 150700;
-pub const __IPHONE_15_8: u32 = 150800;
-pub const __IPHONE_16_0: u32 = 160000;
-pub const __IPHONE_16_1: u32 = 160100;
-pub const __IPHONE_16_2: u32 = 160200;
-pub const __IPHONE_16_3: u32 = 160300;
-pub const __IPHONE_16_4: u32 = 160400;
-pub const __IPHONE_16_5: u32 = 160500;
-pub const __IPHONE_16_6: u32 = 160600;
-pub const __IPHONE_16_7: u32 = 160700;
-pub const __IPHONE_17_0: u32 = 170000;
-pub const __IPHONE_17_1: u32 = 170100;
-pub const __IPHONE_17_2: u32 = 170200;
-pub const __IPHONE_17_3: u32 = 170300;
-pub const __IPHONE_17_4: u32 = 170400;
-pub const __IPHONE_17_5: u32 = 170500;
-pub const __IPHONE_18_0: u32 = 180000;
-pub const __IPHONE_18_1: u32 = 180100;
-pub const __IPHONE_18_2: u32 = 180200;
-pub const __WATCHOS_1_0: u32 = 10000;
-pub const __WATCHOS_2_0: u32 = 20000;
-pub const __WATCHOS_2_1: u32 = 20100;
-pub const __WATCHOS_2_2: u32 = 20200;
-pub const __WATCHOS_3_0: u32 = 30000;
-pub const __WATCHOS_3_1: u32 = 30100;
-pub const __WATCHOS_3_1_1: u32 = 30101;
-pub const __WATCHOS_3_2: u32 = 30200;
-pub const __WATCHOS_4_0: u32 = 40000;
-pub const __WATCHOS_4_1: u32 = 40100;
-pub const __WATCHOS_4_2: u32 = 40200;
-pub const __WATCHOS_4_3: u32 = 40300;
-pub const __WATCHOS_5_0: u32 = 50000;
-pub const __WATCHOS_5_1: u32 = 50100;
-pub const __WATCHOS_5_2: u32 = 50200;
-pub const __WATCHOS_5_3: u32 = 50300;
-pub const __WATCHOS_6_0: u32 = 60000;
-pub const __WATCHOS_6_1: u32 = 60100;
-pub const __WATCHOS_6_2: u32 = 60200;
-pub const __WATCHOS_7_0: u32 = 70000;
-pub const __WATCHOS_7_1: u32 = 70100;
-pub const __WATCHOS_7_2: u32 = 70200;
-pub const __WATCHOS_7_3: u32 = 70300;
-pub const __WATCHOS_7_4: u32 = 70400;
-pub const __WATCHOS_7_5: u32 = 70500;
-pub const __WATCHOS_7_6: u32 = 70600;
-pub const __WATCHOS_8_0: u32 = 80000;
-pub const __WATCHOS_8_1: u32 = 80100;
-pub const __WATCHOS_8_3: u32 = 80300;
-pub const __WATCHOS_8_4: u32 = 80400;
-pub const __WATCHOS_8_5: u32 = 80500;
-pub const __WATCHOS_8_6: u32 = 80600;
-pub const __WATCHOS_8_7: u32 = 80700;
-pub const __WATCHOS_8_8: u32 = 80800;
-pub const __WATCHOS_9_0: u32 = 90000;
-pub const __WATCHOS_9_1: u32 = 90100;
-pub const __WATCHOS_9_2: u32 = 90200;
-pub const __WATCHOS_9_3: u32 = 90300;
-pub const __WATCHOS_9_4: u32 = 90400;
-pub const __WATCHOS_9_5: u32 = 90500;
-pub const __WATCHOS_9_6: u32 = 90600;
-pub const __WATCHOS_10_0: u32 = 100000;
-pub const __WATCHOS_10_1: u32 = 100100;
-pub const __WATCHOS_10_2: u32 = 100200;
-pub const __WATCHOS_10_3: u32 = 100300;
-pub const __WATCHOS_10_4: u32 = 100400;
-pub const __WATCHOS_10_5: u32 = 100500;
-pub const __WATCHOS_11_0: u32 = 110000;
-pub const __WATCHOS_11_1: u32 = 110100;
-pub const __WATCHOS_11_2: u32 = 110200;
-pub const __TVOS_9_0: u32 = 90000;
-pub const __TVOS_9_1: u32 = 90100;
-pub const __TVOS_9_2: u32 = 90200;
-pub const __TVOS_10_0: u32 = 100000;
-pub const __TVOS_10_0_1: u32 = 100001;
-pub const __TVOS_10_1: u32 = 100100;
-pub const __TVOS_10_2: u32 = 100200;
-pub const __TVOS_11_0: u32 = 110000;
-pub const __TVOS_11_1: u32 = 110100;
-pub const __TVOS_11_2: u32 = 110200;
-pub const __TVOS_11_3: u32 = 110300;
-pub const __TVOS_11_4: u32 = 110400;
-pub const __TVOS_12_0: u32 = 120000;
-pub const __TVOS_12_1: u32 = 120100;
-pub const __TVOS_12_2: u32 = 120200;
-pub const __TVOS_12_3: u32 = 120300;
-pub const __TVOS_12_4: u32 = 120400;
-pub const __TVOS_13_0: u32 = 130000;
-pub const __TVOS_13_2: u32 = 130200;
-pub const __TVOS_13_3: u32 = 130300;
-pub const __TVOS_13_4: u32 = 130400;
-pub const __TVOS_14_0: u32 = 140000;
-pub const __TVOS_14_1: u32 = 140100;
-pub const __TVOS_14_2: u32 = 140200;
-pub const __TVOS_14_3: u32 = 140300;
-pub const __TVOS_14_5: u32 = 140500;
-pub const __TVOS_14_6: u32 = 140600;
-pub const __TVOS_14_7: u32 = 140700;
-pub const __TVOS_15_0: u32 = 150000;
-pub const __TVOS_15_1: u32 = 150100;
-pub const __TVOS_15_2: u32 = 150200;
-pub const __TVOS_15_3: u32 = 150300;
-pub const __TVOS_15_4: u32 = 150400;
-pub const __TVOS_15_5: u32 = 150500;
-pub const __TVOS_15_6: u32 = 150600;
-pub const __TVOS_16_0: u32 = 160000;
-pub const __TVOS_16_1: u32 = 160100;
-pub const __TVOS_16_2: u32 = 160200;
-pub const __TVOS_16_3: u32 = 160300;
-pub const __TVOS_16_4: u32 = 160400;
-pub const __TVOS_16_5: u32 = 160500;
-pub const __TVOS_16_6: u32 = 160600;
-pub const __TVOS_17_0: u32 = 170000;
-pub const __TVOS_17_1: u32 = 170100;
-pub const __TVOS_17_2: u32 = 170200;
-pub const __TVOS_17_3: u32 = 170300;
-pub const __TVOS_17_4: u32 = 170400;
-pub const __TVOS_17_5: u32 = 170500;
-pub const __TVOS_18_0: u32 = 180000;
-pub const __TVOS_18_1: u32 = 180100;
-pub const __TVOS_18_2: u32 = 180200;
-pub const __BRIDGEOS_2_0: u32 = 20000;
-pub const __BRIDGEOS_3_0: u32 = 30000;
-pub const __BRIDGEOS_3_1: u32 = 30100;
-pub const __BRIDGEOS_3_4: u32 = 30400;
-pub const __BRIDGEOS_4_0: u32 = 40000;
-pub const __BRIDGEOS_4_1: u32 = 40100;
-pub const __BRIDGEOS_5_0: u32 = 50000;
-pub const __BRIDGEOS_5_1: u32 = 50100;
-pub const __BRIDGEOS_5_3: u32 = 50300;
-pub const __BRIDGEOS_6_0: u32 = 60000;
-pub const __BRIDGEOS_6_2: u32 = 60200;
-pub const __BRIDGEOS_6_4: u32 = 60400;
-pub const __BRIDGEOS_6_5: u32 = 60500;
-pub const __BRIDGEOS_6_6: u32 = 60600;
-pub const __BRIDGEOS_7_0: u32 = 70000;
-pub const __BRIDGEOS_7_1: u32 = 70100;
-pub const __BRIDGEOS_7_2: u32 = 70200;
-pub const __BRIDGEOS_7_3: u32 = 70300;
-pub const __BRIDGEOS_7_4: u32 = 70400;
-pub const __BRIDGEOS_7_6: u32 = 70600;
-pub const __BRIDGEOS_8_0: u32 = 80000;
-pub const __BRIDGEOS_8_1: u32 = 80100;
-pub const __BRIDGEOS_8_2: u32 = 80200;
-pub const __BRIDGEOS_8_3: u32 = 80300;
-pub const __BRIDGEOS_8_4: u32 = 80400;
-pub const __BRIDGEOS_8_5: u32 = 80500;
-pub const __BRIDGEOS_9_0: u32 = 90000;
-pub const __BRIDGEOS_9_1: u32 = 90100;
-pub const __BRIDGEOS_9_2: u32 = 90200;
-pub const __DRIVERKIT_19_0: u32 = 190000;
-pub const __DRIVERKIT_20_0: u32 = 200000;
-pub const __DRIVERKIT_21_0: u32 = 210000;
-pub const __DRIVERKIT_22_0: u32 = 220000;
-pub const __DRIVERKIT_22_4: u32 = 220400;
-pub const __DRIVERKIT_22_5: u32 = 220500;
-pub const __DRIVERKIT_22_6: u32 = 220600;
-pub const __DRIVERKIT_23_0: u32 = 230000;
-pub const __DRIVERKIT_23_1: u32 = 230100;
-pub const __DRIVERKIT_23_2: u32 = 230200;
-pub const __DRIVERKIT_23_3: u32 = 230300;
-pub const __DRIVERKIT_23_4: u32 = 230400;
-pub const __DRIVERKIT_23_5: u32 = 230500;
-pub const __DRIVERKIT_24_0: u32 = 240000;
-pub const __DRIVERKIT_24_1: u32 = 240100;
-pub const __DRIVERKIT_24_2: u32 = 240200;
-pub const __VISIONOS_1_0: u32 = 10000;
-pub const __VISIONOS_1_1: u32 = 10100;
-pub const __VISIONOS_1_2: u32 = 10200;
-pub const __VISIONOS_2_0: u32 = 20000;
-pub const __VISIONOS_2_1: u32 = 20100;
-pub const __VISIONOS_2_2: u32 = 20200;
-pub const MAC_OS_X_VERSION_10_0: u32 = 1000;
-pub const MAC_OS_X_VERSION_10_1: u32 = 1010;
-pub const MAC_OS_X_VERSION_10_2: u32 = 1020;
-pub const MAC_OS_X_VERSION_10_3: u32 = 1030;
-pub const MAC_OS_X_VERSION_10_4: u32 = 1040;
-pub const MAC_OS_X_VERSION_10_5: u32 = 1050;
-pub const MAC_OS_X_VERSION_10_6: u32 = 1060;
-pub const MAC_OS_X_VERSION_10_7: u32 = 1070;
-pub const MAC_OS_X_VERSION_10_8: u32 = 1080;
-pub const MAC_OS_X_VERSION_10_9: u32 = 1090;
-pub const MAC_OS_X_VERSION_10_10: u32 = 101000;
-pub const MAC_OS_X_VERSION_10_10_2: u32 = 101002;
-pub const MAC_OS_X_VERSION_10_10_3: u32 = 101003;
-pub const MAC_OS_X_VERSION_10_11: u32 = 101100;
-pub const MAC_OS_X_VERSION_10_11_2: u32 = 101102;
-pub const MAC_OS_X_VERSION_10_11_3: u32 = 101103;
-pub const MAC_OS_X_VERSION_10_11_4: u32 = 101104;
-pub const MAC_OS_X_VERSION_10_12: u32 = 101200;
-pub const MAC_OS_X_VERSION_10_12_1: u32 = 101201;
-pub const MAC_OS_X_VERSION_10_12_2: u32 = 101202;
-pub const MAC_OS_X_VERSION_10_12_4: u32 = 101204;
-pub const MAC_OS_X_VERSION_10_13: u32 = 101300;
-pub const MAC_OS_X_VERSION_10_13_1: u32 = 101301;
-pub const MAC_OS_X_VERSION_10_13_2: u32 = 101302;
-pub const MAC_OS_X_VERSION_10_13_4: u32 = 101304;
-pub const MAC_OS_X_VERSION_10_14: u32 = 101400;
-pub const MAC_OS_X_VERSION_10_14_1: u32 = 101401;
-pub const MAC_OS_X_VERSION_10_14_4: u32 = 101404;
-pub const MAC_OS_X_VERSION_10_14_5: u32 = 101405;
-pub const MAC_OS_X_VERSION_10_14_6: u32 = 101406;
-pub const MAC_OS_X_VERSION_10_15: u32 = 101500;
-pub const MAC_OS_X_VERSION_10_15_1: u32 = 101501;
-pub const MAC_OS_X_VERSION_10_15_4: u32 = 101504;
-pub const MAC_OS_X_VERSION_10_16: u32 = 101600;
-pub const MAC_OS_VERSION_11_0: u32 = 110000;
-pub const MAC_OS_VERSION_11_1: u32 = 110100;
-pub const MAC_OS_VERSION_11_3: u32 = 110300;
-pub const MAC_OS_VERSION_11_4: u32 = 110400;
-pub const MAC_OS_VERSION_11_5: u32 = 110500;
-pub const MAC_OS_VERSION_11_6: u32 = 110600;
-pub const MAC_OS_VERSION_12_0: u32 = 120000;
-pub const MAC_OS_VERSION_12_1: u32 = 120100;
-pub const MAC_OS_VERSION_12_2: u32 = 120200;
-pub const MAC_OS_VERSION_12_3: u32 = 120300;
-pub const MAC_OS_VERSION_12_4: u32 = 120400;
-pub const MAC_OS_VERSION_12_5: u32 = 120500;
-pub const MAC_OS_VERSION_12_6: u32 = 120600;
-pub const MAC_OS_VERSION_12_7: u32 = 120700;
-pub const MAC_OS_VERSION_13_0: u32 = 130000;
-pub const MAC_OS_VERSION_13_1: u32 = 130100;
-pub const MAC_OS_VERSION_13_2: u32 = 130200;
-pub const MAC_OS_VERSION_13_3: u32 = 130300;
-pub const MAC_OS_VERSION_13_4: u32 = 130400;
-pub const MAC_OS_VERSION_13_5: u32 = 130500;
-pub const MAC_OS_VERSION_13_6: u32 = 130600;
-pub const MAC_OS_VERSION_14_0: u32 = 140000;
-pub const MAC_OS_VERSION_14_1: u32 = 140100;
-pub const MAC_OS_VERSION_14_2: u32 = 140200;
-pub const MAC_OS_VERSION_14_3: u32 = 140300;
-pub const MAC_OS_VERSION_14_4: u32 = 140400;
-pub const MAC_OS_VERSION_14_5: u32 = 140500;
-pub const MAC_OS_VERSION_15_0: u32 = 150000;
-pub const MAC_OS_VERSION_15_1: u32 = 150100;
-pub const MAC_OS_VERSION_15_2: u32 = 150200;
-pub const __MAC_OS_X_VERSION_MAX_ALLOWED: u32 = 150200;
-pub const __ENABLE_LEGACY_MAC_AVAILABILITY: u32 = 1;
-pub const USE_CLANG_STDDEF: u32 = 0;
-pub const _USE_FORTIFY_LEVEL: u32 = 2;
-pub const __HAS_FIXED_CHK_PROTOTYPES: u32 = 1;
-pub const __WORDSIZE: u32 = 64;
-pub const INT8_MAX: u32 = 127;
-pub const INT16_MAX: u32 = 32767;
-pub const INT32_MAX: u32 = 2147483647;
-pub const INT64_MAX: u64 = 9223372036854775807;
-pub const INT8_MIN: i32 = -128;
-pub const INT16_MIN: i32 = -32768;
-pub const INT32_MIN: i32 = -2147483648;
-pub const INT64_MIN: i64 = -9223372036854775808;
-pub const UINT8_MAX: u32 = 255;
-pub const UINT16_MAX: u32 = 65535;
-pub const UINT32_MAX: u32 = 4294967295;
-pub const UINT64_MAX: i32 = -1;
-pub const INT_LEAST8_MIN: i32 = -128;
-pub const INT_LEAST16_MIN: i32 = -32768;
-pub const INT_LEAST32_MIN: i32 = -2147483648;
-pub const INT_LEAST64_MIN: i64 = -9223372036854775808;
-pub const INT_LEAST8_MAX: u32 = 127;
-pub const INT_LEAST16_MAX: u32 = 32767;
-pub const INT_LEAST32_MAX: u32 = 2147483647;
-pub const INT_LEAST64_MAX: u64 = 9223372036854775807;
-pub const UINT_LEAST8_MAX: u32 = 255;
-pub const UINT_LEAST16_MAX: u32 = 65535;
-pub const UINT_LEAST32_MAX: u32 = 4294967295;
-pub const UINT_LEAST64_MAX: i32 = -1;
-pub const INT_FAST8_MIN: i32 = -128;
-pub const INT_FAST16_MIN: i32 = -32768;
-pub const INT_FAST32_MIN: i32 = -2147483648;
-pub const INT_FAST64_MIN: i64 = -9223372036854775808;
-pub const INT_FAST8_MAX: u32 = 127;
-pub const INT_FAST16_MAX: u32 = 32767;
-pub const INT_FAST32_MAX: u32 = 2147483647;
-pub const INT_FAST64_MAX: u64 = 9223372036854775807;
-pub const UINT_FAST8_MAX: u32 = 255;
-pub const UINT_FAST16_MAX: u32 = 65535;
-pub const UINT_FAST32_MAX: u32 = 4294967295;
-pub const UINT_FAST64_MAX: i32 = -1;
-pub const INTPTR_MAX: u64 = 9223372036854775807;
-pub const INTPTR_MIN: i64 = -9223372036854775808;
-pub const UINTPTR_MAX: i32 = -1;
-pub const SIZE_MAX: i32 = -1;
-pub const RSIZE_MAX: i32 = -1;
-pub const WINT_MIN: i32 = -2147483648;
-pub const WINT_MAX: u32 = 2147483647;
-pub const SIG_ATOMIC_MIN: i32 = -2147483648;
-pub const SIG_ATOMIC_MAX: u32 = 2147483647;
+pub const _VCRT_COMPILER_PREPROCESSOR: u32 = 1;
+pub const _SAL_VERSION: u32 = 20;
+pub const __SAL_H_VERSION: u32 = 180000000;
+pub const _USE_DECLSPECS_FOR_SAL: u32 = 0;
+pub const _USE_ATTRIBUTES_FOR_SAL: u32 = 0;
+pub const _CRT_PACKING: u32 = 8;
+pub const _HAS_EXCEPTIONS: u32 = 1;
+pub const _STL_LANG: u32 = 0;
+pub const _HAS_CXX17: u32 = 0;
+pub const _HAS_CXX20: u32 = 0;
+pub const _HAS_CXX23: u32 = 0;
+pub const _HAS_NODISCARD: u32 = 0;
+pub const _ARM_WINAPI_PARTITION_DESKTOP_SDK_AVAILABLE: u32 = 1;
+pub const _CRT_BUILD_DESKTOP_APP: u32 = 1;
+pub const _ARGMAX: u32 = 100;
+pub const _CRT_INT_MAX: u32 = 2147483647;
+pub const _CRT_FUNCTIONS_REQUIRED: u32 = 1;
+pub const _CRT_HAS_CXX17: u32 = 0;
+pub const _CRT_HAS_C11: u32 = 1;
+pub const _CRT_INTERNAL_NONSTDC_NAMES: u32 = 1;
+pub const __STDC_SECURE_LIB__: u32 = 200411;
+pub const __GOT_SECURE_LIB__: u32 = 200411;
+pub const __STDC_WANT_SECURE_LIB__: u32 = 1;
+pub const _SECURECRT_FILL_BUFFER_PATTERN: u32 = 254;
+pub const _CRT_SECURE_CPP_OVERLOAD_STANDARD_NAMES: u32 = 0;
+pub const _CRT_SECURE_CPP_OVERLOAD_STANDARD_NAMES_COUNT: u32 = 0;
+pub const _CRT_SECURE_CPP_OVERLOAD_SECURE_NAMES: u32 = 1;
+pub const _CRT_SECURE_CPP_OVERLOAD_STANDARD_NAMES_MEMORY: u32 = 0;
+pub const _CRT_SECURE_CPP_OVERLOAD_SECURE_NAMES_MEMORY: u32 = 0;
+pub const EPERM: u32 = 1;
+pub const ENOENT: u32 = 2;
+pub const ESRCH: u32 = 3;
+pub const EINTR: u32 = 4;
+pub const EIO: u32 = 5;
+pub const ENXIO: u32 = 6;
+pub const E2BIG: u32 = 7;
+pub const ENOEXEC: u32 = 8;
+pub const EBADF: u32 = 9;
+pub const ECHILD: u32 = 10;
+pub const EAGAIN: u32 = 11;
+pub const ENOMEM: u32 = 12;
+pub const EACCES: u32 = 13;
+pub const EFAULT: u32 = 14;
+pub const EBUSY: u32 = 16;
+pub const EEXIST: u32 = 17;
+pub const EXDEV: u32 = 18;
+pub const ENODEV: u32 = 19;
+pub const ENOTDIR: u32 = 20;
+pub const EISDIR: u32 = 21;
+pub const ENFILE: u32 = 23;
+pub const EMFILE: u32 = 24;
+pub const ENOTTY: u32 = 25;
+pub const EFBIG: u32 = 27;
+pub const ENOSPC: u32 = 28;
+pub const ESPIPE: u32 = 29;
+pub const EROFS: u32 = 30;
+pub const EMLINK: u32 = 31;
+pub const EPIPE: u32 = 32;
+pub const EDOM: u32 = 33;
+pub const EDEADLK: u32 = 36;
+pub const ENAMETOOLONG: u32 = 38;
+pub const ENOLCK: u32 = 39;
+pub const ENOSYS: u32 = 40;
+pub const ENOTEMPTY: u32 = 41;
+pub const EINVAL: u32 = 22;
+pub const ERANGE: u32 = 34;
+pub const EILSEQ: u32 = 42;
+pub const STRUNCATE: u32 = 80;
+pub const EDEADLOCK: u32 = 36;
+pub const EADDRINUSE: u32 = 100;
+pub const EADDRNOTAVAIL: u32 = 101;
+pub const EAFNOSUPPORT: u32 = 102;
+pub const EALREADY: u32 = 103;
+pub const EBADMSG: u32 = 104;
+pub const ECANCELED: u32 = 105;
+pub const ECONNABORTED: u32 = 106;
+pub const ECONNREFUSED: u32 = 107;
+pub const ECONNRESET: u32 = 108;
+pub const EDESTADDRREQ: u32 = 109;
+pub const EHOSTUNREACH: u32 = 110;
+pub const EIDRM: u32 = 111;
+pub const EINPROGRESS: u32 = 112;
+pub const EISCONN: u32 = 113;
+pub const ELOOP: u32 = 114;
+pub const EMSGSIZE: u32 = 115;
+pub const ENETDOWN: u32 = 116;
+pub const ENETRESET: u32 = 117;
+pub const ENETUNREACH: u32 = 118;
+pub const ENOBUFS: u32 = 119;
+pub const ENODATA: u32 = 120;
+pub const ENOLINK: u32 = 121;
+pub const ENOMSG: u32 = 122;
+pub const ENOPROTOOPT: u32 = 123;
+pub const ENOSR: u32 = 124;
+pub const ENOSTR: u32 = 125;
+pub const ENOTCONN: u32 = 126;
+pub const ENOTRECOVERABLE: u32 = 127;
+pub const ENOTSOCK: u32 = 128;
+pub const ENOTSUP: u32 = 129;
+pub const EOPNOTSUPP: u32 = 130;
+pub const EOTHER: u32 = 131;
+pub const EOVERFLOW: u32 = 132;
+pub const EOWNERDEAD: u32 = 133;
+pub const EPROTO: u32 = 134;
+pub const EPROTONOSUPPORT: u32 = 135;
+pub const EPROTOTYPE: u32 = 136;
+pub const ETIME: u32 = 137;
+pub const ETIMEDOUT: u32 = 138;
+pub const ETXTBSY: u32 = 139;
+pub const EWOULDBLOCK: u32 = 140;
+pub const _NLSCMPERROR: u32 = 2147483647;
+pub const WCHAR_MIN: u32 = 0;
+pub const WCHAR_MAX: u32 = 65535;
+pub const WINT_MIN: u32 = 0;
+pub const WINT_MAX: u32 = 65535;
 pub const __bool_true_false_are_defined: u32 = 1;
 pub const true_: u32 = 1;
 pub const false_: u32 = 0;
@@ -616,152 +278,48 @@ pub const FLECS_SPARSE_PAGE_SIZE: u32 = 4096;
 pub const ECS_STACK_PAGE_SIZE: u32 = 4096;
 pub const ECS_STRBUF_SMALL_STRING_SIZE: u32 = 512;
 pub const ECS_STRBUF_MAX_LIST_DEPTH: u32 = 32;
-pub const EPERM: u32 = 1;
-pub const ENOENT: u32 = 2;
-pub const ESRCH: u32 = 3;
-pub const EINTR: u32 = 4;
-pub const EIO: u32 = 5;
-pub const ENXIO: u32 = 6;
-pub const E2BIG: u32 = 7;
-pub const ENOEXEC: u32 = 8;
-pub const EBADF: u32 = 9;
-pub const ECHILD: u32 = 10;
-pub const EDEADLK: u32 = 11;
-pub const ENOMEM: u32 = 12;
-pub const EACCES: u32 = 13;
-pub const EFAULT: u32 = 14;
-pub const ENOTBLK: u32 = 15;
-pub const EBUSY: u32 = 16;
-pub const EEXIST: u32 = 17;
-pub const EXDEV: u32 = 18;
-pub const ENODEV: u32 = 19;
-pub const ENOTDIR: u32 = 20;
-pub const EISDIR: u32 = 21;
-pub const EINVAL: u32 = 22;
-pub const ENFILE: u32 = 23;
-pub const EMFILE: u32 = 24;
-pub const ENOTTY: u32 = 25;
-pub const ETXTBSY: u32 = 26;
-pub const EFBIG: u32 = 27;
-pub const ENOSPC: u32 = 28;
-pub const ESPIPE: u32 = 29;
-pub const EROFS: u32 = 30;
-pub const EMLINK: u32 = 31;
-pub const EPIPE: u32 = 32;
-pub const EDOM: u32 = 33;
-pub const ERANGE: u32 = 34;
-pub const EAGAIN: u32 = 35;
-pub const EWOULDBLOCK: u32 = 35;
-pub const EINPROGRESS: u32 = 36;
-pub const EALREADY: u32 = 37;
-pub const ENOTSOCK: u32 = 38;
-pub const EDESTADDRREQ: u32 = 39;
-pub const EMSGSIZE: u32 = 40;
-pub const EPROTOTYPE: u32 = 41;
-pub const ENOPROTOOPT: u32 = 42;
-pub const EPROTONOSUPPORT: u32 = 43;
-pub const ESOCKTNOSUPPORT: u32 = 44;
-pub const ENOTSUP: u32 = 45;
-pub const EPFNOSUPPORT: u32 = 46;
-pub const EAFNOSUPPORT: u32 = 47;
-pub const EADDRINUSE: u32 = 48;
-pub const EADDRNOTAVAIL: u32 = 49;
-pub const ENETDOWN: u32 = 50;
-pub const ENETUNREACH: u32 = 51;
-pub const ENETRESET: u32 = 52;
-pub const ECONNABORTED: u32 = 53;
-pub const ECONNRESET: u32 = 54;
-pub const ENOBUFS: u32 = 55;
-pub const EISCONN: u32 = 56;
-pub const ENOTCONN: u32 = 57;
-pub const ESHUTDOWN: u32 = 58;
-pub const ETOOMANYREFS: u32 = 59;
-pub const ETIMEDOUT: u32 = 60;
-pub const ECONNREFUSED: u32 = 61;
-pub const ELOOP: u32 = 62;
-pub const ENAMETOOLONG: u32 = 63;
-pub const EHOSTDOWN: u32 = 64;
-pub const EHOSTUNREACH: u32 = 65;
-pub const ENOTEMPTY: u32 = 66;
-pub const EPROCLIM: u32 = 67;
-pub const EUSERS: u32 = 68;
-pub const EDQUOT: u32 = 69;
-pub const ESTALE: u32 = 70;
-pub const EREMOTE: u32 = 71;
-pub const EBADRPC: u32 = 72;
-pub const ERPCMISMATCH: u32 = 73;
-pub const EPROGUNAVAIL: u32 = 74;
-pub const EPROGMISMATCH: u32 = 75;
-pub const EPROCUNAVAIL: u32 = 76;
-pub const ENOLCK: u32 = 77;
-pub const ENOSYS: u32 = 78;
-pub const EFTYPE: u32 = 79;
-pub const EAUTH: u32 = 80;
-pub const ENEEDAUTH: u32 = 81;
-pub const EPWROFF: u32 = 82;
-pub const EDEVERR: u32 = 83;
-pub const EOVERFLOW: u32 = 84;
-pub const EBADEXEC: u32 = 85;
-pub const EBADARCH: u32 = 86;
-pub const ESHLIBVERS: u32 = 87;
-pub const EBADMACHO: u32 = 88;
-pub const ECANCELED: u32 = 89;
-pub const EIDRM: u32 = 90;
-pub const ENOMSG: u32 = 91;
-pub const EILSEQ: u32 = 92;
-pub const ENOATTR: u32 = 93;
-pub const EBADMSG: u32 = 94;
-pub const EMULTIHOP: u32 = 95;
-pub const ENODATA: u32 = 96;
-pub const ENOLINK: u32 = 97;
-pub const ENOSR: u32 = 98;
-pub const ENOSTR: u32 = 99;
-pub const EPROTO: u32 = 100;
-pub const ETIME: u32 = 101;
-pub const EOPNOTSUPP: u32 = 102;
-pub const ENOPOLICY: u32 = 103;
-pub const ENOTRECOVERABLE: u32 = 104;
-pub const EOWNERDEAD: u32 = 105;
-pub const EQFULL: u32 = 106;
-pub const ELAST: u32 = 106;
-pub const USE_CLANG_STDARG: u32 = 0;
-pub const RENAME_SECLUDE: u32 = 1;
-pub const RENAME_SWAP: u32 = 2;
-pub const RENAME_EXCL: u32 = 4;
-pub const RENAME_RESERVED1: u32 = 8;
-pub const RENAME_NOFOLLOW_ANY: u32 = 16;
-pub const SEEK_SET: u32 = 0;
+pub const _CRT_INTERNAL_STDIO_SYMBOL_PREFIX: &[u8; 2] = b"_\0";
+pub const _CRT_INTERNAL_PRINTF_LEGACY_VSPRINTF_NULL_TERMINATION: u32 = 1;
+pub const _CRT_INTERNAL_PRINTF_STANDARD_SNPRINTF_BEHAVIOR: u32 = 2;
+pub const _CRT_INTERNAL_PRINTF_LEGACY_WIDE_SPECIFIERS: u32 = 4;
+pub const _CRT_INTERNAL_PRINTF_LEGACY_MSVCRT_COMPATIBILITY: u32 = 8;
+pub const _CRT_INTERNAL_PRINTF_LEGACY_THREE_DIGIT_EXPONENTS: u32 = 16;
+pub const _CRT_INTERNAL_PRINTF_STANDARD_ROUNDING: u32 = 32;
+pub const _CRT_INTERNAL_SCANF_SECURECRT: u32 = 1;
+pub const _CRT_INTERNAL_SCANF_LEGACY_WIDE_SPECIFIERS: u32 = 2;
+pub const _CRT_INTERNAL_SCANF_LEGACY_MSVCRT_COMPATIBILITY: u32 = 4;
+pub const BUFSIZ: u32 = 512;
+pub const _NSTREAM_: u32 = 512;
+pub const _IOB_ENTRIES: u32 = 3;
+pub const EOF: i32 = -1;
+pub const _IOFBF: u32 = 0;
+pub const _IOLBF: u32 = 64;
+pub const _IONBF: u32 = 4;
+pub const L_tmpnam: u32 = 260;
+pub const L_tmpnam_s: u32 = 260;
 pub const SEEK_CUR: u32 = 1;
 pub const SEEK_END: u32 = 2;
-pub const SEEK_HOLE: u32 = 3;
-pub const SEEK_DATA: u32 = 4;
-pub const __SLBF: u32 = 1;
-pub const __SNBF: u32 = 2;
-pub const __SRD: u32 = 4;
-pub const __SWR: u32 = 8;
-pub const __SRW: u32 = 16;
-pub const __SEOF: u32 = 32;
-pub const __SERR: u32 = 64;
-pub const __SMBF: u32 = 128;
-pub const __SAPP: u32 = 256;
-pub const __SSTR: u32 = 512;
-pub const __SOPT: u32 = 1024;
-pub const __SNPT: u32 = 2048;
-pub const __SOFF: u32 = 4096;
-pub const __SMOD: u32 = 8192;
-pub const __SALC: u32 = 16384;
-pub const __SIGN: u32 = 32768;
-pub const _IOFBF: u32 = 0;
-pub const _IOLBF: u32 = 1;
-pub const _IONBF: u32 = 2;
-pub const BUFSIZ: u32 = 1024;
-pub const EOF: i32 = -1;
+pub const SEEK_SET: u32 = 0;
+pub const FILENAME_MAX: u32 = 260;
 pub const FOPEN_MAX: u32 = 20;
-pub const FILENAME_MAX: u32 = 1024;
-pub const P_tmpdir: &[u8; 10] = b"/var/tmp/\0";
-pub const L_tmpnam: u32 = 1024;
-pub const TMP_MAX: u32 = 308915776;
-pub const L_ctermid: u32 = 1024;
+pub const _SYS_OPEN: u32 = 20;
+pub const TMP_MAX: u32 = 2147483647;
+pub const TMP_MAX_S: u32 = 2147483647;
+pub const _TMP_MAX_S: u32 = 2147483647;
+pub const SYS_OPEN: u32 = 20;
+pub const _HEAP_MAXREQ: u32 = 4294967264;
+pub const _HEAPEMPTY: i32 = -1;
+pub const _HEAPOK: i32 = -2;
+pub const _HEAPBADBEGIN: i32 = -3;
+pub const _HEAPBADNODE: i32 = -4;
+pub const _HEAPEND: i32 = -5;
+pub const _HEAPBADPTR: i32 = -6;
+pub const _FREEENTRY: u32 = 0;
+pub const _USEDENTRY: u32 = 1;
+pub const _ALLOCA_S_THRESHOLD: u32 = 1024;
+pub const _ALLOCA_S_STACK_MARKER: u32 = 52428;
+pub const _ALLOCA_S_HEAP_MARKER: u32 = 56797;
+pub const _ALLOCA_S_MARKER_SIZE: u32 = 8;
 pub const EcsSelf: i64 = -9223372036854775808;
 pub const EcsUp: u64 = 4611686018427387904;
 pub const EcsTrav: u64 = 2305843009213693952;
@@ -840,628 +398,866 @@ pub const ECS_STAT_WINDOW: u32 = 60;
 pub const ECS_ALERT_MAX_SEVERITY_FILTERS: u32 = 4;
 pub const ECS_MEMBER_DESC_CACHE_SIZE: u32 = 32;
 pub const ECS_META_MAX_SCOPE_DEPTH: u32 = 32;
+pub type va_list = *mut ::std::os::raw::c_char;
+pub type __vcrt_bool = bool;
+pub type wchar_t = ::std::os::raw::c_ushort;
 unsafe extern "C" {
-    pub fn __assert_rtn(
-        arg1: *const ::std::os::raw::c_char,
-        arg2: *const ::std::os::raw::c_char,
-        arg3: ::std::os::raw::c_int,
-        arg4: *const ::std::os::raw::c_char,
+    pub fn __security_init_cookie();
+}
+unsafe extern "fastcall" {
+    pub fn __security_check_cookie(_StackCookie: usize);
+}
+unsafe extern "C" {
+    pub fn __report_gsfailure() -> !;
+}
+unsafe extern "C" {
+    pub static mut __security_cookie: usize;
+}
+pub type __crt_bool = bool;
+unsafe extern "C" {
+    pub fn _invalid_parameter_noinfo();
+}
+unsafe extern "C" {
+    pub fn _invalid_parameter_noinfo_noreturn() -> !;
+}
+unsafe extern "C" {
+    pub fn _invoke_watson(
+        _Expression: *const wchar_t,
+        _FunctionName: *const wchar_t,
+        _FileName: *const wchar_t,
+        _LineNo: ::std::os::raw::c_uint,
+        _Reserved: usize,
     ) -> !;
 }
+pub type errno_t = ::std::os::raw::c_int;
+pub type wint_t = ::std::os::raw::c_ushort;
+pub type wctype_t = ::std::os::raw::c_ushort;
+pub type __time32_t = ::std::os::raw::c_long;
+pub type __time64_t = ::std::os::raw::c_longlong;
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct __crt_locale_data_public {
+    pub _locale_pctype: *const ::std::os::raw::c_ushort,
+    pub _locale_mb_cur_max: ::std::os::raw::c_int,
+    pub _locale_lc_codepage: ::std::os::raw::c_uint,
+}
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
+const _: () = {
+    ["Size of __crt_locale_data_public"]
+        [::std::mem::size_of::<__crt_locale_data_public>() - 12usize];
+    ["Alignment of __crt_locale_data_public"]
+        [::std::mem::align_of::<__crt_locale_data_public>() - 4usize];
+    ["Offset of field: __crt_locale_data_public::_locale_pctype"]
+        [::std::mem::offset_of!(__crt_locale_data_public, _locale_pctype) - 0usize];
+    ["Offset of field: __crt_locale_data_public::_locale_mb_cur_max"]
+        [::std::mem::offset_of!(__crt_locale_data_public, _locale_mb_cur_max) - 4usize];
+    ["Offset of field: __crt_locale_data_public::_locale_lc_codepage"]
+        [::std::mem::offset_of!(__crt_locale_data_public, _locale_lc_codepage) - 8usize];
+};
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct __crt_locale_pointers {
+    pub locinfo: *mut __crt_locale_data,
+    pub mbcinfo: *mut __crt_multibyte_data,
+}
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
+const _: () = {
+    ["Size of __crt_locale_pointers"][::std::mem::size_of::<__crt_locale_pointers>() - 8usize];
+    ["Alignment of __crt_locale_pointers"]
+        [::std::mem::align_of::<__crt_locale_pointers>() - 4usize];
+    ["Offset of field: __crt_locale_pointers::locinfo"]
+        [::std::mem::offset_of!(__crt_locale_pointers, locinfo) - 0usize];
+    ["Offset of field: __crt_locale_pointers::mbcinfo"]
+        [::std::mem::offset_of!(__crt_locale_pointers, mbcinfo) - 4usize];
+};
+pub type _locale_t = *mut __crt_locale_pointers;
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct _Mbstatet {
+    pub _Wchar: ::std::os::raw::c_ulong,
+    pub _Byte: ::std::os::raw::c_ushort,
+    pub _State: ::std::os::raw::c_ushort,
+}
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
+const _: () = {
+    ["Size of _Mbstatet"][::std::mem::size_of::<_Mbstatet>() - 8usize];
+    ["Alignment of _Mbstatet"][::std::mem::align_of::<_Mbstatet>() - 4usize];
+    ["Offset of field: _Mbstatet::_Wchar"][::std::mem::offset_of!(_Mbstatet, _Wchar) - 0usize];
+    ["Offset of field: _Mbstatet::_Byte"][::std::mem::offset_of!(_Mbstatet, _Byte) - 4usize];
+    ["Offset of field: _Mbstatet::_State"][::std::mem::offset_of!(_Mbstatet, _State) - 6usize];
+};
+pub type mbstate_t = _Mbstatet;
+pub type time_t = __time64_t;
+pub type rsize_t = usize;
+unsafe extern "C" {
+    pub fn _wassert(_Message: *const wchar_t, _File: *const wchar_t, _Line: ::std::os::raw::c_uint);
+}
 pub type __gnuc_va_list = __builtin_va_list;
-pub type va_list = __builtin_va_list;
-pub type __int8_t = ::std::os::raw::c_schar;
-pub type __uint8_t = ::std::os::raw::c_uchar;
-pub type __int16_t = ::std::os::raw::c_short;
-pub type __uint16_t = ::std::os::raw::c_ushort;
-pub type __int32_t = ::std::os::raw::c_int;
-pub type __uint32_t = ::std::os::raw::c_uint;
-pub type __int64_t = ::std::os::raw::c_longlong;
-pub type __uint64_t = ::std::os::raw::c_ulonglong;
-pub type __darwin_intptr_t = ::std::os::raw::c_long;
-pub type __darwin_natural_t = ::std::os::raw::c_uint;
-pub type __darwin_ct_rune_t = ::std::os::raw::c_int;
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub union __mbstate_t {
-    pub __mbstate8: [::std::os::raw::c_char; 128usize],
-    pub _mbstateL: ::std::os::raw::c_longlong,
+unsafe extern "C" {
+    pub fn _errno() -> *mut ::std::os::raw::c_int;
 }
-#[allow(clippy::unnecessary_operation, clippy::identity_op)]
-const _: () = {
-    ["Size of __mbstate_t"][::std::mem::size_of::<__mbstate_t>() - 128usize];
-    ["Alignment of __mbstate_t"][::std::mem::align_of::<__mbstate_t>() - 8usize];
-    ["Offset of field: __mbstate_t::__mbstate8"]
-        [::std::mem::offset_of!(__mbstate_t, __mbstate8) - 0usize];
-    ["Offset of field: __mbstate_t::_mbstateL"]
-        [::std::mem::offset_of!(__mbstate_t, _mbstateL) - 0usize];
-};
-pub type __darwin_mbstate_t = __mbstate_t;
-pub type __darwin_ptrdiff_t = ::std::os::raw::c_long;
-pub type __darwin_size_t = ::std::os::raw::c_ulong;
-pub type __darwin_va_list = __builtin_va_list;
-pub type __darwin_wchar_t = ::std::os::raw::c_int;
-pub type __darwin_rune_t = __darwin_wchar_t;
-pub type __darwin_wint_t = ::std::os::raw::c_int;
-pub type __darwin_clock_t = ::std::os::raw::c_ulong;
-pub type __darwin_socklen_t = __uint32_t;
-pub type __darwin_ssize_t = ::std::os::raw::c_long;
-pub type __darwin_time_t = ::std::os::raw::c_long;
-pub type __darwin_blkcnt_t = __int64_t;
-pub type __darwin_blksize_t = __int32_t;
-pub type __darwin_dev_t = __int32_t;
-pub type __darwin_fsblkcnt_t = ::std::os::raw::c_uint;
-pub type __darwin_fsfilcnt_t = ::std::os::raw::c_uint;
-pub type __darwin_gid_t = __uint32_t;
-pub type __darwin_id_t = __uint32_t;
-pub type __darwin_ino64_t = __uint64_t;
-pub type __darwin_ino_t = __darwin_ino64_t;
-pub type __darwin_mach_port_name_t = __darwin_natural_t;
-pub type __darwin_mach_port_t = __darwin_mach_port_name_t;
-pub type __darwin_mode_t = __uint16_t;
-pub type __darwin_off_t = __int64_t;
-pub type __darwin_pid_t = __int32_t;
-pub type __darwin_sigset_t = __uint32_t;
-pub type __darwin_suseconds_t = __int32_t;
-pub type __darwin_uid_t = __uint32_t;
-pub type __darwin_useconds_t = __uint32_t;
-pub type __darwin_uuid_t = [::std::os::raw::c_uchar; 16usize];
-pub type __darwin_uuid_string_t = [::std::os::raw::c_char; 37usize];
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct __darwin_pthread_handler_rec {
-    pub __routine: ::std::option::Option<unsafe extern "C" fn(arg1: *mut ::std::os::raw::c_void)>,
-    pub __arg: *mut ::std::os::raw::c_void,
-    pub __next: *mut __darwin_pthread_handler_rec,
+unsafe extern "C" {
+    pub fn _set_errno(_Value: ::std::os::raw::c_int) -> errno_t;
 }
-#[allow(clippy::unnecessary_operation, clippy::identity_op)]
-const _: () = {
-    ["Size of __darwin_pthread_handler_rec"]
-        [::std::mem::size_of::<__darwin_pthread_handler_rec>() - 24usize];
-    ["Alignment of __darwin_pthread_handler_rec"]
-        [::std::mem::align_of::<__darwin_pthread_handler_rec>() - 8usize];
-    ["Offset of field: __darwin_pthread_handler_rec::__routine"]
-        [::std::mem::offset_of!(__darwin_pthread_handler_rec, __routine) - 0usize];
-    ["Offset of field: __darwin_pthread_handler_rec::__arg"]
-        [::std::mem::offset_of!(__darwin_pthread_handler_rec, __arg) - 8usize];
-    ["Offset of field: __darwin_pthread_handler_rec::__next"]
-        [::std::mem::offset_of!(__darwin_pthread_handler_rec, __next) - 16usize];
-};
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct _opaque_pthread_attr_t {
-    pub __sig: ::std::os::raw::c_long,
-    pub __opaque: [::std::os::raw::c_char; 56usize],
+unsafe extern "C" {
+    pub fn _get_errno(_Value: *mut ::std::os::raw::c_int) -> errno_t;
 }
-#[allow(clippy::unnecessary_operation, clippy::identity_op)]
-const _: () = {
-    ["Size of _opaque_pthread_attr_t"][::std::mem::size_of::<_opaque_pthread_attr_t>() - 64usize];
-    ["Alignment of _opaque_pthread_attr_t"]
-        [::std::mem::align_of::<_opaque_pthread_attr_t>() - 8usize];
-    ["Offset of field: _opaque_pthread_attr_t::__sig"]
-        [::std::mem::offset_of!(_opaque_pthread_attr_t, __sig) - 0usize];
-    ["Offset of field: _opaque_pthread_attr_t::__opaque"]
-        [::std::mem::offset_of!(_opaque_pthread_attr_t, __opaque) - 8usize];
-};
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct _opaque_pthread_cond_t {
-    pub __sig: ::std::os::raw::c_long,
-    pub __opaque: [::std::os::raw::c_char; 40usize],
+unsafe extern "C" {
+    pub fn __doserrno() -> *mut ::std::os::raw::c_ulong;
 }
-#[allow(clippy::unnecessary_operation, clippy::identity_op)]
-const _: () = {
-    ["Size of _opaque_pthread_cond_t"][::std::mem::size_of::<_opaque_pthread_cond_t>() - 48usize];
-    ["Alignment of _opaque_pthread_cond_t"]
-        [::std::mem::align_of::<_opaque_pthread_cond_t>() - 8usize];
-    ["Offset of field: _opaque_pthread_cond_t::__sig"]
-        [::std::mem::offset_of!(_opaque_pthread_cond_t, __sig) - 0usize];
-    ["Offset of field: _opaque_pthread_cond_t::__opaque"]
-        [::std::mem::offset_of!(_opaque_pthread_cond_t, __opaque) - 8usize];
-};
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct _opaque_pthread_condattr_t {
-    pub __sig: ::std::os::raw::c_long,
-    pub __opaque: [::std::os::raw::c_char; 8usize],
+unsafe extern "C" {
+    pub fn _set_doserrno(_Value: ::std::os::raw::c_ulong) -> errno_t;
 }
-#[allow(clippy::unnecessary_operation, clippy::identity_op)]
-const _: () = {
-    ["Size of _opaque_pthread_condattr_t"]
-        [::std::mem::size_of::<_opaque_pthread_condattr_t>() - 16usize];
-    ["Alignment of _opaque_pthread_condattr_t"]
-        [::std::mem::align_of::<_opaque_pthread_condattr_t>() - 8usize];
-    ["Offset of field: _opaque_pthread_condattr_t::__sig"]
-        [::std::mem::offset_of!(_opaque_pthread_condattr_t, __sig) - 0usize];
-    ["Offset of field: _opaque_pthread_condattr_t::__opaque"]
-        [::std::mem::offset_of!(_opaque_pthread_condattr_t, __opaque) - 8usize];
-};
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct _opaque_pthread_mutex_t {
-    pub __sig: ::std::os::raw::c_long,
-    pub __opaque: [::std::os::raw::c_char; 56usize],
+unsafe extern "C" {
+    pub fn _get_doserrno(_Value: *mut ::std::os::raw::c_ulong) -> errno_t;
 }
-#[allow(clippy::unnecessary_operation, clippy::identity_op)]
-const _: () = {
-    ["Size of _opaque_pthread_mutex_t"][::std::mem::size_of::<_opaque_pthread_mutex_t>() - 64usize];
-    ["Alignment of _opaque_pthread_mutex_t"]
-        [::std::mem::align_of::<_opaque_pthread_mutex_t>() - 8usize];
-    ["Offset of field: _opaque_pthread_mutex_t::__sig"]
-        [::std::mem::offset_of!(_opaque_pthread_mutex_t, __sig) - 0usize];
-    ["Offset of field: _opaque_pthread_mutex_t::__opaque"]
-        [::std::mem::offset_of!(_opaque_pthread_mutex_t, __opaque) - 8usize];
-};
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct _opaque_pthread_mutexattr_t {
-    pub __sig: ::std::os::raw::c_long,
-    pub __opaque: [::std::os::raw::c_char; 8usize],
-}
-#[allow(clippy::unnecessary_operation, clippy::identity_op)]
-const _: () = {
-    ["Size of _opaque_pthread_mutexattr_t"]
-        [::std::mem::size_of::<_opaque_pthread_mutexattr_t>() - 16usize];
-    ["Alignment of _opaque_pthread_mutexattr_t"]
-        [::std::mem::align_of::<_opaque_pthread_mutexattr_t>() - 8usize];
-    ["Offset of field: _opaque_pthread_mutexattr_t::__sig"]
-        [::std::mem::offset_of!(_opaque_pthread_mutexattr_t, __sig) - 0usize];
-    ["Offset of field: _opaque_pthread_mutexattr_t::__opaque"]
-        [::std::mem::offset_of!(_opaque_pthread_mutexattr_t, __opaque) - 8usize];
-};
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct _opaque_pthread_once_t {
-    pub __sig: ::std::os::raw::c_long,
-    pub __opaque: [::std::os::raw::c_char; 8usize],
-}
-#[allow(clippy::unnecessary_operation, clippy::identity_op)]
-const _: () = {
-    ["Size of _opaque_pthread_once_t"][::std::mem::size_of::<_opaque_pthread_once_t>() - 16usize];
-    ["Alignment of _opaque_pthread_once_t"]
-        [::std::mem::align_of::<_opaque_pthread_once_t>() - 8usize];
-    ["Offset of field: _opaque_pthread_once_t::__sig"]
-        [::std::mem::offset_of!(_opaque_pthread_once_t, __sig) - 0usize];
-    ["Offset of field: _opaque_pthread_once_t::__opaque"]
-        [::std::mem::offset_of!(_opaque_pthread_once_t, __opaque) - 8usize];
-};
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct _opaque_pthread_rwlock_t {
-    pub __sig: ::std::os::raw::c_long,
-    pub __opaque: [::std::os::raw::c_char; 192usize],
-}
-#[allow(clippy::unnecessary_operation, clippy::identity_op)]
-const _: () = {
-    ["Size of _opaque_pthread_rwlock_t"]
-        [::std::mem::size_of::<_opaque_pthread_rwlock_t>() - 200usize];
-    ["Alignment of _opaque_pthread_rwlock_t"]
-        [::std::mem::align_of::<_opaque_pthread_rwlock_t>() - 8usize];
-    ["Offset of field: _opaque_pthread_rwlock_t::__sig"]
-        [::std::mem::offset_of!(_opaque_pthread_rwlock_t, __sig) - 0usize];
-    ["Offset of field: _opaque_pthread_rwlock_t::__opaque"]
-        [::std::mem::offset_of!(_opaque_pthread_rwlock_t, __opaque) - 8usize];
-};
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct _opaque_pthread_rwlockattr_t {
-    pub __sig: ::std::os::raw::c_long,
-    pub __opaque: [::std::os::raw::c_char; 16usize],
-}
-#[allow(clippy::unnecessary_operation, clippy::identity_op)]
-const _: () = {
-    ["Size of _opaque_pthread_rwlockattr_t"]
-        [::std::mem::size_of::<_opaque_pthread_rwlockattr_t>() - 24usize];
-    ["Alignment of _opaque_pthread_rwlockattr_t"]
-        [::std::mem::align_of::<_opaque_pthread_rwlockattr_t>() - 8usize];
-    ["Offset of field: _opaque_pthread_rwlockattr_t::__sig"]
-        [::std::mem::offset_of!(_opaque_pthread_rwlockattr_t, __sig) - 0usize];
-    ["Offset of field: _opaque_pthread_rwlockattr_t::__opaque"]
-        [::std::mem::offset_of!(_opaque_pthread_rwlockattr_t, __opaque) - 8usize];
-};
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct _opaque_pthread_t {
-    pub __sig: ::std::os::raw::c_long,
-    pub __cleanup_stack: *mut __darwin_pthread_handler_rec,
-    pub __opaque: [::std::os::raw::c_char; 8176usize],
-}
-#[allow(clippy::unnecessary_operation, clippy::identity_op)]
-const _: () = {
-    ["Size of _opaque_pthread_t"][::std::mem::size_of::<_opaque_pthread_t>() - 8192usize];
-    ["Alignment of _opaque_pthread_t"][::std::mem::align_of::<_opaque_pthread_t>() - 8usize];
-    ["Offset of field: _opaque_pthread_t::__sig"]
-        [::std::mem::offset_of!(_opaque_pthread_t, __sig) - 0usize];
-    ["Offset of field: _opaque_pthread_t::__cleanup_stack"]
-        [::std::mem::offset_of!(_opaque_pthread_t, __cleanup_stack) - 8usize];
-    ["Offset of field: _opaque_pthread_t::__opaque"]
-        [::std::mem::offset_of!(_opaque_pthread_t, __opaque) - 16usize];
-};
-pub type __darwin_pthread_attr_t = _opaque_pthread_attr_t;
-pub type __darwin_pthread_cond_t = _opaque_pthread_cond_t;
-pub type __darwin_pthread_condattr_t = _opaque_pthread_condattr_t;
-pub type __darwin_pthread_key_t = ::std::os::raw::c_ulong;
-pub type __darwin_pthread_mutex_t = _opaque_pthread_mutex_t;
-pub type __darwin_pthread_mutexattr_t = _opaque_pthread_mutexattr_t;
-pub type __darwin_pthread_once_t = _opaque_pthread_once_t;
-pub type __darwin_pthread_rwlock_t = _opaque_pthread_rwlock_t;
-pub type __darwin_pthread_rwlockattr_t = _opaque_pthread_rwlockattr_t;
-pub type __darwin_pthread_t = *mut _opaque_pthread_t;
-pub type __darwin_nl_item = ::std::os::raw::c_int;
-pub type __darwin_wctrans_t = ::std::os::raw::c_int;
-pub type __darwin_wctype_t = __uint32_t;
 unsafe extern "C" {
     pub fn memchr(
-        __s: *const ::std::os::raw::c_void,
-        __c: ::std::os::raw::c_int,
-        __n: ::std::os::raw::c_ulong,
+        _Buf: *const ::std::os::raw::c_void,
+        _Val: ::std::os::raw::c_int,
+        _MaxCount: ::std::os::raw::c_uint,
     ) -> *mut ::std::os::raw::c_void;
 }
 unsafe extern "C" {
     pub fn memcmp(
-        __s1: *const ::std::os::raw::c_void,
-        __s2: *const ::std::os::raw::c_void,
-        __n: ::std::os::raw::c_ulong,
+        _Buf1: *const ::std::os::raw::c_void,
+        _Buf2: *const ::std::os::raw::c_void,
+        _Size: ::std::os::raw::c_uint,
     ) -> ::std::os::raw::c_int;
 }
 unsafe extern "C" {
     pub fn memcpy(
-        __dst: *mut ::std::os::raw::c_void,
-        __src: *const ::std::os::raw::c_void,
-        __n: ::std::os::raw::c_ulong,
+        _Dst: *mut ::std::os::raw::c_void,
+        _Src: *const ::std::os::raw::c_void,
+        _Size: ::std::os::raw::c_uint,
     ) -> *mut ::std::os::raw::c_void;
 }
 unsafe extern "C" {
     pub fn memmove(
-        __dst: *mut ::std::os::raw::c_void,
-        __src: *const ::std::os::raw::c_void,
-        __len: ::std::os::raw::c_ulong,
+        _Dst: *mut ::std::os::raw::c_void,
+        _Src: *const ::std::os::raw::c_void,
+        _Size: ::std::os::raw::c_uint,
     ) -> *mut ::std::os::raw::c_void;
 }
 unsafe extern "C" {
     pub fn memset(
-        __b: *mut ::std::os::raw::c_void,
-        __c: ::std::os::raw::c_int,
-        __len: ::std::os::raw::c_ulong,
+        _Dst: *mut ::std::os::raw::c_void,
+        _Val: ::std::os::raw::c_int,
+        _Size: ::std::os::raw::c_uint,
     ) -> *mut ::std::os::raw::c_void;
 }
 unsafe extern "C" {
-    pub fn strcat(
-        __s1: *mut ::std::os::raw::c_char,
-        __s2: *const ::std::os::raw::c_char,
-    ) -> *mut ::std::os::raw::c_char;
-}
-unsafe extern "C" {
     pub fn strchr(
-        __s: *const ::std::os::raw::c_char,
-        __c: ::std::os::raw::c_int,
-    ) -> *mut ::std::os::raw::c_char;
-}
-unsafe extern "C" {
-    pub fn strcmp(
-        __s1: *const ::std::os::raw::c_char,
-        __s2: *const ::std::os::raw::c_char,
-    ) -> ::std::os::raw::c_int;
-}
-unsafe extern "C" {
-    pub fn strcoll(
-        __s1: *const ::std::os::raw::c_char,
-        __s2: *const ::std::os::raw::c_char,
-    ) -> ::std::os::raw::c_int;
-}
-unsafe extern "C" {
-    pub fn strcpy(
-        __dst: *mut ::std::os::raw::c_char,
-        __src: *const ::std::os::raw::c_char,
-    ) -> *mut ::std::os::raw::c_char;
-}
-unsafe extern "C" {
-    pub fn strcspn(
-        __s: *const ::std::os::raw::c_char,
-        __charset: *const ::std::os::raw::c_char,
-    ) -> ::std::os::raw::c_ulong;
-}
-unsafe extern "C" {
-    pub fn strerror(__errnum: ::std::os::raw::c_int) -> *mut ::std::os::raw::c_char;
-}
-unsafe extern "C" {
-    pub fn strlen(__s: *const ::std::os::raw::c_char) -> ::std::os::raw::c_ulong;
-}
-unsafe extern "C" {
-    pub fn strncat(
-        __s1: *mut ::std::os::raw::c_char,
-        __s2: *const ::std::os::raw::c_char,
-        __n: ::std::os::raw::c_ulong,
-    ) -> *mut ::std::os::raw::c_char;
-}
-unsafe extern "C" {
-    pub fn strncmp(
-        __s1: *const ::std::os::raw::c_char,
-        __s2: *const ::std::os::raw::c_char,
-        __n: ::std::os::raw::c_ulong,
-    ) -> ::std::os::raw::c_int;
-}
-unsafe extern "C" {
-    pub fn strncpy(
-        __dst: *mut ::std::os::raw::c_char,
-        __src: *const ::std::os::raw::c_char,
-        __n: ::std::os::raw::c_ulong,
-    ) -> *mut ::std::os::raw::c_char;
-}
-unsafe extern "C" {
-    pub fn strpbrk(
-        __s: *const ::std::os::raw::c_char,
-        __charset: *const ::std::os::raw::c_char,
+        _Str: *const ::std::os::raw::c_char,
+        _Val: ::std::os::raw::c_int,
     ) -> *mut ::std::os::raw::c_char;
 }
 unsafe extern "C" {
     pub fn strrchr(
-        __s: *const ::std::os::raw::c_char,
-        __c: ::std::os::raw::c_int,
+        _Str: *const ::std::os::raw::c_char,
+        _Ch: ::std::os::raw::c_int,
+    ) -> *mut ::std::os::raw::c_char;
+}
+unsafe extern "C" {
+    pub fn strstr(
+        _Str: *const ::std::os::raw::c_char,
+        _SubStr: *const ::std::os::raw::c_char,
+    ) -> *mut ::std::os::raw::c_char;
+}
+unsafe extern "C" {
+    pub fn wcschr(
+        _Str: *const ::std::os::raw::c_ushort,
+        _Ch: ::std::os::raw::c_ushort,
+    ) -> *mut ::std::os::raw::c_ushort;
+}
+unsafe extern "C" {
+    pub fn wcsrchr(_Str: *const wchar_t, _Ch: wchar_t) -> *mut wchar_t;
+}
+unsafe extern "C" {
+    pub fn wcsstr(_Str: *const wchar_t, _SubStr: *const wchar_t) -> *mut wchar_t;
+}
+unsafe extern "C" {
+    pub fn _memicmp(
+        _Buf1: *const ::std::os::raw::c_void,
+        _Buf2: *const ::std::os::raw::c_void,
+        _Size: usize,
+    ) -> ::std::os::raw::c_int;
+}
+unsafe extern "C" {
+    pub fn _memicmp_l(
+        _Buf1: *const ::std::os::raw::c_void,
+        _Buf2: *const ::std::os::raw::c_void,
+        _Size: usize,
+        _Locale: _locale_t,
+    ) -> ::std::os::raw::c_int;
+}
+unsafe extern "C" {
+    pub fn memccpy(
+        _Dst: *mut ::std::os::raw::c_void,
+        _Src: *const ::std::os::raw::c_void,
+        _Val: ::std::os::raw::c_int,
+        _Size: ::std::os::raw::c_uint,
+    ) -> *mut ::std::os::raw::c_void;
+}
+unsafe extern "C" {
+    pub fn memicmp(
+        _Buf1: *const ::std::os::raw::c_void,
+        _Buf2: *const ::std::os::raw::c_void,
+        _Size: usize,
+    ) -> ::std::os::raw::c_int;
+}
+unsafe extern "C" {
+    pub fn wcscat_s(
+        _Destination: *mut wchar_t,
+        _SizeInWords: rsize_t,
+        _Source: *const wchar_t,
+    ) -> errno_t;
+}
+unsafe extern "C" {
+    pub fn wcscpy_s(
+        _Destination: *mut wchar_t,
+        _SizeInWords: rsize_t,
+        _Source: *const wchar_t,
+    ) -> errno_t;
+}
+unsafe extern "C" {
+    pub fn wcsncat_s(
+        _Destination: *mut wchar_t,
+        _SizeInWords: rsize_t,
+        _Source: *const wchar_t,
+        _MaxCount: rsize_t,
+    ) -> errno_t;
+}
+unsafe extern "C" {
+    pub fn wcsncpy_s(
+        _Destination: *mut wchar_t,
+        _SizeInWords: rsize_t,
+        _Source: *const wchar_t,
+        _MaxCount: rsize_t,
+    ) -> errno_t;
+}
+unsafe extern "C" {
+    pub fn wcstok_s(
+        _String: *mut wchar_t,
+        _Delimiter: *const wchar_t,
+        _Context: *mut *mut wchar_t,
+    ) -> *mut wchar_t;
+}
+unsafe extern "C" {
+    pub fn _wcsdup(_String: *const wchar_t) -> *mut wchar_t;
+}
+unsafe extern "C" {
+    pub fn wcscat(_Destination: *mut wchar_t, _Source: *const wchar_t) -> *mut wchar_t;
+}
+unsafe extern "C" {
+    pub fn wcscmp(
+        _String1: *const ::std::os::raw::c_ushort,
+        _String2: *const ::std::os::raw::c_ushort,
+    ) -> ::std::os::raw::c_int;
+}
+unsafe extern "C" {
+    pub fn wcscpy(_Destination: *mut wchar_t, _Source: *const wchar_t) -> *mut wchar_t;
+}
+unsafe extern "C" {
+    pub fn wcscspn(_String: *const wchar_t, _Control: *const wchar_t) -> usize;
+}
+unsafe extern "C" {
+    pub fn wcslen(_String: *const ::std::os::raw::c_ushort) -> ::std::os::raw::c_uint;
+}
+unsafe extern "C" {
+    pub fn wcsnlen(_Source: *const wchar_t, _MaxCount: usize) -> usize;
+}
+unsafe extern "C" {
+    pub fn wcsncat(
+        _Destination: *mut wchar_t,
+        _Source: *const wchar_t,
+        _Count: usize,
+    ) -> *mut wchar_t;
+}
+unsafe extern "C" {
+    pub fn wcsncmp(
+        _String1: *const ::std::os::raw::c_ushort,
+        _String2: *const ::std::os::raw::c_ushort,
+        _MaxCount: ::std::os::raw::c_uint,
+    ) -> ::std::os::raw::c_int;
+}
+unsafe extern "C" {
+    pub fn wcsncpy(
+        _Destination: *mut wchar_t,
+        _Source: *const wchar_t,
+        _Count: usize,
+    ) -> *mut wchar_t;
+}
+unsafe extern "C" {
+    pub fn wcspbrk(_String: *const wchar_t, _Control: *const wchar_t) -> *mut wchar_t;
+}
+unsafe extern "C" {
+    pub fn wcsspn(_String: *const wchar_t, _Control: *const wchar_t) -> usize;
+}
+unsafe extern "C" {
+    pub fn wcstok(
+        _String: *mut wchar_t,
+        _Delimiter: *const wchar_t,
+        _Context: *mut *mut wchar_t,
+    ) -> *mut wchar_t;
+}
+unsafe extern "C" {
+    pub fn _wcserror(_ErrorNumber: ::std::os::raw::c_int) -> *mut wchar_t;
+}
+unsafe extern "C" {
+    pub fn _wcserror_s(
+        _Buffer: *mut wchar_t,
+        _SizeInWords: usize,
+        _ErrorNumber: ::std::os::raw::c_int,
+    ) -> errno_t;
+}
+unsafe extern "C" {
+    pub fn __wcserror(_String: *const wchar_t) -> *mut wchar_t;
+}
+unsafe extern "C" {
+    pub fn __wcserror_s(
+        _Buffer: *mut wchar_t,
+        _SizeInWords: usize,
+        _ErrorMessage: *const wchar_t,
+    ) -> errno_t;
+}
+unsafe extern "C" {
+    pub fn _wcsicmp(_String1: *const wchar_t, _String2: *const wchar_t) -> ::std::os::raw::c_int;
+}
+unsafe extern "C" {
+    pub fn _wcsicmp_l(
+        _String1: *const wchar_t,
+        _String2: *const wchar_t,
+        _Locale: _locale_t,
+    ) -> ::std::os::raw::c_int;
+}
+unsafe extern "C" {
+    pub fn _wcsnicmp(
+        _String1: *const wchar_t,
+        _String2: *const wchar_t,
+        _MaxCount: usize,
+    ) -> ::std::os::raw::c_int;
+}
+unsafe extern "C" {
+    pub fn _wcsnicmp_l(
+        _String1: *const wchar_t,
+        _String2: *const wchar_t,
+        _MaxCount: usize,
+        _Locale: _locale_t,
+    ) -> ::std::os::raw::c_int;
+}
+unsafe extern "C" {
+    pub fn _wcsnset_s(
+        _Destination: *mut wchar_t,
+        _SizeInWords: usize,
+        _Value: wchar_t,
+        _MaxCount: usize,
+    ) -> errno_t;
+}
+unsafe extern "C" {
+    pub fn _wcsnset(_String: *mut wchar_t, _Value: wchar_t, _MaxCount: usize) -> *mut wchar_t;
+}
+unsafe extern "C" {
+    pub fn _wcsrev(_String: *mut wchar_t) -> *mut wchar_t;
+}
+unsafe extern "C" {
+    pub fn _wcsset_s(_Destination: *mut wchar_t, _SizeInWords: usize, _Value: wchar_t) -> errno_t;
+}
+unsafe extern "C" {
+    pub fn _wcsset(_String: *mut wchar_t, _Value: wchar_t) -> *mut wchar_t;
+}
+unsafe extern "C" {
+    pub fn _wcslwr_s(_String: *mut wchar_t, _SizeInWords: usize) -> errno_t;
+}
+unsafe extern "C" {
+    pub fn _wcslwr(_String: *mut wchar_t) -> *mut wchar_t;
+}
+unsafe extern "C" {
+    pub fn _wcslwr_s_l(_String: *mut wchar_t, _SizeInWords: usize, _Locale: _locale_t) -> errno_t;
+}
+unsafe extern "C" {
+    pub fn _wcslwr_l(_String: *mut wchar_t, _Locale: _locale_t) -> *mut wchar_t;
+}
+unsafe extern "C" {
+    pub fn _wcsupr_s(_String: *mut wchar_t, _Size: usize) -> errno_t;
+}
+unsafe extern "C" {
+    pub fn _wcsupr(_String: *mut wchar_t) -> *mut wchar_t;
+}
+unsafe extern "C" {
+    pub fn _wcsupr_s_l(_String: *mut wchar_t, _Size: usize, _Locale: _locale_t) -> errno_t;
+}
+unsafe extern "C" {
+    pub fn _wcsupr_l(_String: *mut wchar_t, _Locale: _locale_t) -> *mut wchar_t;
+}
+unsafe extern "C" {
+    pub fn wcsxfrm(_Destination: *mut wchar_t, _Source: *const wchar_t, _MaxCount: usize) -> usize;
+}
+unsafe extern "C" {
+    pub fn _wcsxfrm_l(
+        _Destination: *mut wchar_t,
+        _Source: *const wchar_t,
+        _MaxCount: usize,
+        _Locale: _locale_t,
+    ) -> usize;
+}
+unsafe extern "C" {
+    pub fn wcscoll(_String1: *const wchar_t, _String2: *const wchar_t) -> ::std::os::raw::c_int;
+}
+unsafe extern "C" {
+    pub fn _wcscoll_l(
+        _String1: *const wchar_t,
+        _String2: *const wchar_t,
+        _Locale: _locale_t,
+    ) -> ::std::os::raw::c_int;
+}
+unsafe extern "C" {
+    pub fn _wcsicoll(_String1: *const wchar_t, _String2: *const wchar_t) -> ::std::os::raw::c_int;
+}
+unsafe extern "C" {
+    pub fn _wcsicoll_l(
+        _String1: *const wchar_t,
+        _String2: *const wchar_t,
+        _Locale: _locale_t,
+    ) -> ::std::os::raw::c_int;
+}
+unsafe extern "C" {
+    pub fn _wcsncoll(
+        _String1: *const wchar_t,
+        _String2: *const wchar_t,
+        _MaxCount: usize,
+    ) -> ::std::os::raw::c_int;
+}
+unsafe extern "C" {
+    pub fn _wcsncoll_l(
+        _String1: *const wchar_t,
+        _String2: *const wchar_t,
+        _MaxCount: usize,
+        _Locale: _locale_t,
+    ) -> ::std::os::raw::c_int;
+}
+unsafe extern "C" {
+    pub fn _wcsnicoll(
+        _String1: *const wchar_t,
+        _String2: *const wchar_t,
+        _MaxCount: usize,
+    ) -> ::std::os::raw::c_int;
+}
+unsafe extern "C" {
+    pub fn _wcsnicoll_l(
+        _String1: *const wchar_t,
+        _String2: *const wchar_t,
+        _MaxCount: usize,
+        _Locale: _locale_t,
+    ) -> ::std::os::raw::c_int;
+}
+unsafe extern "C" {
+    pub fn wcsdup(_String: *const wchar_t) -> *mut wchar_t;
+}
+unsafe extern "C" {
+    pub fn wcsicmp(_String1: *const wchar_t, _String2: *const wchar_t) -> ::std::os::raw::c_int;
+}
+unsafe extern "C" {
+    pub fn wcsnicmp(
+        _String1: *const wchar_t,
+        _String2: *const wchar_t,
+        _MaxCount: usize,
+    ) -> ::std::os::raw::c_int;
+}
+unsafe extern "C" {
+    pub fn wcsnset(_String: *mut wchar_t, _Value: wchar_t, _MaxCount: usize) -> *mut wchar_t;
+}
+unsafe extern "C" {
+    pub fn wcsrev(_String: *mut wchar_t) -> *mut wchar_t;
+}
+unsafe extern "C" {
+    pub fn wcsset(_String: *mut wchar_t, _Value: wchar_t) -> *mut wchar_t;
+}
+unsafe extern "C" {
+    pub fn wcslwr(_String: *mut wchar_t) -> *mut wchar_t;
+}
+unsafe extern "C" {
+    pub fn wcsupr(_String: *mut wchar_t) -> *mut wchar_t;
+}
+unsafe extern "C" {
+    pub fn wcsicoll(_String1: *const wchar_t, _String2: *const wchar_t) -> ::std::os::raw::c_int;
+}
+unsafe extern "C" {
+    pub fn strcpy_s(
+        _Destination: *mut ::std::os::raw::c_char,
+        _SizeInBytes: rsize_t,
+        _Source: *const ::std::os::raw::c_char,
+    ) -> errno_t;
+}
+unsafe extern "C" {
+    pub fn strcat_s(
+        _Destination: *mut ::std::os::raw::c_char,
+        _SizeInBytes: rsize_t,
+        _Source: *const ::std::os::raw::c_char,
+    ) -> errno_t;
+}
+unsafe extern "C" {
+    pub fn strerror_s(
+        _Buffer: *mut ::std::os::raw::c_char,
+        _SizeInBytes: usize,
+        _ErrorNumber: ::std::os::raw::c_int,
+    ) -> errno_t;
+}
+unsafe extern "C" {
+    pub fn strncat_s(
+        _Destination: *mut ::std::os::raw::c_char,
+        _SizeInBytes: rsize_t,
+        _Source: *const ::std::os::raw::c_char,
+        _MaxCount: rsize_t,
+    ) -> errno_t;
+}
+unsafe extern "C" {
+    pub fn strncpy_s(
+        _Destination: *mut ::std::os::raw::c_char,
+        _SizeInBytes: rsize_t,
+        _Source: *const ::std::os::raw::c_char,
+        _MaxCount: rsize_t,
+    ) -> errno_t;
+}
+unsafe extern "C" {
+    pub fn strtok_s(
+        _String: *mut ::std::os::raw::c_char,
+        _Delimiter: *const ::std::os::raw::c_char,
+        _Context: *mut *mut ::std::os::raw::c_char,
+    ) -> *mut ::std::os::raw::c_char;
+}
+unsafe extern "C" {
+    pub fn _memccpy(
+        _Dst: *mut ::std::os::raw::c_void,
+        _Src: *const ::std::os::raw::c_void,
+        _Val: ::std::os::raw::c_int,
+        _MaxCount: usize,
+    ) -> *mut ::std::os::raw::c_void;
+}
+unsafe extern "C" {
+    pub fn strcat(
+        _Destination: *mut ::std::os::raw::c_char,
+        _Source: *const ::std::os::raw::c_char,
+    ) -> *mut ::std::os::raw::c_char;
+}
+unsafe extern "C" {
+    pub fn strcmp(
+        _Str1: *const ::std::os::raw::c_char,
+        _Str2: *const ::std::os::raw::c_char,
+    ) -> ::std::os::raw::c_int;
+}
+unsafe extern "C" {
+    pub fn _strcmpi(
+        _String1: *const ::std::os::raw::c_char,
+        _String2: *const ::std::os::raw::c_char,
+    ) -> ::std::os::raw::c_int;
+}
+unsafe extern "C" {
+    pub fn strcoll(
+        _String1: *const ::std::os::raw::c_char,
+        _String2: *const ::std::os::raw::c_char,
+    ) -> ::std::os::raw::c_int;
+}
+unsafe extern "C" {
+    pub fn _strcoll_l(
+        _String1: *const ::std::os::raw::c_char,
+        _String2: *const ::std::os::raw::c_char,
+        _Locale: _locale_t,
+    ) -> ::std::os::raw::c_int;
+}
+unsafe extern "C" {
+    pub fn strcpy(
+        _Destination: *mut ::std::os::raw::c_char,
+        _Source: *const ::std::os::raw::c_char,
+    ) -> *mut ::std::os::raw::c_char;
+}
+unsafe extern "C" {
+    pub fn strcspn(
+        _Str: *const ::std::os::raw::c_char,
+        _Control: *const ::std::os::raw::c_char,
+    ) -> ::std::os::raw::c_uint;
+}
+unsafe extern "C" {
+    pub fn _strdup(_Source: *const ::std::os::raw::c_char) -> *mut ::std::os::raw::c_char;
+}
+unsafe extern "C" {
+    pub fn _strerror(_ErrorMessage: *const ::std::os::raw::c_char) -> *mut ::std::os::raw::c_char;
+}
+unsafe extern "C" {
+    pub fn _strerror_s(
+        _Buffer: *mut ::std::os::raw::c_char,
+        _SizeInBytes: usize,
+        _ErrorMessage: *const ::std::os::raw::c_char,
+    ) -> errno_t;
+}
+unsafe extern "C" {
+    pub fn strerror(_ErrorMessage: ::std::os::raw::c_int) -> *mut ::std::os::raw::c_char;
+}
+unsafe extern "C" {
+    pub fn _stricmp(
+        _String1: *const ::std::os::raw::c_char,
+        _String2: *const ::std::os::raw::c_char,
+    ) -> ::std::os::raw::c_int;
+}
+unsafe extern "C" {
+    pub fn _stricoll(
+        _String1: *const ::std::os::raw::c_char,
+        _String2: *const ::std::os::raw::c_char,
+    ) -> ::std::os::raw::c_int;
+}
+unsafe extern "C" {
+    pub fn _stricoll_l(
+        _String1: *const ::std::os::raw::c_char,
+        _String2: *const ::std::os::raw::c_char,
+        _Locale: _locale_t,
+    ) -> ::std::os::raw::c_int;
+}
+unsafe extern "C" {
+    pub fn _stricmp_l(
+        _String1: *const ::std::os::raw::c_char,
+        _String2: *const ::std::os::raw::c_char,
+        _Locale: _locale_t,
+    ) -> ::std::os::raw::c_int;
+}
+unsafe extern "C" {
+    pub fn strlen(_Str: *const ::std::os::raw::c_char) -> ::std::os::raw::c_uint;
+}
+unsafe extern "C" {
+    pub fn _strlwr_s(_String: *mut ::std::os::raw::c_char, _Size: usize) -> errno_t;
+}
+unsafe extern "C" {
+    pub fn _strlwr(_String: *mut ::std::os::raw::c_char) -> *mut ::std::os::raw::c_char;
+}
+unsafe extern "C" {
+    pub fn _strlwr_s_l(
+        _String: *mut ::std::os::raw::c_char,
+        _Size: usize,
+        _Locale: _locale_t,
+    ) -> errno_t;
+}
+unsafe extern "C" {
+    pub fn _strlwr_l(
+        _String: *mut ::std::os::raw::c_char,
+        _Locale: _locale_t,
+    ) -> *mut ::std::os::raw::c_char;
+}
+unsafe extern "C" {
+    pub fn strncat(
+        _Destination: *mut ::std::os::raw::c_char,
+        _Source: *const ::std::os::raw::c_char,
+        _Count: ::std::os::raw::c_uint,
+    ) -> *mut ::std::os::raw::c_char;
+}
+unsafe extern "C" {
+    pub fn strncmp(
+        _Str1: *const ::std::os::raw::c_char,
+        _Str2: *const ::std::os::raw::c_char,
+        _MaxCount: ::std::os::raw::c_uint,
+    ) -> ::std::os::raw::c_int;
+}
+unsafe extern "C" {
+    pub fn _strnicmp(
+        _String1: *const ::std::os::raw::c_char,
+        _String2: *const ::std::os::raw::c_char,
+        _MaxCount: usize,
+    ) -> ::std::os::raw::c_int;
+}
+unsafe extern "C" {
+    pub fn _strnicmp_l(
+        _String1: *const ::std::os::raw::c_char,
+        _String2: *const ::std::os::raw::c_char,
+        _MaxCount: usize,
+        _Locale: _locale_t,
+    ) -> ::std::os::raw::c_int;
+}
+unsafe extern "C" {
+    pub fn _strnicoll(
+        _String1: *const ::std::os::raw::c_char,
+        _String2: *const ::std::os::raw::c_char,
+        _MaxCount: usize,
+    ) -> ::std::os::raw::c_int;
+}
+unsafe extern "C" {
+    pub fn _strnicoll_l(
+        _String1: *const ::std::os::raw::c_char,
+        _String2: *const ::std::os::raw::c_char,
+        _MaxCount: usize,
+        _Locale: _locale_t,
+    ) -> ::std::os::raw::c_int;
+}
+unsafe extern "C" {
+    pub fn _strncoll(
+        _String1: *const ::std::os::raw::c_char,
+        _String2: *const ::std::os::raw::c_char,
+        _MaxCount: usize,
+    ) -> ::std::os::raw::c_int;
+}
+unsafe extern "C" {
+    pub fn _strncoll_l(
+        _String1: *const ::std::os::raw::c_char,
+        _String2: *const ::std::os::raw::c_char,
+        _MaxCount: usize,
+        _Locale: _locale_t,
+    ) -> ::std::os::raw::c_int;
+}
+unsafe extern "C" {
+    pub fn __strncnt(_String: *const ::std::os::raw::c_char, _Count: usize) -> usize;
+}
+unsafe extern "C" {
+    pub fn strncpy(
+        _Destination: *mut ::std::os::raw::c_char,
+        _Source: *const ::std::os::raw::c_char,
+        _Count: ::std::os::raw::c_uint,
+    ) -> *mut ::std::os::raw::c_char;
+}
+unsafe extern "C" {
+    pub fn strnlen(_String: *const ::std::os::raw::c_char, _MaxCount: usize) -> usize;
+}
+unsafe extern "C" {
+    pub fn _strnset_s(
+        _String: *mut ::std::os::raw::c_char,
+        _SizeInBytes: usize,
+        _Value: ::std::os::raw::c_int,
+        _MaxCount: usize,
+    ) -> errno_t;
+}
+unsafe extern "C" {
+    pub fn _strnset(
+        _Destination: *mut ::std::os::raw::c_char,
+        _Value: ::std::os::raw::c_int,
+        _Count: usize,
+    ) -> *mut ::std::os::raw::c_char;
+}
+unsafe extern "C" {
+    pub fn strpbrk(
+        _Str: *const ::std::os::raw::c_char,
+        _Control: *const ::std::os::raw::c_char,
+    ) -> *mut ::std::os::raw::c_char;
+}
+unsafe extern "C" {
+    pub fn _strrev(_Str: *mut ::std::os::raw::c_char) -> *mut ::std::os::raw::c_char;
+}
+unsafe extern "C" {
+    pub fn _strset_s(
+        _Destination: *mut ::std::os::raw::c_char,
+        _DestinationSize: usize,
+        _Value: ::std::os::raw::c_int,
+    ) -> errno_t;
+}
+unsafe extern "C" {
+    pub fn _strset(
+        _Destination: *mut ::std::os::raw::c_char,
+        _Value: ::std::os::raw::c_int,
     ) -> *mut ::std::os::raw::c_char;
 }
 unsafe extern "C" {
     pub fn strspn(
-        __s: *const ::std::os::raw::c_char,
-        __charset: *const ::std::os::raw::c_char,
-    ) -> ::std::os::raw::c_ulong;
-}
-unsafe extern "C" {
-    pub fn strstr(
-        __big: *const ::std::os::raw::c_char,
-        __little: *const ::std::os::raw::c_char,
-    ) -> *mut ::std::os::raw::c_char;
+        _Str: *const ::std::os::raw::c_char,
+        _Control: *const ::std::os::raw::c_char,
+    ) -> ::std::os::raw::c_uint;
 }
 unsafe extern "C" {
     pub fn strtok(
-        __str: *mut ::std::os::raw::c_char,
-        __sep: *const ::std::os::raw::c_char,
+        _String: *mut ::std::os::raw::c_char,
+        _Delimiter: *const ::std::os::raw::c_char,
+    ) -> *mut ::std::os::raw::c_char;
+}
+unsafe extern "C" {
+    pub fn _strupr_s(_String: *mut ::std::os::raw::c_char, _Size: usize) -> errno_t;
+}
+unsafe extern "C" {
+    pub fn _strupr(_String: *mut ::std::os::raw::c_char) -> *mut ::std::os::raw::c_char;
+}
+unsafe extern "C" {
+    pub fn _strupr_s_l(
+        _String: *mut ::std::os::raw::c_char,
+        _Size: usize,
+        _Locale: _locale_t,
+    ) -> errno_t;
+}
+unsafe extern "C" {
+    pub fn _strupr_l(
+        _String: *mut ::std::os::raw::c_char,
+        _Locale: _locale_t,
     ) -> *mut ::std::os::raw::c_char;
 }
 unsafe extern "C" {
     pub fn strxfrm(
-        __s1: *mut ::std::os::raw::c_char,
-        __s2: *const ::std::os::raw::c_char,
-        __n: ::std::os::raw::c_ulong,
-    ) -> ::std::os::raw::c_ulong;
+        _Destination: *mut ::std::os::raw::c_char,
+        _Source: *const ::std::os::raw::c_char,
+        _MaxCount: ::std::os::raw::c_uint,
+    ) -> ::std::os::raw::c_uint;
 }
 unsafe extern "C" {
-    pub fn strtok_r(
-        __str: *mut ::std::os::raw::c_char,
-        __sep: *const ::std::os::raw::c_char,
-        __lasts: *mut *mut ::std::os::raw::c_char,
-    ) -> *mut ::std::os::raw::c_char;
+    pub fn _strxfrm_l(
+        _Destination: *mut ::std::os::raw::c_char,
+        _Source: *const ::std::os::raw::c_char,
+        _MaxCount: usize,
+        _Locale: _locale_t,
+    ) -> usize;
 }
 unsafe extern "C" {
-    pub fn strerror_r(
-        __errnum: ::std::os::raw::c_int,
-        __strerrbuf: *mut ::std::os::raw::c_char,
-        __buflen: usize,
+    pub fn strdup(_String: *const ::std::os::raw::c_char) -> *mut ::std::os::raw::c_char;
+}
+unsafe extern "C" {
+    pub fn strcmpi(
+        _String1: *const ::std::os::raw::c_char,
+        _String2: *const ::std::os::raw::c_char,
     ) -> ::std::os::raw::c_int;
 }
 unsafe extern "C" {
-    pub fn strdup(__s1: *const ::std::os::raw::c_char) -> *mut ::std::os::raw::c_char;
-}
-unsafe extern "C" {
-    pub fn memccpy(
-        __dst: *mut ::std::os::raw::c_void,
-        __src: *const ::std::os::raw::c_void,
-        __c: ::std::os::raw::c_int,
-        __n: ::std::os::raw::c_ulong,
-    ) -> *mut ::std::os::raw::c_void;
-}
-unsafe extern "C" {
-    pub fn stpcpy(
-        __dst: *mut ::std::os::raw::c_char,
-        __src: *const ::std::os::raw::c_char,
-    ) -> *mut ::std::os::raw::c_char;
-}
-unsafe extern "C" {
-    pub fn stpncpy(
-        __dst: *mut ::std::os::raw::c_char,
-        __src: *const ::std::os::raw::c_char,
-        __n: ::std::os::raw::c_ulong,
-    ) -> *mut ::std::os::raw::c_char;
-}
-unsafe extern "C" {
-    pub fn strndup(
-        __s1: *const ::std::os::raw::c_char,
-        __n: ::std::os::raw::c_ulong,
-    ) -> *mut ::std::os::raw::c_char;
-}
-unsafe extern "C" {
-    pub fn strnlen(__s1: *const ::std::os::raw::c_char, __n: usize) -> usize;
-}
-unsafe extern "C" {
-    pub fn strsignal(__sig: ::std::os::raw::c_int) -> *mut ::std::os::raw::c_char;
-}
-pub type u_int8_t = ::std::os::raw::c_uchar;
-pub type u_int16_t = ::std::os::raw::c_ushort;
-pub type u_int32_t = ::std::os::raw::c_uint;
-pub type u_int64_t = ::std::os::raw::c_ulonglong;
-pub type register_t = i64;
-pub type user_addr_t = u_int64_t;
-pub type user_size_t = u_int64_t;
-pub type user_ssize_t = i64;
-pub type user_long_t = i64;
-pub type user_ulong_t = u_int64_t;
-pub type user_time_t = i64;
-pub type user_off_t = i64;
-pub type syscall_arg_t = u_int64_t;
-pub type rsize_t = __darwin_size_t;
-pub type errno_t = ::std::os::raw::c_int;
-unsafe extern "C" {
-    pub fn memset_s(
-        __s: *mut ::std::os::raw::c_void,
-        __smax: rsize_t,
-        __c: ::std::os::raw::c_int,
-        __n: rsize_t,
-    ) -> errno_t;
-}
-unsafe extern "C" {
-    pub fn memmem(
-        __big: *const ::std::os::raw::c_void,
-        __big_len: usize,
-        __little: *const ::std::os::raw::c_void,
-        __little_len: usize,
-    ) -> *mut ::std::os::raw::c_void;
-}
-unsafe extern "C" {
-    pub fn memset_pattern4(
-        __b: *mut ::std::os::raw::c_void,
-        __pattern4: *const ::std::os::raw::c_void,
-        __len: usize,
-    );
-}
-unsafe extern "C" {
-    pub fn memset_pattern8(
-        __b: *mut ::std::os::raw::c_void,
-        __pattern8: *const ::std::os::raw::c_void,
-        __len: usize,
-    );
-}
-unsafe extern "C" {
-    pub fn memset_pattern16(
-        __b: *mut ::std::os::raw::c_void,
-        __pattern16: *const ::std::os::raw::c_void,
-        __len: usize,
-    );
-}
-unsafe extern "C" {
-    pub fn strcasestr(
-        __big: *const ::std::os::raw::c_char,
-        __little: *const ::std::os::raw::c_char,
-    ) -> *mut ::std::os::raw::c_char;
-}
-unsafe extern "C" {
-    pub fn strnstr(
-        __big: *const ::std::os::raw::c_char,
-        __little: *const ::std::os::raw::c_char,
-        __len: usize,
-    ) -> *mut ::std::os::raw::c_char;
-}
-unsafe extern "C" {
-    pub fn strlcat(
-        __dst: *mut ::std::os::raw::c_char,
-        __source: *const ::std::os::raw::c_char,
-        __size: ::std::os::raw::c_ulong,
-    ) -> ::std::os::raw::c_ulong;
-}
-unsafe extern "C" {
-    pub fn strlcpy(
-        __dst: *mut ::std::os::raw::c_char,
-        __source: *const ::std::os::raw::c_char,
-        __size: ::std::os::raw::c_ulong,
-    ) -> ::std::os::raw::c_ulong;
-}
-unsafe extern "C" {
-    pub fn strmode(__mode: ::std::os::raw::c_int, __bp: *mut ::std::os::raw::c_char);
-}
-unsafe extern "C" {
-    pub fn strsep(
-        __stringp: *mut *mut ::std::os::raw::c_char,
-        __delim: *const ::std::os::raw::c_char,
-    ) -> *mut ::std::os::raw::c_char;
-}
-unsafe extern "C" {
-    pub fn swab(
-        arg1: *const ::std::os::raw::c_void,
-        arg2: *mut ::std::os::raw::c_void,
-        arg3: isize,
-    );
-}
-unsafe extern "C" {
-    pub fn timingsafe_bcmp(
-        __b1: *const ::std::os::raw::c_void,
-        __b2: *const ::std::os::raw::c_void,
-        __len: usize,
+    pub fn stricmp(
+        _String1: *const ::std::os::raw::c_char,
+        _String2: *const ::std::os::raw::c_char,
     ) -> ::std::os::raw::c_int;
 }
 unsafe extern "C" {
-    pub fn strsignal_r(
-        __sig: ::std::os::raw::c_int,
-        __strsignalbuf: *mut ::std::os::raw::c_char,
-        __buflen: usize,
+    pub fn strlwr(_String: *mut ::std::os::raw::c_char) -> *mut ::std::os::raw::c_char;
+}
+unsafe extern "C" {
+    pub fn strnicmp(
+        _String1: *const ::std::os::raw::c_char,
+        _String2: *const ::std::os::raw::c_char,
+        _MaxCount: usize,
     ) -> ::std::os::raw::c_int;
 }
 unsafe extern "C" {
-    pub fn bcmp(
-        arg1: *const ::std::os::raw::c_void,
-        arg2: *const ::std::os::raw::c_void,
-        arg3: ::std::os::raw::c_ulong,
-    ) -> ::std::os::raw::c_int;
-}
-unsafe extern "C" {
-    pub fn bcopy(
-        arg1: *const ::std::os::raw::c_void,
-        arg2: *mut ::std::os::raw::c_void,
-        arg3: usize,
-    );
-}
-unsafe extern "C" {
-    pub fn bzero(arg1: *mut ::std::os::raw::c_void, arg2: ::std::os::raw::c_ulong);
-}
-unsafe extern "C" {
-    pub fn index(
-        arg1: *const ::std::os::raw::c_char,
-        arg2: ::std::os::raw::c_int,
+    pub fn strnset(
+        _String: *mut ::std::os::raw::c_char,
+        _Value: ::std::os::raw::c_int,
+        _MaxCount: usize,
     ) -> *mut ::std::os::raw::c_char;
 }
 unsafe extern "C" {
-    pub fn rindex(
-        arg1: *const ::std::os::raw::c_char,
-        arg2: ::std::os::raw::c_int,
+    pub fn strrev(_String: *mut ::std::os::raw::c_char) -> *mut ::std::os::raw::c_char;
+}
+unsafe extern "C" {
+    pub fn strset(
+        _String: *mut ::std::os::raw::c_char,
+        _Value: ::std::os::raw::c_int,
     ) -> *mut ::std::os::raw::c_char;
 }
 unsafe extern "C" {
-    pub fn ffs(arg1: ::std::os::raw::c_int) -> ::std::os::raw::c_int;
+    pub fn strupr(_String: *mut ::std::os::raw::c_char) -> *mut ::std::os::raw::c_char;
 }
-unsafe extern "C" {
-    pub fn strcasecmp(
-        arg1: *const ::std::os::raw::c_char,
-        arg2: *const ::std::os::raw::c_char,
-    ) -> ::std::os::raw::c_int;
-}
-unsafe extern "C" {
-    pub fn strncasecmp(
-        arg1: *const ::std::os::raw::c_char,
-        arg2: *const ::std::os::raw::c_char,
-        arg3: ::std::os::raw::c_ulong,
-    ) -> ::std::os::raw::c_int;
-}
-unsafe extern "C" {
-    pub fn ffsl(arg1: ::std::os::raw::c_long) -> ::std::os::raw::c_int;
-}
-unsafe extern "C" {
-    pub fn ffsll(arg1: ::std::os::raw::c_longlong) -> ::std::os::raw::c_int;
-}
-unsafe extern "C" {
-    pub fn fls(arg1: ::std::os::raw::c_int) -> ::std::os::raw::c_int;
-}
-unsafe extern "C" {
-    pub fn flsl(arg1: ::std::os::raw::c_long) -> ::std::os::raw::c_int;
-}
-unsafe extern "C" {
-    pub fn flsll(arg1: ::std::os::raw::c_longlong) -> ::std::os::raw::c_int;
-}
-pub type int_least8_t = i8;
-pub type int_least16_t = i16;
-pub type int_least32_t = i32;
-pub type int_least64_t = i64;
-pub type uint_least8_t = u8;
-pub type uint_least16_t = u16;
-pub type uint_least32_t = u32;
-pub type uint_least64_t = u64;
-pub type int_fast8_t = i8;
-pub type int_fast16_t = i16;
-pub type int_fast32_t = i32;
-pub type int_fast64_t = i64;
-pub type uint_fast8_t = u8;
-pub type uint_fast16_t = u16;
-pub type uint_fast32_t = u32;
-pub type uint_fast64_t = u64;
-pub type intmax_t = ::std::os::raw::c_long;
-pub type uintmax_t = ::std::os::raw::c_ulong;
+pub type int_least8_t = ::std::os::raw::c_schar;
+pub type int_least16_t = ::std::os::raw::c_short;
+pub type int_least32_t = ::std::os::raw::c_int;
+pub type int_least64_t = ::std::os::raw::c_longlong;
+pub type uint_least8_t = ::std::os::raw::c_uchar;
+pub type uint_least16_t = ::std::os::raw::c_ushort;
+pub type uint_least32_t = ::std::os::raw::c_uint;
+pub type uint_least64_t = ::std::os::raw::c_ulonglong;
+pub type int_fast8_t = ::std::os::raw::c_schar;
+pub type int_fast16_t = ::std::os::raw::c_int;
+pub type int_fast32_t = ::std::os::raw::c_int;
+pub type int_fast64_t = ::std::os::raw::c_longlong;
+pub type uint_fast8_t = ::std::os::raw::c_uchar;
+pub type uint_fast16_t = ::std::os::raw::c_uint;
+pub type uint_fast32_t = ::std::os::raw::c_uint;
+pub type uint_fast64_t = ::std::os::raw::c_ulonglong;
+pub type intmax_t = ::std::os::raw::c_longlong;
+pub type uintmax_t = ::std::os::raw::c_ulonglong;
 pub type ecs_flags8_t = u8;
 pub type ecs_flags16_t = u16;
 pub type ecs_flags32_t = u32;
@@ -1477,11 +1273,11 @@ pub struct ecs_vec_t {
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of ecs_vec_t"][::std::mem::size_of::<ecs_vec_t>() - 16usize];
-    ["Alignment of ecs_vec_t"][::std::mem::align_of::<ecs_vec_t>() - 8usize];
+    ["Size of ecs_vec_t"][::std::mem::size_of::<ecs_vec_t>() - 12usize];
+    ["Alignment of ecs_vec_t"][::std::mem::align_of::<ecs_vec_t>() - 4usize];
     ["Offset of field: ecs_vec_t::array"][::std::mem::offset_of!(ecs_vec_t, array) - 0usize];
-    ["Offset of field: ecs_vec_t::count"][::std::mem::offset_of!(ecs_vec_t, count) - 8usize];
-    ["Offset of field: ecs_vec_t::size"][::std::mem::offset_of!(ecs_vec_t, size) - 12usize];
+    ["Offset of field: ecs_vec_t::count"][::std::mem::offset_of!(ecs_vec_t, count) - 4usize];
+    ["Offset of field: ecs_vec_t::size"][::std::mem::offset_of!(ecs_vec_t, size) - 8usize];
 };
 unsafe extern "C" {
     pub fn ecs_vec_init(
@@ -1617,18 +1413,18 @@ pub struct ecs_sparse_t {
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of ecs_sparse_t"][::std::mem::size_of::<ecs_sparse_t>() - 64usize];
+    ["Size of ecs_sparse_t"][::std::mem::size_of::<ecs_sparse_t>() - 48usize];
     ["Alignment of ecs_sparse_t"][::std::mem::align_of::<ecs_sparse_t>() - 8usize];
     ["Offset of field: ecs_sparse_t::dense"][::std::mem::offset_of!(ecs_sparse_t, dense) - 0usize];
-    ["Offset of field: ecs_sparse_t::pages"][::std::mem::offset_of!(ecs_sparse_t, pages) - 16usize];
-    ["Offset of field: ecs_sparse_t::size"][::std::mem::offset_of!(ecs_sparse_t, size) - 32usize];
-    ["Offset of field: ecs_sparse_t::count"][::std::mem::offset_of!(ecs_sparse_t, count) - 36usize];
+    ["Offset of field: ecs_sparse_t::pages"][::std::mem::offset_of!(ecs_sparse_t, pages) - 12usize];
+    ["Offset of field: ecs_sparse_t::size"][::std::mem::offset_of!(ecs_sparse_t, size) - 24usize];
+    ["Offset of field: ecs_sparse_t::count"][::std::mem::offset_of!(ecs_sparse_t, count) - 28usize];
     ["Offset of field: ecs_sparse_t::max_id"]
-        [::std::mem::offset_of!(ecs_sparse_t, max_id) - 40usize];
+        [::std::mem::offset_of!(ecs_sparse_t, max_id) - 32usize];
     ["Offset of field: ecs_sparse_t::allocator"]
-        [::std::mem::offset_of!(ecs_sparse_t, allocator) - 48usize];
+        [::std::mem::offset_of!(ecs_sparse_t, allocator) - 40usize];
     ["Offset of field: ecs_sparse_t::page_allocator"]
-        [::std::mem::offset_of!(ecs_sparse_t, page_allocator) - 56usize];
+        [::std::mem::offset_of!(ecs_sparse_t, page_allocator) - 44usize];
 };
 unsafe extern "C" {
     #[doc = " Initialize sparse set"]
@@ -1771,13 +1567,13 @@ pub struct ecs_block_allocator_block_t {
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of ecs_block_allocator_block_t"]
-        [::std::mem::size_of::<ecs_block_allocator_block_t>() - 16usize];
+        [::std::mem::size_of::<ecs_block_allocator_block_t>() - 8usize];
     ["Alignment of ecs_block_allocator_block_t"]
-        [::std::mem::align_of::<ecs_block_allocator_block_t>() - 8usize];
+        [::std::mem::align_of::<ecs_block_allocator_block_t>() - 4usize];
     ["Offset of field: ecs_block_allocator_block_t::memory"]
         [::std::mem::offset_of!(ecs_block_allocator_block_t, memory) - 0usize];
     ["Offset of field: ecs_block_allocator_block_t::next"]
-        [::std::mem::offset_of!(ecs_block_allocator_block_t, next) - 8usize];
+        [::std::mem::offset_of!(ecs_block_allocator_block_t, next) - 4usize];
 };
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
@@ -1787,9 +1583,9 @@ pub struct ecs_block_allocator_chunk_header_t {
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of ecs_block_allocator_chunk_header_t"]
-        [::std::mem::size_of::<ecs_block_allocator_chunk_header_t>() - 8usize];
+        [::std::mem::size_of::<ecs_block_allocator_chunk_header_t>() - 4usize];
     ["Alignment of ecs_block_allocator_chunk_header_t"]
-        [::std::mem::align_of::<ecs_block_allocator_chunk_header_t>() - 8usize];
+        [::std::mem::align_of::<ecs_block_allocator_chunk_header_t>() - 4usize];
     ["Offset of field: ecs_block_allocator_chunk_header_t::next"]
         [::std::mem::offset_of!(ecs_block_allocator_chunk_header_t, next) - 0usize];
 };
@@ -1807,25 +1603,25 @@ pub struct ecs_block_allocator_t {
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of ecs_block_allocator_t"][::std::mem::size_of::<ecs_block_allocator_t>() - 48usize];
+    ["Size of ecs_block_allocator_t"][::std::mem::size_of::<ecs_block_allocator_t>() - 32usize];
     ["Alignment of ecs_block_allocator_t"]
-        [::std::mem::align_of::<ecs_block_allocator_t>() - 8usize];
+        [::std::mem::align_of::<ecs_block_allocator_t>() - 4usize];
     ["Offset of field: ecs_block_allocator_t::head"]
         [::std::mem::offset_of!(ecs_block_allocator_t, head) - 0usize];
     ["Offset of field: ecs_block_allocator_t::block_head"]
-        [::std::mem::offset_of!(ecs_block_allocator_t, block_head) - 8usize];
+        [::std::mem::offset_of!(ecs_block_allocator_t, block_head) - 4usize];
     ["Offset of field: ecs_block_allocator_t::block_tail"]
-        [::std::mem::offset_of!(ecs_block_allocator_t, block_tail) - 16usize];
+        [::std::mem::offset_of!(ecs_block_allocator_t, block_tail) - 8usize];
     ["Offset of field: ecs_block_allocator_t::chunk_size"]
-        [::std::mem::offset_of!(ecs_block_allocator_t, chunk_size) - 24usize];
+        [::std::mem::offset_of!(ecs_block_allocator_t, chunk_size) - 12usize];
     ["Offset of field: ecs_block_allocator_t::data_size"]
-        [::std::mem::offset_of!(ecs_block_allocator_t, data_size) - 28usize];
+        [::std::mem::offset_of!(ecs_block_allocator_t, data_size) - 16usize];
     ["Offset of field: ecs_block_allocator_t::chunks_per_block"]
-        [::std::mem::offset_of!(ecs_block_allocator_t, chunks_per_block) - 32usize];
+        [::std::mem::offset_of!(ecs_block_allocator_t, chunks_per_block) - 20usize];
     ["Offset of field: ecs_block_allocator_t::block_size"]
-        [::std::mem::offset_of!(ecs_block_allocator_t, block_size) - 36usize];
+        [::std::mem::offset_of!(ecs_block_allocator_t, block_size) - 24usize];
     ["Offset of field: ecs_block_allocator_t::alloc_count"]
-        [::std::mem::offset_of!(ecs_block_allocator_t, alloc_count) - 40usize];
+        [::std::mem::offset_of!(ecs_block_allocator_t, alloc_count) - 28usize];
 };
 unsafe extern "C" {
     pub fn flecs_ballocator_init(ba: *mut ecs_block_allocator_t, size: ecs_size_t);
@@ -1878,16 +1674,16 @@ pub struct ecs_stack_page_t {
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of ecs_stack_page_t"][::std::mem::size_of::<ecs_stack_page_t>() - 24usize];
-    ["Alignment of ecs_stack_page_t"][::std::mem::align_of::<ecs_stack_page_t>() - 8usize];
+    ["Size of ecs_stack_page_t"][::std::mem::size_of::<ecs_stack_page_t>() - 16usize];
+    ["Alignment of ecs_stack_page_t"][::std::mem::align_of::<ecs_stack_page_t>() - 4usize];
     ["Offset of field: ecs_stack_page_t::data"]
         [::std::mem::offset_of!(ecs_stack_page_t, data) - 0usize];
     ["Offset of field: ecs_stack_page_t::next"]
-        [::std::mem::offset_of!(ecs_stack_page_t, next) - 8usize];
+        [::std::mem::offset_of!(ecs_stack_page_t, next) - 4usize];
     ["Offset of field: ecs_stack_page_t::sp"]
-        [::std::mem::offset_of!(ecs_stack_page_t, sp) - 16usize];
+        [::std::mem::offset_of!(ecs_stack_page_t, sp) - 8usize];
     ["Offset of field: ecs_stack_page_t::id"]
-        [::std::mem::offset_of!(ecs_stack_page_t, id) - 20usize];
+        [::std::mem::offset_of!(ecs_stack_page_t, id) - 12usize];
 };
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
@@ -1900,18 +1696,18 @@ pub struct ecs_stack_cursor_t {
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of ecs_stack_cursor_t"][::std::mem::size_of::<ecs_stack_cursor_t>() - 32usize];
-    ["Alignment of ecs_stack_cursor_t"][::std::mem::align_of::<ecs_stack_cursor_t>() - 8usize];
+    ["Size of ecs_stack_cursor_t"][::std::mem::size_of::<ecs_stack_cursor_t>() - 16usize];
+    ["Alignment of ecs_stack_cursor_t"][::std::mem::align_of::<ecs_stack_cursor_t>() - 4usize];
     ["Offset of field: ecs_stack_cursor_t::prev"]
         [::std::mem::offset_of!(ecs_stack_cursor_t, prev) - 0usize];
     ["Offset of field: ecs_stack_cursor_t::page"]
-        [::std::mem::offset_of!(ecs_stack_cursor_t, page) - 8usize];
+        [::std::mem::offset_of!(ecs_stack_cursor_t, page) - 4usize];
     ["Offset of field: ecs_stack_cursor_t::sp"]
-        [::std::mem::offset_of!(ecs_stack_cursor_t, sp) - 16usize];
+        [::std::mem::offset_of!(ecs_stack_cursor_t, sp) - 8usize];
     ["Offset of field: ecs_stack_cursor_t::is_free"]
-        [::std::mem::offset_of!(ecs_stack_cursor_t, is_free) - 18usize];
+        [::std::mem::offset_of!(ecs_stack_cursor_t, is_free) - 10usize];
     ["Offset of field: ecs_stack_cursor_t::owner"]
-        [::std::mem::offset_of!(ecs_stack_cursor_t, owner) - 24usize];
+        [::std::mem::offset_of!(ecs_stack_cursor_t, owner) - 12usize];
 };
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
@@ -1923,15 +1719,15 @@ pub struct ecs_stack_t {
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of ecs_stack_t"][::std::mem::size_of::<ecs_stack_t>() - 48usize];
-    ["Alignment of ecs_stack_t"][::std::mem::align_of::<ecs_stack_t>() - 8usize];
+    ["Size of ecs_stack_t"][::std::mem::size_of::<ecs_stack_t>() - 28usize];
+    ["Alignment of ecs_stack_t"][::std::mem::align_of::<ecs_stack_t>() - 4usize];
     ["Offset of field: ecs_stack_t::first"][::std::mem::offset_of!(ecs_stack_t, first) - 0usize];
     ["Offset of field: ecs_stack_t::tail_page"]
-        [::std::mem::offset_of!(ecs_stack_t, tail_page) - 24usize];
+        [::std::mem::offset_of!(ecs_stack_t, tail_page) - 16usize];
     ["Offset of field: ecs_stack_t::tail_cursor"]
-        [::std::mem::offset_of!(ecs_stack_t, tail_cursor) - 32usize];
+        [::std::mem::offset_of!(ecs_stack_t, tail_cursor) - 20usize];
     ["Offset of field: ecs_stack_t::cursor_count"]
-        [::std::mem::offset_of!(ecs_stack_t, cursor_count) - 40usize];
+        [::std::mem::offset_of!(ecs_stack_t, cursor_count) - 24usize];
 };
 unsafe extern "C" {
     pub fn flecs_stack_init(stack: *mut ecs_stack_t);
@@ -1993,8 +1789,8 @@ pub struct ecs_bucket_t {
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of ecs_bucket_t"][::std::mem::size_of::<ecs_bucket_t>() - 8usize];
-    ["Alignment of ecs_bucket_t"][::std::mem::align_of::<ecs_bucket_t>() - 8usize];
+    ["Size of ecs_bucket_t"][::std::mem::size_of::<ecs_bucket_t>() - 4usize];
+    ["Alignment of ecs_bucket_t"][::std::mem::align_of::<ecs_bucket_t>() - 4usize];
     ["Offset of field: ecs_bucket_t::first"][::std::mem::offset_of!(ecs_bucket_t, first) - 0usize];
 };
 #[repr(C)]
@@ -2010,20 +1806,20 @@ pub struct ecs_map_t {
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of ecs_map_t"][::std::mem::size_of::<ecs_map_t>() - 40usize];
-    ["Alignment of ecs_map_t"][::std::mem::align_of::<ecs_map_t>() - 8usize];
+    ["Size of ecs_map_t"][::std::mem::size_of::<ecs_map_t>() - 24usize];
+    ["Alignment of ecs_map_t"][::std::mem::align_of::<ecs_map_t>() - 4usize];
     ["Offset of field: ecs_map_t::bucket_shift"]
         [::std::mem::offset_of!(ecs_map_t, bucket_shift) - 0usize];
     ["Offset of field: ecs_map_t::shared_allocator"]
         [::std::mem::offset_of!(ecs_map_t, shared_allocator) - 1usize];
-    ["Offset of field: ecs_map_t::buckets"][::std::mem::offset_of!(ecs_map_t, buckets) - 8usize];
+    ["Offset of field: ecs_map_t::buckets"][::std::mem::offset_of!(ecs_map_t, buckets) - 4usize];
     ["Offset of field: ecs_map_t::bucket_count"]
-        [::std::mem::offset_of!(ecs_map_t, bucket_count) - 16usize];
-    ["Offset of field: ecs_map_t::count"][::std::mem::offset_of!(ecs_map_t, count) - 20usize];
+        [::std::mem::offset_of!(ecs_map_t, bucket_count) - 8usize];
+    ["Offset of field: ecs_map_t::count"][::std::mem::offset_of!(ecs_map_t, count) - 12usize];
     ["Offset of field: ecs_map_t::entry_allocator"]
-        [::std::mem::offset_of!(ecs_map_t, entry_allocator) - 24usize];
+        [::std::mem::offset_of!(ecs_map_t, entry_allocator) - 16usize];
     ["Offset of field: ecs_map_t::allocator"]
-        [::std::mem::offset_of!(ecs_map_t, allocator) - 32usize];
+        [::std::mem::offset_of!(ecs_map_t, allocator) - 20usize];
 };
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
@@ -2035,14 +1831,14 @@ pub struct ecs_map_iter_t {
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of ecs_map_iter_t"][::std::mem::size_of::<ecs_map_iter_t>() - 32usize];
-    ["Alignment of ecs_map_iter_t"][::std::mem::align_of::<ecs_map_iter_t>() - 8usize];
+    ["Size of ecs_map_iter_t"][::std::mem::size_of::<ecs_map_iter_t>() - 16usize];
+    ["Alignment of ecs_map_iter_t"][::std::mem::align_of::<ecs_map_iter_t>() - 4usize];
     ["Offset of field: ecs_map_iter_t::map"][::std::mem::offset_of!(ecs_map_iter_t, map) - 0usize];
     ["Offset of field: ecs_map_iter_t::bucket"]
-        [::std::mem::offset_of!(ecs_map_iter_t, bucket) - 8usize];
+        [::std::mem::offset_of!(ecs_map_iter_t, bucket) - 4usize];
     ["Offset of field: ecs_map_iter_t::entry"]
-        [::std::mem::offset_of!(ecs_map_iter_t, entry) - 16usize];
-    ["Offset of field: ecs_map_iter_t::res"][::std::mem::offset_of!(ecs_map_iter_t, res) - 24usize];
+        [::std::mem::offset_of!(ecs_map_iter_t, entry) - 8usize];
+    ["Offset of field: ecs_map_iter_t::res"][::std::mem::offset_of!(ecs_map_iter_t, res) - 12usize];
 };
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
@@ -2052,12 +1848,12 @@ pub struct ecs_map_params_t {
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of ecs_map_params_t"][::std::mem::size_of::<ecs_map_params_t>() - 56usize];
-    ["Alignment of ecs_map_params_t"][::std::mem::align_of::<ecs_map_params_t>() - 8usize];
+    ["Size of ecs_map_params_t"][::std::mem::size_of::<ecs_map_params_t>() - 36usize];
+    ["Alignment of ecs_map_params_t"][::std::mem::align_of::<ecs_map_params_t>() - 4usize];
     ["Offset of field: ecs_map_params_t::allocator"]
         [::std::mem::offset_of!(ecs_map_params_t, allocator) - 0usize];
     ["Offset of field: ecs_map_params_t::entry_allocator"]
-        [::std::mem::offset_of!(ecs_map_params_t, entry_allocator) - 8usize];
+        [::std::mem::offset_of!(ecs_map_params_t, entry_allocator) - 4usize];
 };
 unsafe extern "C" {
     pub fn ecs_map_params_init(params: *mut ecs_map_params_t, allocator: *mut ecs_allocator_t);
@@ -2164,12 +1960,12 @@ pub struct ecs_switch_page_t {
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of ecs_switch_page_t"][::std::mem::size_of::<ecs_switch_page_t>() - 32usize];
-    ["Alignment of ecs_switch_page_t"][::std::mem::align_of::<ecs_switch_page_t>() - 8usize];
+    ["Size of ecs_switch_page_t"][::std::mem::size_of::<ecs_switch_page_t>() - 24usize];
+    ["Alignment of ecs_switch_page_t"][::std::mem::align_of::<ecs_switch_page_t>() - 4usize];
     ["Offset of field: ecs_switch_page_t::nodes"]
         [::std::mem::offset_of!(ecs_switch_page_t, nodes) - 0usize];
     ["Offset of field: ecs_switch_page_t::values"]
-        [::std::mem::offset_of!(ecs_switch_page_t, values) - 16usize];
+        [::std::mem::offset_of!(ecs_switch_page_t, values) - 12usize];
 };
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
@@ -2179,10 +1975,10 @@ pub struct ecs_switch_t {
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of ecs_switch_t"][::std::mem::size_of::<ecs_switch_t>() - 56usize];
-    ["Alignment of ecs_switch_t"][::std::mem::align_of::<ecs_switch_t>() - 8usize];
+    ["Size of ecs_switch_t"][::std::mem::size_of::<ecs_switch_t>() - 36usize];
+    ["Alignment of ecs_switch_t"][::std::mem::align_of::<ecs_switch_t>() - 4usize];
     ["Offset of field: ecs_switch_t::hdrs"][::std::mem::offset_of!(ecs_switch_t, hdrs) - 0usize];
-    ["Offset of field: ecs_switch_t::pages"][::std::mem::offset_of!(ecs_switch_t, pages) - 40usize];
+    ["Offset of field: ecs_switch_t::pages"][::std::mem::offset_of!(ecs_switch_t, pages) - 24usize];
 };
 unsafe extern "C" {
     #[doc = " Init new switch."]
@@ -2236,12 +2032,12 @@ pub struct ecs_allocator_t {
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of ecs_allocator_t"][::std::mem::size_of::<ecs_allocator_t>() - 112usize];
+    ["Size of ecs_allocator_t"][::std::mem::size_of::<ecs_allocator_t>() - 80usize];
     ["Alignment of ecs_allocator_t"][::std::mem::align_of::<ecs_allocator_t>() - 8usize];
     ["Offset of field: ecs_allocator_t::chunks"]
         [::std::mem::offset_of!(ecs_allocator_t, chunks) - 0usize];
     ["Offset of field: ecs_allocator_t::sizes"]
-        [::std::mem::offset_of!(ecs_allocator_t, sizes) - 48usize];
+        [::std::mem::offset_of!(ecs_allocator_t, sizes) - 32usize];
 };
 unsafe extern "C" {
     pub fn flecs_allocator_init(a: *mut ecs_allocator_t);
@@ -2279,12 +2075,12 @@ pub struct ecs_strbuf_list_elem {
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of ecs_strbuf_list_elem"][::std::mem::size_of::<ecs_strbuf_list_elem>() - 16usize];
-    ["Alignment of ecs_strbuf_list_elem"][::std::mem::align_of::<ecs_strbuf_list_elem>() - 8usize];
+    ["Size of ecs_strbuf_list_elem"][::std::mem::size_of::<ecs_strbuf_list_elem>() - 8usize];
+    ["Alignment of ecs_strbuf_list_elem"][::std::mem::align_of::<ecs_strbuf_list_elem>() - 4usize];
     ["Offset of field: ecs_strbuf_list_elem::count"]
         [::std::mem::offset_of!(ecs_strbuf_list_elem, count) - 0usize];
     ["Offset of field: ecs_strbuf_list_elem::separator"]
-        [::std::mem::offset_of!(ecs_strbuf_list_elem, separator) - 8usize];
+        [::std::mem::offset_of!(ecs_strbuf_list_elem, separator) - 4usize];
 };
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
@@ -2298,19 +2094,19 @@ pub struct ecs_strbuf_t {
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of ecs_strbuf_t"][::std::mem::size_of::<ecs_strbuf_t>() - 1048usize];
-    ["Alignment of ecs_strbuf_t"][::std::mem::align_of::<ecs_strbuf_t>() - 8usize];
+    ["Size of ecs_strbuf_t"][::std::mem::size_of::<ecs_strbuf_t>() - 784usize];
+    ["Alignment of ecs_strbuf_t"][::std::mem::align_of::<ecs_strbuf_t>() - 4usize];
     ["Offset of field: ecs_strbuf_t::content"]
         [::std::mem::offset_of!(ecs_strbuf_t, content) - 0usize];
     ["Offset of field: ecs_strbuf_t::length"]
-        [::std::mem::offset_of!(ecs_strbuf_t, length) - 8usize];
-    ["Offset of field: ecs_strbuf_t::size"][::std::mem::offset_of!(ecs_strbuf_t, size) - 12usize];
+        [::std::mem::offset_of!(ecs_strbuf_t, length) - 4usize];
+    ["Offset of field: ecs_strbuf_t::size"][::std::mem::offset_of!(ecs_strbuf_t, size) - 8usize];
     ["Offset of field: ecs_strbuf_t::list_stack"]
-        [::std::mem::offset_of!(ecs_strbuf_t, list_stack) - 16usize];
+        [::std::mem::offset_of!(ecs_strbuf_t, list_stack) - 12usize];
     ["Offset of field: ecs_strbuf_t::list_sp"]
-        [::std::mem::offset_of!(ecs_strbuf_t, list_sp) - 528usize];
+        [::std::mem::offset_of!(ecs_strbuf_t, list_sp) - 268usize];
     ["Offset of field: ecs_strbuf_t::small_string"]
-        [::std::mem::offset_of!(ecs_strbuf_t, small_string) - 532usize];
+        [::std::mem::offset_of!(ecs_strbuf_t, small_string) - 272usize];
 };
 unsafe extern "C" {
     pub fn ecs_strbuf_append(buffer: *mut ecs_strbuf_t, fmt: *const ::std::os::raw::c_char, ...);
@@ -2402,581 +2198,831 @@ unsafe extern "C" {
 unsafe extern "C" {
     pub fn ecs_strbuf_written(buffer: *const ecs_strbuf_t) -> i32;
 }
-unsafe extern "C" {
-    pub fn __error() -> *mut ::std::os::raw::c_int;
-}
-unsafe extern "C" {
-    pub fn renameat(
-        arg1: ::std::os::raw::c_int,
-        arg2: *const ::std::os::raw::c_char,
-        arg3: ::std::os::raw::c_int,
-        arg4: *const ::std::os::raw::c_char,
-    ) -> ::std::os::raw::c_int;
-}
-unsafe extern "C" {
-    pub fn renamex_np(
-        arg1: *const ::std::os::raw::c_char,
-        arg2: *const ::std::os::raw::c_char,
-        arg3: ::std::os::raw::c_uint,
-    ) -> ::std::os::raw::c_int;
-}
-unsafe extern "C" {
-    pub fn renameatx_np(
-        arg1: ::std::os::raw::c_int,
-        arg2: *const ::std::os::raw::c_char,
-        arg3: ::std::os::raw::c_int,
-        arg4: *const ::std::os::raw::c_char,
-        arg5: ::std::os::raw::c_uint,
-    ) -> ::std::os::raw::c_int;
-}
-unsafe extern "C" {
-    pub fn printf(arg1: *const ::std::os::raw::c_char, ...) -> ::std::os::raw::c_int;
-}
-pub type fpos_t = __darwin_off_t;
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
-pub struct __sbuf {
-    pub _base: *mut ::std::os::raw::c_uchar,
-    pub _size: ::std::os::raw::c_int,
+pub struct _iobuf {
+    pub _Placeholder: *mut ::std::os::raw::c_void,
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of __sbuf"][::std::mem::size_of::<__sbuf>() - 16usize];
-    ["Alignment of __sbuf"][::std::mem::align_of::<__sbuf>() - 8usize];
-    ["Offset of field: __sbuf::_base"][::std::mem::offset_of!(__sbuf, _base) - 0usize];
-    ["Offset of field: __sbuf::_size"][::std::mem::offset_of!(__sbuf, _size) - 8usize];
+    ["Size of _iobuf"][::std::mem::size_of::<_iobuf>() - 4usize];
+    ["Alignment of _iobuf"][::std::mem::align_of::<_iobuf>() - 4usize];
+    ["Offset of field: _iobuf::_Placeholder"]
+        [::std::mem::offset_of!(_iobuf, _Placeholder) - 0usize];
 };
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct __sFILEX {
-    _unused: [u8; 0],
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct __sFILE {
-    pub _p: *mut ::std::os::raw::c_uchar,
-    pub _r: ::std::os::raw::c_int,
-    pub _w: ::std::os::raw::c_int,
-    pub _flags: ::std::os::raw::c_short,
-    pub _file: ::std::os::raw::c_short,
-    pub _bf: __sbuf,
-    pub _lbfsize: ::std::os::raw::c_int,
-    pub _cookie: *mut ::std::os::raw::c_void,
-    pub _close: ::std::option::Option<
-        unsafe extern "C" fn(arg1: *mut ::std::os::raw::c_void) -> ::std::os::raw::c_int,
-    >,
-    pub _read: ::std::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut ::std::os::raw::c_void,
-            arg2: *mut ::std::os::raw::c_char,
-            arg3: ::std::os::raw::c_int,
-        ) -> ::std::os::raw::c_int,
-    >,
-    pub _seek: ::std::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut ::std::os::raw::c_void,
-            arg2: fpos_t,
-            arg3: ::std::os::raw::c_int,
-        ) -> fpos_t,
-    >,
-    pub _write: ::std::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut ::std::os::raw::c_void,
-            arg2: *const ::std::os::raw::c_char,
-            arg3: ::std::os::raw::c_int,
-        ) -> ::std::os::raw::c_int,
-    >,
-    pub _ub: __sbuf,
-    pub _extra: *mut __sFILEX,
-    pub _ur: ::std::os::raw::c_int,
-    pub _ubuf: [::std::os::raw::c_uchar; 3usize],
-    pub _nbuf: [::std::os::raw::c_uchar; 1usize],
-    pub _lb: __sbuf,
-    pub _blksize: ::std::os::raw::c_int,
-    pub _offset: fpos_t,
-}
-#[allow(clippy::unnecessary_operation, clippy::identity_op)]
-const _: () = {
-    ["Size of __sFILE"][::std::mem::size_of::<__sFILE>() - 152usize];
-    ["Alignment of __sFILE"][::std::mem::align_of::<__sFILE>() - 8usize];
-    ["Offset of field: __sFILE::_p"][::std::mem::offset_of!(__sFILE, _p) - 0usize];
-    ["Offset of field: __sFILE::_r"][::std::mem::offset_of!(__sFILE, _r) - 8usize];
-    ["Offset of field: __sFILE::_w"][::std::mem::offset_of!(__sFILE, _w) - 12usize];
-    ["Offset of field: __sFILE::_flags"][::std::mem::offset_of!(__sFILE, _flags) - 16usize];
-    ["Offset of field: __sFILE::_file"][::std::mem::offset_of!(__sFILE, _file) - 18usize];
-    ["Offset of field: __sFILE::_bf"][::std::mem::offset_of!(__sFILE, _bf) - 24usize];
-    ["Offset of field: __sFILE::_lbfsize"][::std::mem::offset_of!(__sFILE, _lbfsize) - 40usize];
-    ["Offset of field: __sFILE::_cookie"][::std::mem::offset_of!(__sFILE, _cookie) - 48usize];
-    ["Offset of field: __sFILE::_close"][::std::mem::offset_of!(__sFILE, _close) - 56usize];
-    ["Offset of field: __sFILE::_read"][::std::mem::offset_of!(__sFILE, _read) - 64usize];
-    ["Offset of field: __sFILE::_seek"][::std::mem::offset_of!(__sFILE, _seek) - 72usize];
-    ["Offset of field: __sFILE::_write"][::std::mem::offset_of!(__sFILE, _write) - 80usize];
-    ["Offset of field: __sFILE::_ub"][::std::mem::offset_of!(__sFILE, _ub) - 88usize];
-    ["Offset of field: __sFILE::_extra"][::std::mem::offset_of!(__sFILE, _extra) - 104usize];
-    ["Offset of field: __sFILE::_ur"][::std::mem::offset_of!(__sFILE, _ur) - 112usize];
-    ["Offset of field: __sFILE::_ubuf"][::std::mem::offset_of!(__sFILE, _ubuf) - 116usize];
-    ["Offset of field: __sFILE::_nbuf"][::std::mem::offset_of!(__sFILE, _nbuf) - 119usize];
-    ["Offset of field: __sFILE::_lb"][::std::mem::offset_of!(__sFILE, _lb) - 120usize];
-    ["Offset of field: __sFILE::_blksize"][::std::mem::offset_of!(__sFILE, _blksize) - 136usize];
-    ["Offset of field: __sFILE::_offset"][::std::mem::offset_of!(__sFILE, _offset) - 144usize];
-};
-pub type FILE = __sFILE;
+pub type FILE = _iobuf;
 unsafe extern "C" {
-    pub static mut __stdinp: *mut FILE;
+    pub fn __acrt_iob_func(_Ix: ::std::os::raw::c_uint) -> *mut FILE;
 }
 unsafe extern "C" {
-    pub static mut __stdoutp: *mut FILE;
+    pub fn fgetwc(_Stream: *mut FILE) -> wint_t;
 }
 unsafe extern "C" {
-    pub static mut __stderrp: *mut FILE;
+    pub fn _fgetwchar() -> wint_t;
 }
 unsafe extern "C" {
-    pub fn clearerr(arg1: *mut FILE);
+    pub fn fputwc(_Character: wchar_t, _Stream: *mut FILE) -> wint_t;
 }
 unsafe extern "C" {
-    pub fn fclose(arg1: *mut FILE) -> ::std::os::raw::c_int;
+    pub fn _fputwchar(_Character: wchar_t) -> wint_t;
 }
 unsafe extern "C" {
-    pub fn feof(arg1: *mut FILE) -> ::std::os::raw::c_int;
+    pub fn getwc(_Stream: *mut FILE) -> wint_t;
 }
 unsafe extern "C" {
-    pub fn ferror(arg1: *mut FILE) -> ::std::os::raw::c_int;
+    pub fn getwchar() -> wint_t;
 }
 unsafe extern "C" {
-    pub fn fflush(arg1: *mut FILE) -> ::std::os::raw::c_int;
+    pub fn fgetws(
+        _Buffer: *mut wchar_t,
+        _BufferCount: ::std::os::raw::c_int,
+        _Stream: *mut FILE,
+    ) -> *mut wchar_t;
 }
 unsafe extern "C" {
-    pub fn fgetc(arg1: *mut FILE) -> ::std::os::raw::c_int;
+    pub fn fputws(_Buffer: *const wchar_t, _Stream: *mut FILE) -> ::std::os::raw::c_int;
 }
 unsafe extern "C" {
-    pub fn fgetpos(arg1: *mut FILE, arg2: *mut fpos_t) -> ::std::os::raw::c_int;
+    pub fn _getws_s(_Buffer: *mut wchar_t, _BufferCount: usize) -> *mut wchar_t;
 }
 unsafe extern "C" {
-    pub fn fgets(
-        arg1: *mut ::std::os::raw::c_char,
-        arg2: ::std::os::raw::c_int,
-        arg3: *mut FILE,
+    pub fn putwc(_Character: wchar_t, _Stream: *mut FILE) -> wint_t;
+}
+unsafe extern "C" {
+    pub fn putwchar(_Character: wchar_t) -> wint_t;
+}
+unsafe extern "C" {
+    pub fn _putws(_Buffer: *const wchar_t) -> ::std::os::raw::c_int;
+}
+unsafe extern "C" {
+    pub fn ungetwc(_Character: wint_t, _Stream: *mut FILE) -> wint_t;
+}
+unsafe extern "C" {
+    pub fn _wfdopen(_FileHandle: ::std::os::raw::c_int, _Mode: *const wchar_t) -> *mut FILE;
+}
+unsafe extern "C" {
+    pub fn _wfopen(_FileName: *const wchar_t, _Mode: *const wchar_t) -> *mut FILE;
+}
+unsafe extern "C" {
+    pub fn _wfopen_s(
+        _Stream: *mut *mut FILE,
+        _FileName: *const wchar_t,
+        _Mode: *const wchar_t,
+    ) -> errno_t;
+}
+unsafe extern "C" {
+    pub fn _wfreopen(
+        _FileName: *const wchar_t,
+        _Mode: *const wchar_t,
+        _OldStream: *mut FILE,
+    ) -> *mut FILE;
+}
+unsafe extern "C" {
+    pub fn _wfreopen_s(
+        _Stream: *mut *mut FILE,
+        _FileName: *const wchar_t,
+        _Mode: *const wchar_t,
+        _OldStream: *mut FILE,
+    ) -> errno_t;
+}
+unsafe extern "C" {
+    pub fn _wfsopen(
+        _FileName: *const wchar_t,
+        _Mode: *const wchar_t,
+        _ShFlag: ::std::os::raw::c_int,
+    ) -> *mut FILE;
+}
+unsafe extern "C" {
+    pub fn _wperror(_ErrorMessage: *const wchar_t);
+}
+unsafe extern "C" {
+    pub fn _wpopen(_Command: *const wchar_t, _Mode: *const wchar_t) -> *mut FILE;
+}
+unsafe extern "C" {
+    pub fn _wremove(_FileName: *const wchar_t) -> ::std::os::raw::c_int;
+}
+unsafe extern "C" {
+    pub fn _wtempnam(_Directory: *const wchar_t, _FilePrefix: *const wchar_t) -> *mut wchar_t;
+}
+unsafe extern "C" {
+    pub fn _wtmpnam_s(_Buffer: *mut wchar_t, _BufferCount: usize) -> errno_t;
+}
+unsafe extern "C" {
+    pub fn _wtmpnam(_Buffer: *mut wchar_t) -> *mut wchar_t;
+}
+unsafe extern "C" {
+    pub fn _fgetwc_nolock(_Stream: *mut FILE) -> wint_t;
+}
+unsafe extern "C" {
+    pub fn _fputwc_nolock(_Character: wchar_t, _Stream: *mut FILE) -> wint_t;
+}
+unsafe extern "C" {
+    pub fn _getwc_nolock(_Stream: *mut FILE) -> wint_t;
+}
+unsafe extern "C" {
+    pub fn _putwc_nolock(_Character: wchar_t, _Stream: *mut FILE) -> wint_t;
+}
+unsafe extern "C" {
+    pub fn _ungetwc_nolock(_Character: wint_t, _Stream: *mut FILE) -> wint_t;
+}
+unsafe extern "C" {
+    pub fn __stdio_common_vfwprintf(
+        _Options: ::std::os::raw::c_ulonglong,
+        _Stream: *mut FILE,
+        _Format: *const wchar_t,
+        _Locale: _locale_t,
+        _ArgList: va_list,
+    ) -> ::std::os::raw::c_int;
+}
+unsafe extern "C" {
+    pub fn __stdio_common_vfwprintf_s(
+        _Options: ::std::os::raw::c_ulonglong,
+        _Stream: *mut FILE,
+        _Format: *const wchar_t,
+        _Locale: _locale_t,
+        _ArgList: va_list,
+    ) -> ::std::os::raw::c_int;
+}
+unsafe extern "C" {
+    pub fn __stdio_common_vfwprintf_p(
+        _Options: ::std::os::raw::c_ulonglong,
+        _Stream: *mut FILE,
+        _Format: *const wchar_t,
+        _Locale: _locale_t,
+        _ArgList: va_list,
+    ) -> ::std::os::raw::c_int;
+}
+unsafe extern "C" {
+    pub fn __stdio_common_vfwscanf(
+        _Options: ::std::os::raw::c_ulonglong,
+        _Stream: *mut FILE,
+        _Format: *const wchar_t,
+        _Locale: _locale_t,
+        _ArgList: va_list,
+    ) -> ::std::os::raw::c_int;
+}
+unsafe extern "C" {
+    pub fn __stdio_common_vswprintf(
+        _Options: ::std::os::raw::c_ulonglong,
+        _Buffer: *mut wchar_t,
+        _BufferCount: usize,
+        _Format: *const wchar_t,
+        _Locale: _locale_t,
+        _ArgList: va_list,
+    ) -> ::std::os::raw::c_int;
+}
+unsafe extern "C" {
+    pub fn __stdio_common_vswprintf_s(
+        _Options: ::std::os::raw::c_ulonglong,
+        _Buffer: *mut wchar_t,
+        _BufferCount: usize,
+        _Format: *const wchar_t,
+        _Locale: _locale_t,
+        _ArgList: va_list,
+    ) -> ::std::os::raw::c_int;
+}
+unsafe extern "C" {
+    pub fn __stdio_common_vsnwprintf_s(
+        _Options: ::std::os::raw::c_ulonglong,
+        _Buffer: *mut wchar_t,
+        _BufferCount: usize,
+        _MaxCount: usize,
+        _Format: *const wchar_t,
+        _Locale: _locale_t,
+        _ArgList: va_list,
+    ) -> ::std::os::raw::c_int;
+}
+unsafe extern "C" {
+    pub fn __stdio_common_vswprintf_p(
+        _Options: ::std::os::raw::c_ulonglong,
+        _Buffer: *mut wchar_t,
+        _BufferCount: usize,
+        _Format: *const wchar_t,
+        _Locale: _locale_t,
+        _ArgList: va_list,
+    ) -> ::std::os::raw::c_int;
+}
+unsafe extern "C" {
+    pub fn __stdio_common_vswscanf(
+        _Options: ::std::os::raw::c_ulonglong,
+        _Buffer: *const wchar_t,
+        _BufferCount: usize,
+        _Format: *const wchar_t,
+        _Locale: _locale_t,
+        _ArgList: va_list,
+    ) -> ::std::os::raw::c_int;
+}
+pub type fpos_t = ::std::os::raw::c_longlong;
+unsafe extern "C" {
+    pub fn _get_stream_buffer_pointers(
+        _Stream: *mut FILE,
+        _Base: *mut *mut *mut ::std::os::raw::c_char,
+        _Pointer: *mut *mut *mut ::std::os::raw::c_char,
+        _Count: *mut *mut ::std::os::raw::c_int,
+    ) -> errno_t;
+}
+unsafe extern "C" {
+    pub fn clearerr_s(_Stream: *mut FILE) -> errno_t;
+}
+unsafe extern "C" {
+    pub fn fopen_s(
+        _Stream: *mut *mut FILE,
+        _FileName: *const ::std::os::raw::c_char,
+        _Mode: *const ::std::os::raw::c_char,
+    ) -> errno_t;
+}
+unsafe extern "C" {
+    pub fn fread_s(
+        _Buffer: *mut ::std::os::raw::c_void,
+        _BufferSize: usize,
+        _ElementSize: usize,
+        _ElementCount: usize,
+        _Stream: *mut FILE,
+    ) -> usize;
+}
+unsafe extern "C" {
+    pub fn freopen_s(
+        _Stream: *mut *mut FILE,
+        _FileName: *const ::std::os::raw::c_char,
+        _Mode: *const ::std::os::raw::c_char,
+        _OldStream: *mut FILE,
+    ) -> errno_t;
+}
+unsafe extern "C" {
+    pub fn gets_s(
+        _Buffer: *mut ::std::os::raw::c_char,
+        _Size: rsize_t,
     ) -> *mut ::std::os::raw::c_char;
 }
 unsafe extern "C" {
-    pub fn fopen(
-        __filename: *const ::std::os::raw::c_char,
-        __mode: *const ::std::os::raw::c_char,
+    pub fn tmpfile_s(_Stream: *mut *mut FILE) -> errno_t;
+}
+unsafe extern "C" {
+    pub fn tmpnam_s(_Buffer: *mut ::std::os::raw::c_char, _Size: rsize_t) -> errno_t;
+}
+unsafe extern "C" {
+    pub fn clearerr(_Stream: *mut FILE);
+}
+unsafe extern "C" {
+    pub fn fclose(_Stream: *mut FILE) -> ::std::os::raw::c_int;
+}
+unsafe extern "C" {
+    pub fn _fcloseall() -> ::std::os::raw::c_int;
+}
+unsafe extern "C" {
+    pub fn _fdopen(
+        _FileHandle: ::std::os::raw::c_int,
+        _Mode: *const ::std::os::raw::c_char,
     ) -> *mut FILE;
 }
 unsafe extern "C" {
-    pub fn fprintf(
-        arg1: *mut FILE,
-        arg2: *const ::std::os::raw::c_char,
-        ...
+    pub fn feof(_Stream: *mut FILE) -> ::std::os::raw::c_int;
+}
+unsafe extern "C" {
+    pub fn ferror(_Stream: *mut FILE) -> ::std::os::raw::c_int;
+}
+unsafe extern "C" {
+    pub fn fflush(_Stream: *mut FILE) -> ::std::os::raw::c_int;
+}
+unsafe extern "C" {
+    pub fn fgetc(_Stream: *mut FILE) -> ::std::os::raw::c_int;
+}
+unsafe extern "C" {
+    pub fn _fgetchar() -> ::std::os::raw::c_int;
+}
+unsafe extern "C" {
+    pub fn fgetpos(_Stream: *mut FILE, _Position: *mut fpos_t) -> ::std::os::raw::c_int;
+}
+unsafe extern "C" {
+    pub fn fgets(
+        _Buffer: *mut ::std::os::raw::c_char,
+        _MaxCount: ::std::os::raw::c_int,
+        _Stream: *mut FILE,
+    ) -> *mut ::std::os::raw::c_char;
+}
+unsafe extern "C" {
+    pub fn _fileno(_Stream: *mut FILE) -> ::std::os::raw::c_int;
+}
+unsafe extern "C" {
+    pub fn _flushall() -> ::std::os::raw::c_int;
+}
+unsafe extern "C" {
+    pub fn fopen(
+        _FileName: *const ::std::os::raw::c_char,
+        _Mode: *const ::std::os::raw::c_char,
+    ) -> *mut FILE;
+}
+unsafe extern "C" {
+    pub fn fputc(_Character: ::std::os::raw::c_int, _Stream: *mut FILE) -> ::std::os::raw::c_int;
+}
+unsafe extern "C" {
+    pub fn _fputchar(_Character: ::std::os::raw::c_int) -> ::std::os::raw::c_int;
+}
+unsafe extern "C" {
+    pub fn fputs(
+        _Buffer: *const ::std::os::raw::c_char,
+        _Stream: *mut FILE,
     ) -> ::std::os::raw::c_int;
-}
-unsafe extern "C" {
-    pub fn fputc(arg1: ::std::os::raw::c_int, arg2: *mut FILE) -> ::std::os::raw::c_int;
-}
-unsafe extern "C" {
-    pub fn fputs(arg1: *const ::std::os::raw::c_char, arg2: *mut FILE) -> ::std::os::raw::c_int;
 }
 unsafe extern "C" {
     pub fn fread(
-        __ptr: *mut ::std::os::raw::c_void,
-        __size: ::std::os::raw::c_ulong,
-        __nitems: ::std::os::raw::c_ulong,
-        __stream: *mut FILE,
-    ) -> ::std::os::raw::c_ulong;
+        _Buffer: *mut ::std::os::raw::c_void,
+        _ElementSize: ::std::os::raw::c_uint,
+        _ElementCount: ::std::os::raw::c_uint,
+        _Stream: *mut FILE,
+    ) -> ::std::os::raw::c_uint;
 }
 unsafe extern "C" {
     pub fn freopen(
-        arg1: *const ::std::os::raw::c_char,
-        arg2: *const ::std::os::raw::c_char,
-        arg3: *mut FILE,
+        _FileName: *const ::std::os::raw::c_char,
+        _Mode: *const ::std::os::raw::c_char,
+        _Stream: *mut FILE,
     ) -> *mut FILE;
 }
 unsafe extern "C" {
-    pub fn fscanf(
-        arg1: *mut FILE,
-        arg2: *const ::std::os::raw::c_char,
-        ...
-    ) -> ::std::os::raw::c_int;
+    pub fn _fsopen(
+        _FileName: *const ::std::os::raw::c_char,
+        _Mode: *const ::std::os::raw::c_char,
+        _ShFlag: ::std::os::raw::c_int,
+    ) -> *mut FILE;
+}
+unsafe extern "C" {
+    pub fn fsetpos(_Stream: *mut FILE, _Position: *const fpos_t) -> ::std::os::raw::c_int;
 }
 unsafe extern "C" {
     pub fn fseek(
-        arg1: *mut FILE,
-        arg2: ::std::os::raw::c_long,
-        arg3: ::std::os::raw::c_int,
+        _Stream: *mut FILE,
+        _Offset: ::std::os::raw::c_long,
+        _Origin: ::std::os::raw::c_int,
     ) -> ::std::os::raw::c_int;
 }
 unsafe extern "C" {
-    pub fn fsetpos(arg1: *mut FILE, arg2: *const fpos_t) -> ::std::os::raw::c_int;
+    pub fn _fseeki64(
+        _Stream: *mut FILE,
+        _Offset: ::std::os::raw::c_longlong,
+        _Origin: ::std::os::raw::c_int,
+    ) -> ::std::os::raw::c_int;
 }
 unsafe extern "C" {
-    pub fn ftell(arg1: *mut FILE) -> ::std::os::raw::c_long;
+    pub fn ftell(_Stream: *mut FILE) -> ::std::os::raw::c_long;
+}
+unsafe extern "C" {
+    pub fn _ftelli64(_Stream: *mut FILE) -> ::std::os::raw::c_longlong;
 }
 unsafe extern "C" {
     pub fn fwrite(
-        __ptr: *const ::std::os::raw::c_void,
-        __size: ::std::os::raw::c_ulong,
-        __nitems: ::std::os::raw::c_ulong,
-        __stream: *mut FILE,
-    ) -> ::std::os::raw::c_ulong;
+        _Buffer: *const ::std::os::raw::c_void,
+        _ElementSize: ::std::os::raw::c_uint,
+        _ElementCount: ::std::os::raw::c_uint,
+        _Stream: *mut FILE,
+    ) -> ::std::os::raw::c_uint;
 }
 unsafe extern "C" {
-    pub fn getc(arg1: *mut FILE) -> ::std::os::raw::c_int;
+    pub fn getc(_Stream: *mut FILE) -> ::std::os::raw::c_int;
 }
 unsafe extern "C" {
     pub fn getchar() -> ::std::os::raw::c_int;
 }
 unsafe extern "C" {
-    pub fn gets(arg1: *mut ::std::os::raw::c_char) -> *mut ::std::os::raw::c_char;
+    pub fn _getmaxstdio() -> ::std::os::raw::c_int;
 }
 unsafe extern "C" {
-    pub fn perror(arg1: *const ::std::os::raw::c_char);
+    pub fn _getw(_Stream: *mut FILE) -> ::std::os::raw::c_int;
 }
 unsafe extern "C" {
-    pub fn putc(arg1: ::std::os::raw::c_int, arg2: *mut FILE) -> ::std::os::raw::c_int;
+    pub fn perror(_ErrorMessage: *const ::std::os::raw::c_char);
 }
 unsafe extern "C" {
-    pub fn putchar(arg1: ::std::os::raw::c_int) -> ::std::os::raw::c_int;
+    pub fn _pclose(_Stream: *mut FILE) -> ::std::os::raw::c_int;
 }
 unsafe extern "C" {
-    pub fn puts(arg1: *const ::std::os::raw::c_char) -> ::std::os::raw::c_int;
+    pub fn _popen(
+        _Command: *const ::std::os::raw::c_char,
+        _Mode: *const ::std::os::raw::c_char,
+    ) -> *mut FILE;
 }
 unsafe extern "C" {
-    pub fn remove(arg1: *const ::std::os::raw::c_char) -> ::std::os::raw::c_int;
+    pub fn putc(_Character: ::std::os::raw::c_int, _Stream: *mut FILE) -> ::std::os::raw::c_int;
+}
+unsafe extern "C" {
+    pub fn putchar(_Character: ::std::os::raw::c_int) -> ::std::os::raw::c_int;
+}
+unsafe extern "C" {
+    pub fn puts(_Buffer: *const ::std::os::raw::c_char) -> ::std::os::raw::c_int;
+}
+unsafe extern "C" {
+    pub fn _putw(_Word: ::std::os::raw::c_int, _Stream: *mut FILE) -> ::std::os::raw::c_int;
+}
+unsafe extern "C" {
+    pub fn remove(_FileName: *const ::std::os::raw::c_char) -> ::std::os::raw::c_int;
 }
 unsafe extern "C" {
     pub fn rename(
-        __old: *const ::std::os::raw::c_char,
-        __new: *const ::std::os::raw::c_char,
+        _OldFileName: *const ::std::os::raw::c_char,
+        _NewFileName: *const ::std::os::raw::c_char,
     ) -> ::std::os::raw::c_int;
 }
 unsafe extern "C" {
-    pub fn rewind(arg1: *mut FILE);
+    pub fn _unlink(_FileName: *const ::std::os::raw::c_char) -> ::std::os::raw::c_int;
 }
 unsafe extern "C" {
-    pub fn scanf(arg1: *const ::std::os::raw::c_char, ...) -> ::std::os::raw::c_int;
+    pub fn unlink(_FileName: *const ::std::os::raw::c_char) -> ::std::os::raw::c_int;
 }
 unsafe extern "C" {
-    pub fn setbuf(arg1: *mut FILE, arg2: *mut ::std::os::raw::c_char);
+    pub fn rewind(_Stream: *mut FILE);
+}
+unsafe extern "C" {
+    pub fn _rmtmp() -> ::std::os::raw::c_int;
+}
+unsafe extern "C" {
+    pub fn setbuf(_Stream: *mut FILE, _Buffer: *mut ::std::os::raw::c_char);
+}
+unsafe extern "C" {
+    pub fn _setmaxstdio(_Maximum: ::std::os::raw::c_int) -> ::std::os::raw::c_int;
 }
 unsafe extern "C" {
     pub fn setvbuf(
-        arg1: *mut FILE,
-        arg2: *mut ::std::os::raw::c_char,
-        arg3: ::std::os::raw::c_int,
-        arg4: usize,
+        _Stream: *mut FILE,
+        _Buffer: *mut ::std::os::raw::c_char,
+        _Mode: ::std::os::raw::c_int,
+        _Size: usize,
     ) -> ::std::os::raw::c_int;
 }
 unsafe extern "C" {
-    pub fn sprintf(
-        arg1: *mut ::std::os::raw::c_char,
-        arg2: *const ::std::os::raw::c_char,
-        ...
-    ) -> ::std::os::raw::c_int;
-}
-unsafe extern "C" {
-    pub fn sscanf(
-        arg1: *const ::std::os::raw::c_char,
-        arg2: *const ::std::os::raw::c_char,
-        ...
-    ) -> ::std::os::raw::c_int;
+    pub fn _tempnam(
+        _DirectoryName: *const ::std::os::raw::c_char,
+        _FilePrefix: *const ::std::os::raw::c_char,
+    ) -> *mut ::std::os::raw::c_char;
 }
 unsafe extern "C" {
     pub fn tmpfile() -> *mut FILE;
 }
 unsafe extern "C" {
-    pub fn tmpnam(arg1: *mut ::std::os::raw::c_char) -> *mut ::std::os::raw::c_char;
+    pub fn tmpnam(_Buffer: *mut ::std::os::raw::c_char) -> *mut ::std::os::raw::c_char;
 }
 unsafe extern "C" {
-    pub fn ungetc(arg1: ::std::os::raw::c_int, arg2: *mut FILE) -> ::std::os::raw::c_int;
+    pub fn ungetc(_Character: ::std::os::raw::c_int, _Stream: *mut FILE) -> ::std::os::raw::c_int;
 }
 unsafe extern "C" {
-    pub fn vfprintf(
-        arg1: *mut FILE,
-        arg2: *const ::std::os::raw::c_char,
-        arg3: __builtin_va_list,
+    pub fn _lock_file(_Stream: *mut FILE);
+}
+unsafe extern "C" {
+    pub fn _unlock_file(_Stream: *mut FILE);
+}
+unsafe extern "C" {
+    pub fn _fclose_nolock(_Stream: *mut FILE) -> ::std::os::raw::c_int;
+}
+unsafe extern "C" {
+    pub fn _fflush_nolock(_Stream: *mut FILE) -> ::std::os::raw::c_int;
+}
+unsafe extern "C" {
+    pub fn _fgetc_nolock(_Stream: *mut FILE) -> ::std::os::raw::c_int;
+}
+unsafe extern "C" {
+    pub fn _fputc_nolock(
+        _Character: ::std::os::raw::c_int,
+        _Stream: *mut FILE,
     ) -> ::std::os::raw::c_int;
 }
 unsafe extern "C" {
-    pub fn vprintf(
-        arg1: *const ::std::os::raw::c_char,
-        arg2: __builtin_va_list,
+    pub fn _fread_nolock(
+        _Buffer: *mut ::std::os::raw::c_void,
+        _ElementSize: usize,
+        _ElementCount: usize,
+        _Stream: *mut FILE,
+    ) -> usize;
+}
+unsafe extern "C" {
+    pub fn _fread_nolock_s(
+        _Buffer: *mut ::std::os::raw::c_void,
+        _BufferSize: usize,
+        _ElementSize: usize,
+        _ElementCount: usize,
+        _Stream: *mut FILE,
+    ) -> usize;
+}
+unsafe extern "C" {
+    pub fn _fseek_nolock(
+        _Stream: *mut FILE,
+        _Offset: ::std::os::raw::c_long,
+        _Origin: ::std::os::raw::c_int,
     ) -> ::std::os::raw::c_int;
 }
 unsafe extern "C" {
-    pub fn vsprintf(
-        arg1: *mut ::std::os::raw::c_char,
-        arg2: *const ::std::os::raw::c_char,
-        arg3: __builtin_va_list,
+    pub fn _fseeki64_nolock(
+        _Stream: *mut FILE,
+        _Offset: ::std::os::raw::c_longlong,
+        _Origin: ::std::os::raw::c_int,
     ) -> ::std::os::raw::c_int;
 }
 unsafe extern "C" {
-    pub fn ctermid(arg1: *mut ::std::os::raw::c_char) -> *mut ::std::os::raw::c_char;
+    pub fn _ftell_nolock(_Stream: *mut FILE) -> ::std::os::raw::c_long;
 }
 unsafe extern "C" {
-    pub fn fdopen(arg1: ::std::os::raw::c_int, arg2: *const ::std::os::raw::c_char) -> *mut FILE;
+    pub fn _ftelli64_nolock(_Stream: *mut FILE) -> ::std::os::raw::c_longlong;
 }
 unsafe extern "C" {
-    pub fn fileno(arg1: *mut FILE) -> ::std::os::raw::c_int;
+    pub fn _fwrite_nolock(
+        _Buffer: *const ::std::os::raw::c_void,
+        _ElementSize: usize,
+        _ElementCount: usize,
+        _Stream: *mut FILE,
+    ) -> usize;
 }
 unsafe extern "C" {
-    pub fn pclose(arg1: *mut FILE) -> ::std::os::raw::c_int;
+    pub fn _getc_nolock(_Stream: *mut FILE) -> ::std::os::raw::c_int;
 }
 unsafe extern "C" {
-    pub fn popen(
-        arg1: *const ::std::os::raw::c_char,
-        arg2: *const ::std::os::raw::c_char,
-    ) -> *mut FILE;
-}
-unsafe extern "C" {
-    pub fn __srget(arg1: *mut FILE) -> ::std::os::raw::c_int;
-}
-unsafe extern "C" {
-    pub fn __svfscanf(
-        arg1: *mut FILE,
-        arg2: *const ::std::os::raw::c_char,
-        arg3: va_list,
+    pub fn _putc_nolock(
+        _Character: ::std::os::raw::c_int,
+        _Stream: *mut FILE,
     ) -> ::std::os::raw::c_int;
 }
 unsafe extern "C" {
-    pub fn __swbuf(arg1: ::std::os::raw::c_int, arg2: *mut FILE) -> ::std::os::raw::c_int;
+    pub fn _ungetc_nolock(
+        _Character: ::std::os::raw::c_int,
+        _Stream: *mut FILE,
+    ) -> ::std::os::raw::c_int;
 }
 unsafe extern "C" {
-    pub fn flockfile(arg1: *mut FILE);
+    pub fn __p__commode() -> *mut ::std::os::raw::c_int;
 }
 unsafe extern "C" {
-    pub fn ftrylockfile(arg1: *mut FILE) -> ::std::os::raw::c_int;
+    pub fn __stdio_common_vfprintf(
+        _Options: ::std::os::raw::c_ulonglong,
+        _Stream: *mut FILE,
+        _Format: *const ::std::os::raw::c_char,
+        _Locale: _locale_t,
+        _ArgList: va_list,
+    ) -> ::std::os::raw::c_int;
 }
 unsafe extern "C" {
-    pub fn funlockfile(arg1: *mut FILE);
+    pub fn __stdio_common_vfprintf_s(
+        _Options: ::std::os::raw::c_ulonglong,
+        _Stream: *mut FILE,
+        _Format: *const ::std::os::raw::c_char,
+        _Locale: _locale_t,
+        _ArgList: va_list,
+    ) -> ::std::os::raw::c_int;
 }
 unsafe extern "C" {
-    pub fn getc_unlocked(arg1: *mut FILE) -> ::std::os::raw::c_int;
+    pub fn __stdio_common_vfprintf_p(
+        _Options: ::std::os::raw::c_ulonglong,
+        _Stream: *mut FILE,
+        _Format: *const ::std::os::raw::c_char,
+        _Locale: _locale_t,
+        _ArgList: va_list,
+    ) -> ::std::os::raw::c_int;
 }
 unsafe extern "C" {
-    pub fn getchar_unlocked() -> ::std::os::raw::c_int;
+    pub fn _set_printf_count_output(_Value: ::std::os::raw::c_int) -> ::std::os::raw::c_int;
 }
 unsafe extern "C" {
-    pub fn putc_unlocked(arg1: ::std::os::raw::c_int, arg2: *mut FILE) -> ::std::os::raw::c_int;
+    pub fn _get_printf_count_output() -> ::std::os::raw::c_int;
 }
 unsafe extern "C" {
-    pub fn putchar_unlocked(arg1: ::std::os::raw::c_int) -> ::std::os::raw::c_int;
+    pub fn __stdio_common_vfscanf(
+        _Options: ::std::os::raw::c_ulonglong,
+        _Stream: *mut FILE,
+        _Format: *const ::std::os::raw::c_char,
+        _Locale: _locale_t,
+        _Arglist: va_list,
+    ) -> ::std::os::raw::c_int;
 }
 unsafe extern "C" {
-    pub fn getw(arg1: *mut FILE) -> ::std::os::raw::c_int;
+    pub fn __stdio_common_vsprintf(
+        _Options: ::std::os::raw::c_ulonglong,
+        _Buffer: *mut ::std::os::raw::c_char,
+        _BufferCount: usize,
+        _Format: *const ::std::os::raw::c_char,
+        _Locale: _locale_t,
+        _ArgList: va_list,
+    ) -> ::std::os::raw::c_int;
 }
 unsafe extern "C" {
-    pub fn putw(arg1: ::std::os::raw::c_int, arg2: *mut FILE) -> ::std::os::raw::c_int;
+    pub fn __stdio_common_vsprintf_s(
+        _Options: ::std::os::raw::c_ulonglong,
+        _Buffer: *mut ::std::os::raw::c_char,
+        _BufferCount: usize,
+        _Format: *const ::std::os::raw::c_char,
+        _Locale: _locale_t,
+        _ArgList: va_list,
+    ) -> ::std::os::raw::c_int;
+}
+unsafe extern "C" {
+    pub fn __stdio_common_vsnprintf_s(
+        _Options: ::std::os::raw::c_ulonglong,
+        _Buffer: *mut ::std::os::raw::c_char,
+        _BufferCount: usize,
+        _MaxCount: usize,
+        _Format: *const ::std::os::raw::c_char,
+        _Locale: _locale_t,
+        _ArgList: va_list,
+    ) -> ::std::os::raw::c_int;
+}
+unsafe extern "C" {
+    pub fn __stdio_common_vsprintf_p(
+        _Options: ::std::os::raw::c_ulonglong,
+        _Buffer: *mut ::std::os::raw::c_char,
+        _BufferCount: usize,
+        _Format: *const ::std::os::raw::c_char,
+        _Locale: _locale_t,
+        _ArgList: va_list,
+    ) -> ::std::os::raw::c_int;
+}
+unsafe extern "C" {
+    pub fn __stdio_common_vsscanf(
+        _Options: ::std::os::raw::c_ulonglong,
+        _Buffer: *const ::std::os::raw::c_char,
+        _BufferCount: usize,
+        _Format: *const ::std::os::raw::c_char,
+        _Locale: _locale_t,
+        _ArgList: va_list,
+    ) -> ::std::os::raw::c_int;
 }
 unsafe extern "C" {
     pub fn tempnam(
-        __dir: *const ::std::os::raw::c_char,
-        __prefix: *const ::std::os::raw::c_char,
+        _Directory: *const ::std::os::raw::c_char,
+        _FilePrefix: *const ::std::os::raw::c_char,
     ) -> *mut ::std::os::raw::c_char;
 }
-pub type off_t = __darwin_off_t;
 unsafe extern "C" {
-    pub fn fseeko(
-        __stream: *mut FILE,
-        __offset: off_t,
-        __whence: ::std::os::raw::c_int,
-    ) -> ::std::os::raw::c_int;
+    pub fn fcloseall() -> ::std::os::raw::c_int;
 }
 unsafe extern "C" {
-    pub fn ftello(__stream: *mut FILE) -> off_t;
-}
-unsafe extern "C" {
-    pub fn snprintf(
-        __str: *mut ::std::os::raw::c_char,
-        __size: ::std::os::raw::c_ulong,
-        __format: *const ::std::os::raw::c_char,
-        ...
-    ) -> ::std::os::raw::c_int;
-}
-unsafe extern "C" {
-    pub fn vfscanf(
-        __stream: *mut FILE,
-        __format: *const ::std::os::raw::c_char,
-        arg1: __builtin_va_list,
-    ) -> ::std::os::raw::c_int;
-}
-unsafe extern "C" {
-    pub fn vscanf(
-        __format: *const ::std::os::raw::c_char,
-        arg1: __builtin_va_list,
-    ) -> ::std::os::raw::c_int;
-}
-unsafe extern "C" {
-    pub fn vsnprintf(
-        __str: *mut ::std::os::raw::c_char,
-        __size: ::std::os::raw::c_ulong,
-        __format: *const ::std::os::raw::c_char,
-        arg1: __builtin_va_list,
-    ) -> ::std::os::raw::c_int;
-}
-unsafe extern "C" {
-    pub fn vsscanf(
-        __str: *const ::std::os::raw::c_char,
-        __format: *const ::std::os::raw::c_char,
-        arg1: __builtin_va_list,
-    ) -> ::std::os::raw::c_int;
-}
-unsafe extern "C" {
-    pub fn dprintf(
-        arg1: ::std::os::raw::c_int,
-        arg2: *const ::std::os::raw::c_char,
-        ...
-    ) -> ::std::os::raw::c_int;
-}
-unsafe extern "C" {
-    pub fn vdprintf(
-        arg1: ::std::os::raw::c_int,
-        arg2: *const ::std::os::raw::c_char,
-        arg3: va_list,
-    ) -> ::std::os::raw::c_int;
-}
-unsafe extern "C" {
-    pub fn getdelim(
-        __linep: *mut *mut ::std::os::raw::c_char,
-        __linecapp: *mut usize,
-        __delimiter: ::std::os::raw::c_int,
-        __stream: *mut FILE,
-    ) -> isize;
-}
-unsafe extern "C" {
-    pub fn getline(
-        __linep: *mut *mut ::std::os::raw::c_char,
-        __linecapp: *mut usize,
-        __stream: *mut FILE,
-    ) -> isize;
-}
-unsafe extern "C" {
-    pub fn fmemopen(
-        __buf: *mut ::std::os::raw::c_void,
-        __size: usize,
-        __mode: *const ::std::os::raw::c_char,
+    pub fn fdopen(
+        _FileHandle: ::std::os::raw::c_int,
+        _Format: *const ::std::os::raw::c_char,
     ) -> *mut FILE;
 }
 unsafe extern "C" {
-    pub fn open_memstream(
-        __bufp: *mut *mut ::std::os::raw::c_char,
-        __sizep: *mut usize,
-    ) -> *mut FILE;
+    pub fn fgetchar() -> ::std::os::raw::c_int;
 }
 unsafe extern "C" {
-    pub static sys_nerr: ::std::os::raw::c_int;
+    pub fn fileno(_Stream: *mut FILE) -> ::std::os::raw::c_int;
 }
 unsafe extern "C" {
-    pub static sys_errlist: [*const ::std::os::raw::c_char; 0usize];
+    pub fn flushall() -> ::std::os::raw::c_int;
 }
 unsafe extern "C" {
-    pub fn asprintf(
-        arg1: *mut *mut ::std::os::raw::c_char,
-        arg2: *const ::std::os::raw::c_char,
-        ...
-    ) -> ::std::os::raw::c_int;
+    pub fn fputchar(_Ch: ::std::os::raw::c_int) -> ::std::os::raw::c_int;
 }
 unsafe extern "C" {
-    pub fn ctermid_r(arg1: *mut ::std::os::raw::c_char) -> *mut ::std::os::raw::c_char;
+    pub fn getw(_Stream: *mut FILE) -> ::std::os::raw::c_int;
 }
 unsafe extern "C" {
-    pub fn fgetln(arg1: *mut FILE, arg2: *mut usize) -> *mut ::std::os::raw::c_char;
+    pub fn putw(_Ch: ::std::os::raw::c_int, _Stream: *mut FILE) -> ::std::os::raw::c_int;
 }
 unsafe extern "C" {
-    pub fn fmtcheck(
-        arg1: *const ::std::os::raw::c_char,
-        arg2: *const ::std::os::raw::c_char,
-    ) -> *const ::std::os::raw::c_char;
+    pub fn rmtmp() -> ::std::os::raw::c_int;
 }
 unsafe extern "C" {
-    pub fn fpurge(arg1: *mut FILE) -> ::std::os::raw::c_int;
+    pub fn _calloc_base(_Count: usize, _Size: usize) -> *mut ::std::os::raw::c_void;
 }
 unsafe extern "C" {
-    pub fn setbuffer(
-        arg1: *mut FILE,
-        arg2: *mut ::std::os::raw::c_char,
-        arg3: ::std::os::raw::c_int,
-    );
+    pub fn calloc(
+        _Count: ::std::os::raw::c_uint,
+        _Size: ::std::os::raw::c_uint,
+    ) -> *mut ::std::os::raw::c_void;
 }
 unsafe extern "C" {
-    pub fn setlinebuf(arg1: *mut FILE) -> ::std::os::raw::c_int;
+    pub fn _callnewh(_Size: usize) -> ::std::os::raw::c_int;
 }
 unsafe extern "C" {
-    pub fn vasprintf(
-        arg1: *mut *mut ::std::os::raw::c_char,
-        arg2: *const ::std::os::raw::c_char,
-        arg3: va_list,
-    ) -> ::std::os::raw::c_int;
+    pub fn _expand(
+        _Block: *mut ::std::os::raw::c_void,
+        _Size: usize,
+    ) -> *mut ::std::os::raw::c_void;
 }
 unsafe extern "C" {
-    pub fn funopen(
-        arg1: *const ::std::os::raw::c_void,
-        arg2: ::std::option::Option<
-            unsafe extern "C" fn(
-                arg1: *mut ::std::os::raw::c_void,
-                arg2: *mut ::std::os::raw::c_char,
-                arg3: ::std::os::raw::c_int,
-            ) -> ::std::os::raw::c_int,
-        >,
-        arg3: ::std::option::Option<
-            unsafe extern "C" fn(
-                arg1: *mut ::std::os::raw::c_void,
-                arg2: *const ::std::os::raw::c_char,
-                arg3: ::std::os::raw::c_int,
-            ) -> ::std::os::raw::c_int,
-        >,
-        arg4: ::std::option::Option<
-            unsafe extern "C" fn(
-                arg1: *mut ::std::os::raw::c_void,
-                arg2: fpos_t,
-                arg3: ::std::os::raw::c_int,
-            ) -> fpos_t,
-        >,
-        arg5: ::std::option::Option<
-            unsafe extern "C" fn(arg1: *mut ::std::os::raw::c_void) -> ::std::os::raw::c_int,
-        >,
-    ) -> *mut FILE;
+    pub fn _free_base(_Block: *mut ::std::os::raw::c_void);
 }
 unsafe extern "C" {
-    pub fn __sprintf_chk(
-        arg1: *mut ::std::os::raw::c_char,
-        arg2: ::std::os::raw::c_int,
-        arg3: usize,
-        arg4: *const ::std::os::raw::c_char,
-        ...
-    ) -> ::std::os::raw::c_int;
+    pub fn free(_Block: *mut ::std::os::raw::c_void);
 }
 unsafe extern "C" {
-    pub fn __snprintf_chk(
-        arg1: *mut ::std::os::raw::c_char,
-        arg2: usize,
-        arg3: ::std::os::raw::c_int,
-        arg4: usize,
-        arg5: *const ::std::os::raw::c_char,
-        ...
-    ) -> ::std::os::raw::c_int;
+    pub fn _malloc_base(_Size: usize) -> *mut ::std::os::raw::c_void;
 }
 unsafe extern "C" {
-    pub fn __vsprintf_chk(
-        arg1: *mut ::std::os::raw::c_char,
-        arg2: ::std::os::raw::c_int,
-        arg3: usize,
-        arg4: *const ::std::os::raw::c_char,
-        arg5: va_list,
-    ) -> ::std::os::raw::c_int;
+    pub fn malloc(_Size: ::std::os::raw::c_uint) -> *mut ::std::os::raw::c_void;
 }
 unsafe extern "C" {
-    pub fn __vsnprintf_chk(
-        arg1: *mut ::std::os::raw::c_char,
-        arg2: usize,
-        arg3: ::std::os::raw::c_int,
-        arg4: usize,
-        arg5: *const ::std::os::raw::c_char,
-        arg6: va_list,
-    ) -> ::std::os::raw::c_int;
+    pub fn _msize_base(_Block: *mut ::std::os::raw::c_void) -> usize;
 }
 unsafe extern "C" {
-    pub fn alloca(arg1: ::std::os::raw::c_ulong) -> *mut ::std::os::raw::c_void;
+    pub fn _msize(_Block: *mut ::std::os::raw::c_void) -> usize;
+}
+unsafe extern "C" {
+    pub fn _realloc_base(
+        _Block: *mut ::std::os::raw::c_void,
+        _Size: usize,
+    ) -> *mut ::std::os::raw::c_void;
+}
+unsafe extern "C" {
+    pub fn realloc(
+        _Block: *mut ::std::os::raw::c_void,
+        _Size: ::std::os::raw::c_uint,
+    ) -> *mut ::std::os::raw::c_void;
+}
+unsafe extern "C" {
+    pub fn _recalloc_base(
+        _Block: *mut ::std::os::raw::c_void,
+        _Count: usize,
+        _Size: usize,
+    ) -> *mut ::std::os::raw::c_void;
+}
+unsafe extern "C" {
+    pub fn _recalloc(
+        _Block: *mut ::std::os::raw::c_void,
+        _Count: usize,
+        _Size: usize,
+    ) -> *mut ::std::os::raw::c_void;
+}
+unsafe extern "C" {
+    pub fn _aligned_free(_Block: *mut ::std::os::raw::c_void);
+}
+unsafe extern "C" {
+    pub fn _aligned_malloc(_Size: usize, _Alignment: usize) -> *mut ::std::os::raw::c_void;
+}
+unsafe extern "C" {
+    pub fn _aligned_offset_malloc(
+        _Size: usize,
+        _Alignment: usize,
+        _Offset: usize,
+    ) -> *mut ::std::os::raw::c_void;
+}
+unsafe extern "C" {
+    pub fn _aligned_msize(
+        _Block: *mut ::std::os::raw::c_void,
+        _Alignment: usize,
+        _Offset: usize,
+    ) -> usize;
+}
+unsafe extern "C" {
+    pub fn _aligned_offset_realloc(
+        _Block: *mut ::std::os::raw::c_void,
+        _Size: usize,
+        _Alignment: usize,
+        _Offset: usize,
+    ) -> *mut ::std::os::raw::c_void;
+}
+unsafe extern "C" {
+    pub fn _aligned_offset_recalloc(
+        _Block: *mut ::std::os::raw::c_void,
+        _Count: usize,
+        _Size: usize,
+        _Alignment: usize,
+        _Offset: usize,
+    ) -> *mut ::std::os::raw::c_void;
+}
+unsafe extern "C" {
+    pub fn _aligned_realloc(
+        _Block: *mut ::std::os::raw::c_void,
+        _Size: usize,
+        _Alignment: usize,
+    ) -> *mut ::std::os::raw::c_void;
+}
+unsafe extern "C" {
+    pub fn _aligned_recalloc(
+        _Block: *mut ::std::os::raw::c_void,
+        _Count: usize,
+        _Size: usize,
+        _Alignment: usize,
+    ) -> *mut ::std::os::raw::c_void;
+}
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct _heapinfo {
+    pub _pentry: *mut ::std::os::raw::c_int,
+    pub _size: usize,
+    pub _useflag: ::std::os::raw::c_int,
+}
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
+const _: () = {
+    ["Size of _heapinfo"][::std::mem::size_of::<_heapinfo>() - 12usize];
+    ["Alignment of _heapinfo"][::std::mem::align_of::<_heapinfo>() - 4usize];
+    ["Offset of field: _heapinfo::_pentry"][::std::mem::offset_of!(_heapinfo, _pentry) - 0usize];
+    ["Offset of field: _heapinfo::_size"][::std::mem::offset_of!(_heapinfo, _size) - 4usize];
+    ["Offset of field: _heapinfo::_useflag"][::std::mem::offset_of!(_heapinfo, _useflag) - 8usize];
+};
+pub type _HEAPINFO = _heapinfo;
+unsafe extern "C" {
+    pub fn _alloca(_Size: ::std::os::raw::c_uint) -> *mut ::std::os::raw::c_void;
+}
+unsafe extern "C" {
+    pub fn _get_heap_handle() -> isize;
+}
+unsafe extern "C" {
+    pub fn _heapmin() -> ::std::os::raw::c_int;
+}
+unsafe extern "C" {
+    pub fn _heapwalk(_EntryInfo: *mut _HEAPINFO) -> ::std::os::raw::c_int;
+}
+unsafe extern "C" {
+    pub fn _heapchk() -> ::std::os::raw::c_int;
+}
+unsafe extern "C" {
+    pub fn _resetstkoflw() -> ::std::os::raw::c_int;
 }
 #[doc = " Time type."]
 #[repr(C)]
@@ -3227,84 +3273,83 @@ pub struct ecs_os_api_t {
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of ecs_os_api_t"][::std::mem::size_of::<ecs_os_api_t>() - 320usize];
+    ["Size of ecs_os_api_t"][::std::mem::size_of::<ecs_os_api_t>() - 168usize];
     ["Alignment of ecs_os_api_t"][::std::mem::align_of::<ecs_os_api_t>() - 8usize];
     ["Offset of field: ecs_os_api_t::init_"][::std::mem::offset_of!(ecs_os_api_t, init_) - 0usize];
-    ["Offset of field: ecs_os_api_t::fini_"][::std::mem::offset_of!(ecs_os_api_t, fini_) - 8usize];
+    ["Offset of field: ecs_os_api_t::fini_"][::std::mem::offset_of!(ecs_os_api_t, fini_) - 4usize];
     ["Offset of field: ecs_os_api_t::malloc_"]
-        [::std::mem::offset_of!(ecs_os_api_t, malloc_) - 16usize];
+        [::std::mem::offset_of!(ecs_os_api_t, malloc_) - 8usize];
     ["Offset of field: ecs_os_api_t::realloc_"]
-        [::std::mem::offset_of!(ecs_os_api_t, realloc_) - 24usize];
+        [::std::mem::offset_of!(ecs_os_api_t, realloc_) - 12usize];
     ["Offset of field: ecs_os_api_t::calloc_"]
-        [::std::mem::offset_of!(ecs_os_api_t, calloc_) - 32usize];
-    ["Offset of field: ecs_os_api_t::free_"][::std::mem::offset_of!(ecs_os_api_t, free_) - 40usize];
+        [::std::mem::offset_of!(ecs_os_api_t, calloc_) - 16usize];
+    ["Offset of field: ecs_os_api_t::free_"][::std::mem::offset_of!(ecs_os_api_t, free_) - 20usize];
     ["Offset of field: ecs_os_api_t::strdup_"]
-        [::std::mem::offset_of!(ecs_os_api_t, strdup_) - 48usize];
+        [::std::mem::offset_of!(ecs_os_api_t, strdup_) - 24usize];
     ["Offset of field: ecs_os_api_t::thread_new_"]
-        [::std::mem::offset_of!(ecs_os_api_t, thread_new_) - 56usize];
+        [::std::mem::offset_of!(ecs_os_api_t, thread_new_) - 28usize];
     ["Offset of field: ecs_os_api_t::thread_join_"]
-        [::std::mem::offset_of!(ecs_os_api_t, thread_join_) - 64usize];
+        [::std::mem::offset_of!(ecs_os_api_t, thread_join_) - 32usize];
     ["Offset of field: ecs_os_api_t::thread_self_"]
-        [::std::mem::offset_of!(ecs_os_api_t, thread_self_) - 72usize];
+        [::std::mem::offset_of!(ecs_os_api_t, thread_self_) - 36usize];
     ["Offset of field: ecs_os_api_t::task_new_"]
-        [::std::mem::offset_of!(ecs_os_api_t, task_new_) - 80usize];
+        [::std::mem::offset_of!(ecs_os_api_t, task_new_) - 40usize];
     ["Offset of field: ecs_os_api_t::task_join_"]
-        [::std::mem::offset_of!(ecs_os_api_t, task_join_) - 88usize];
-    ["Offset of field: ecs_os_api_t::ainc_"][::std::mem::offset_of!(ecs_os_api_t, ainc_) - 96usize];
-    ["Offset of field: ecs_os_api_t::adec_"]
-        [::std::mem::offset_of!(ecs_os_api_t, adec_) - 104usize];
+        [::std::mem::offset_of!(ecs_os_api_t, task_join_) - 44usize];
+    ["Offset of field: ecs_os_api_t::ainc_"][::std::mem::offset_of!(ecs_os_api_t, ainc_) - 48usize];
+    ["Offset of field: ecs_os_api_t::adec_"][::std::mem::offset_of!(ecs_os_api_t, adec_) - 52usize];
     ["Offset of field: ecs_os_api_t::lainc_"]
-        [::std::mem::offset_of!(ecs_os_api_t, lainc_) - 112usize];
+        [::std::mem::offset_of!(ecs_os_api_t, lainc_) - 56usize];
     ["Offset of field: ecs_os_api_t::ladec_"]
-        [::std::mem::offset_of!(ecs_os_api_t, ladec_) - 120usize];
+        [::std::mem::offset_of!(ecs_os_api_t, ladec_) - 60usize];
     ["Offset of field: ecs_os_api_t::mutex_new_"]
-        [::std::mem::offset_of!(ecs_os_api_t, mutex_new_) - 128usize];
+        [::std::mem::offset_of!(ecs_os_api_t, mutex_new_) - 64usize];
     ["Offset of field: ecs_os_api_t::mutex_free_"]
-        [::std::mem::offset_of!(ecs_os_api_t, mutex_free_) - 136usize];
+        [::std::mem::offset_of!(ecs_os_api_t, mutex_free_) - 68usize];
     ["Offset of field: ecs_os_api_t::mutex_lock_"]
-        [::std::mem::offset_of!(ecs_os_api_t, mutex_lock_) - 144usize];
+        [::std::mem::offset_of!(ecs_os_api_t, mutex_lock_) - 72usize];
     ["Offset of field: ecs_os_api_t::mutex_unlock_"]
-        [::std::mem::offset_of!(ecs_os_api_t, mutex_unlock_) - 152usize];
+        [::std::mem::offset_of!(ecs_os_api_t, mutex_unlock_) - 76usize];
     ["Offset of field: ecs_os_api_t::cond_new_"]
-        [::std::mem::offset_of!(ecs_os_api_t, cond_new_) - 160usize];
+        [::std::mem::offset_of!(ecs_os_api_t, cond_new_) - 80usize];
     ["Offset of field: ecs_os_api_t::cond_free_"]
-        [::std::mem::offset_of!(ecs_os_api_t, cond_free_) - 168usize];
+        [::std::mem::offset_of!(ecs_os_api_t, cond_free_) - 84usize];
     ["Offset of field: ecs_os_api_t::cond_signal_"]
-        [::std::mem::offset_of!(ecs_os_api_t, cond_signal_) - 176usize];
+        [::std::mem::offset_of!(ecs_os_api_t, cond_signal_) - 88usize];
     ["Offset of field: ecs_os_api_t::cond_broadcast_"]
-        [::std::mem::offset_of!(ecs_os_api_t, cond_broadcast_) - 184usize];
+        [::std::mem::offset_of!(ecs_os_api_t, cond_broadcast_) - 92usize];
     ["Offset of field: ecs_os_api_t::cond_wait_"]
-        [::std::mem::offset_of!(ecs_os_api_t, cond_wait_) - 192usize];
+        [::std::mem::offset_of!(ecs_os_api_t, cond_wait_) - 96usize];
     ["Offset of field: ecs_os_api_t::sleep_"]
-        [::std::mem::offset_of!(ecs_os_api_t, sleep_) - 200usize];
-    ["Offset of field: ecs_os_api_t::now_"][::std::mem::offset_of!(ecs_os_api_t, now_) - 208usize];
+        [::std::mem::offset_of!(ecs_os_api_t, sleep_) - 100usize];
+    ["Offset of field: ecs_os_api_t::now_"][::std::mem::offset_of!(ecs_os_api_t, now_) - 104usize];
     ["Offset of field: ecs_os_api_t::get_time_"]
-        [::std::mem::offset_of!(ecs_os_api_t, get_time_) - 216usize];
-    ["Offset of field: ecs_os_api_t::log_"][::std::mem::offset_of!(ecs_os_api_t, log_) - 224usize];
+        [::std::mem::offset_of!(ecs_os_api_t, get_time_) - 108usize];
+    ["Offset of field: ecs_os_api_t::log_"][::std::mem::offset_of!(ecs_os_api_t, log_) - 112usize];
     ["Offset of field: ecs_os_api_t::abort_"]
-        [::std::mem::offset_of!(ecs_os_api_t, abort_) - 232usize];
+        [::std::mem::offset_of!(ecs_os_api_t, abort_) - 116usize];
     ["Offset of field: ecs_os_api_t::dlopen_"]
-        [::std::mem::offset_of!(ecs_os_api_t, dlopen_) - 240usize];
+        [::std::mem::offset_of!(ecs_os_api_t, dlopen_) - 120usize];
     ["Offset of field: ecs_os_api_t::dlproc_"]
-        [::std::mem::offset_of!(ecs_os_api_t, dlproc_) - 248usize];
+        [::std::mem::offset_of!(ecs_os_api_t, dlproc_) - 124usize];
     ["Offset of field: ecs_os_api_t::dlclose_"]
-        [::std::mem::offset_of!(ecs_os_api_t, dlclose_) - 256usize];
+        [::std::mem::offset_of!(ecs_os_api_t, dlclose_) - 128usize];
     ["Offset of field: ecs_os_api_t::module_to_dl_"]
-        [::std::mem::offset_of!(ecs_os_api_t, module_to_dl_) - 264usize];
+        [::std::mem::offset_of!(ecs_os_api_t, module_to_dl_) - 132usize];
     ["Offset of field: ecs_os_api_t::module_to_etc_"]
-        [::std::mem::offset_of!(ecs_os_api_t, module_to_etc_) - 272usize];
+        [::std::mem::offset_of!(ecs_os_api_t, module_to_etc_) - 136usize];
     ["Offset of field: ecs_os_api_t::log_level_"]
-        [::std::mem::offset_of!(ecs_os_api_t, log_level_) - 280usize];
+        [::std::mem::offset_of!(ecs_os_api_t, log_level_) - 140usize];
     ["Offset of field: ecs_os_api_t::log_indent_"]
-        [::std::mem::offset_of!(ecs_os_api_t, log_indent_) - 284usize];
+        [::std::mem::offset_of!(ecs_os_api_t, log_indent_) - 144usize];
     ["Offset of field: ecs_os_api_t::log_last_error_"]
-        [::std::mem::offset_of!(ecs_os_api_t, log_last_error_) - 288usize];
+        [::std::mem::offset_of!(ecs_os_api_t, log_last_error_) - 148usize];
     ["Offset of field: ecs_os_api_t::log_last_timestamp_"]
-        [::std::mem::offset_of!(ecs_os_api_t, log_last_timestamp_) - 296usize];
+        [::std::mem::offset_of!(ecs_os_api_t, log_last_timestamp_) - 152usize];
     ["Offset of field: ecs_os_api_t::flags_"]
-        [::std::mem::offset_of!(ecs_os_api_t, flags_) - 304usize];
+        [::std::mem::offset_of!(ecs_os_api_t, flags_) - 160usize];
     ["Offset of field: ecs_os_api_t::log_out_"]
-        [::std::mem::offset_of!(ecs_os_api_t, log_out_) - 312usize];
+        [::std::mem::offset_of!(ecs_os_api_t, log_out_) - 164usize];
 };
 unsafe extern "C" {
     #[doc = " Static OS API variable with configured callbacks."]
@@ -3447,10 +3492,10 @@ pub struct ecs_type_t {
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of ecs_type_t"][::std::mem::size_of::<ecs_type_t>() - 16usize];
-    ["Alignment of ecs_type_t"][::std::mem::align_of::<ecs_type_t>() - 8usize];
+    ["Size of ecs_type_t"][::std::mem::size_of::<ecs_type_t>() - 8usize];
+    ["Alignment of ecs_type_t"][::std::mem::align_of::<ecs_type_t>() - 4usize];
     ["Offset of field: ecs_type_t::array"][::std::mem::offset_of!(ecs_type_t, array) - 0usize];
-    ["Offset of field: ecs_type_t::count"][::std::mem::offset_of!(ecs_type_t, count) - 8usize];
+    ["Offset of field: ecs_type_t::count"][::std::mem::offset_of!(ecs_type_t, count) - 4usize];
 };
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
@@ -3494,14 +3539,14 @@ pub struct ecs_header_t {
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of ecs_header_t"][::std::mem::size_of::<ecs_header_t>() - 24usize];
-    ["Alignment of ecs_header_t"][::std::mem::align_of::<ecs_header_t>() - 8usize];
+    ["Size of ecs_header_t"][::std::mem::size_of::<ecs_header_t>() - 16usize];
+    ["Alignment of ecs_header_t"][::std::mem::align_of::<ecs_header_t>() - 4usize];
     ["Offset of field: ecs_header_t::magic"][::std::mem::offset_of!(ecs_header_t, magic) - 0usize];
     ["Offset of field: ecs_header_t::type_"][::std::mem::offset_of!(ecs_header_t, type_) - 4usize];
     ["Offset of field: ecs_header_t::refcount"]
         [::std::mem::offset_of!(ecs_header_t, refcount) - 8usize];
     ["Offset of field: ecs_header_t::mixins"]
-        [::std::mem::offset_of!(ecs_header_t, mixins) - 16usize];
+        [::std::mem::offset_of!(ecs_header_t, mixins) - 12usize];
 };
 #[doc = " Record for entity index"]
 #[repr(C)]
@@ -3518,12 +3563,12 @@ pub struct ecs_record_t {
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of ecs_record_t"][::std::mem::size_of::<ecs_record_t>() - 24usize];
-    ["Alignment of ecs_record_t"][::std::mem::align_of::<ecs_record_t>() - 8usize];
+    ["Size of ecs_record_t"][::std::mem::size_of::<ecs_record_t>() - 16usize];
+    ["Alignment of ecs_record_t"][::std::mem::align_of::<ecs_record_t>() - 4usize];
     ["Offset of field: ecs_record_t::idr"][::std::mem::offset_of!(ecs_record_t, idr) - 0usize];
-    ["Offset of field: ecs_record_t::table"][::std::mem::offset_of!(ecs_record_t, table) - 8usize];
-    ["Offset of field: ecs_record_t::row"][::std::mem::offset_of!(ecs_record_t, row) - 16usize];
-    ["Offset of field: ecs_record_t::dense"][::std::mem::offset_of!(ecs_record_t, dense) - 20usize];
+    ["Offset of field: ecs_record_t::table"][::std::mem::offset_of!(ecs_record_t, table) - 4usize];
+    ["Offset of field: ecs_record_t::row"][::std::mem::offset_of!(ecs_record_t, row) - 8usize];
+    ["Offset of field: ecs_record_t::dense"][::std::mem::offset_of!(ecs_record_t, dense) - 12usize];
 };
 #[doc = " Header for table cache elements."]
 #[repr(C)]
@@ -3542,19 +3587,19 @@ pub struct ecs_table_cache_hdr_t {
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of ecs_table_cache_hdr_t"][::std::mem::size_of::<ecs_table_cache_hdr_t>() - 40usize];
+    ["Size of ecs_table_cache_hdr_t"][::std::mem::size_of::<ecs_table_cache_hdr_t>() - 20usize];
     ["Alignment of ecs_table_cache_hdr_t"]
-        [::std::mem::align_of::<ecs_table_cache_hdr_t>() - 8usize];
+        [::std::mem::align_of::<ecs_table_cache_hdr_t>() - 4usize];
     ["Offset of field: ecs_table_cache_hdr_t::cache"]
         [::std::mem::offset_of!(ecs_table_cache_hdr_t, cache) - 0usize];
     ["Offset of field: ecs_table_cache_hdr_t::table"]
-        [::std::mem::offset_of!(ecs_table_cache_hdr_t, table) - 8usize];
+        [::std::mem::offset_of!(ecs_table_cache_hdr_t, table) - 4usize];
     ["Offset of field: ecs_table_cache_hdr_t::prev"]
-        [::std::mem::offset_of!(ecs_table_cache_hdr_t, prev) - 16usize];
+        [::std::mem::offset_of!(ecs_table_cache_hdr_t, prev) - 8usize];
     ["Offset of field: ecs_table_cache_hdr_t::next"]
-        [::std::mem::offset_of!(ecs_table_cache_hdr_t, next) - 24usize];
+        [::std::mem::offset_of!(ecs_table_cache_hdr_t, next) - 12usize];
     ["Offset of field: ecs_table_cache_hdr_t::empty"]
-        [::std::mem::offset_of!(ecs_table_cache_hdr_t, empty) - 32usize];
+        [::std::mem::offset_of!(ecs_table_cache_hdr_t, empty) - 16usize];
 };
 #[doc = " Metadata describing where a component id is stored in a table.\n This type is used as element type for the component index table cache. One\n record exists per table/component in the table. Only records for wildcard ids\n can have a count > 1."]
 #[repr(C)]
@@ -3571,16 +3616,16 @@ pub struct ecs_table_record_t {
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of ecs_table_record_t"][::std::mem::size_of::<ecs_table_record_t>() - 48usize];
-    ["Alignment of ecs_table_record_t"][::std::mem::align_of::<ecs_table_record_t>() - 8usize];
+    ["Size of ecs_table_record_t"][::std::mem::size_of::<ecs_table_record_t>() - 28usize];
+    ["Alignment of ecs_table_record_t"][::std::mem::align_of::<ecs_table_record_t>() - 4usize];
     ["Offset of field: ecs_table_record_t::hdr"]
         [::std::mem::offset_of!(ecs_table_record_t, hdr) - 0usize];
     ["Offset of field: ecs_table_record_t::index"]
-        [::std::mem::offset_of!(ecs_table_record_t, index) - 40usize];
+        [::std::mem::offset_of!(ecs_table_record_t, index) - 20usize];
     ["Offset of field: ecs_table_record_t::count"]
-        [::std::mem::offset_of!(ecs_table_record_t, count) - 42usize];
+        [::std::mem::offset_of!(ecs_table_record_t, count) - 22usize];
     ["Offset of field: ecs_table_record_t::column"]
-        [::std::mem::offset_of!(ecs_table_record_t, column) - 44usize];
+        [::std::mem::offset_of!(ecs_table_record_t, column) - 24usize];
 };
 #[doc = " Function prototype for runnables (systems, observers).\n The run callback overrides the default behavior for iterating through the\n results of a runnable object.\n\n The default runnable iterates the iterator, and calls an iter_action (see\n below) for each returned result.\n\n @param it The iterator to be iterated by the runnable."]
 pub type ecs_run_action_t = ::std::option::Option<unsafe extern "C" fn(it: *mut ecs_iter_t)>;
@@ -3699,7 +3744,7 @@ pub const ecs_inout_kind_t_EcsIn: ecs_inout_kind_t = 4;
 #[doc = "< Term is only written"]
 pub const ecs_inout_kind_t_EcsOut: ecs_inout_kind_t = 5;
 #[doc = " Specify read/write access for term"]
-pub type ecs_inout_kind_t = ::std::os::raw::c_uint;
+pub type ecs_inout_kind_t = ::std::os::raw::c_int;
 #[doc = "< The term must match"]
 pub const ecs_oper_kind_t_EcsAnd: ecs_oper_kind_t = 0;
 #[doc = "< One of the terms in an or chain must match"]
@@ -3715,7 +3760,7 @@ pub const ecs_oper_kind_t_EcsOrFrom: ecs_oper_kind_t = 5;
 #[doc = "< Term must match none of the components from term id"]
 pub const ecs_oper_kind_t_EcsNotFrom: ecs_oper_kind_t = 6;
 #[doc = " Specify operator for term"]
-pub type ecs_oper_kind_t = ::std::os::raw::c_uint;
+pub type ecs_oper_kind_t = ::std::os::raw::c_int;
 #[doc = "< Behavior determined by query creation context"]
 pub const ecs_query_cache_kind_t_EcsQueryCacheDefault: ecs_query_cache_kind_t = 0;
 #[doc = "< Cache query terms that are cacheable"]
@@ -3725,7 +3770,7 @@ pub const ecs_query_cache_kind_t_EcsQueryCacheAll: ecs_query_cache_kind_t = 2;
 #[doc = "< No caching"]
 pub const ecs_query_cache_kind_t_EcsQueryCacheNone: ecs_query_cache_kind_t = 3;
 #[doc = " Specify cache policy for query"]
-pub type ecs_query_cache_kind_t = ::std::os::raw::c_uint;
+pub type ecs_query_cache_kind_t = ::std::os::raw::c_int;
 #[doc = " Type that describes a reference to an entity or variable in a term."]
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
@@ -3836,48 +3881,48 @@ pub struct ecs_query_t {
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of ecs_query_t"][::std::mem::size_of::<ecs_query_t>() - 2816usize];
+    ["Size of ecs_query_t"][::std::mem::size_of::<ecs_query_t>() - 2784usize];
     ["Alignment of ecs_query_t"][::std::mem::align_of::<ecs_query_t>() - 8usize];
     ["Offset of field: ecs_query_t::hdr"][::std::mem::offset_of!(ecs_query_t, hdr) - 0usize];
-    ["Offset of field: ecs_query_t::terms"][::std::mem::offset_of!(ecs_query_t, terms) - 24usize];
-    ["Offset of field: ecs_query_t::sizes"][::std::mem::offset_of!(ecs_query_t, sizes) - 2328usize];
-    ["Offset of field: ecs_query_t::ids"][::std::mem::offset_of!(ecs_query_t, ids) - 2456usize];
-    ["Offset of field: ecs_query_t::flags"][::std::mem::offset_of!(ecs_query_t, flags) - 2712usize];
+    ["Offset of field: ecs_query_t::terms"][::std::mem::offset_of!(ecs_query_t, terms) - 16usize];
+    ["Offset of field: ecs_query_t::sizes"][::std::mem::offset_of!(ecs_query_t, sizes) - 2320usize];
+    ["Offset of field: ecs_query_t::ids"][::std::mem::offset_of!(ecs_query_t, ids) - 2448usize];
+    ["Offset of field: ecs_query_t::flags"][::std::mem::offset_of!(ecs_query_t, flags) - 2704usize];
     ["Offset of field: ecs_query_t::var_count"]
-        [::std::mem::offset_of!(ecs_query_t, var_count) - 2716usize];
+        [::std::mem::offset_of!(ecs_query_t, var_count) - 2708usize];
     ["Offset of field: ecs_query_t::term_count"]
-        [::std::mem::offset_of!(ecs_query_t, term_count) - 2717usize];
+        [::std::mem::offset_of!(ecs_query_t, term_count) - 2709usize];
     ["Offset of field: ecs_query_t::field_count"]
-        [::std::mem::offset_of!(ecs_query_t, field_count) - 2718usize];
+        [::std::mem::offset_of!(ecs_query_t, field_count) - 2710usize];
     ["Offset of field: ecs_query_t::fixed_fields"]
-        [::std::mem::offset_of!(ecs_query_t, fixed_fields) - 2720usize];
+        [::std::mem::offset_of!(ecs_query_t, fixed_fields) - 2712usize];
     ["Offset of field: ecs_query_t::static_id_fields"]
-        [::std::mem::offset_of!(ecs_query_t, static_id_fields) - 2724usize];
+        [::std::mem::offset_of!(ecs_query_t, static_id_fields) - 2716usize];
     ["Offset of field: ecs_query_t::data_fields"]
-        [::std::mem::offset_of!(ecs_query_t, data_fields) - 2728usize];
+        [::std::mem::offset_of!(ecs_query_t, data_fields) - 2720usize];
     ["Offset of field: ecs_query_t::write_fields"]
-        [::std::mem::offset_of!(ecs_query_t, write_fields) - 2732usize];
+        [::std::mem::offset_of!(ecs_query_t, write_fields) - 2724usize];
     ["Offset of field: ecs_query_t::read_fields"]
-        [::std::mem::offset_of!(ecs_query_t, read_fields) - 2736usize];
+        [::std::mem::offset_of!(ecs_query_t, read_fields) - 2728usize];
     ["Offset of field: ecs_query_t::row_fields"]
-        [::std::mem::offset_of!(ecs_query_t, row_fields) - 2740usize];
+        [::std::mem::offset_of!(ecs_query_t, row_fields) - 2732usize];
     ["Offset of field: ecs_query_t::shared_readonly_fields"]
-        [::std::mem::offset_of!(ecs_query_t, shared_readonly_fields) - 2744usize];
+        [::std::mem::offset_of!(ecs_query_t, shared_readonly_fields) - 2736usize];
     ["Offset of field: ecs_query_t::set_fields"]
-        [::std::mem::offset_of!(ecs_query_t, set_fields) - 2748usize];
+        [::std::mem::offset_of!(ecs_query_t, set_fields) - 2740usize];
     ["Offset of field: ecs_query_t::cache_kind"]
-        [::std::mem::offset_of!(ecs_query_t, cache_kind) - 2752usize];
-    ["Offset of field: ecs_query_t::vars"][::std::mem::offset_of!(ecs_query_t, vars) - 2760usize];
-    ["Offset of field: ecs_query_t::ctx"][::std::mem::offset_of!(ecs_query_t, ctx) - 2768usize];
+        [::std::mem::offset_of!(ecs_query_t, cache_kind) - 2744usize];
+    ["Offset of field: ecs_query_t::vars"][::std::mem::offset_of!(ecs_query_t, vars) - 2748usize];
+    ["Offset of field: ecs_query_t::ctx"][::std::mem::offset_of!(ecs_query_t, ctx) - 2752usize];
     ["Offset of field: ecs_query_t::binding_ctx"]
-        [::std::mem::offset_of!(ecs_query_t, binding_ctx) - 2776usize];
+        [::std::mem::offset_of!(ecs_query_t, binding_ctx) - 2756usize];
     ["Offset of field: ecs_query_t::entity"]
-        [::std::mem::offset_of!(ecs_query_t, entity) - 2784usize];
+        [::std::mem::offset_of!(ecs_query_t, entity) - 2760usize];
     ["Offset of field: ecs_query_t::real_world"]
-        [::std::mem::offset_of!(ecs_query_t, real_world) - 2792usize];
-    ["Offset of field: ecs_query_t::world"][::std::mem::offset_of!(ecs_query_t, world) - 2800usize];
+        [::std::mem::offset_of!(ecs_query_t, real_world) - 2768usize];
+    ["Offset of field: ecs_query_t::world"][::std::mem::offset_of!(ecs_query_t, world) - 2772usize];
     ["Offset of field: ecs_query_t::eval_count"]
-        [::std::mem::offset_of!(ecs_query_t, eval_count) - 2808usize];
+        [::std::mem::offset_of!(ecs_query_t, eval_count) - 2776usize];
 };
 #[doc = " An observer reacts to events matching a query.\n Created with ecs_observer_init()."]
 #[repr(C)]
@@ -3916,37 +3961,36 @@ pub struct ecs_observer_t {
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of ecs_observer_t"][::std::mem::size_of::<ecs_observer_t>() - 192usize];
+    ["Size of ecs_observer_t"][::std::mem::size_of::<ecs_observer_t>() - 144usize];
     ["Alignment of ecs_observer_t"][::std::mem::align_of::<ecs_observer_t>() - 8usize];
     ["Offset of field: ecs_observer_t::hdr"][::std::mem::offset_of!(ecs_observer_t, hdr) - 0usize];
     ["Offset of field: ecs_observer_t::query"]
-        [::std::mem::offset_of!(ecs_observer_t, query) - 24usize];
+        [::std::mem::offset_of!(ecs_observer_t, query) - 16usize];
     ["Offset of field: ecs_observer_t::events"]
-        [::std::mem::offset_of!(ecs_observer_t, events) - 32usize];
+        [::std::mem::offset_of!(ecs_observer_t, events) - 24usize];
     ["Offset of field: ecs_observer_t::event_count"]
-        [::std::mem::offset_of!(ecs_observer_t, event_count) - 96usize];
+        [::std::mem::offset_of!(ecs_observer_t, event_count) - 88usize];
     ["Offset of field: ecs_observer_t::callback"]
-        [::std::mem::offset_of!(ecs_observer_t, callback) - 104usize];
-    ["Offset of field: ecs_observer_t::run"]
-        [::std::mem::offset_of!(ecs_observer_t, run) - 112usize];
+        [::std::mem::offset_of!(ecs_observer_t, callback) - 92usize];
+    ["Offset of field: ecs_observer_t::run"][::std::mem::offset_of!(ecs_observer_t, run) - 96usize];
     ["Offset of field: ecs_observer_t::ctx"]
-        [::std::mem::offset_of!(ecs_observer_t, ctx) - 120usize];
+        [::std::mem::offset_of!(ecs_observer_t, ctx) - 100usize];
     ["Offset of field: ecs_observer_t::callback_ctx"]
-        [::std::mem::offset_of!(ecs_observer_t, callback_ctx) - 128usize];
+        [::std::mem::offset_of!(ecs_observer_t, callback_ctx) - 104usize];
     ["Offset of field: ecs_observer_t::run_ctx"]
-        [::std::mem::offset_of!(ecs_observer_t, run_ctx) - 136usize];
+        [::std::mem::offset_of!(ecs_observer_t, run_ctx) - 108usize];
     ["Offset of field: ecs_observer_t::ctx_free"]
-        [::std::mem::offset_of!(ecs_observer_t, ctx_free) - 144usize];
+        [::std::mem::offset_of!(ecs_observer_t, ctx_free) - 112usize];
     ["Offset of field: ecs_observer_t::callback_ctx_free"]
-        [::std::mem::offset_of!(ecs_observer_t, callback_ctx_free) - 152usize];
+        [::std::mem::offset_of!(ecs_observer_t, callback_ctx_free) - 116usize];
     ["Offset of field: ecs_observer_t::run_ctx_free"]
-        [::std::mem::offset_of!(ecs_observer_t, run_ctx_free) - 160usize];
+        [::std::mem::offset_of!(ecs_observer_t, run_ctx_free) - 120usize];
     ["Offset of field: ecs_observer_t::observable"]
-        [::std::mem::offset_of!(ecs_observer_t, observable) - 168usize];
+        [::std::mem::offset_of!(ecs_observer_t, observable) - 124usize];
     ["Offset of field: ecs_observer_t::world"]
-        [::std::mem::offset_of!(ecs_observer_t, world) - 176usize];
+        [::std::mem::offset_of!(ecs_observer_t, world) - 128usize];
     ["Offset of field: ecs_observer_t::entity"]
-        [::std::mem::offset_of!(ecs_observer_t, entity) - 184usize];
+        [::std::mem::offset_of!(ecs_observer_t, entity) - 136usize];
 };
 #[doc = " Type that contains component lifecycle callbacks.\n\n @ingroup components"]
 #[repr(C)]
@@ -3985,38 +4029,38 @@ pub struct ecs_type_hooks_t {
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of ecs_type_hooks_t"][::std::mem::size_of::<ecs_type_hooks_t>() - 120usize];
-    ["Alignment of ecs_type_hooks_t"][::std::mem::align_of::<ecs_type_hooks_t>() - 8usize];
+    ["Size of ecs_type_hooks_t"][::std::mem::size_of::<ecs_type_hooks_t>() - 60usize];
+    ["Alignment of ecs_type_hooks_t"][::std::mem::align_of::<ecs_type_hooks_t>() - 4usize];
     ["Offset of field: ecs_type_hooks_t::ctor"]
         [::std::mem::offset_of!(ecs_type_hooks_t, ctor) - 0usize];
     ["Offset of field: ecs_type_hooks_t::dtor"]
-        [::std::mem::offset_of!(ecs_type_hooks_t, dtor) - 8usize];
+        [::std::mem::offset_of!(ecs_type_hooks_t, dtor) - 4usize];
     ["Offset of field: ecs_type_hooks_t::copy"]
-        [::std::mem::offset_of!(ecs_type_hooks_t, copy) - 16usize];
+        [::std::mem::offset_of!(ecs_type_hooks_t, copy) - 8usize];
     ["Offset of field: ecs_type_hooks_t::move_"]
-        [::std::mem::offset_of!(ecs_type_hooks_t, move_) - 24usize];
+        [::std::mem::offset_of!(ecs_type_hooks_t, move_) - 12usize];
     ["Offset of field: ecs_type_hooks_t::copy_ctor"]
-        [::std::mem::offset_of!(ecs_type_hooks_t, copy_ctor) - 32usize];
+        [::std::mem::offset_of!(ecs_type_hooks_t, copy_ctor) - 16usize];
     ["Offset of field: ecs_type_hooks_t::move_ctor"]
-        [::std::mem::offset_of!(ecs_type_hooks_t, move_ctor) - 40usize];
+        [::std::mem::offset_of!(ecs_type_hooks_t, move_ctor) - 20usize];
     ["Offset of field: ecs_type_hooks_t::ctor_move_dtor"]
-        [::std::mem::offset_of!(ecs_type_hooks_t, ctor_move_dtor) - 48usize];
+        [::std::mem::offset_of!(ecs_type_hooks_t, ctor_move_dtor) - 24usize];
     ["Offset of field: ecs_type_hooks_t::move_dtor"]
-        [::std::mem::offset_of!(ecs_type_hooks_t, move_dtor) - 56usize];
+        [::std::mem::offset_of!(ecs_type_hooks_t, move_dtor) - 28usize];
     ["Offset of field: ecs_type_hooks_t::on_add"]
-        [::std::mem::offset_of!(ecs_type_hooks_t, on_add) - 64usize];
+        [::std::mem::offset_of!(ecs_type_hooks_t, on_add) - 32usize];
     ["Offset of field: ecs_type_hooks_t::on_set"]
-        [::std::mem::offset_of!(ecs_type_hooks_t, on_set) - 72usize];
+        [::std::mem::offset_of!(ecs_type_hooks_t, on_set) - 36usize];
     ["Offset of field: ecs_type_hooks_t::on_remove"]
-        [::std::mem::offset_of!(ecs_type_hooks_t, on_remove) - 80usize];
+        [::std::mem::offset_of!(ecs_type_hooks_t, on_remove) - 40usize];
     ["Offset of field: ecs_type_hooks_t::ctx"]
-        [::std::mem::offset_of!(ecs_type_hooks_t, ctx) - 88usize];
+        [::std::mem::offset_of!(ecs_type_hooks_t, ctx) - 44usize];
     ["Offset of field: ecs_type_hooks_t::binding_ctx"]
-        [::std::mem::offset_of!(ecs_type_hooks_t, binding_ctx) - 96usize];
+        [::std::mem::offset_of!(ecs_type_hooks_t, binding_ctx) - 48usize];
     ["Offset of field: ecs_type_hooks_t::ctx_free"]
-        [::std::mem::offset_of!(ecs_type_hooks_t, ctx_free) - 104usize];
+        [::std::mem::offset_of!(ecs_type_hooks_t, ctx_free) - 52usize];
     ["Offset of field: ecs_type_hooks_t::binding_ctx_free"]
-        [::std::mem::offset_of!(ecs_type_hooks_t, binding_ctx_free) - 112usize];
+        [::std::mem::offset_of!(ecs_type_hooks_t, binding_ctx_free) - 56usize];
 };
 #[doc = " Type that contains component information (passed to ctors/dtors/...)\n\n @ingroup components"]
 #[repr(C)]
@@ -4035,7 +4079,7 @@ pub struct ecs_type_info_t {
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of ecs_type_info_t"][::std::mem::size_of::<ecs_type_info_t>() - 144usize];
+    ["Size of ecs_type_info_t"][::std::mem::size_of::<ecs_type_info_t>() - 88usize];
     ["Alignment of ecs_type_info_t"][::std::mem::align_of::<ecs_type_info_t>() - 8usize];
     ["Offset of field: ecs_type_info_t::size"]
         [::std::mem::offset_of!(ecs_type_info_t, size) - 0usize];
@@ -4044,9 +4088,9 @@ const _: () = {
     ["Offset of field: ecs_type_info_t::hooks"]
         [::std::mem::offset_of!(ecs_type_info_t, hooks) - 8usize];
     ["Offset of field: ecs_type_info_t::component"]
-        [::std::mem::offset_of!(ecs_type_info_t, component) - 128usize];
+        [::std::mem::offset_of!(ecs_type_info_t, component) - 72usize];
     ["Offset of field: ecs_type_info_t::name"]
-        [::std::mem::offset_of!(ecs_type_info_t, name) - 136usize];
+        [::std::mem::offset_of!(ecs_type_info_t, name) - 80usize];
 };
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
@@ -4070,18 +4114,18 @@ pub struct ecs_event_record_t {
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of ecs_event_record_t"][::std::mem::size_of::<ecs_event_record_t>() - 72usize];
+    ["Size of ecs_event_record_t"][::std::mem::size_of::<ecs_event_record_t>() - 48usize];
     ["Alignment of ecs_event_record_t"][::std::mem::align_of::<ecs_event_record_t>() - 8usize];
     ["Offset of field: ecs_event_record_t::any"]
         [::std::mem::offset_of!(ecs_event_record_t, any) - 0usize];
     ["Offset of field: ecs_event_record_t::wildcard"]
-        [::std::mem::offset_of!(ecs_event_record_t, wildcard) - 8usize];
+        [::std::mem::offset_of!(ecs_event_record_t, wildcard) - 4usize];
     ["Offset of field: ecs_event_record_t::wildcard_pair"]
-        [::std::mem::offset_of!(ecs_event_record_t, wildcard_pair) - 16usize];
+        [::std::mem::offset_of!(ecs_event_record_t, wildcard_pair) - 8usize];
     ["Offset of field: ecs_event_record_t::event_ids"]
-        [::std::mem::offset_of!(ecs_event_record_t, event_ids) - 24usize];
+        [::std::mem::offset_of!(ecs_event_record_t, event_ids) - 12usize];
     ["Offset of field: ecs_event_record_t::event"]
-        [::std::mem::offset_of!(ecs_event_record_t, event) - 64usize];
+        [::std::mem::offset_of!(ecs_event_record_t, event) - 40usize];
 };
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
@@ -4094,18 +4138,18 @@ pub struct ecs_observable_t {
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of ecs_observable_t"][::std::mem::size_of::<ecs_observable_t>() - 352usize];
+    ["Size of ecs_observable_t"][::std::mem::size_of::<ecs_observable_t>() - 240usize];
     ["Alignment of ecs_observable_t"][::std::mem::align_of::<ecs_observable_t>() - 8usize];
     ["Offset of field: ecs_observable_t::on_add"]
         [::std::mem::offset_of!(ecs_observable_t, on_add) - 0usize];
     ["Offset of field: ecs_observable_t::on_remove"]
-        [::std::mem::offset_of!(ecs_observable_t, on_remove) - 72usize];
+        [::std::mem::offset_of!(ecs_observable_t, on_remove) - 48usize];
     ["Offset of field: ecs_observable_t::on_set"]
-        [::std::mem::offset_of!(ecs_observable_t, on_set) - 144usize];
+        [::std::mem::offset_of!(ecs_observable_t, on_set) - 96usize];
     ["Offset of field: ecs_observable_t::on_wildcard"]
-        [::std::mem::offset_of!(ecs_observable_t, on_wildcard) - 216usize];
+        [::std::mem::offset_of!(ecs_observable_t, on_wildcard) - 144usize];
     ["Offset of field: ecs_observable_t::events"]
-        [::std::mem::offset_of!(ecs_observable_t, events) - 288usize];
+        [::std::mem::offset_of!(ecs_observable_t, events) - 192usize];
 };
 #[doc = " Range in table"]
 #[repr(C)]
@@ -4117,14 +4161,14 @@ pub struct ecs_table_range_t {
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of ecs_table_range_t"][::std::mem::size_of::<ecs_table_range_t>() - 16usize];
-    ["Alignment of ecs_table_range_t"][::std::mem::align_of::<ecs_table_range_t>() - 8usize];
+    ["Size of ecs_table_range_t"][::std::mem::size_of::<ecs_table_range_t>() - 12usize];
+    ["Alignment of ecs_table_range_t"][::std::mem::align_of::<ecs_table_range_t>() - 4usize];
     ["Offset of field: ecs_table_range_t::table"]
         [::std::mem::offset_of!(ecs_table_range_t, table) - 0usize];
     ["Offset of field: ecs_table_range_t::offset"]
-        [::std::mem::offset_of!(ecs_table_range_t, offset) - 8usize];
+        [::std::mem::offset_of!(ecs_table_range_t, offset) - 4usize];
     ["Offset of field: ecs_table_range_t::count"]
-        [::std::mem::offset_of!(ecs_table_range_t, count) - 12usize];
+        [::std::mem::offset_of!(ecs_table_range_t, count) - 8usize];
 };
 #[doc = " Value of query variable"]
 #[repr(C)]
@@ -4152,13 +4196,13 @@ pub struct ecs_ref_t {
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of ecs_ref_t"][::std::mem::size_of::<ecs_ref_t>() - 40usize];
+    ["Size of ecs_ref_t"][::std::mem::size_of::<ecs_ref_t>() - 32usize];
     ["Alignment of ecs_ref_t"][::std::mem::align_of::<ecs_ref_t>() - 8usize];
     ["Offset of field: ecs_ref_t::entity"][::std::mem::offset_of!(ecs_ref_t, entity) - 0usize];
     ["Offset of field: ecs_ref_t::id"][::std::mem::offset_of!(ecs_ref_t, id) - 8usize];
     ["Offset of field: ecs_ref_t::table_id"][::std::mem::offset_of!(ecs_ref_t, table_id) - 16usize];
     ["Offset of field: ecs_ref_t::tr"][::std::mem::offset_of!(ecs_ref_t, tr) - 24usize];
-    ["Offset of field: ecs_ref_t::record"][::std::mem::offset_of!(ecs_ref_t, record) - 32usize];
+    ["Offset of field: ecs_ref_t::record"][::std::mem::offset_of!(ecs_ref_t, record) - 28usize];
 };
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
@@ -4202,15 +4246,15 @@ pub struct ecs_table_cache_iter_t {
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of ecs_table_cache_iter_t"][::std::mem::size_of::<ecs_table_cache_iter_t>() - 24usize];
+    ["Size of ecs_table_cache_iter_t"][::std::mem::size_of::<ecs_table_cache_iter_t>() - 12usize];
     ["Alignment of ecs_table_cache_iter_t"]
-        [::std::mem::align_of::<ecs_table_cache_iter_t>() - 8usize];
+        [::std::mem::align_of::<ecs_table_cache_iter_t>() - 4usize];
     ["Offset of field: ecs_table_cache_iter_t::cur"]
         [::std::mem::offset_of!(ecs_table_cache_iter_t, cur) - 0usize];
     ["Offset of field: ecs_table_cache_iter_t::next"]
-        [::std::mem::offset_of!(ecs_table_cache_iter_t, next) - 8usize];
+        [::std::mem::offset_of!(ecs_table_cache_iter_t, next) - 4usize];
     ["Offset of field: ecs_table_cache_iter_t::next_list"]
-        [::std::mem::offset_of!(ecs_table_cache_iter_t, next_list) - 16usize];
+        [::std::mem::offset_of!(ecs_table_cache_iter_t, next_list) - 8usize];
 };
 #[doc = " Each iterator"]
 #[repr(C)]
@@ -4225,19 +4269,19 @@ pub struct ecs_each_iter_t {
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of ecs_each_iter_t"][::std::mem::size_of::<ecs_each_iter_t>() - 56usize];
+    ["Size of ecs_each_iter_t"][::std::mem::size_of::<ecs_each_iter_t>() - 48usize];
     ["Alignment of ecs_each_iter_t"][::std::mem::align_of::<ecs_each_iter_t>() - 8usize];
     ["Offset of field: ecs_each_iter_t::it"][::std::mem::offset_of!(ecs_each_iter_t, it) - 0usize];
     ["Offset of field: ecs_each_iter_t::ids"]
-        [::std::mem::offset_of!(ecs_each_iter_t, ids) - 24usize];
+        [::std::mem::offset_of!(ecs_each_iter_t, ids) - 16usize];
     ["Offset of field: ecs_each_iter_t::sources"]
-        [::std::mem::offset_of!(ecs_each_iter_t, sources) - 32usize];
+        [::std::mem::offset_of!(ecs_each_iter_t, sources) - 24usize];
     ["Offset of field: ecs_each_iter_t::sizes"]
-        [::std::mem::offset_of!(ecs_each_iter_t, sizes) - 40usize];
+        [::std::mem::offset_of!(ecs_each_iter_t, sizes) - 32usize];
     ["Offset of field: ecs_each_iter_t::columns"]
-        [::std::mem::offset_of!(ecs_each_iter_t, columns) - 44usize];
+        [::std::mem::offset_of!(ecs_each_iter_t, columns) - 36usize];
     ["Offset of field: ecs_each_iter_t::trs"]
-        [::std::mem::offset_of!(ecs_each_iter_t, trs) - 48usize];
+        [::std::mem::offset_of!(ecs_each_iter_t, trs) - 40usize];
 };
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
@@ -4272,34 +4316,34 @@ pub struct ecs_query_iter_t {
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of ecs_query_iter_t"][::std::mem::size_of::<ecs_query_iter_t>() - 96usize];
-    ["Alignment of ecs_query_iter_t"][::std::mem::align_of::<ecs_query_iter_t>() - 8usize];
+    ["Size of ecs_query_iter_t"][::std::mem::size_of::<ecs_query_iter_t>() - 48usize];
+    ["Alignment of ecs_query_iter_t"][::std::mem::align_of::<ecs_query_iter_t>() - 4usize];
     ["Offset of field: ecs_query_iter_t::query"]
         [::std::mem::offset_of!(ecs_query_iter_t, query) - 0usize];
     ["Offset of field: ecs_query_iter_t::vars"]
-        [::std::mem::offset_of!(ecs_query_iter_t, vars) - 8usize];
+        [::std::mem::offset_of!(ecs_query_iter_t, vars) - 4usize];
     ["Offset of field: ecs_query_iter_t::query_vars"]
-        [::std::mem::offset_of!(ecs_query_iter_t, query_vars) - 16usize];
+        [::std::mem::offset_of!(ecs_query_iter_t, query_vars) - 8usize];
     ["Offset of field: ecs_query_iter_t::ops"]
-        [::std::mem::offset_of!(ecs_query_iter_t, ops) - 24usize];
+        [::std::mem::offset_of!(ecs_query_iter_t, ops) - 12usize];
     ["Offset of field: ecs_query_iter_t::op_ctx"]
-        [::std::mem::offset_of!(ecs_query_iter_t, op_ctx) - 32usize];
+        [::std::mem::offset_of!(ecs_query_iter_t, op_ctx) - 16usize];
     ["Offset of field: ecs_query_iter_t::node"]
-        [::std::mem::offset_of!(ecs_query_iter_t, node) - 40usize];
+        [::std::mem::offset_of!(ecs_query_iter_t, node) - 20usize];
     ["Offset of field: ecs_query_iter_t::prev"]
-        [::std::mem::offset_of!(ecs_query_iter_t, prev) - 48usize];
+        [::std::mem::offset_of!(ecs_query_iter_t, prev) - 24usize];
     ["Offset of field: ecs_query_iter_t::last"]
-        [::std::mem::offset_of!(ecs_query_iter_t, last) - 56usize];
+        [::std::mem::offset_of!(ecs_query_iter_t, last) - 28usize];
     ["Offset of field: ecs_query_iter_t::written"]
-        [::std::mem::offset_of!(ecs_query_iter_t, written) - 64usize];
+        [::std::mem::offset_of!(ecs_query_iter_t, written) - 32usize];
     ["Offset of field: ecs_query_iter_t::skip_count"]
-        [::std::mem::offset_of!(ecs_query_iter_t, skip_count) - 72usize];
+        [::std::mem::offset_of!(ecs_query_iter_t, skip_count) - 36usize];
     ["Offset of field: ecs_query_iter_t::profile"]
-        [::std::mem::offset_of!(ecs_query_iter_t, profile) - 80usize];
+        [::std::mem::offset_of!(ecs_query_iter_t, profile) - 40usize];
     ["Offset of field: ecs_query_iter_t::op"]
-        [::std::mem::offset_of!(ecs_query_iter_t, op) - 88usize];
+        [::std::mem::offset_of!(ecs_query_iter_t, op) - 44usize];
     ["Offset of field: ecs_query_iter_t::sp"]
-        [::std::mem::offset_of!(ecs_query_iter_t, sp) - 90usize];
+        [::std::mem::offset_of!(ecs_query_iter_t, sp) - 46usize];
 };
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
@@ -4310,14 +4354,14 @@ pub struct ecs_iter_cache_t {
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of ecs_iter_cache_t"][::std::mem::size_of::<ecs_iter_cache_t>() - 16usize];
-    ["Alignment of ecs_iter_cache_t"][::std::mem::align_of::<ecs_iter_cache_t>() - 8usize];
+    ["Size of ecs_iter_cache_t"][::std::mem::size_of::<ecs_iter_cache_t>() - 8usize];
+    ["Alignment of ecs_iter_cache_t"][::std::mem::align_of::<ecs_iter_cache_t>() - 4usize];
     ["Offset of field: ecs_iter_cache_t::stack_cursor"]
         [::std::mem::offset_of!(ecs_iter_cache_t, stack_cursor) - 0usize];
     ["Offset of field: ecs_iter_cache_t::used"]
-        [::std::mem::offset_of!(ecs_iter_cache_t, used) - 8usize];
+        [::std::mem::offset_of!(ecs_iter_cache_t, used) - 4usize];
     ["Offset of field: ecs_iter_cache_t::allocated"]
-        [::std::mem::offset_of!(ecs_iter_cache_t, allocated) - 9usize];
+        [::std::mem::offset_of!(ecs_iter_cache_t, allocated) - 5usize];
 };
 #[repr(C)]
 #[derive(Copy, Clone)]
@@ -4337,7 +4381,7 @@ pub union ecs_iter_private_t__bindgen_ty_1 {
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of ecs_iter_private_t__bindgen_ty_1"]
-        [::std::mem::size_of::<ecs_iter_private_t__bindgen_ty_1>() - 96usize];
+        [::std::mem::size_of::<ecs_iter_private_t__bindgen_ty_1>() - 48usize];
     ["Alignment of ecs_iter_private_t__bindgen_ty_1"]
         [::std::mem::align_of::<ecs_iter_private_t__bindgen_ty_1>() - 8usize];
     ["Offset of field: ecs_iter_private_t__bindgen_ty_1::query"]
@@ -4351,14 +4395,14 @@ const _: () = {
 };
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of ecs_iter_private_t"][::std::mem::size_of::<ecs_iter_private_t>() - 120usize];
+    ["Size of ecs_iter_private_t"][::std::mem::size_of::<ecs_iter_private_t>() - 64usize];
     ["Alignment of ecs_iter_private_t"][::std::mem::align_of::<ecs_iter_private_t>() - 8usize];
     ["Offset of field: ecs_iter_private_t::iter"]
         [::std::mem::offset_of!(ecs_iter_private_t, iter) - 0usize];
     ["Offset of field: ecs_iter_private_t::entity_iter"]
-        [::std::mem::offset_of!(ecs_iter_private_t, entity_iter) - 96usize];
+        [::std::mem::offset_of!(ecs_iter_private_t, entity_iter) - 48usize];
     ["Offset of field: ecs_iter_private_t::cache"]
-        [::std::mem::offset_of!(ecs_iter_private_t, cache) - 104usize];
+        [::std::mem::offset_of!(ecs_iter_private_t, cache) - 52usize];
 };
 unsafe extern "C" {
     pub fn flecs_module_path_from_c(
@@ -4450,7 +4494,7 @@ pub struct ecs_suspend_readonly_state_t {
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of ecs_suspend_readonly_state_t"]
-        [::std::mem::size_of::<ecs_suspend_readonly_state_t>() - 96usize];
+        [::std::mem::size_of::<ecs_suspend_readonly_state_t>() - 72usize];
     ["Alignment of ecs_suspend_readonly_state_t"]
         [::std::mem::align_of::<ecs_suspend_readonly_state_t>() - 8usize];
     ["Offset of field: ecs_suspend_readonly_state_t::is_readonly"]
@@ -4466,9 +4510,9 @@ const _: () = {
     ["Offset of field: ecs_suspend_readonly_state_t::commands"]
         [::std::mem::offset_of!(ecs_suspend_readonly_state_t, commands) - 24usize];
     ["Offset of field: ecs_suspend_readonly_state_t::defer_stack"]
-        [::std::mem::offset_of!(ecs_suspend_readonly_state_t, defer_stack) - 40usize];
+        [::std::mem::offset_of!(ecs_suspend_readonly_state_t, defer_stack) - 36usize];
     ["Offset of field: ecs_suspend_readonly_state_t::stage"]
-        [::std::mem::offset_of!(ecs_suspend_readonly_state_t, stage) - 88usize];
+        [::std::mem::offset_of!(ecs_suspend_readonly_state_t, stage) - 64usize];
 };
 unsafe extern "C" {
     pub fn flecs_suspend_readonly(
@@ -4496,12 +4540,12 @@ pub struct ecs_hm_bucket_t {
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of ecs_hm_bucket_t"][::std::mem::size_of::<ecs_hm_bucket_t>() - 32usize];
-    ["Alignment of ecs_hm_bucket_t"][::std::mem::align_of::<ecs_hm_bucket_t>() - 8usize];
+    ["Size of ecs_hm_bucket_t"][::std::mem::size_of::<ecs_hm_bucket_t>() - 24usize];
+    ["Alignment of ecs_hm_bucket_t"][::std::mem::align_of::<ecs_hm_bucket_t>() - 4usize];
     ["Offset of field: ecs_hm_bucket_t::keys"]
         [::std::mem::offset_of!(ecs_hm_bucket_t, keys) - 0usize];
     ["Offset of field: ecs_hm_bucket_t::values"]
-        [::std::mem::offset_of!(ecs_hm_bucket_t, values) - 16usize];
+        [::std::mem::offset_of!(ecs_hm_bucket_t, values) - 12usize];
 };
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
@@ -4516,21 +4560,21 @@ pub struct ecs_hashmap_t {
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of ecs_hashmap_t"][::std::mem::size_of::<ecs_hashmap_t>() - 120usize];
-    ["Alignment of ecs_hashmap_t"][::std::mem::align_of::<ecs_hashmap_t>() - 8usize];
+    ["Size of ecs_hashmap_t"][::std::mem::size_of::<ecs_hashmap_t>() - 76usize];
+    ["Alignment of ecs_hashmap_t"][::std::mem::align_of::<ecs_hashmap_t>() - 4usize];
     ["Offset of field: ecs_hashmap_t::hash"][::std::mem::offset_of!(ecs_hashmap_t, hash) - 0usize];
     ["Offset of field: ecs_hashmap_t::compare"]
-        [::std::mem::offset_of!(ecs_hashmap_t, compare) - 8usize];
+        [::std::mem::offset_of!(ecs_hashmap_t, compare) - 4usize];
     ["Offset of field: ecs_hashmap_t::key_size"]
-        [::std::mem::offset_of!(ecs_hashmap_t, key_size) - 16usize];
+        [::std::mem::offset_of!(ecs_hashmap_t, key_size) - 8usize];
     ["Offset of field: ecs_hashmap_t::value_size"]
-        [::std::mem::offset_of!(ecs_hashmap_t, value_size) - 20usize];
+        [::std::mem::offset_of!(ecs_hashmap_t, value_size) - 12usize];
     ["Offset of field: ecs_hashmap_t::hashmap_allocator"]
-        [::std::mem::offset_of!(ecs_hashmap_t, hashmap_allocator) - 24usize];
+        [::std::mem::offset_of!(ecs_hashmap_t, hashmap_allocator) - 16usize];
     ["Offset of field: ecs_hashmap_t::bucket_allocator"]
-        [::std::mem::offset_of!(ecs_hashmap_t, bucket_allocator) - 32usize];
+        [::std::mem::offset_of!(ecs_hashmap_t, bucket_allocator) - 20usize];
     ["Offset of field: ecs_hashmap_t::impl_"]
-        [::std::mem::offset_of!(ecs_hashmap_t, impl_) - 80usize];
+        [::std::mem::offset_of!(ecs_hashmap_t, impl_) - 52usize];
 };
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
@@ -4541,14 +4585,14 @@ pub struct flecs_hashmap_iter_t {
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of flecs_hashmap_iter_t"][::std::mem::size_of::<flecs_hashmap_iter_t>() - 48usize];
-    ["Alignment of flecs_hashmap_iter_t"][::std::mem::align_of::<flecs_hashmap_iter_t>() - 8usize];
+    ["Size of flecs_hashmap_iter_t"][::std::mem::size_of::<flecs_hashmap_iter_t>() - 24usize];
+    ["Alignment of flecs_hashmap_iter_t"][::std::mem::align_of::<flecs_hashmap_iter_t>() - 4usize];
     ["Offset of field: flecs_hashmap_iter_t::it"]
         [::std::mem::offset_of!(flecs_hashmap_iter_t, it) - 0usize];
     ["Offset of field: flecs_hashmap_iter_t::bucket"]
-        [::std::mem::offset_of!(flecs_hashmap_iter_t, bucket) - 32usize];
+        [::std::mem::offset_of!(flecs_hashmap_iter_t, bucket) - 16usize];
     ["Offset of field: flecs_hashmap_iter_t::index"]
-        [::std::mem::offset_of!(flecs_hashmap_iter_t, index) - 40usize];
+        [::std::mem::offset_of!(flecs_hashmap_iter_t, index) - 20usize];
 };
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
@@ -4559,15 +4603,15 @@ pub struct flecs_hashmap_result_t {
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of flecs_hashmap_result_t"][::std::mem::size_of::<flecs_hashmap_result_t>() - 24usize];
+    ["Size of flecs_hashmap_result_t"][::std::mem::size_of::<flecs_hashmap_result_t>() - 16usize];
     ["Alignment of flecs_hashmap_result_t"]
         [::std::mem::align_of::<flecs_hashmap_result_t>() - 8usize];
     ["Offset of field: flecs_hashmap_result_t::key"]
         [::std::mem::offset_of!(flecs_hashmap_result_t, key) - 0usize];
     ["Offset of field: flecs_hashmap_result_t::value"]
-        [::std::mem::offset_of!(flecs_hashmap_result_t, value) - 8usize];
+        [::std::mem::offset_of!(flecs_hashmap_result_t, value) - 4usize];
     ["Offset of field: flecs_hashmap_result_t::hash"]
-        [::std::mem::offset_of!(flecs_hashmap_result_t, hash) - 16usize];
+        [::std::mem::offset_of!(flecs_hashmap_result_t, hash) - 8usize];
 };
 unsafe extern "C" {
     pub fn flecs_hashmap_init_(
@@ -4694,7 +4738,7 @@ pub struct ecs_entity_desc_t {
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of ecs_entity_desc_t"][::std::mem::size_of::<ecs_entity_desc_t>() - 88usize];
+    ["Size of ecs_entity_desc_t"][::std::mem::size_of::<ecs_entity_desc_t>() - 56usize];
     ["Alignment of ecs_entity_desc_t"][::std::mem::align_of::<ecs_entity_desc_t>() - 8usize];
     ["Offset of field: ecs_entity_desc_t::_canary"]
         [::std::mem::offset_of!(ecs_entity_desc_t, _canary) - 0usize];
@@ -4705,19 +4749,19 @@ const _: () = {
     ["Offset of field: ecs_entity_desc_t::name"]
         [::std::mem::offset_of!(ecs_entity_desc_t, name) - 24usize];
     ["Offset of field: ecs_entity_desc_t::sep"]
-        [::std::mem::offset_of!(ecs_entity_desc_t, sep) - 32usize];
+        [::std::mem::offset_of!(ecs_entity_desc_t, sep) - 28usize];
     ["Offset of field: ecs_entity_desc_t::root_sep"]
-        [::std::mem::offset_of!(ecs_entity_desc_t, root_sep) - 40usize];
+        [::std::mem::offset_of!(ecs_entity_desc_t, root_sep) - 32usize];
     ["Offset of field: ecs_entity_desc_t::symbol"]
-        [::std::mem::offset_of!(ecs_entity_desc_t, symbol) - 48usize];
+        [::std::mem::offset_of!(ecs_entity_desc_t, symbol) - 36usize];
     ["Offset of field: ecs_entity_desc_t::use_low_id"]
-        [::std::mem::offset_of!(ecs_entity_desc_t, use_low_id) - 56usize];
+        [::std::mem::offset_of!(ecs_entity_desc_t, use_low_id) - 40usize];
     ["Offset of field: ecs_entity_desc_t::add"]
-        [::std::mem::offset_of!(ecs_entity_desc_t, add) - 64usize];
+        [::std::mem::offset_of!(ecs_entity_desc_t, add) - 44usize];
     ["Offset of field: ecs_entity_desc_t::set"]
-        [::std::mem::offset_of!(ecs_entity_desc_t, set) - 72usize];
+        [::std::mem::offset_of!(ecs_entity_desc_t, set) - 48usize];
     ["Offset of field: ecs_entity_desc_t::add_expr"]
-        [::std::mem::offset_of!(ecs_entity_desc_t, add_expr) - 80usize];
+        [::std::mem::offset_of!(ecs_entity_desc_t, add_expr) - 52usize];
 };
 #[doc = " Used with ecs_bulk_init().\n\n @ingroup entities"]
 #[repr(C)]
@@ -4738,20 +4782,20 @@ pub struct ecs_bulk_desc_t {
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of ecs_bulk_desc_t"][::std::mem::size_of::<ecs_bulk_desc_t>() - 296usize];
+    ["Size of ecs_bulk_desc_t"][::std::mem::size_of::<ecs_bulk_desc_t>() - 280usize];
     ["Alignment of ecs_bulk_desc_t"][::std::mem::align_of::<ecs_bulk_desc_t>() - 8usize];
     ["Offset of field: ecs_bulk_desc_t::_canary"]
         [::std::mem::offset_of!(ecs_bulk_desc_t, _canary) - 0usize];
     ["Offset of field: ecs_bulk_desc_t::entities"]
-        [::std::mem::offset_of!(ecs_bulk_desc_t, entities) - 8usize];
+        [::std::mem::offset_of!(ecs_bulk_desc_t, entities) - 4usize];
     ["Offset of field: ecs_bulk_desc_t::count"]
-        [::std::mem::offset_of!(ecs_bulk_desc_t, count) - 16usize];
+        [::std::mem::offset_of!(ecs_bulk_desc_t, count) - 8usize];
     ["Offset of field: ecs_bulk_desc_t::ids"]
-        [::std::mem::offset_of!(ecs_bulk_desc_t, ids) - 24usize];
+        [::std::mem::offset_of!(ecs_bulk_desc_t, ids) - 16usize];
     ["Offset of field: ecs_bulk_desc_t::data"]
-        [::std::mem::offset_of!(ecs_bulk_desc_t, data) - 280usize];
+        [::std::mem::offset_of!(ecs_bulk_desc_t, data) - 272usize];
     ["Offset of field: ecs_bulk_desc_t::table"]
-        [::std::mem::offset_of!(ecs_bulk_desc_t, table) - 288usize];
+        [::std::mem::offset_of!(ecs_bulk_desc_t, table) - 276usize];
 };
 #[doc = " Used with ecs_component_init().\n\n @ingroup components"]
 #[repr(C)]
@@ -4766,7 +4810,7 @@ pub struct ecs_component_desc_t {
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of ecs_component_desc_t"][::std::mem::size_of::<ecs_component_desc_t>() - 160usize];
+    ["Size of ecs_component_desc_t"][::std::mem::size_of::<ecs_component_desc_t>() - 104usize];
     ["Alignment of ecs_component_desc_t"][::std::mem::align_of::<ecs_component_desc_t>() - 8usize];
     ["Offset of field: ecs_component_desc_t::_canary"]
         [::std::mem::offset_of!(ecs_component_desc_t, _canary) - 0usize];
@@ -4866,75 +4910,75 @@ pub struct ecs_iter_t {
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of ecs_iter_t"][::std::mem::size_of::<ecs_iter_t>() - 384usize];
+    ["Size of ecs_iter_t"][::std::mem::size_of::<ecs_iter_t>() - 248usize];
     ["Alignment of ecs_iter_t"][::std::mem::align_of::<ecs_iter_t>() - 8usize];
     ["Offset of field: ecs_iter_t::world"][::std::mem::offset_of!(ecs_iter_t, world) - 0usize];
     ["Offset of field: ecs_iter_t::real_world"]
-        [::std::mem::offset_of!(ecs_iter_t, real_world) - 8usize];
+        [::std::mem::offset_of!(ecs_iter_t, real_world) - 4usize];
     ["Offset of field: ecs_iter_t::entities"]
-        [::std::mem::offset_of!(ecs_iter_t, entities) - 16usize];
-    ["Offset of field: ecs_iter_t::sizes"][::std::mem::offset_of!(ecs_iter_t, sizes) - 24usize];
-    ["Offset of field: ecs_iter_t::table"][::std::mem::offset_of!(ecs_iter_t, table) - 32usize];
+        [::std::mem::offset_of!(ecs_iter_t, entities) - 8usize];
+    ["Offset of field: ecs_iter_t::sizes"][::std::mem::offset_of!(ecs_iter_t, sizes) - 12usize];
+    ["Offset of field: ecs_iter_t::table"][::std::mem::offset_of!(ecs_iter_t, table) - 16usize];
     ["Offset of field: ecs_iter_t::other_table"]
-        [::std::mem::offset_of!(ecs_iter_t, other_table) - 40usize];
-    ["Offset of field: ecs_iter_t::ids"][::std::mem::offset_of!(ecs_iter_t, ids) - 48usize];
+        [::std::mem::offset_of!(ecs_iter_t, other_table) - 20usize];
+    ["Offset of field: ecs_iter_t::ids"][::std::mem::offset_of!(ecs_iter_t, ids) - 24usize];
     ["Offset of field: ecs_iter_t::variables"]
-        [::std::mem::offset_of!(ecs_iter_t, variables) - 56usize];
-    ["Offset of field: ecs_iter_t::trs"][::std::mem::offset_of!(ecs_iter_t, trs) - 64usize];
-    ["Offset of field: ecs_iter_t::sources"][::std::mem::offset_of!(ecs_iter_t, sources) - 72usize];
+        [::std::mem::offset_of!(ecs_iter_t, variables) - 28usize];
+    ["Offset of field: ecs_iter_t::trs"][::std::mem::offset_of!(ecs_iter_t, trs) - 32usize];
+    ["Offset of field: ecs_iter_t::sources"][::std::mem::offset_of!(ecs_iter_t, sources) - 36usize];
     ["Offset of field: ecs_iter_t::constrained_vars"]
-        [::std::mem::offset_of!(ecs_iter_t, constrained_vars) - 80usize];
+        [::std::mem::offset_of!(ecs_iter_t, constrained_vars) - 40usize];
     ["Offset of field: ecs_iter_t::group_id"]
-        [::std::mem::offset_of!(ecs_iter_t, group_id) - 88usize];
+        [::std::mem::offset_of!(ecs_iter_t, group_id) - 48usize];
     ["Offset of field: ecs_iter_t::set_fields"]
-        [::std::mem::offset_of!(ecs_iter_t, set_fields) - 96usize];
+        [::std::mem::offset_of!(ecs_iter_t, set_fields) - 56usize];
     ["Offset of field: ecs_iter_t::ref_fields"]
-        [::std::mem::offset_of!(ecs_iter_t, ref_fields) - 100usize];
+        [::std::mem::offset_of!(ecs_iter_t, ref_fields) - 60usize];
     ["Offset of field: ecs_iter_t::row_fields"]
-        [::std::mem::offset_of!(ecs_iter_t, row_fields) - 104usize];
+        [::std::mem::offset_of!(ecs_iter_t, row_fields) - 64usize];
     ["Offset of field: ecs_iter_t::up_fields"]
-        [::std::mem::offset_of!(ecs_iter_t, up_fields) - 108usize];
-    ["Offset of field: ecs_iter_t::system"][::std::mem::offset_of!(ecs_iter_t, system) - 112usize];
-    ["Offset of field: ecs_iter_t::event"][::std::mem::offset_of!(ecs_iter_t, event) - 120usize];
+        [::std::mem::offset_of!(ecs_iter_t, up_fields) - 68usize];
+    ["Offset of field: ecs_iter_t::system"][::std::mem::offset_of!(ecs_iter_t, system) - 72usize];
+    ["Offset of field: ecs_iter_t::event"][::std::mem::offset_of!(ecs_iter_t, event) - 80usize];
     ["Offset of field: ecs_iter_t::event_id"]
-        [::std::mem::offset_of!(ecs_iter_t, event_id) - 128usize];
+        [::std::mem::offset_of!(ecs_iter_t, event_id) - 88usize];
     ["Offset of field: ecs_iter_t::event_cur"]
-        [::std::mem::offset_of!(ecs_iter_t, event_cur) - 136usize];
+        [::std::mem::offset_of!(ecs_iter_t, event_cur) - 96usize];
     ["Offset of field: ecs_iter_t::field_count"]
-        [::std::mem::offset_of!(ecs_iter_t, field_count) - 140usize];
+        [::std::mem::offset_of!(ecs_iter_t, field_count) - 100usize];
     ["Offset of field: ecs_iter_t::term_index"]
-        [::std::mem::offset_of!(ecs_iter_t, term_index) - 141usize];
+        [::std::mem::offset_of!(ecs_iter_t, term_index) - 101usize];
     ["Offset of field: ecs_iter_t::variable_count"]
-        [::std::mem::offset_of!(ecs_iter_t, variable_count) - 142usize];
-    ["Offset of field: ecs_iter_t::query"][::std::mem::offset_of!(ecs_iter_t, query) - 144usize];
+        [::std::mem::offset_of!(ecs_iter_t, variable_count) - 102usize];
+    ["Offset of field: ecs_iter_t::query"][::std::mem::offset_of!(ecs_iter_t, query) - 104usize];
     ["Offset of field: ecs_iter_t::variable_names"]
-        [::std::mem::offset_of!(ecs_iter_t, variable_names) - 152usize];
-    ["Offset of field: ecs_iter_t::param"][::std::mem::offset_of!(ecs_iter_t, param) - 160usize];
-    ["Offset of field: ecs_iter_t::ctx"][::std::mem::offset_of!(ecs_iter_t, ctx) - 168usize];
+        [::std::mem::offset_of!(ecs_iter_t, variable_names) - 108usize];
+    ["Offset of field: ecs_iter_t::param"][::std::mem::offset_of!(ecs_iter_t, param) - 112usize];
+    ["Offset of field: ecs_iter_t::ctx"][::std::mem::offset_of!(ecs_iter_t, ctx) - 116usize];
     ["Offset of field: ecs_iter_t::binding_ctx"]
-        [::std::mem::offset_of!(ecs_iter_t, binding_ctx) - 176usize];
+        [::std::mem::offset_of!(ecs_iter_t, binding_ctx) - 120usize];
     ["Offset of field: ecs_iter_t::callback_ctx"]
-        [::std::mem::offset_of!(ecs_iter_t, callback_ctx) - 184usize];
+        [::std::mem::offset_of!(ecs_iter_t, callback_ctx) - 124usize];
     ["Offset of field: ecs_iter_t::run_ctx"]
-        [::std::mem::offset_of!(ecs_iter_t, run_ctx) - 192usize];
+        [::std::mem::offset_of!(ecs_iter_t, run_ctx) - 128usize];
     ["Offset of field: ecs_iter_t::delta_time"]
-        [::std::mem::offset_of!(ecs_iter_t, delta_time) - 200usize];
+        [::std::mem::offset_of!(ecs_iter_t, delta_time) - 132usize];
     ["Offset of field: ecs_iter_t::delta_system_time"]
-        [::std::mem::offset_of!(ecs_iter_t, delta_system_time) - 204usize];
+        [::std::mem::offset_of!(ecs_iter_t, delta_system_time) - 136usize];
     ["Offset of field: ecs_iter_t::frame_offset"]
-        [::std::mem::offset_of!(ecs_iter_t, frame_offset) - 208usize];
-    ["Offset of field: ecs_iter_t::offset"][::std::mem::offset_of!(ecs_iter_t, offset) - 212usize];
-    ["Offset of field: ecs_iter_t::count"][::std::mem::offset_of!(ecs_iter_t, count) - 216usize];
-    ["Offset of field: ecs_iter_t::flags"][::std::mem::offset_of!(ecs_iter_t, flags) - 220usize];
+        [::std::mem::offset_of!(ecs_iter_t, frame_offset) - 140usize];
+    ["Offset of field: ecs_iter_t::offset"][::std::mem::offset_of!(ecs_iter_t, offset) - 144usize];
+    ["Offset of field: ecs_iter_t::count"][::std::mem::offset_of!(ecs_iter_t, count) - 148usize];
+    ["Offset of field: ecs_iter_t::flags"][::std::mem::offset_of!(ecs_iter_t, flags) - 152usize];
     ["Offset of field: ecs_iter_t::interrupted_by"]
-        [::std::mem::offset_of!(ecs_iter_t, interrupted_by) - 224usize];
-    ["Offset of field: ecs_iter_t::priv_"][::std::mem::offset_of!(ecs_iter_t, priv_) - 232usize];
-    ["Offset of field: ecs_iter_t::next"][::std::mem::offset_of!(ecs_iter_t, next) - 352usize];
+        [::std::mem::offset_of!(ecs_iter_t, interrupted_by) - 160usize];
+    ["Offset of field: ecs_iter_t::priv_"][::std::mem::offset_of!(ecs_iter_t, priv_) - 168usize];
+    ["Offset of field: ecs_iter_t::next"][::std::mem::offset_of!(ecs_iter_t, next) - 232usize];
     ["Offset of field: ecs_iter_t::callback"]
-        [::std::mem::offset_of!(ecs_iter_t, callback) - 360usize];
-    ["Offset of field: ecs_iter_t::fini"][::std::mem::offset_of!(ecs_iter_t, fini) - 368usize];
+        [::std::mem::offset_of!(ecs_iter_t, callback) - 236usize];
+    ["Offset of field: ecs_iter_t::fini"][::std::mem::offset_of!(ecs_iter_t, fini) - 240usize];
     ["Offset of field: ecs_iter_t::chain_it"]
-        [::std::mem::offset_of!(ecs_iter_t, chain_it) - 376usize];
+        [::std::mem::offset_of!(ecs_iter_t, chain_it) - 244usize];
 };
 #[doc = " Used with ecs_query_init().\n\n \\ingroup queries"]
 #[repr(C)]
@@ -4981,7 +5025,7 @@ pub struct ecs_query_desc_t {
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of ecs_query_desc_t"][::std::mem::size_of::<ecs_query_desc_t>() - 2440usize];
+    ["Size of ecs_query_desc_t"][::std::mem::size_of::<ecs_query_desc_t>() - 2400usize];
     ["Alignment of ecs_query_desc_t"][::std::mem::align_of::<ecs_query_desc_t>() - 8usize];
     ["Offset of field: ecs_query_desc_t::_canary"]
         [::std::mem::offset_of!(ecs_query_desc_t, _canary) - 0usize];
@@ -4990,37 +5034,37 @@ const _: () = {
     ["Offset of field: ecs_query_desc_t::expr"]
         [::std::mem::offset_of!(ecs_query_desc_t, expr) - 2312usize];
     ["Offset of field: ecs_query_desc_t::cache_kind"]
-        [::std::mem::offset_of!(ecs_query_desc_t, cache_kind) - 2320usize];
+        [::std::mem::offset_of!(ecs_query_desc_t, cache_kind) - 2316usize];
     ["Offset of field: ecs_query_desc_t::flags"]
-        [::std::mem::offset_of!(ecs_query_desc_t, flags) - 2324usize];
+        [::std::mem::offset_of!(ecs_query_desc_t, flags) - 2320usize];
     ["Offset of field: ecs_query_desc_t::order_by_callback"]
-        [::std::mem::offset_of!(ecs_query_desc_t, order_by_callback) - 2328usize];
+        [::std::mem::offset_of!(ecs_query_desc_t, order_by_callback) - 2324usize];
     ["Offset of field: ecs_query_desc_t::order_by_table_callback"]
-        [::std::mem::offset_of!(ecs_query_desc_t, order_by_table_callback) - 2336usize];
+        [::std::mem::offset_of!(ecs_query_desc_t, order_by_table_callback) - 2328usize];
     ["Offset of field: ecs_query_desc_t::order_by"]
-        [::std::mem::offset_of!(ecs_query_desc_t, order_by) - 2344usize];
+        [::std::mem::offset_of!(ecs_query_desc_t, order_by) - 2336usize];
     ["Offset of field: ecs_query_desc_t::group_by"]
-        [::std::mem::offset_of!(ecs_query_desc_t, group_by) - 2352usize];
+        [::std::mem::offset_of!(ecs_query_desc_t, group_by) - 2344usize];
     ["Offset of field: ecs_query_desc_t::group_by_callback"]
-        [::std::mem::offset_of!(ecs_query_desc_t, group_by_callback) - 2360usize];
+        [::std::mem::offset_of!(ecs_query_desc_t, group_by_callback) - 2352usize];
     ["Offset of field: ecs_query_desc_t::on_group_create"]
-        [::std::mem::offset_of!(ecs_query_desc_t, on_group_create) - 2368usize];
+        [::std::mem::offset_of!(ecs_query_desc_t, on_group_create) - 2356usize];
     ["Offset of field: ecs_query_desc_t::on_group_delete"]
-        [::std::mem::offset_of!(ecs_query_desc_t, on_group_delete) - 2376usize];
+        [::std::mem::offset_of!(ecs_query_desc_t, on_group_delete) - 2360usize];
     ["Offset of field: ecs_query_desc_t::group_by_ctx"]
-        [::std::mem::offset_of!(ecs_query_desc_t, group_by_ctx) - 2384usize];
+        [::std::mem::offset_of!(ecs_query_desc_t, group_by_ctx) - 2364usize];
     ["Offset of field: ecs_query_desc_t::group_by_ctx_free"]
-        [::std::mem::offset_of!(ecs_query_desc_t, group_by_ctx_free) - 2392usize];
+        [::std::mem::offset_of!(ecs_query_desc_t, group_by_ctx_free) - 2368usize];
     ["Offset of field: ecs_query_desc_t::ctx"]
-        [::std::mem::offset_of!(ecs_query_desc_t, ctx) - 2400usize];
+        [::std::mem::offset_of!(ecs_query_desc_t, ctx) - 2372usize];
     ["Offset of field: ecs_query_desc_t::binding_ctx"]
-        [::std::mem::offset_of!(ecs_query_desc_t, binding_ctx) - 2408usize];
+        [::std::mem::offset_of!(ecs_query_desc_t, binding_ctx) - 2376usize];
     ["Offset of field: ecs_query_desc_t::ctx_free"]
-        [::std::mem::offset_of!(ecs_query_desc_t, ctx_free) - 2416usize];
+        [::std::mem::offset_of!(ecs_query_desc_t, ctx_free) - 2380usize];
     ["Offset of field: ecs_query_desc_t::binding_ctx_free"]
-        [::std::mem::offset_of!(ecs_query_desc_t, binding_ctx_free) - 2424usize];
+        [::std::mem::offset_of!(ecs_query_desc_t, binding_ctx_free) - 2384usize];
     ["Offset of field: ecs_query_desc_t::entity"]
-        [::std::mem::offset_of!(ecs_query_desc_t, entity) - 2432usize];
+        [::std::mem::offset_of!(ecs_query_desc_t, entity) - 2392usize];
 };
 #[doc = " Used with ecs_observer_init().\n\n @ingroup observers"]
 #[repr(C)]
@@ -5062,7 +5106,7 @@ pub struct ecs_observer_desc_t {
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of ecs_observer_desc_t"][::std::mem::size_of::<ecs_observer_desc_t>() - 2616usize];
+    ["Size of ecs_observer_desc_t"][::std::mem::size_of::<ecs_observer_desc_t>() - 2536usize];
     ["Alignment of ecs_observer_desc_t"][::std::mem::align_of::<ecs_observer_desc_t>() - 8usize];
     ["Offset of field: ecs_observer_desc_t::_canary"]
         [::std::mem::offset_of!(ecs_observer_desc_t, _canary) - 0usize];
@@ -5071,33 +5115,33 @@ const _: () = {
     ["Offset of field: ecs_observer_desc_t::query"]
         [::std::mem::offset_of!(ecs_observer_desc_t, query) - 16usize];
     ["Offset of field: ecs_observer_desc_t::events"]
-        [::std::mem::offset_of!(ecs_observer_desc_t, events) - 2456usize];
+        [::std::mem::offset_of!(ecs_observer_desc_t, events) - 2416usize];
     ["Offset of field: ecs_observer_desc_t::yield_existing"]
-        [::std::mem::offset_of!(ecs_observer_desc_t, yield_existing) - 2520usize];
+        [::std::mem::offset_of!(ecs_observer_desc_t, yield_existing) - 2480usize];
     ["Offset of field: ecs_observer_desc_t::callback"]
-        [::std::mem::offset_of!(ecs_observer_desc_t, callback) - 2528usize];
+        [::std::mem::offset_of!(ecs_observer_desc_t, callback) - 2484usize];
     ["Offset of field: ecs_observer_desc_t::run"]
-        [::std::mem::offset_of!(ecs_observer_desc_t, run) - 2536usize];
+        [::std::mem::offset_of!(ecs_observer_desc_t, run) - 2488usize];
     ["Offset of field: ecs_observer_desc_t::ctx"]
-        [::std::mem::offset_of!(ecs_observer_desc_t, ctx) - 2544usize];
+        [::std::mem::offset_of!(ecs_observer_desc_t, ctx) - 2492usize];
     ["Offset of field: ecs_observer_desc_t::ctx_free"]
-        [::std::mem::offset_of!(ecs_observer_desc_t, ctx_free) - 2552usize];
+        [::std::mem::offset_of!(ecs_observer_desc_t, ctx_free) - 2496usize];
     ["Offset of field: ecs_observer_desc_t::callback_ctx"]
-        [::std::mem::offset_of!(ecs_observer_desc_t, callback_ctx) - 2560usize];
+        [::std::mem::offset_of!(ecs_observer_desc_t, callback_ctx) - 2500usize];
     ["Offset of field: ecs_observer_desc_t::callback_ctx_free"]
-        [::std::mem::offset_of!(ecs_observer_desc_t, callback_ctx_free) - 2568usize];
+        [::std::mem::offset_of!(ecs_observer_desc_t, callback_ctx_free) - 2504usize];
     ["Offset of field: ecs_observer_desc_t::run_ctx"]
-        [::std::mem::offset_of!(ecs_observer_desc_t, run_ctx) - 2576usize];
+        [::std::mem::offset_of!(ecs_observer_desc_t, run_ctx) - 2508usize];
     ["Offset of field: ecs_observer_desc_t::run_ctx_free"]
-        [::std::mem::offset_of!(ecs_observer_desc_t, run_ctx_free) - 2584usize];
+        [::std::mem::offset_of!(ecs_observer_desc_t, run_ctx_free) - 2512usize];
     ["Offset of field: ecs_observer_desc_t::observable"]
-        [::std::mem::offset_of!(ecs_observer_desc_t, observable) - 2592usize];
+        [::std::mem::offset_of!(ecs_observer_desc_t, observable) - 2516usize];
     ["Offset of field: ecs_observer_desc_t::last_event_id"]
-        [::std::mem::offset_of!(ecs_observer_desc_t, last_event_id) - 2600usize];
+        [::std::mem::offset_of!(ecs_observer_desc_t, last_event_id) - 2520usize];
     ["Offset of field: ecs_observer_desc_t::term_index_"]
-        [::std::mem::offset_of!(ecs_observer_desc_t, term_index_) - 2608usize];
+        [::std::mem::offset_of!(ecs_observer_desc_t, term_index_) - 2524usize];
     ["Offset of field: ecs_observer_desc_t::flags_"]
-        [::std::mem::offset_of!(ecs_observer_desc_t, flags_) - 2612usize];
+        [::std::mem::offset_of!(ecs_observer_desc_t, flags_) - 2528usize];
 };
 #[doc = " Used with ecs_emit().\n\n @ingroup observers"]
 #[repr(C)]
@@ -5128,30 +5172,30 @@ pub struct ecs_event_desc_t {
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of ecs_event_desc_t"][::std::mem::size_of::<ecs_event_desc_t>() - 80usize];
+    ["Size of ecs_event_desc_t"][::std::mem::size_of::<ecs_event_desc_t>() - 56usize];
     ["Alignment of ecs_event_desc_t"][::std::mem::align_of::<ecs_event_desc_t>() - 8usize];
     ["Offset of field: ecs_event_desc_t::event"]
         [::std::mem::offset_of!(ecs_event_desc_t, event) - 0usize];
     ["Offset of field: ecs_event_desc_t::ids"]
         [::std::mem::offset_of!(ecs_event_desc_t, ids) - 8usize];
     ["Offset of field: ecs_event_desc_t::table"]
-        [::std::mem::offset_of!(ecs_event_desc_t, table) - 16usize];
+        [::std::mem::offset_of!(ecs_event_desc_t, table) - 12usize];
     ["Offset of field: ecs_event_desc_t::other_table"]
-        [::std::mem::offset_of!(ecs_event_desc_t, other_table) - 24usize];
+        [::std::mem::offset_of!(ecs_event_desc_t, other_table) - 16usize];
     ["Offset of field: ecs_event_desc_t::offset"]
-        [::std::mem::offset_of!(ecs_event_desc_t, offset) - 32usize];
+        [::std::mem::offset_of!(ecs_event_desc_t, offset) - 20usize];
     ["Offset of field: ecs_event_desc_t::count"]
-        [::std::mem::offset_of!(ecs_event_desc_t, count) - 36usize];
+        [::std::mem::offset_of!(ecs_event_desc_t, count) - 24usize];
     ["Offset of field: ecs_event_desc_t::entity"]
-        [::std::mem::offset_of!(ecs_event_desc_t, entity) - 40usize];
+        [::std::mem::offset_of!(ecs_event_desc_t, entity) - 32usize];
     ["Offset of field: ecs_event_desc_t::param"]
-        [::std::mem::offset_of!(ecs_event_desc_t, param) - 48usize];
+        [::std::mem::offset_of!(ecs_event_desc_t, param) - 40usize];
     ["Offset of field: ecs_event_desc_t::const_param"]
-        [::std::mem::offset_of!(ecs_event_desc_t, const_param) - 56usize];
+        [::std::mem::offset_of!(ecs_event_desc_t, const_param) - 44usize];
     ["Offset of field: ecs_event_desc_t::observable"]
-        [::std::mem::offset_of!(ecs_event_desc_t, observable) - 64usize];
+        [::std::mem::offset_of!(ecs_event_desc_t, observable) - 48usize];
     ["Offset of field: ecs_event_desc_t::flags"]
-        [::std::mem::offset_of!(ecs_event_desc_t, flags) - 72usize];
+        [::std::mem::offset_of!(ecs_event_desc_t, flags) - 52usize];
 };
 #[doc = " Type with information about the current Flecs build"]
 #[repr(C)]
@@ -5178,26 +5222,26 @@ pub struct ecs_build_info_t {
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of ecs_build_info_t"][::std::mem::size_of::<ecs_build_info_t>() - 40usize];
-    ["Alignment of ecs_build_info_t"][::std::mem::align_of::<ecs_build_info_t>() - 8usize];
+    ["Size of ecs_build_info_t"][::std::mem::size_of::<ecs_build_info_t>() - 24usize];
+    ["Alignment of ecs_build_info_t"][::std::mem::align_of::<ecs_build_info_t>() - 4usize];
     ["Offset of field: ecs_build_info_t::compiler"]
         [::std::mem::offset_of!(ecs_build_info_t, compiler) - 0usize];
     ["Offset of field: ecs_build_info_t::addons"]
-        [::std::mem::offset_of!(ecs_build_info_t, addons) - 8usize];
+        [::std::mem::offset_of!(ecs_build_info_t, addons) - 4usize];
     ["Offset of field: ecs_build_info_t::version"]
-        [::std::mem::offset_of!(ecs_build_info_t, version) - 16usize];
+        [::std::mem::offset_of!(ecs_build_info_t, version) - 8usize];
     ["Offset of field: ecs_build_info_t::version_major"]
-        [::std::mem::offset_of!(ecs_build_info_t, version_major) - 24usize];
+        [::std::mem::offset_of!(ecs_build_info_t, version_major) - 12usize];
     ["Offset of field: ecs_build_info_t::version_minor"]
-        [::std::mem::offset_of!(ecs_build_info_t, version_minor) - 26usize];
+        [::std::mem::offset_of!(ecs_build_info_t, version_minor) - 14usize];
     ["Offset of field: ecs_build_info_t::version_patch"]
-        [::std::mem::offset_of!(ecs_build_info_t, version_patch) - 28usize];
+        [::std::mem::offset_of!(ecs_build_info_t, version_patch) - 16usize];
     ["Offset of field: ecs_build_info_t::debug"]
-        [::std::mem::offset_of!(ecs_build_info_t, debug) - 30usize];
+        [::std::mem::offset_of!(ecs_build_info_t, debug) - 18usize];
     ["Offset of field: ecs_build_info_t::sanitize"]
-        [::std::mem::offset_of!(ecs_build_info_t, sanitize) - 31usize];
+        [::std::mem::offset_of!(ecs_build_info_t, sanitize) - 19usize];
     ["Offset of field: ecs_build_info_t::perf_trace"]
-        [::std::mem::offset_of!(ecs_build_info_t, perf_trace) - 32usize];
+        [::std::mem::offset_of!(ecs_build_info_t, perf_trace) - 20usize];
 };
 #[doc = " Type that contains information about the world."]
 #[repr(C)]
@@ -5405,9 +5449,9 @@ pub struct ecs_query_group_info_t {
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of ecs_query_group_info_t"][::std::mem::size_of::<ecs_query_group_info_t>() - 16usize];
+    ["Size of ecs_query_group_info_t"][::std::mem::size_of::<ecs_query_group_info_t>() - 12usize];
     ["Alignment of ecs_query_group_info_t"]
-        [::std::mem::align_of::<ecs_query_group_info_t>() - 8usize];
+        [::std::mem::align_of::<ecs_query_group_info_t>() - 4usize];
     ["Offset of field: ecs_query_group_info_t::match_count"]
         [::std::mem::offset_of!(ecs_query_group_info_t, match_count) - 0usize];
     ["Offset of field: ecs_query_group_info_t::table_count"]
@@ -5432,17 +5476,17 @@ pub struct EcsIdentifier {
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of EcsIdentifier"][::std::mem::size_of::<EcsIdentifier>() - 40usize];
+    ["Size of EcsIdentifier"][::std::mem::size_of::<EcsIdentifier>() - 32usize];
     ["Alignment of EcsIdentifier"][::std::mem::align_of::<EcsIdentifier>() - 8usize];
     ["Offset of field: EcsIdentifier::value"]
         [::std::mem::offset_of!(EcsIdentifier, value) - 0usize];
     ["Offset of field: EcsIdentifier::length"]
-        [::std::mem::offset_of!(EcsIdentifier, length) - 8usize];
-    ["Offset of field: EcsIdentifier::hash"][::std::mem::offset_of!(EcsIdentifier, hash) - 16usize];
+        [::std::mem::offset_of!(EcsIdentifier, length) - 4usize];
+    ["Offset of field: EcsIdentifier::hash"][::std::mem::offset_of!(EcsIdentifier, hash) - 8usize];
     ["Offset of field: EcsIdentifier::index_hash"]
-        [::std::mem::offset_of!(EcsIdentifier, index_hash) - 24usize];
+        [::std::mem::offset_of!(EcsIdentifier, index_hash) - 16usize];
     ["Offset of field: EcsIdentifier::index"]
-        [::std::mem::offset_of!(EcsIdentifier, index) - 32usize];
+        [::std::mem::offset_of!(EcsIdentifier, index) - 24usize];
 };
 #[doc = " Component information."]
 #[repr(C)]
@@ -5470,8 +5514,8 @@ pub struct EcsPoly {
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of EcsPoly"][::std::mem::size_of::<EcsPoly>() - 8usize];
-    ["Alignment of EcsPoly"][::std::mem::align_of::<EcsPoly>() - 8usize];
+    ["Size of EcsPoly"][::std::mem::size_of::<EcsPoly>() - 4usize];
+    ["Alignment of EcsPoly"][::std::mem::align_of::<EcsPoly>() - 4usize];
     ["Offset of field: EcsPoly::poly"][::std::mem::offset_of!(EcsPoly, poly) - 0usize];
 };
 #[doc = " When added to an entity this informs serialization formats which component\n to use when a value is assigned to an entity without specifying the\n component. This is intended as a hint, serialization formats are not required\n to use it. Adding this component does not change the behavior of core ECS\n operations."]
@@ -5503,15 +5547,19 @@ unsafe extern "C" {
     pub static ECS_TOGGLE: ecs_id_t;
 }
 unsafe extern "C" {
+    #[doc = " Component component id."]
     pub static FLECS_IDEcsComponentID_: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = " Identifier component id."]
     pub static FLECS_IDEcsIdentifierID_: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = " Poly component id."]
     pub static FLECS_IDEcsPolyID_: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = " DefaultChildComponent component id."]
     pub static FLECS_IDEcsDefaultChildComponentID_: ecs_entity_t;
 }
 unsafe extern "C" {
@@ -5527,15 +5575,19 @@ unsafe extern "C" {
     pub static EcsSystem: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = " TickSource component id."]
     pub static FLECS_IDEcsTickSourceID_: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = " Pipeline module component ids"]
     pub static FLECS_IDEcsPipelineQueryID_: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = " Timer component id."]
     pub static FLECS_IDEcsTimerID_: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = " RateFilter component id."]
     pub static FLECS_IDEcsRateFilterID_: ecs_entity_t;
 }
 unsafe extern "C" {
@@ -5771,6 +5823,7 @@ unsafe extern "C" {
     pub static EcsEmpty: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< Pipeline component id."]
     pub static FLECS_IDEcsPipelineID_: ecs_entity_t;
 }
 unsafe extern "C" {
@@ -5865,13 +5918,13 @@ pub struct ecs_entities_t {
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of ecs_entities_t"][::std::mem::size_of::<ecs_entities_t>() - 16usize];
-    ["Alignment of ecs_entities_t"][::std::mem::align_of::<ecs_entities_t>() - 8usize];
+    ["Size of ecs_entities_t"][::std::mem::size_of::<ecs_entities_t>() - 12usize];
+    ["Alignment of ecs_entities_t"][::std::mem::align_of::<ecs_entities_t>() - 4usize];
     ["Offset of field: ecs_entities_t::ids"][::std::mem::offset_of!(ecs_entities_t, ids) - 0usize];
     ["Offset of field: ecs_entities_t::count"]
-        [::std::mem::offset_of!(ecs_entities_t, count) - 8usize];
+        [::std::mem::offset_of!(ecs_entities_t, count) - 4usize];
     ["Offset of field: ecs_entities_t::alive_count"]
-        [::std::mem::offset_of!(ecs_entities_t, alive_count) - 12usize];
+        [::std::mem::offset_of!(ecs_entities_t, alive_count) - 8usize];
 };
 unsafe extern "C" {
     #[doc = " Return entity identifiers in world.\n This operation returns an array with all entity ids that exist in the world.\n Note that the returned array will change and may get invalidated as a result\n of entity creation & deletion.\n\n To iterate all alive entity ids, do:\n @code\n ecs_entities_t entities = ecs_get_entities(world);\n for (int i = 0; i < entities.alive_count; i ++) {\n   ecs_entity_t id = entities.ids[i];\n }\n @endcode\n\n To iterate not-alive ids, do:\n @code\n for (int i = entities.alive_count + 1; i < entities.count; i ++) {\n   ecs_entity_t id = entities.ids[i];\n }\n @endcode\n\n The returned array does not need to be freed. Mutating the returned array\n will return in undefined behavior (and likely crashes).\n\n @param world The world.\n @return Struct with entity id array."]
@@ -7213,7 +7266,7 @@ pub const ecs_journal_kind_t_EcsJournalDelete: ecs_journal_kind_t = 3;
 pub const ecs_journal_kind_t_EcsJournalDeleteWith: ecs_journal_kind_t = 4;
 pub const ecs_journal_kind_t_EcsJournalRemoveAll: ecs_journal_kind_t = 5;
 pub const ecs_journal_kind_t_EcsJournalTableEvents: ecs_journal_kind_t = 6;
-pub type ecs_journal_kind_t = ::std::os::raw::c_uint;
+pub type ecs_journal_kind_t = ::std::os::raw::c_int;
 unsafe extern "C" {
     pub fn flecs_journal_begin(
         world: *mut ecs_world_t,
@@ -7376,8 +7429,8 @@ pub struct ecs_app_desc_t {
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of ecs_app_desc_t"][::std::mem::size_of::<ecs_app_desc_t>() - 40usize];
-    ["Alignment of ecs_app_desc_t"][::std::mem::align_of::<ecs_app_desc_t>() - 8usize];
+    ["Size of ecs_app_desc_t"][::std::mem::size_of::<ecs_app_desc_t>() - 28usize];
+    ["Alignment of ecs_app_desc_t"][::std::mem::align_of::<ecs_app_desc_t>() - 4usize];
     ["Offset of field: ecs_app_desc_t::target_fps"]
         [::std::mem::offset_of!(ecs_app_desc_t, target_fps) - 0usize];
     ["Offset of field: ecs_app_desc_t::delta_time"]
@@ -7393,8 +7446,8 @@ const _: () = {
     ["Offset of field: ecs_app_desc_t::port"]
         [::std::mem::offset_of!(ecs_app_desc_t, port) - 18usize];
     ["Offset of field: ecs_app_desc_t::init"]
-        [::std::mem::offset_of!(ecs_app_desc_t, init) - 24usize];
-    ["Offset of field: ecs_app_desc_t::ctx"][::std::mem::offset_of!(ecs_app_desc_t, ctx) - 32usize];
+        [::std::mem::offset_of!(ecs_app_desc_t, init) - 20usize];
+    ["Offset of field: ecs_app_desc_t::ctx"][::std::mem::offset_of!(ecs_app_desc_t, ctx) - 24usize];
 };
 #[doc = " Callback type for run action."]
 pub type ecs_app_run_action_t = ::std::option::Option<
@@ -7454,9 +7507,9 @@ const _: () = {
     ["Offset of field: ecs_http_connection_t::server"]
         [::std::mem::offset_of!(ecs_http_connection_t, server) - 8usize];
     ["Offset of field: ecs_http_connection_t::host"]
-        [::std::mem::offset_of!(ecs_http_connection_t, host) - 16usize];
+        [::std::mem::offset_of!(ecs_http_connection_t, host) - 12usize];
     ["Offset of field: ecs_http_connection_t::port"]
-        [::std::mem::offset_of!(ecs_http_connection_t, port) - 144usize];
+        [::std::mem::offset_of!(ecs_http_connection_t, port) - 140usize];
 };
 #[doc = " Helper type used for headers & URL query parameters."]
 #[repr(C)]
@@ -7467,12 +7520,12 @@ pub struct ecs_http_key_value_t {
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of ecs_http_key_value_t"][::std::mem::size_of::<ecs_http_key_value_t>() - 16usize];
-    ["Alignment of ecs_http_key_value_t"][::std::mem::align_of::<ecs_http_key_value_t>() - 8usize];
+    ["Size of ecs_http_key_value_t"][::std::mem::size_of::<ecs_http_key_value_t>() - 8usize];
+    ["Alignment of ecs_http_key_value_t"][::std::mem::align_of::<ecs_http_key_value_t>() - 4usize];
     ["Offset of field: ecs_http_key_value_t::key"]
         [::std::mem::offset_of!(ecs_http_key_value_t, key) - 0usize];
     ["Offset of field: ecs_http_key_value_t::value"]
-        [::std::mem::offset_of!(ecs_http_key_value_t, value) - 8usize];
+        [::std::mem::offset_of!(ecs_http_key_value_t, value) - 4usize];
 };
 pub const ecs_http_method_t_EcsHttpGet: ecs_http_method_t = 0;
 pub const ecs_http_method_t_EcsHttpPost: ecs_http_method_t = 1;
@@ -7481,7 +7534,7 @@ pub const ecs_http_method_t_EcsHttpDelete: ecs_http_method_t = 3;
 pub const ecs_http_method_t_EcsHttpOptions: ecs_http_method_t = 4;
 pub const ecs_http_method_t_EcsHttpMethodUnsupported: ecs_http_method_t = 5;
 #[doc = " Supported request methods."]
-pub type ecs_http_method_t = ::std::os::raw::c_uint;
+pub type ecs_http_method_t = ::std::os::raw::c_int;
 #[doc = " An HTTP request."]
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
@@ -7498,26 +7551,26 @@ pub struct ecs_http_request_t {
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of ecs_http_request_t"][::std::mem::size_of::<ecs_http_request_t>() - 1072usize];
+    ["Size of ecs_http_request_t"][::std::mem::size_of::<ecs_http_request_t>() - 544usize];
     ["Alignment of ecs_http_request_t"][::std::mem::align_of::<ecs_http_request_t>() - 8usize];
     ["Offset of field: ecs_http_request_t::id"]
         [::std::mem::offset_of!(ecs_http_request_t, id) - 0usize];
     ["Offset of field: ecs_http_request_t::method"]
         [::std::mem::offset_of!(ecs_http_request_t, method) - 8usize];
     ["Offset of field: ecs_http_request_t::path"]
-        [::std::mem::offset_of!(ecs_http_request_t, path) - 16usize];
+        [::std::mem::offset_of!(ecs_http_request_t, path) - 12usize];
     ["Offset of field: ecs_http_request_t::body"]
-        [::std::mem::offset_of!(ecs_http_request_t, body) - 24usize];
+        [::std::mem::offset_of!(ecs_http_request_t, body) - 16usize];
     ["Offset of field: ecs_http_request_t::headers"]
-        [::std::mem::offset_of!(ecs_http_request_t, headers) - 32usize];
+        [::std::mem::offset_of!(ecs_http_request_t, headers) - 20usize];
     ["Offset of field: ecs_http_request_t::params"]
-        [::std::mem::offset_of!(ecs_http_request_t, params) - 544usize];
+        [::std::mem::offset_of!(ecs_http_request_t, params) - 276usize];
     ["Offset of field: ecs_http_request_t::header_count"]
-        [::std::mem::offset_of!(ecs_http_request_t, header_count) - 1056usize];
+        [::std::mem::offset_of!(ecs_http_request_t, header_count) - 532usize];
     ["Offset of field: ecs_http_request_t::param_count"]
-        [::std::mem::offset_of!(ecs_http_request_t, param_count) - 1060usize];
+        [::std::mem::offset_of!(ecs_http_request_t, param_count) - 536usize];
     ["Offset of field: ecs_http_request_t::conn"]
-        [::std::mem::offset_of!(ecs_http_request_t, conn) - 1064usize];
+        [::std::mem::offset_of!(ecs_http_request_t, conn) - 540usize];
 };
 #[doc = " An HTTP reply."]
 #[repr(C)]
@@ -7536,18 +7589,18 @@ pub struct ecs_http_reply_t {
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of ecs_http_reply_t"][::std::mem::size_of::<ecs_http_reply_t>() - 2120usize];
-    ["Alignment of ecs_http_reply_t"][::std::mem::align_of::<ecs_http_reply_t>() - 8usize];
+    ["Size of ecs_http_reply_t"][::std::mem::size_of::<ecs_http_reply_t>() - 1580usize];
+    ["Alignment of ecs_http_reply_t"][::std::mem::align_of::<ecs_http_reply_t>() - 4usize];
     ["Offset of field: ecs_http_reply_t::code"]
         [::std::mem::offset_of!(ecs_http_reply_t, code) - 0usize];
     ["Offset of field: ecs_http_reply_t::body"]
-        [::std::mem::offset_of!(ecs_http_reply_t, body) - 8usize];
+        [::std::mem::offset_of!(ecs_http_reply_t, body) - 4usize];
     ["Offset of field: ecs_http_reply_t::status"]
-        [::std::mem::offset_of!(ecs_http_reply_t, status) - 1056usize];
+        [::std::mem::offset_of!(ecs_http_reply_t, status) - 788usize];
     ["Offset of field: ecs_http_reply_t::content_type"]
-        [::std::mem::offset_of!(ecs_http_reply_t, content_type) - 1064usize];
+        [::std::mem::offset_of!(ecs_http_reply_t, content_type) - 792usize];
     ["Offset of field: ecs_http_reply_t::headers"]
-        [::std::mem::offset_of!(ecs_http_reply_t, headers) - 1072usize];
+        [::std::mem::offset_of!(ecs_http_reply_t, headers) - 796usize];
 };
 unsafe extern "C" {
     #[doc = "< Total number of HTTP requests received."]
@@ -7614,23 +7667,23 @@ pub struct ecs_http_server_desc_t {
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of ecs_http_server_desc_t"][::std::mem::size_of::<ecs_http_server_desc_t>() - 56usize];
+    ["Size of ecs_http_server_desc_t"][::std::mem::size_of::<ecs_http_server_desc_t>() - 40usize];
     ["Alignment of ecs_http_server_desc_t"]
         [::std::mem::align_of::<ecs_http_server_desc_t>() - 8usize];
     ["Offset of field: ecs_http_server_desc_t::callback"]
         [::std::mem::offset_of!(ecs_http_server_desc_t, callback) - 0usize];
     ["Offset of field: ecs_http_server_desc_t::ctx"]
-        [::std::mem::offset_of!(ecs_http_server_desc_t, ctx) - 8usize];
+        [::std::mem::offset_of!(ecs_http_server_desc_t, ctx) - 4usize];
     ["Offset of field: ecs_http_server_desc_t::port"]
-        [::std::mem::offset_of!(ecs_http_server_desc_t, port) - 16usize];
+        [::std::mem::offset_of!(ecs_http_server_desc_t, port) - 8usize];
     ["Offset of field: ecs_http_server_desc_t::ipaddr"]
-        [::std::mem::offset_of!(ecs_http_server_desc_t, ipaddr) - 24usize];
+        [::std::mem::offset_of!(ecs_http_server_desc_t, ipaddr) - 12usize];
     ["Offset of field: ecs_http_server_desc_t::send_queue_wait_ms"]
-        [::std::mem::offset_of!(ecs_http_server_desc_t, send_queue_wait_ms) - 32usize];
+        [::std::mem::offset_of!(ecs_http_server_desc_t, send_queue_wait_ms) - 16usize];
     ["Offset of field: ecs_http_server_desc_t::cache_timeout"]
-        [::std::mem::offset_of!(ecs_http_server_desc_t, cache_timeout) - 40usize];
+        [::std::mem::offset_of!(ecs_http_server_desc_t, cache_timeout) - 24usize];
     ["Offset of field: ecs_http_server_desc_t::cache_purge_timeout"]
-        [::std::mem::offset_of!(ecs_http_server_desc_t, cache_purge_timeout) - 48usize];
+        [::std::mem::offset_of!(ecs_http_server_desc_t, cache_purge_timeout) - 32usize];
 };
 unsafe extern "C" {
     #[doc = " Create server.\n Use ecs_http_server_start() to start receiving requests.\n\n @param desc Server configuration parameters.\n @return The new server, or NULL if creation failed."]
@@ -7689,6 +7742,7 @@ unsafe extern "C" {
     ) -> *const ::std::os::raw::c_char;
 }
 unsafe extern "C" {
+    #[doc = " Component that instantiates the REST API."]
     pub static FLECS_IDEcsRestID_: ecs_entity_t;
 }
 #[doc = " Component that creates a REST API server when instantiated."]
@@ -7703,11 +7757,11 @@ pub struct EcsRest {
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of EcsRest"][::std::mem::size_of::<EcsRest>() - 24usize];
-    ["Alignment of EcsRest"][::std::mem::align_of::<EcsRest>() - 8usize];
+    ["Size of EcsRest"][::std::mem::size_of::<EcsRest>() - 12usize];
+    ["Alignment of EcsRest"][::std::mem::align_of::<EcsRest>() - 4usize];
     ["Offset of field: EcsRest::port"][::std::mem::offset_of!(EcsRest, port) - 0usize];
-    ["Offset of field: EcsRest::ipaddr"][::std::mem::offset_of!(EcsRest, ipaddr) - 8usize];
-    ["Offset of field: EcsRest::impl_"][::std::mem::offset_of!(EcsRest, impl_) - 16usize];
+    ["Offset of field: EcsRest::ipaddr"][::std::mem::offset_of!(EcsRest, ipaddr) - 4usize];
+    ["Offset of field: EcsRest::impl_"][::std::mem::offset_of!(EcsRest, impl_) - 8usize];
 };
 unsafe extern "C" {
     #[doc = " Create HTTP server for REST API.\n This allows for the creation of a REST server that can be managed by the\n application without using Flecs systems.\n\n @param world The world.\n @param desc The HTTP server descriptor.\n @return The HTTP server, or NULL if failed."]
@@ -7850,7 +7904,7 @@ pub struct ecs_pipeline_desc_t {
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of ecs_pipeline_desc_t"][::std::mem::size_of::<ecs_pipeline_desc_t>() - 2448usize];
+    ["Size of ecs_pipeline_desc_t"][::std::mem::size_of::<ecs_pipeline_desc_t>() - 2408usize];
     ["Alignment of ecs_pipeline_desc_t"][::std::mem::align_of::<ecs_pipeline_desc_t>() - 8usize];
     ["Offset of field: ecs_pipeline_desc_t::entity"]
         [::std::mem::offset_of!(ecs_pipeline_desc_t, entity) - 0usize];
@@ -7959,7 +8013,7 @@ pub struct ecs_system_desc_t {
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of ecs_system_desc_t"][::std::mem::size_of::<ecs_system_desc_t>() - 2544usize];
+    ["Size of ecs_system_desc_t"][::std::mem::size_of::<ecs_system_desc_t>() - 2472usize];
     ["Alignment of ecs_system_desc_t"][::std::mem::align_of::<ecs_system_desc_t>() - 8usize];
     ["Offset of field: ecs_system_desc_t::_canary"]
         [::std::mem::offset_of!(ecs_system_desc_t, _canary) - 0usize];
@@ -7968,31 +8022,31 @@ const _: () = {
     ["Offset of field: ecs_system_desc_t::query"]
         [::std::mem::offset_of!(ecs_system_desc_t, query) - 16usize];
     ["Offset of field: ecs_system_desc_t::callback"]
-        [::std::mem::offset_of!(ecs_system_desc_t, callback) - 2456usize];
+        [::std::mem::offset_of!(ecs_system_desc_t, callback) - 2416usize];
     ["Offset of field: ecs_system_desc_t::run"]
-        [::std::mem::offset_of!(ecs_system_desc_t, run) - 2464usize];
+        [::std::mem::offset_of!(ecs_system_desc_t, run) - 2420usize];
     ["Offset of field: ecs_system_desc_t::ctx"]
-        [::std::mem::offset_of!(ecs_system_desc_t, ctx) - 2472usize];
+        [::std::mem::offset_of!(ecs_system_desc_t, ctx) - 2424usize];
     ["Offset of field: ecs_system_desc_t::ctx_free"]
-        [::std::mem::offset_of!(ecs_system_desc_t, ctx_free) - 2480usize];
+        [::std::mem::offset_of!(ecs_system_desc_t, ctx_free) - 2428usize];
     ["Offset of field: ecs_system_desc_t::callback_ctx"]
-        [::std::mem::offset_of!(ecs_system_desc_t, callback_ctx) - 2488usize];
+        [::std::mem::offset_of!(ecs_system_desc_t, callback_ctx) - 2432usize];
     ["Offset of field: ecs_system_desc_t::callback_ctx_free"]
-        [::std::mem::offset_of!(ecs_system_desc_t, callback_ctx_free) - 2496usize];
+        [::std::mem::offset_of!(ecs_system_desc_t, callback_ctx_free) - 2436usize];
     ["Offset of field: ecs_system_desc_t::run_ctx"]
-        [::std::mem::offset_of!(ecs_system_desc_t, run_ctx) - 2504usize];
+        [::std::mem::offset_of!(ecs_system_desc_t, run_ctx) - 2440usize];
     ["Offset of field: ecs_system_desc_t::run_ctx_free"]
-        [::std::mem::offset_of!(ecs_system_desc_t, run_ctx_free) - 2512usize];
+        [::std::mem::offset_of!(ecs_system_desc_t, run_ctx_free) - 2444usize];
     ["Offset of field: ecs_system_desc_t::interval"]
-        [::std::mem::offset_of!(ecs_system_desc_t, interval) - 2520usize];
+        [::std::mem::offset_of!(ecs_system_desc_t, interval) - 2448usize];
     ["Offset of field: ecs_system_desc_t::rate"]
-        [::std::mem::offset_of!(ecs_system_desc_t, rate) - 2524usize];
+        [::std::mem::offset_of!(ecs_system_desc_t, rate) - 2452usize];
     ["Offset of field: ecs_system_desc_t::tick_source"]
-        [::std::mem::offset_of!(ecs_system_desc_t, tick_source) - 2528usize];
+        [::std::mem::offset_of!(ecs_system_desc_t, tick_source) - 2456usize];
     ["Offset of field: ecs_system_desc_t::multi_threaded"]
-        [::std::mem::offset_of!(ecs_system_desc_t, multi_threaded) - 2536usize];
+        [::std::mem::offset_of!(ecs_system_desc_t, multi_threaded) - 2464usize];
     ["Offset of field: ecs_system_desc_t::immediate"]
-        [::std::mem::offset_of!(ecs_system_desc_t, immediate) - 2537usize];
+        [::std::mem::offset_of!(ecs_system_desc_t, immediate) - 2465usize];
 };
 unsafe extern "C" {
     #[doc = " Create a system"]
@@ -8042,43 +8096,42 @@ pub struct ecs_system_t {
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of ecs_system_t"][::std::mem::size_of::<ecs_system_t>() - 160usize];
+    ["Size of ecs_system_t"][::std::mem::size_of::<ecs_system_t>() - 120usize];
     ["Alignment of ecs_system_t"][::std::mem::align_of::<ecs_system_t>() - 8usize];
     ["Offset of field: ecs_system_t::hdr"][::std::mem::offset_of!(ecs_system_t, hdr) - 0usize];
-    ["Offset of field: ecs_system_t::run"][::std::mem::offset_of!(ecs_system_t, run) - 24usize];
+    ["Offset of field: ecs_system_t::run"][::std::mem::offset_of!(ecs_system_t, run) - 16usize];
     ["Offset of field: ecs_system_t::action"]
-        [::std::mem::offset_of!(ecs_system_t, action) - 32usize];
-    ["Offset of field: ecs_system_t::query"][::std::mem::offset_of!(ecs_system_t, query) - 40usize];
+        [::std::mem::offset_of!(ecs_system_t, action) - 20usize];
+    ["Offset of field: ecs_system_t::query"][::std::mem::offset_of!(ecs_system_t, query) - 24usize];
     ["Offset of field: ecs_system_t::query_entity"]
-        [::std::mem::offset_of!(ecs_system_t, query_entity) - 48usize];
+        [::std::mem::offset_of!(ecs_system_t, query_entity) - 32usize];
     ["Offset of field: ecs_system_t::tick_source"]
-        [::std::mem::offset_of!(ecs_system_t, tick_source) - 56usize];
+        [::std::mem::offset_of!(ecs_system_t, tick_source) - 40usize];
     ["Offset of field: ecs_system_t::multi_threaded"]
-        [::std::mem::offset_of!(ecs_system_t, multi_threaded) - 64usize];
+        [::std::mem::offset_of!(ecs_system_t, multi_threaded) - 48usize];
     ["Offset of field: ecs_system_t::immediate"]
-        [::std::mem::offset_of!(ecs_system_t, immediate) - 65usize];
-    ["Offset of field: ecs_system_t::ctx"][::std::mem::offset_of!(ecs_system_t, ctx) - 72usize];
+        [::std::mem::offset_of!(ecs_system_t, immediate) - 49usize];
+    ["Offset of field: ecs_system_t::ctx"][::std::mem::offset_of!(ecs_system_t, ctx) - 52usize];
     ["Offset of field: ecs_system_t::callback_ctx"]
-        [::std::mem::offset_of!(ecs_system_t, callback_ctx) - 80usize];
+        [::std::mem::offset_of!(ecs_system_t, callback_ctx) - 56usize];
     ["Offset of field: ecs_system_t::run_ctx"]
-        [::std::mem::offset_of!(ecs_system_t, run_ctx) - 88usize];
+        [::std::mem::offset_of!(ecs_system_t, run_ctx) - 60usize];
     ["Offset of field: ecs_system_t::ctx_free"]
-        [::std::mem::offset_of!(ecs_system_t, ctx_free) - 96usize];
+        [::std::mem::offset_of!(ecs_system_t, ctx_free) - 64usize];
     ["Offset of field: ecs_system_t::callback_ctx_free"]
-        [::std::mem::offset_of!(ecs_system_t, callback_ctx_free) - 104usize];
+        [::std::mem::offset_of!(ecs_system_t, callback_ctx_free) - 68usize];
     ["Offset of field: ecs_system_t::run_ctx_free"]
-        [::std::mem::offset_of!(ecs_system_t, run_ctx_free) - 112usize];
+        [::std::mem::offset_of!(ecs_system_t, run_ctx_free) - 72usize];
     ["Offset of field: ecs_system_t::time_spent"]
-        [::std::mem::offset_of!(ecs_system_t, time_spent) - 120usize];
+        [::std::mem::offset_of!(ecs_system_t, time_spent) - 76usize];
     ["Offset of field: ecs_system_t::time_passed"]
-        [::std::mem::offset_of!(ecs_system_t, time_passed) - 124usize];
+        [::std::mem::offset_of!(ecs_system_t, time_passed) - 80usize];
     ["Offset of field: ecs_system_t::last_frame"]
-        [::std::mem::offset_of!(ecs_system_t, last_frame) - 128usize];
-    ["Offset of field: ecs_system_t::world"]
-        [::std::mem::offset_of!(ecs_system_t, world) - 136usize];
+        [::std::mem::offset_of!(ecs_system_t, last_frame) - 88usize];
+    ["Offset of field: ecs_system_t::world"][::std::mem::offset_of!(ecs_system_t, world) - 96usize];
     ["Offset of field: ecs_system_t::entity"]
-        [::std::mem::offset_of!(ecs_system_t, entity) - 144usize];
-    ["Offset of field: ecs_system_t::dtor"][::std::mem::offset_of!(ecs_system_t, dtor) - 152usize];
+        [::std::mem::offset_of!(ecs_system_t, entity) - 104usize];
+    ["Offset of field: ecs_system_t::dtor"][::std::mem::offset_of!(ecs_system_t, dtor) - 112usize];
 };
 unsafe extern "C" {
     #[doc = " Get system object.\n Returns the system object. Can be used to access various information about\n the system, like the query and context.\n\n @param world The world.\n @param system The system.\n @return The system object."]
@@ -8655,22 +8708,22 @@ pub struct ecs_pipeline_stats_t {
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of ecs_pipeline_stats_t"][::std::mem::size_of::<ecs_pipeline_stats_t>() - 56usize];
-    ["Alignment of ecs_pipeline_stats_t"][::std::mem::align_of::<ecs_pipeline_stats_t>() - 8usize];
+    ["Size of ecs_pipeline_stats_t"][::std::mem::size_of::<ecs_pipeline_stats_t>() - 44usize];
+    ["Alignment of ecs_pipeline_stats_t"][::std::mem::align_of::<ecs_pipeline_stats_t>() - 4usize];
     ["Offset of field: ecs_pipeline_stats_t::canary_"]
         [::std::mem::offset_of!(ecs_pipeline_stats_t, canary_) - 0usize];
     ["Offset of field: ecs_pipeline_stats_t::systems"]
-        [::std::mem::offset_of!(ecs_pipeline_stats_t, systems) - 8usize];
+        [::std::mem::offset_of!(ecs_pipeline_stats_t, systems) - 4usize];
     ["Offset of field: ecs_pipeline_stats_t::sync_points"]
-        [::std::mem::offset_of!(ecs_pipeline_stats_t, sync_points) - 24usize];
+        [::std::mem::offset_of!(ecs_pipeline_stats_t, sync_points) - 16usize];
     ["Offset of field: ecs_pipeline_stats_t::t"]
-        [::std::mem::offset_of!(ecs_pipeline_stats_t, t) - 40usize];
+        [::std::mem::offset_of!(ecs_pipeline_stats_t, t) - 28usize];
     ["Offset of field: ecs_pipeline_stats_t::system_count"]
-        [::std::mem::offset_of!(ecs_pipeline_stats_t, system_count) - 44usize];
+        [::std::mem::offset_of!(ecs_pipeline_stats_t, system_count) - 32usize];
     ["Offset of field: ecs_pipeline_stats_t::active_system_count"]
-        [::std::mem::offset_of!(ecs_pipeline_stats_t, active_system_count) - 48usize];
+        [::std::mem::offset_of!(ecs_pipeline_stats_t, active_system_count) - 36usize];
     ["Offset of field: ecs_pipeline_stats_t::rebuild_count"]
-        [::std::mem::offset_of!(ecs_pipeline_stats_t, rebuild_count) - 52usize];
+        [::std::mem::offset_of!(ecs_pipeline_stats_t, rebuild_count) - 40usize];
 };
 unsafe extern "C" {
     #[doc = " Get world statistics.\n\n @param world The world.\n @param stats Out parameter for statistics."]
@@ -8814,18 +8867,23 @@ unsafe extern "C" {
     pub fn ecs_metric_copy(m: *mut ecs_metric_t, dst: i32, src: i32);
 }
 unsafe extern "C" {
+    #[doc = "< Flecs stats module."]
     pub static mut FLECS_IDFlecsStatsID_: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< Component id for EcsWorldStats."]
     pub static mut FLECS_IDEcsWorldStatsID_: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< Component id for EcsWorldSummary."]
     pub static mut FLECS_IDEcsWorldSummaryID_: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< Component id for EcsSystemStats."]
     pub static mut FLECS_IDEcsSystemStatsID_: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< Component id for EcsPipelineStats."]
     pub static mut FLECS_IDEcsPipelineStatsID_: ecs_entity_t;
 }
 unsafe extern "C" {
@@ -8888,8 +8946,8 @@ pub struct EcsSystemStats {
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of EcsSystemStats"][::std::mem::size_of::<EcsSystemStats>() - 48usize];
-    ["Alignment of EcsSystemStats"][::std::mem::align_of::<EcsSystemStats>() - 8usize];
+    ["Size of EcsSystemStats"][::std::mem::size_of::<EcsSystemStats>() - 32usize];
+    ["Alignment of EcsSystemStats"][::std::mem::align_of::<EcsSystemStats>() - 4usize];
     ["Offset of field: EcsSystemStats::hdr"][::std::mem::offset_of!(EcsSystemStats, hdr) - 0usize];
     ["Offset of field: EcsSystemStats::stats"]
         [::std::mem::offset_of!(EcsSystemStats, stats) - 8usize];
@@ -8903,8 +8961,8 @@ pub struct EcsPipelineStats {
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of EcsPipelineStats"][::std::mem::size_of::<EcsPipelineStats>() - 48usize];
-    ["Alignment of EcsPipelineStats"][::std::mem::align_of::<EcsPipelineStats>() - 8usize];
+    ["Size of EcsPipelineStats"][::std::mem::size_of::<EcsPipelineStats>() - 32usize];
+    ["Alignment of EcsPipelineStats"][::std::mem::align_of::<EcsPipelineStats>() - 4usize];
     ["Offset of field: EcsPipelineStats::hdr"]
         [::std::mem::offset_of!(EcsPipelineStats, hdr) - 0usize];
     ["Offset of field: EcsPipelineStats::stats"]
@@ -8939,7 +8997,7 @@ pub struct EcsWorldSummary {
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of EcsWorldSummary"][::std::mem::size_of::<EcsWorldSummary>() - 120usize];
+    ["Size of EcsWorldSummary"][::std::mem::size_of::<EcsWorldSummary>() - 104usize];
     ["Alignment of EcsWorldSummary"][::std::mem::align_of::<EcsWorldSummary>() - 8usize];
     ["Offset of field: EcsWorldSummary::target_fps"]
         [::std::mem::offset_of!(EcsWorldSummary, target_fps) - 0usize];
@@ -8969,48 +9027,63 @@ unsafe extern "C" {
     pub fn FlecsStatsImport(world: *mut ecs_world_t);
 }
 unsafe extern "C" {
+    #[doc = " Flecs metrics module."]
     pub static mut FLECS_IDFlecsMetricsID_: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = " Tag added to metrics, and used as first element of metric kind pair."]
     pub static mut EcsMetric: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = " Tag added to metrics, and used as first element of metric kind pair."]
     pub static mut FLECS_IDEcsMetricID_: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = " Metric that has monotonically increasing value."]
     pub static mut EcsCounter: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = " Metric that has monotonically increasing value."]
     pub static mut FLECS_IDEcsCounterID_: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = " Counter metric that is auto-incremented by source value."]
     pub static mut EcsCounterIncrement: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = " Counter metric that is auto-incremented by source value."]
     pub static mut FLECS_IDEcsCounterIncrementID_: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = " Counter metric that counts the number of entities with an id."]
     pub static mut EcsCounterId: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = " Counter metric that counts the number of entities with an id."]
     pub static mut FLECS_IDEcsCounterIdID_: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = " Metric that represents current value."]
     pub static mut EcsGauge: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = " Metric that represents current value."]
     pub static mut FLECS_IDEcsGaugeID_: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = " Tag added to metric instances."]
     pub static mut EcsMetricInstance: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = " Tag added to metric instances."]
     pub static mut FLECS_IDEcsMetricInstanceID_: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = " Component with metric instance value."]
     pub static mut FLECS_IDEcsMetricValueID_: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = " Component with entity source of metric instance."]
     pub static mut FLECS_IDEcsMetricSourceID_: ecs_entity_t;
 }
 #[doc = " Component that stores metric value."]
@@ -9089,42 +9162,55 @@ unsafe extern "C" {
     pub fn FlecsMetricsImport(world: *mut ecs_world_t);
 }
 unsafe extern "C" {
+    #[doc = " Module id."]
     pub static mut FLECS_IDFlecsAlertsID_: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< Component added to alert, and used as first element of alert severity pair."]
     pub static mut FLECS_IDEcsAlertID_: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< Component added to alert instance."]
     pub static mut FLECS_IDEcsAlertInstanceID_: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< Component added to alert source which tracks how many active alerts there are."]
     pub static mut FLECS_IDEcsAlertsActiveID_: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< Component added to alert which tracks how long an alert has been inactive."]
     pub static mut FLECS_IDEcsAlertTimeoutID_: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< Info alert severity."]
     pub static mut EcsAlertInfo: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< Info alert severity."]
     pub static mut FLECS_IDEcsAlertInfoID_: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< Warning alert severity."]
     pub static mut EcsAlertWarning: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< Warning alert severity."]
     pub static mut FLECS_IDEcsAlertWarningID_: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< Error alert severity."]
     pub static mut EcsAlertError: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< Error alert severity."]
     pub static mut FLECS_IDEcsAlertErrorID_: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< Critical alert severity."]
     pub static mut EcsAlertCritical: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< Critical alert severity."]
     pub static mut FLECS_IDEcsAlertCriticalID_: ecs_entity_t;
 }
 #[doc = " Component added to alert instance."]
@@ -9136,8 +9222,8 @@ pub struct EcsAlertInstance {
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of EcsAlertInstance"][::std::mem::size_of::<EcsAlertInstance>() - 8usize];
-    ["Alignment of EcsAlertInstance"][::std::mem::align_of::<EcsAlertInstance>() - 8usize];
+    ["Size of EcsAlertInstance"][::std::mem::size_of::<EcsAlertInstance>() - 4usize];
+    ["Alignment of EcsAlertInstance"][::std::mem::align_of::<EcsAlertInstance>() - 4usize];
     ["Offset of field: EcsAlertInstance::message"]
         [::std::mem::offset_of!(EcsAlertInstance, message) - 0usize];
 };
@@ -9155,8 +9241,8 @@ pub struct EcsAlertsActive {
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of EcsAlertsActive"][::std::mem::size_of::<EcsAlertsActive>() - 56usize];
-    ["Alignment of EcsAlertsActive"][::std::mem::align_of::<EcsAlertsActive>() - 8usize];
+    ["Size of EcsAlertsActive"][::std::mem::size_of::<EcsAlertsActive>() - 36usize];
+    ["Alignment of EcsAlertsActive"][::std::mem::align_of::<EcsAlertsActive>() - 4usize];
     ["Offset of field: EcsAlertsActive::info_count"]
         [::std::mem::offset_of!(EcsAlertsActive, info_count) - 0usize];
     ["Offset of field: EcsAlertsActive::warning_count"]
@@ -9164,7 +9250,7 @@ const _: () = {
     ["Offset of field: EcsAlertsActive::error_count"]
         [::std::mem::offset_of!(EcsAlertsActive, error_count) - 8usize];
     ["Offset of field: EcsAlertsActive::alerts"]
-        [::std::mem::offset_of!(EcsAlertsActive, alerts) - 16usize];
+        [::std::mem::offset_of!(EcsAlertsActive, alerts) - 12usize];
 };
 #[doc = " Alert severity filter.\n A severity filter can adjust the severity of an alert based on whether an\n entity in the alert query has a specific component. For example, a filter\n could check if an entity has the \"Production\" tag, and increase the default\n severity of an alert from Warning to Error."]
 #[repr(C)]
@@ -9178,7 +9264,7 @@ pub struct ecs_alert_severity_filter_t {
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of ecs_alert_severity_filter_t"]
-        [::std::mem::size_of::<ecs_alert_severity_filter_t>() - 32usize];
+        [::std::mem::size_of::<ecs_alert_severity_filter_t>() - 24usize];
     ["Alignment of ecs_alert_severity_filter_t"]
         [::std::mem::align_of::<ecs_alert_severity_filter_t>() - 8usize];
     ["Offset of field: ecs_alert_severity_filter_t::severity"]
@@ -9188,7 +9274,7 @@ const _: () = {
     ["Offset of field: ecs_alert_severity_filter_t::var"]
         [::std::mem::offset_of!(ecs_alert_severity_filter_t, var) - 16usize];
     ["Offset of field: ecs_alert_severity_filter_t::_var_index"]
-        [::std::mem::offset_of!(ecs_alert_severity_filter_t, _var_index) - 24usize];
+        [::std::mem::offset_of!(ecs_alert_severity_filter_t, _var_index) - 20usize];
 };
 #[doc = " Alert descriptor, used with ecs_alert_init()."]
 #[repr(C)]
@@ -9220,7 +9306,7 @@ pub struct ecs_alert_desc_t {
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of ecs_alert_desc_t"][::std::mem::size_of::<ecs_alert_desc_t>() - 2648usize];
+    ["Size of ecs_alert_desc_t"][::std::mem::size_of::<ecs_alert_desc_t>() - 2568usize];
     ["Alignment of ecs_alert_desc_t"][::std::mem::align_of::<ecs_alert_desc_t>() - 8usize];
     ["Offset of field: ecs_alert_desc_t::_canary"]
         [::std::mem::offset_of!(ecs_alert_desc_t, _canary) - 0usize];
@@ -9229,23 +9315,23 @@ const _: () = {
     ["Offset of field: ecs_alert_desc_t::query"]
         [::std::mem::offset_of!(ecs_alert_desc_t, query) - 16usize];
     ["Offset of field: ecs_alert_desc_t::message"]
-        [::std::mem::offset_of!(ecs_alert_desc_t, message) - 2456usize];
+        [::std::mem::offset_of!(ecs_alert_desc_t, message) - 2416usize];
     ["Offset of field: ecs_alert_desc_t::doc_name"]
-        [::std::mem::offset_of!(ecs_alert_desc_t, doc_name) - 2464usize];
+        [::std::mem::offset_of!(ecs_alert_desc_t, doc_name) - 2420usize];
     ["Offset of field: ecs_alert_desc_t::brief"]
-        [::std::mem::offset_of!(ecs_alert_desc_t, brief) - 2472usize];
+        [::std::mem::offset_of!(ecs_alert_desc_t, brief) - 2424usize];
     ["Offset of field: ecs_alert_desc_t::severity"]
-        [::std::mem::offset_of!(ecs_alert_desc_t, severity) - 2480usize];
+        [::std::mem::offset_of!(ecs_alert_desc_t, severity) - 2432usize];
     ["Offset of field: ecs_alert_desc_t::severity_filters"]
-        [::std::mem::offset_of!(ecs_alert_desc_t, severity_filters) - 2488usize];
+        [::std::mem::offset_of!(ecs_alert_desc_t, severity_filters) - 2440usize];
     ["Offset of field: ecs_alert_desc_t::retain_period"]
-        [::std::mem::offset_of!(ecs_alert_desc_t, retain_period) - 2616usize];
+        [::std::mem::offset_of!(ecs_alert_desc_t, retain_period) - 2536usize];
     ["Offset of field: ecs_alert_desc_t::member"]
-        [::std::mem::offset_of!(ecs_alert_desc_t, member) - 2624usize];
+        [::std::mem::offset_of!(ecs_alert_desc_t, member) - 2544usize];
     ["Offset of field: ecs_alert_desc_t::id"]
-        [::std::mem::offset_of!(ecs_alert_desc_t, id) - 2632usize];
+        [::std::mem::offset_of!(ecs_alert_desc_t, id) - 2552usize];
     ["Offset of field: ecs_alert_desc_t::var"]
-        [::std::mem::offset_of!(ecs_alert_desc_t, var) - 2640usize];
+        [::std::mem::offset_of!(ecs_alert_desc_t, var) - 2560usize];
 };
 unsafe extern "C" {
     #[doc = " Create a new alert.\n An alert is a query that is evaluated periodically and creates alert\n instances for each entity that matches the query. Alerts can be used to\n automate detection of errors in an application.\n\n Alerts are automatically cleared when a query is no longer true for an alert\n instance. At most one alert instance will be created per matched entity.\n\n Alert instances have three components:\n - AlertInstance: contains the alert message for the instance\n - MetricSource: contains the entity that triggered the alert\n - MetricValue: contains how long the alert has been active\n\n Alerts reuse components from the metrics addon so that alert instances can be\n tracked and discovered as metrics. Just like metrics, alert instances are\n created as children of the alert.\n\n When an entity has active alerts, it will have the EcsAlertsActive component\n which contains a map with active alerts for the entity. This component\n will be automatically removed once all alerts are cleared for the entity.\n\n @param world The world.\n @param desc Alert description.\n @return The alert entity."]
@@ -9293,18 +9379,18 @@ pub struct ecs_from_json_desc_t {
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of ecs_from_json_desc_t"][::std::mem::size_of::<ecs_from_json_desc_t>() - 40usize];
-    ["Alignment of ecs_from_json_desc_t"][::std::mem::align_of::<ecs_from_json_desc_t>() - 8usize];
+    ["Size of ecs_from_json_desc_t"][::std::mem::size_of::<ecs_from_json_desc_t>() - 20usize];
+    ["Alignment of ecs_from_json_desc_t"][::std::mem::align_of::<ecs_from_json_desc_t>() - 4usize];
     ["Offset of field: ecs_from_json_desc_t::name"]
         [::std::mem::offset_of!(ecs_from_json_desc_t, name) - 0usize];
     ["Offset of field: ecs_from_json_desc_t::expr"]
-        [::std::mem::offset_of!(ecs_from_json_desc_t, expr) - 8usize];
+        [::std::mem::offset_of!(ecs_from_json_desc_t, expr) - 4usize];
     ["Offset of field: ecs_from_json_desc_t::lookup_action"]
-        [::std::mem::offset_of!(ecs_from_json_desc_t, lookup_action) - 16usize];
+        [::std::mem::offset_of!(ecs_from_json_desc_t, lookup_action) - 8usize];
     ["Offset of field: ecs_from_json_desc_t::lookup_ctx"]
-        [::std::mem::offset_of!(ecs_from_json_desc_t, lookup_ctx) - 24usize];
+        [::std::mem::offset_of!(ecs_from_json_desc_t, lookup_ctx) - 12usize];
     ["Offset of field: ecs_from_json_desc_t::strict"]
-        [::std::mem::offset_of!(ecs_from_json_desc_t, strict) - 32usize];
+        [::std::mem::offset_of!(ecs_from_json_desc_t, strict) - 16usize];
 };
 unsafe extern "C" {
     #[doc = " Parse JSON string into value.\n This operation parses a JSON expression into the provided pointer. The\n memory pointed to must be large enough to contain a value of the used type.\n\n @param world The world.\n @param type The type of the expression to parse.\n @param ptr Pointer to the memory to write to.\n @param json The JSON expression to parse.\n @param desc Configuration parameters for deserializer.\n @return Pointer to the character after the last one read, or NULL if failed."]
@@ -9504,7 +9590,7 @@ pub struct ecs_iter_to_json_desc_t {
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of ecs_iter_to_json_desc_t"][::std::mem::size_of::<ecs_iter_to_json_desc_t>() - 40usize];
+    ["Size of ecs_iter_to_json_desc_t"][::std::mem::size_of::<ecs_iter_to_json_desc_t>() - 32usize];
     ["Alignment of ecs_iter_to_json_desc_t"]
         [::std::mem::align_of::<ecs_iter_to_json_desc_t>() - 8usize];
     ["Offset of field: ecs_iter_to_json_desc_t::serialize_entity_ids"]
@@ -9542,7 +9628,7 @@ const _: () = {
     ["Offset of field: ecs_iter_to_json_desc_t::serialize_matches"]
         [::std::mem::offset_of!(ecs_iter_to_json_desc_t, serialize_matches) - 24usize];
     ["Offset of field: ecs_iter_to_json_desc_t::query"]
-        [::std::mem::offset_of!(ecs_iter_to_json_desc_t, query) - 32usize];
+        [::std::mem::offset_of!(ecs_iter_to_json_desc_t, query) - 28usize];
 };
 unsafe extern "C" {
     #[doc = " Serialize iterator into JSON string.\n This operation will iterate the contents of the iterator and serialize them\n to JSON. The function accepts iterators from any source.\n\n @param iter The iterator to serialize to JSON.\n @return A JSON string with the serialized iterator data, or NULL if failed."]
@@ -9595,687 +9681,915 @@ unsafe extern "C" {
     ) -> ::std::os::raw::c_int;
 }
 unsafe extern "C" {
+    #[doc = "< Parent scope for prefixes."]
     pub static mut EcsUnitPrefixes: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< Parent scope for prefixes."]
     pub static mut FLECS_IDEcsUnitPrefixesID_: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< Yocto unit prefix."]
     pub static mut EcsYocto: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< Yocto unit prefix."]
     pub static mut FLECS_IDEcsYoctoID_: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< Zepto unit prefix."]
     pub static mut EcsZepto: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< Zepto unit prefix."]
     pub static mut FLECS_IDEcsZeptoID_: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< Atto unit prefix."]
     pub static mut EcsAtto: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< Atto unit prefix."]
     pub static mut FLECS_IDEcsAttoID_: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< Femto unit prefix."]
     pub static mut EcsFemto: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< Femto unit prefix."]
     pub static mut FLECS_IDEcsFemtoID_: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< Pico unit prefix."]
     pub static mut EcsPico: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< Pico unit prefix."]
     pub static mut FLECS_IDEcsPicoID_: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< Nano unit prefix."]
     pub static mut EcsNano: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< Nano unit prefix."]
     pub static mut FLECS_IDEcsNanoID_: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< Micro unit prefix."]
     pub static mut EcsMicro: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< Micro unit prefix."]
     pub static mut FLECS_IDEcsMicroID_: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< Milli unit prefix."]
     pub static mut EcsMilli: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< Milli unit prefix."]
     pub static mut FLECS_IDEcsMilliID_: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< Centi unit prefix."]
     pub static mut EcsCenti: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< Centi unit prefix."]
     pub static mut FLECS_IDEcsCentiID_: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< Deci unit prefix."]
     pub static mut EcsDeci: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< Deci unit prefix."]
     pub static mut FLECS_IDEcsDeciID_: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< Deca unit prefix."]
     pub static mut EcsDeca: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< Deca unit prefix."]
     pub static mut FLECS_IDEcsDecaID_: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< Hecto unit prefix."]
     pub static mut EcsHecto: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< Hecto unit prefix."]
     pub static mut FLECS_IDEcsHectoID_: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< Kilo unit prefix."]
     pub static mut EcsKilo: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< Kilo unit prefix."]
     pub static mut FLECS_IDEcsKiloID_: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< Mega unit prefix."]
     pub static mut EcsMega: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< Mega unit prefix."]
     pub static mut FLECS_IDEcsMegaID_: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< Giga unit prefix."]
     pub static mut EcsGiga: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< Giga unit prefix."]
     pub static mut FLECS_IDEcsGigaID_: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< Tera unit prefix."]
     pub static mut EcsTera: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< Tera unit prefix."]
     pub static mut FLECS_IDEcsTeraID_: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< Peta unit prefix."]
     pub static mut EcsPeta: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< Peta unit prefix."]
     pub static mut FLECS_IDEcsPetaID_: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< Exa unit prefix."]
     pub static mut EcsExa: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< Exa unit prefix."]
     pub static mut FLECS_IDEcsExaID_: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< Zetta unit prefix."]
     pub static mut EcsZetta: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< Zetta unit prefix."]
     pub static mut FLECS_IDEcsZettaID_: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< Yotta unit prefix."]
     pub static mut EcsYotta: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< Yotta unit prefix."]
     pub static mut FLECS_IDEcsYottaID_: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< Kibi unit prefix."]
     pub static mut EcsKibi: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< Kibi unit prefix."]
     pub static mut FLECS_IDEcsKibiID_: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< Mebi unit prefix."]
     pub static mut EcsMebi: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< Mebi unit prefix."]
     pub static mut FLECS_IDEcsMebiID_: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< Gibi unit prefix."]
     pub static mut EcsGibi: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< Gibi unit prefix."]
     pub static mut FLECS_IDEcsGibiID_: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< Tebi unit prefix."]
     pub static mut EcsTebi: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< Tebi unit prefix."]
     pub static mut FLECS_IDEcsTebiID_: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< Pebi unit prefix."]
     pub static mut EcsPebi: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< Pebi unit prefix."]
     pub static mut FLECS_IDEcsPebiID_: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< Exbi unit prefix."]
     pub static mut EcsExbi: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< Exbi unit prefix."]
     pub static mut FLECS_IDEcsExbiID_: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< Zebi unit prefix."]
     pub static mut EcsZebi: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< Zebi unit prefix."]
     pub static mut FLECS_IDEcsZebiID_: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< Yobi unit prefix."]
     pub static mut EcsYobi: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< Yobi unit prefix."]
     pub static mut FLECS_IDEcsYobiID_: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< Duration quantity."]
     pub static mut EcsDuration: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< Duration quantity."]
     pub static mut FLECS_IDEcsDurationID_: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< PicoSeconds duration unit."]
     pub static mut EcsPicoSeconds: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< PicoSeconds duration unit."]
     pub static mut FLECS_IDEcsPicoSecondsID_: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< NanoSeconds duration unit."]
     pub static mut EcsNanoSeconds: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< NanoSeconds duration unit."]
     pub static mut FLECS_IDEcsNanoSecondsID_: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< MicroSeconds duration unit."]
     pub static mut EcsMicroSeconds: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< MicroSeconds duration unit."]
     pub static mut FLECS_IDEcsMicroSecondsID_: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< MilliSeconds duration unit."]
     pub static mut EcsMilliSeconds: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< MilliSeconds duration unit."]
     pub static mut FLECS_IDEcsMilliSecondsID_: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< Seconds duration unit."]
     pub static mut EcsSeconds: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< Seconds duration unit."]
     pub static mut FLECS_IDEcsSecondsID_: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< Minutes duration unit."]
     pub static mut EcsMinutes: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< Minutes duration unit."]
     pub static mut FLECS_IDEcsMinutesID_: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< Hours duration unit."]
     pub static mut EcsHours: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< Hours duration unit."]
     pub static mut FLECS_IDEcsHoursID_: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< Days duration unit."]
     pub static mut EcsDays: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< Days duration unit."]
     pub static mut FLECS_IDEcsDaysID_: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< Time quantity."]
     pub static mut EcsTime: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< Time quantity."]
     pub static mut FLECS_IDEcsTimeID_: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< Date unit."]
     pub static mut EcsDate: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< Date unit."]
     pub static mut FLECS_IDEcsDateID_: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< Mass quantity."]
     pub static mut EcsMass: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< Mass quantity."]
     pub static mut FLECS_IDEcsMassID_: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< Grams unit."]
     pub static mut EcsGrams: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< Grams unit."]
     pub static mut FLECS_IDEcsGramsID_: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< KiloGrams unit."]
     pub static mut EcsKiloGrams: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< KiloGrams unit."]
     pub static mut FLECS_IDEcsKiloGramsID_: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< ElectricCurrent quantity."]
     pub static mut EcsElectricCurrent: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< ElectricCurrent quantity."]
     pub static mut FLECS_IDEcsElectricCurrentID_: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< Ampere unit."]
     pub static mut EcsAmpere: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< Ampere unit."]
     pub static mut FLECS_IDEcsAmpereID_: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< Amount quantity."]
     pub static mut EcsAmount: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< Amount quantity."]
     pub static mut FLECS_IDEcsAmountID_: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< Mole unit."]
     pub static mut EcsMole: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< Mole unit."]
     pub static mut FLECS_IDEcsMoleID_: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< LuminousIntensity quantity."]
     pub static mut EcsLuminousIntensity: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< LuminousIntensity quantity."]
     pub static mut FLECS_IDEcsLuminousIntensityID_: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< Candela unit."]
     pub static mut EcsCandela: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< Candela unit."]
     pub static mut FLECS_IDEcsCandelaID_: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< Force quantity."]
     pub static mut EcsForce: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< Force quantity."]
     pub static mut FLECS_IDEcsForceID_: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< Newton unit."]
     pub static mut EcsNewton: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< Newton unit."]
     pub static mut FLECS_IDEcsNewtonID_: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< Length quantity."]
     pub static mut EcsLength: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< Length quantity."]
     pub static mut FLECS_IDEcsLengthID_: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< Meters unit."]
     pub static mut EcsMeters: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< Meters unit."]
     pub static mut FLECS_IDEcsMetersID_: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< PicoMeters unit."]
     pub static mut EcsPicoMeters: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< PicoMeters unit."]
     pub static mut FLECS_IDEcsPicoMetersID_: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< NanoMeters unit."]
     pub static mut EcsNanoMeters: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< NanoMeters unit."]
     pub static mut FLECS_IDEcsNanoMetersID_: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< MicroMeters unit."]
     pub static mut EcsMicroMeters: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< MicroMeters unit."]
     pub static mut FLECS_IDEcsMicroMetersID_: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< MilliMeters unit."]
     pub static mut EcsMilliMeters: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< MilliMeters unit."]
     pub static mut FLECS_IDEcsMilliMetersID_: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< CentiMeters unit."]
     pub static mut EcsCentiMeters: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< CentiMeters unit."]
     pub static mut FLECS_IDEcsCentiMetersID_: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< KiloMeters unit."]
     pub static mut EcsKiloMeters: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< KiloMeters unit."]
     pub static mut FLECS_IDEcsKiloMetersID_: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< Miles unit."]
     pub static mut EcsMiles: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< Miles unit."]
     pub static mut FLECS_IDEcsMilesID_: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< Pixels unit."]
     pub static mut EcsPixels: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< Pixels unit."]
     pub static mut FLECS_IDEcsPixelsID_: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< Pressure quantity."]
     pub static mut EcsPressure: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< Pressure quantity."]
     pub static mut FLECS_IDEcsPressureID_: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< Pascal unit."]
     pub static mut EcsPascal: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< Pascal unit."]
     pub static mut FLECS_IDEcsPascalID_: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< Bar unit."]
     pub static mut EcsBar: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< Bar unit."]
     pub static mut FLECS_IDEcsBarID_: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< Speed quantity."]
     pub static mut EcsSpeed: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< Speed quantity."]
     pub static mut FLECS_IDEcsSpeedID_: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< MetersPerSecond unit."]
     pub static mut EcsMetersPerSecond: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< MetersPerSecond unit."]
     pub static mut FLECS_IDEcsMetersPerSecondID_: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< KiloMetersPerSecond unit."]
     pub static mut EcsKiloMetersPerSecond: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< KiloMetersPerSecond unit."]
     pub static mut FLECS_IDEcsKiloMetersPerSecondID_: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< KiloMetersPerHour unit."]
     pub static mut EcsKiloMetersPerHour: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< KiloMetersPerHour unit."]
     pub static mut FLECS_IDEcsKiloMetersPerHourID_: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< MilesPerHour unit."]
     pub static mut EcsMilesPerHour: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< MilesPerHour unit."]
     pub static mut FLECS_IDEcsMilesPerHourID_: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< Temperature quantity."]
     pub static mut EcsTemperature: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< Temperature quantity."]
     pub static mut FLECS_IDEcsTemperatureID_: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< Kelvin unit."]
     pub static mut EcsKelvin: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< Kelvin unit."]
     pub static mut FLECS_IDEcsKelvinID_: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< Celsius unit."]
     pub static mut EcsCelsius: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< Celsius unit."]
     pub static mut FLECS_IDEcsCelsiusID_: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< Fahrenheit unit."]
     pub static mut EcsFahrenheit: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< Fahrenheit unit."]
     pub static mut FLECS_IDEcsFahrenheitID_: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< Data quantity."]
     pub static mut EcsData: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< Data quantity."]
     pub static mut FLECS_IDEcsDataID_: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< Bits unit."]
     pub static mut EcsBits: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< Bits unit."]
     pub static mut FLECS_IDEcsBitsID_: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< KiloBits unit."]
     pub static mut EcsKiloBits: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< KiloBits unit."]
     pub static mut FLECS_IDEcsKiloBitsID_: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< MegaBits unit."]
     pub static mut EcsMegaBits: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< MegaBits unit."]
     pub static mut FLECS_IDEcsMegaBitsID_: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< GigaBits unit."]
     pub static mut EcsGigaBits: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< GigaBits unit."]
     pub static mut FLECS_IDEcsGigaBitsID_: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< Bytes unit."]
     pub static mut EcsBytes: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< Bytes unit."]
     pub static mut FLECS_IDEcsBytesID_: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< KiloBytes unit."]
     pub static mut EcsKiloBytes: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< KiloBytes unit."]
     pub static mut FLECS_IDEcsKiloBytesID_: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< MegaBytes unit."]
     pub static mut EcsMegaBytes: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< MegaBytes unit."]
     pub static mut FLECS_IDEcsMegaBytesID_: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< GigaBytes unit."]
     pub static mut EcsGigaBytes: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< GigaBytes unit."]
     pub static mut FLECS_IDEcsGigaBytesID_: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< KibiBytes unit."]
     pub static mut EcsKibiBytes: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< KibiBytes unit."]
     pub static mut FLECS_IDEcsKibiBytesID_: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< MebiBytes unit."]
     pub static mut EcsMebiBytes: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< MebiBytes unit."]
     pub static mut FLECS_IDEcsMebiBytesID_: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< GibiBytes unit."]
     pub static mut EcsGibiBytes: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< GibiBytes unit."]
     pub static mut FLECS_IDEcsGibiBytesID_: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< DataRate quantity."]
     pub static mut EcsDataRate: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< DataRate quantity."]
     pub static mut FLECS_IDEcsDataRateID_: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< BitsPerSecond unit."]
     pub static mut EcsBitsPerSecond: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< BitsPerSecond unit."]
     pub static mut FLECS_IDEcsBitsPerSecondID_: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< KiloBitsPerSecond unit."]
     pub static mut EcsKiloBitsPerSecond: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< KiloBitsPerSecond unit."]
     pub static mut FLECS_IDEcsKiloBitsPerSecondID_: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< MegaBitsPerSecond unit."]
     pub static mut EcsMegaBitsPerSecond: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< MegaBitsPerSecond unit."]
     pub static mut FLECS_IDEcsMegaBitsPerSecondID_: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< GigaBitsPerSecond unit."]
     pub static mut EcsGigaBitsPerSecond: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< GigaBitsPerSecond unit."]
     pub static mut FLECS_IDEcsGigaBitsPerSecondID_: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< BytesPerSecond unit."]
     pub static mut EcsBytesPerSecond: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< BytesPerSecond unit."]
     pub static mut FLECS_IDEcsBytesPerSecondID_: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< KiloBytesPerSecond unit."]
     pub static mut EcsKiloBytesPerSecond: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< KiloBytesPerSecond unit."]
     pub static mut FLECS_IDEcsKiloBytesPerSecondID_: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< MegaBytesPerSecond unit."]
     pub static mut EcsMegaBytesPerSecond: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< MegaBytesPerSecond unit."]
     pub static mut FLECS_IDEcsMegaBytesPerSecondID_: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< GigaBytesPerSecond unit."]
     pub static mut EcsGigaBytesPerSecond: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< GigaBytesPerSecond unit."]
     pub static mut FLECS_IDEcsGigaBytesPerSecondID_: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< Angle quantity."]
     pub static mut EcsAngle: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< Angle quantity."]
     pub static mut FLECS_IDEcsAngleID_: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< Radians unit."]
     pub static mut EcsRadians: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< Radians unit."]
     pub static mut FLECS_IDEcsRadiansID_: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< Degrees unit."]
     pub static mut EcsDegrees: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< Degrees unit."]
     pub static mut FLECS_IDEcsDegreesID_: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< Frequency quantity."]
     pub static mut EcsFrequency: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< Frequency quantity."]
     pub static mut FLECS_IDEcsFrequencyID_: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< Hertz unit."]
     pub static mut EcsHertz: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< Hertz unit."]
     pub static mut FLECS_IDEcsHertzID_: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< KiloHertz unit."]
     pub static mut EcsKiloHertz: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< KiloHertz unit."]
     pub static mut FLECS_IDEcsKiloHertzID_: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< MegaHertz unit."]
     pub static mut EcsMegaHertz: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< MegaHertz unit."]
     pub static mut FLECS_IDEcsMegaHertzID_: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< GigaHertz unit."]
     pub static mut EcsGigaHertz: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< GigaHertz unit."]
     pub static mut FLECS_IDEcsGigaHertzID_: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< URI quantity."]
     pub static mut EcsUri: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< URI quantity."]
     pub static mut FLECS_IDEcsUriID_: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< UriHyperlink unit."]
     pub static mut EcsUriHyperlink: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< UriHyperlink unit."]
     pub static mut FLECS_IDEcsUriHyperlinkID_: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< UriImage unit."]
     pub static mut EcsUriImage: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< UriImage unit."]
     pub static mut FLECS_IDEcsUriImageID_: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< UriFile unit."]
     pub static mut EcsUriFile: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< UriFile unit."]
     pub static mut FLECS_IDEcsUriFileID_: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< Color quantity."]
     pub static mut EcsColor: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< Color quantity."]
     pub static mut FLECS_IDEcsColorID_: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< ColorRgb unit."]
     pub static mut EcsColorRgb: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< ColorRgb unit."]
     pub static mut FLECS_IDEcsColorRgbID_: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< ColorHsl unit."]
     pub static mut EcsColorHsl: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< ColorHsl unit."]
     pub static mut FLECS_IDEcsColorHslID_: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< ColorCss unit."]
     pub static mut EcsColorCss: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< ColorCss unit."]
     pub static mut FLECS_IDEcsColorCssID_: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< Acceleration unit."]
     pub static mut EcsAcceleration: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< Acceleration unit."]
     pub static mut FLECS_IDEcsAccelerationID_: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< Percentage unit."]
     pub static mut EcsPercentage: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< Percentage unit."]
     pub static mut FLECS_IDEcsPercentageID_: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< Bel unit."]
     pub static mut EcsBel: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< Bel unit."]
     pub static mut FLECS_IDEcsBelID_: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< DeciBel unit."]
     pub static mut EcsDeciBel: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< DeciBel unit."]
     pub static mut FLECS_IDEcsDeciBelID_: ecs_entity_t;
 }
 unsafe extern "C" {
@@ -10323,22 +10637,22 @@ pub struct ecs_script_vars_t {
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of ecs_script_vars_t"][::std::mem::size_of::<ecs_script_vars_t>() - 176usize];
-    ["Alignment of ecs_script_vars_t"][::std::mem::align_of::<ecs_script_vars_t>() - 8usize];
+    ["Size of ecs_script_vars_t"][::std::mem::size_of::<ecs_script_vars_t>() - 108usize];
+    ["Alignment of ecs_script_vars_t"][::std::mem::align_of::<ecs_script_vars_t>() - 4usize];
     ["Offset of field: ecs_script_vars_t::parent"]
         [::std::mem::offset_of!(ecs_script_vars_t, parent) - 0usize];
     ["Offset of field: ecs_script_vars_t::var_index"]
-        [::std::mem::offset_of!(ecs_script_vars_t, var_index) - 8usize];
+        [::std::mem::offset_of!(ecs_script_vars_t, var_index) - 4usize];
     ["Offset of field: ecs_script_vars_t::vars"]
-        [::std::mem::offset_of!(ecs_script_vars_t, vars) - 128usize];
+        [::std::mem::offset_of!(ecs_script_vars_t, vars) - 80usize];
     ["Offset of field: ecs_script_vars_t::world"]
-        [::std::mem::offset_of!(ecs_script_vars_t, world) - 144usize];
+        [::std::mem::offset_of!(ecs_script_vars_t, world) - 92usize];
     ["Offset of field: ecs_script_vars_t::stack"]
-        [::std::mem::offset_of!(ecs_script_vars_t, stack) - 152usize];
+        [::std::mem::offset_of!(ecs_script_vars_t, stack) - 96usize];
     ["Offset of field: ecs_script_vars_t::cursor"]
-        [::std::mem::offset_of!(ecs_script_vars_t, cursor) - 160usize];
+        [::std::mem::offset_of!(ecs_script_vars_t, cursor) - 100usize];
     ["Offset of field: ecs_script_vars_t::allocator"]
-        [::std::mem::offset_of!(ecs_script_vars_t, allocator) - 168usize];
+        [::std::mem::offset_of!(ecs_script_vars_t, allocator) - 104usize];
 };
 #[doc = " Script object."]
 #[repr(C)]
@@ -10350,11 +10664,11 @@ pub struct ecs_script_t {
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of ecs_script_t"][::std::mem::size_of::<ecs_script_t>() - 24usize];
-    ["Alignment of ecs_script_t"][::std::mem::align_of::<ecs_script_t>() - 8usize];
+    ["Size of ecs_script_t"][::std::mem::size_of::<ecs_script_t>() - 12usize];
+    ["Alignment of ecs_script_t"][::std::mem::align_of::<ecs_script_t>() - 4usize];
     ["Offset of field: ecs_script_t::world"][::std::mem::offset_of!(ecs_script_t, world) - 0usize];
-    ["Offset of field: ecs_script_t::name"][::std::mem::offset_of!(ecs_script_t, name) - 8usize];
-    ["Offset of field: ecs_script_t::code"][::std::mem::offset_of!(ecs_script_t, code) - 16usize];
+    ["Offset of field: ecs_script_t::name"][::std::mem::offset_of!(ecs_script_t, name) - 4usize];
+    ["Offset of field: ecs_script_t::code"][::std::mem::offset_of!(ecs_script_t, code) - 8usize];
 };
 #[doc = " Script component.\n This component is added to the entities of managed scripts and templates."]
 #[repr(C)]
@@ -10365,11 +10679,11 @@ pub struct EcsScript {
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of EcsScript"][::std::mem::size_of::<EcsScript>() - 16usize];
-    ["Alignment of EcsScript"][::std::mem::align_of::<EcsScript>() - 8usize];
+    ["Size of EcsScript"][::std::mem::size_of::<EcsScript>() - 8usize];
+    ["Alignment of EcsScript"][::std::mem::align_of::<EcsScript>() - 4usize];
     ["Offset of field: EcsScript::script"][::std::mem::offset_of!(EcsScript, script) - 0usize];
     ["Offset of field: EcsScript::template_"]
-        [::std::mem::offset_of!(EcsScript, template_) - 8usize];
+        [::std::mem::offset_of!(EcsScript, template_) - 4usize];
 };
 unsafe extern "C" {
     #[doc = " Parse script.\n This operation parses a script and returns a script object upon success. To\n run the script, call ecs_script_eval().\n\n @param world The world.\n @param name Name of the script (typically a file/module name).\n @param code The script code.\n @return Script object if success, NULL if failed."]
@@ -10423,14 +10737,14 @@ pub struct ecs_script_desc_t {
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of ecs_script_desc_t"][::std::mem::size_of::<ecs_script_desc_t>() - 24usize];
+    ["Size of ecs_script_desc_t"][::std::mem::size_of::<ecs_script_desc_t>() - 16usize];
     ["Alignment of ecs_script_desc_t"][::std::mem::align_of::<ecs_script_desc_t>() - 8usize];
     ["Offset of field: ecs_script_desc_t::entity"]
         [::std::mem::offset_of!(ecs_script_desc_t, entity) - 0usize];
     ["Offset of field: ecs_script_desc_t::filename"]
         [::std::mem::offset_of!(ecs_script_desc_t, filename) - 8usize];
     ["Offset of field: ecs_script_desc_t::code"]
-        [::std::mem::offset_of!(ecs_script_desc_t, code) - 16usize];
+        [::std::mem::offset_of!(ecs_script_desc_t, code) - 12usize];
 };
 unsafe extern "C" {
     #[doc = " Load managed script.\n A managed script tracks which entities it creates, and keeps those entities\n synchronized when the contents of the script are updated. When the script is\n updated, entities that are no longer in the new version will be deleted.\n\n This feature is experimental.\n\n @param world The world.\n @param desc Script descriptor."]
@@ -10515,19 +10829,19 @@ pub struct ecs_script_expr_run_desc_t {
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of ecs_script_expr_run_desc_t"]
-        [::std::mem::size_of::<ecs_script_expr_run_desc_t>() - 40usize];
+        [::std::mem::size_of::<ecs_script_expr_run_desc_t>() - 20usize];
     ["Alignment of ecs_script_expr_run_desc_t"]
-        [::std::mem::align_of::<ecs_script_expr_run_desc_t>() - 8usize];
+        [::std::mem::align_of::<ecs_script_expr_run_desc_t>() - 4usize];
     ["Offset of field: ecs_script_expr_run_desc_t::name"]
         [::std::mem::offset_of!(ecs_script_expr_run_desc_t, name) - 0usize];
     ["Offset of field: ecs_script_expr_run_desc_t::expr"]
-        [::std::mem::offset_of!(ecs_script_expr_run_desc_t, expr) - 8usize];
+        [::std::mem::offset_of!(ecs_script_expr_run_desc_t, expr) - 4usize];
     ["Offset of field: ecs_script_expr_run_desc_t::lookup_action"]
-        [::std::mem::offset_of!(ecs_script_expr_run_desc_t, lookup_action) - 16usize];
+        [::std::mem::offset_of!(ecs_script_expr_run_desc_t, lookup_action) - 8usize];
     ["Offset of field: ecs_script_expr_run_desc_t::lookup_ctx"]
-        [::std::mem::offset_of!(ecs_script_expr_run_desc_t, lookup_ctx) - 24usize];
+        [::std::mem::offset_of!(ecs_script_expr_run_desc_t, lookup_ctx) - 12usize];
     ["Offset of field: ecs_script_expr_run_desc_t::vars"]
-        [::std::mem::offset_of!(ecs_script_expr_run_desc_t, vars) - 32usize];
+        [::std::mem::offset_of!(ecs_script_expr_run_desc_t, vars) - 16usize];
 };
 unsafe extern "C" {
     #[doc = " Parse standalone expression into value.\n This operation parses a flecs expression into the provided pointer. The\n memory pointed to must be large enough to contain a value of the used type.\n\n If no type and pointer are provided for the value argument, the operation\n will discover the type from the expression and allocate storage for the\n value. The allocated value must be freed with ecs_value_free().\n\n @param world The world.\n @param ptr The pointer to the expression to parse.\n @param value The value containing type & pointer to write to.\n @param desc Configuration parameters for deserializer.\n @return Pointer to the character after the last one read, or NULL if failed."]
@@ -10585,6 +10899,7 @@ unsafe extern "C" {
     pub fn FlecsScriptImport(world: *mut ecs_world_t);
 }
 unsafe extern "C" {
+    #[doc = "< Component id for EcsDocDescription."]
     pub static FLECS_IDEcsDocDescriptionID_: ecs_entity_t;
 }
 unsafe extern "C" {
@@ -10611,8 +10926,8 @@ pub struct EcsDocDescription {
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of EcsDocDescription"][::std::mem::size_of::<EcsDocDescription>() - 8usize];
-    ["Alignment of EcsDocDescription"][::std::mem::align_of::<EcsDocDescription>() - 8usize];
+    ["Size of EcsDocDescription"][::std::mem::size_of::<EcsDocDescription>() - 4usize];
+    ["Alignment of EcsDocDescription"][::std::mem::align_of::<EcsDocDescription>() - 4usize];
     ["Offset of field: EcsDocDescription::value"]
         [::std::mem::offset_of!(EcsDocDescription, value) - 0usize];
 };
@@ -10695,7 +11010,6 @@ unsafe extern "C" {
     #[doc = " Doc module import function.\n Usage:\n @code\n ECS_IMPORT(world, FlecsDoc)\n @endcode\n\n @param world The world."]
     pub fn FlecsDocImport(world: *mut ecs_world_t);
 }
-pub type wchar_t = ::std::os::raw::c_int;
 pub type max_align_t = f64;
 #[doc = " Primitive type definitions.\n These typedefs allow the builtin primitives to be used as regular components:\n\n @code\n ecs_set(world, e, ecs_i32_t, {10});\n @endcode\n\n Or a more useful example (create an enum constant with a manual value):\n\n @code\n ecs_set_pair_second(world, e, EcsConstant, ecs_i32_t, {10});\n @endcode"]
 pub type ecs_bool_t = bool;
@@ -10715,42 +11029,55 @@ pub type ecs_f32_t = f32;
 pub type ecs_f64_t = f64;
 pub type ecs_string_t = *mut ::std::os::raw::c_char;
 unsafe extern "C" {
+    #[doc = "< Id for component added to all types with reflection data."]
     pub static FLECS_IDEcsTypeID_: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< Id for component that stores a type specific serializer."]
     pub static FLECS_IDEcsTypeSerializerID_: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< Id for component that stores reflection data for a primitive type."]
     pub static FLECS_IDEcsPrimitiveID_: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< Id for component that stores reflection data for an enum type."]
     pub static FLECS_IDEcsEnumID_: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< Id for component that stores reflection data for a bitmask type."]
     pub static FLECS_IDEcsBitmaskID_: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< Id for component that stores reflection data for struct members."]
     pub static FLECS_IDEcsMemberID_: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< Id for component that stores min/max ranges for member values."]
     pub static FLECS_IDEcsMemberRangesID_: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< Id for component that stores reflection data for a struct type."]
     pub static FLECS_IDEcsStructID_: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< Id for component that stores reflection data for an array type."]
     pub static FLECS_IDEcsArrayID_: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< Id for component that stores reflection data for a vector type."]
     pub static FLECS_IDEcsVectorID_: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< Id for component that stores reflection data for an opaque type."]
     pub static FLECS_IDEcsOpaqueID_: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< Id for component that stores unit data."]
     pub static FLECS_IDEcsUnitID_: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< Id for component that stores unit prefix data."]
     pub static FLECS_IDEcsUnitPrefixID_: ecs_entity_t;
 }
 unsafe extern "C" {
@@ -10762,57 +11089,75 @@ unsafe extern "C" {
     pub static EcsQuantity: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< Builtin boolean type."]
     pub static FLECS_IDecs_bool_tID_: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< Builtin char type."]
     pub static FLECS_IDecs_char_tID_: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< Builtin byte type."]
     pub static FLECS_IDecs_byte_tID_: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< Builtin 8 bit unsigned int type."]
     pub static FLECS_IDecs_u8_tID_: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< Builtin 16 bit unsigned int type."]
     pub static FLECS_IDecs_u16_tID_: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< Builtin 32 bit unsigned int type."]
     pub static FLECS_IDecs_u32_tID_: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< Builtin 64 bit unsigned int type."]
     pub static FLECS_IDecs_u64_tID_: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< Builtin pointer sized unsigned int type."]
     pub static FLECS_IDecs_uptr_tID_: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< Builtin 8 bit signed int type."]
     pub static FLECS_IDecs_i8_tID_: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< Builtin 16 bit signed int type."]
     pub static FLECS_IDecs_i16_tID_: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< Builtin 32 bit signed int type."]
     pub static FLECS_IDecs_i32_tID_: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< Builtin 64 bit signed int type."]
     pub static FLECS_IDecs_i64_tID_: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< Builtin pointer sized signed int type."]
     pub static FLECS_IDecs_iptr_tID_: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< Builtin 32 bit floating point type."]
     pub static FLECS_IDecs_f32_tID_: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< Builtin 64 bit floating point type."]
     pub static FLECS_IDecs_f64_tID_: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< Builtin string type."]
     pub static FLECS_IDecs_string_tID_: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< Builtin entity type."]
     pub static FLECS_IDecs_entity_tID_: ecs_entity_t;
 }
 unsafe extern "C" {
+    #[doc = "< Builtin (component) id type."]
     pub static FLECS_IDecs_id_tID_: ecs_entity_t;
 }
 pub const ecs_type_kind_t_EcsPrimitiveType: ecs_type_kind_t = 0;
@@ -10824,7 +11169,7 @@ pub const ecs_type_kind_t_EcsVectorType: ecs_type_kind_t = 5;
 pub const ecs_type_kind_t_EcsOpaqueType: ecs_type_kind_t = 6;
 pub const ecs_type_kind_t_EcsTypeKindLast: ecs_type_kind_t = 6;
 #[doc = " Type kinds supported by meta addon"]
-pub type ecs_type_kind_t = ::std::os::raw::c_uint;
+pub type ecs_type_kind_t = ::std::os::raw::c_int;
 #[doc = " Component that is automatically added to every type with the right kind."]
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
@@ -10864,7 +11209,7 @@ pub const ecs_primitive_kind_t_EcsEntity: ecs_primitive_kind_t = 17;
 pub const ecs_primitive_kind_t_EcsId: ecs_primitive_kind_t = 18;
 pub const ecs_primitive_kind_t_EcsPrimitiveKindLast: ecs_primitive_kind_t = 18;
 #[doc = " Primitive type kinds supported by meta addon"]
-pub type ecs_primitive_kind_t = ::std::os::raw::c_uint;
+pub type ecs_primitive_kind_t = ::std::os::raw::c_int;
 #[doc = " Component added to primitive types"]
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
@@ -11003,8 +11348,8 @@ pub struct EcsStruct {
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of EcsStruct"][::std::mem::size_of::<EcsStruct>() - 16usize];
-    ["Alignment of EcsStruct"][::std::mem::align_of::<EcsStruct>() - 8usize];
+    ["Size of EcsStruct"][::std::mem::size_of::<EcsStruct>() - 12usize];
+    ["Alignment of EcsStruct"][::std::mem::align_of::<EcsStruct>() - 4usize];
     ["Offset of field: EcsStruct::members"][::std::mem::offset_of!(EcsStruct, members) - 0usize];
 };
 #[doc = " Type that describes an enum constant"]
@@ -11020,14 +11365,14 @@ pub struct ecs_enum_constant_t {
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of ecs_enum_constant_t"][::std::mem::size_of::<ecs_enum_constant_t>() - 24usize];
+    ["Size of ecs_enum_constant_t"][::std::mem::size_of::<ecs_enum_constant_t>() - 16usize];
     ["Alignment of ecs_enum_constant_t"][::std::mem::align_of::<ecs_enum_constant_t>() - 8usize];
     ["Offset of field: ecs_enum_constant_t::name"]
         [::std::mem::offset_of!(ecs_enum_constant_t, name) - 0usize];
     ["Offset of field: ecs_enum_constant_t::value"]
-        [::std::mem::offset_of!(ecs_enum_constant_t, value) - 8usize];
+        [::std::mem::offset_of!(ecs_enum_constant_t, value) - 4usize];
     ["Offset of field: ecs_enum_constant_t::constant"]
-        [::std::mem::offset_of!(ecs_enum_constant_t, constant) - 16usize];
+        [::std::mem::offset_of!(ecs_enum_constant_t, constant) - 8usize];
 };
 #[doc = " Component added to enum type entities"]
 #[repr(C)]
@@ -11038,8 +11383,8 @@ pub struct EcsEnum {
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of EcsEnum"][::std::mem::size_of::<EcsEnum>() - 40usize];
-    ["Alignment of EcsEnum"][::std::mem::align_of::<EcsEnum>() - 8usize];
+    ["Size of EcsEnum"][::std::mem::size_of::<EcsEnum>() - 24usize];
+    ["Alignment of EcsEnum"][::std::mem::align_of::<EcsEnum>() - 4usize];
     ["Offset of field: EcsEnum::constants"][::std::mem::offset_of!(EcsEnum, constants) - 0usize];
 };
 #[doc = " Type that describes an bitmask constant"]
@@ -11055,15 +11400,15 @@ pub struct ecs_bitmask_constant_t {
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of ecs_bitmask_constant_t"][::std::mem::size_of::<ecs_bitmask_constant_t>() - 24usize];
+    ["Size of ecs_bitmask_constant_t"][::std::mem::size_of::<ecs_bitmask_constant_t>() - 16usize];
     ["Alignment of ecs_bitmask_constant_t"]
         [::std::mem::align_of::<ecs_bitmask_constant_t>() - 8usize];
     ["Offset of field: ecs_bitmask_constant_t::name"]
         [::std::mem::offset_of!(ecs_bitmask_constant_t, name) - 0usize];
     ["Offset of field: ecs_bitmask_constant_t::value"]
-        [::std::mem::offset_of!(ecs_bitmask_constant_t, value) - 8usize];
+        [::std::mem::offset_of!(ecs_bitmask_constant_t, value) - 4usize];
     ["Offset of field: ecs_bitmask_constant_t::constant"]
-        [::std::mem::offset_of!(ecs_bitmask_constant_t, constant) - 16usize];
+        [::std::mem::offset_of!(ecs_bitmask_constant_t, constant) - 8usize];
 };
 #[doc = " Component added to bitmask type entities"]
 #[repr(C)]
@@ -11074,8 +11419,8 @@ pub struct EcsBitmask {
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of EcsBitmask"][::std::mem::size_of::<EcsBitmask>() - 40usize];
-    ["Alignment of EcsBitmask"][::std::mem::align_of::<EcsBitmask>() - 8usize];
+    ["Size of EcsBitmask"][::std::mem::size_of::<EcsBitmask>() - 24usize];
+    ["Alignment of EcsBitmask"][::std::mem::align_of::<EcsBitmask>() - 4usize];
     ["Offset of field: EcsBitmask::constants"]
         [::std::mem::offset_of!(EcsBitmask, constants) - 0usize];
 };
@@ -11132,16 +11477,16 @@ pub struct ecs_serializer_t {
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of ecs_serializer_t"][::std::mem::size_of::<ecs_serializer_t>() - 32usize];
-    ["Alignment of ecs_serializer_t"][::std::mem::align_of::<ecs_serializer_t>() - 8usize];
+    ["Size of ecs_serializer_t"][::std::mem::size_of::<ecs_serializer_t>() - 16usize];
+    ["Alignment of ecs_serializer_t"][::std::mem::align_of::<ecs_serializer_t>() - 4usize];
     ["Offset of field: ecs_serializer_t::value"]
         [::std::mem::offset_of!(ecs_serializer_t, value) - 0usize];
     ["Offset of field: ecs_serializer_t::member"]
-        [::std::mem::offset_of!(ecs_serializer_t, member) - 8usize];
+        [::std::mem::offset_of!(ecs_serializer_t, member) - 4usize];
     ["Offset of field: ecs_serializer_t::world"]
-        [::std::mem::offset_of!(ecs_serializer_t, world) - 16usize];
+        [::std::mem::offset_of!(ecs_serializer_t, world) - 8usize];
     ["Offset of field: ecs_serializer_t::ctx"]
-        [::std::mem::offset_of!(ecs_serializer_t, ctx) - 24usize];
+        [::std::mem::offset_of!(ecs_serializer_t, ctx) - 12usize];
 };
 #[doc = " Callback invoked serializing an opaque type."]
 pub type ecs_meta_serialize_t = ::std::option::Option<
@@ -11224,36 +11569,36 @@ pub struct EcsOpaque {
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of EcsOpaque"][::std::mem::size_of::<EcsOpaque>() - 128usize];
+    ["Size of EcsOpaque"][::std::mem::size_of::<EcsOpaque>() - 72usize];
     ["Alignment of EcsOpaque"][::std::mem::align_of::<EcsOpaque>() - 8usize];
     ["Offset of field: EcsOpaque::as_type"][::std::mem::offset_of!(EcsOpaque, as_type) - 0usize];
     ["Offset of field: EcsOpaque::serialize"]
         [::std::mem::offset_of!(EcsOpaque, serialize) - 8usize];
     ["Offset of field: EcsOpaque::assign_bool"]
-        [::std::mem::offset_of!(EcsOpaque, assign_bool) - 16usize];
+        [::std::mem::offset_of!(EcsOpaque, assign_bool) - 12usize];
     ["Offset of field: EcsOpaque::assign_char"]
-        [::std::mem::offset_of!(EcsOpaque, assign_char) - 24usize];
+        [::std::mem::offset_of!(EcsOpaque, assign_char) - 16usize];
     ["Offset of field: EcsOpaque::assign_int"]
-        [::std::mem::offset_of!(EcsOpaque, assign_int) - 32usize];
+        [::std::mem::offset_of!(EcsOpaque, assign_int) - 20usize];
     ["Offset of field: EcsOpaque::assign_uint"]
-        [::std::mem::offset_of!(EcsOpaque, assign_uint) - 40usize];
+        [::std::mem::offset_of!(EcsOpaque, assign_uint) - 24usize];
     ["Offset of field: EcsOpaque::assign_float"]
-        [::std::mem::offset_of!(EcsOpaque, assign_float) - 48usize];
+        [::std::mem::offset_of!(EcsOpaque, assign_float) - 28usize];
     ["Offset of field: EcsOpaque::assign_string"]
-        [::std::mem::offset_of!(EcsOpaque, assign_string) - 56usize];
+        [::std::mem::offset_of!(EcsOpaque, assign_string) - 32usize];
     ["Offset of field: EcsOpaque::assign_entity"]
-        [::std::mem::offset_of!(EcsOpaque, assign_entity) - 64usize];
+        [::std::mem::offset_of!(EcsOpaque, assign_entity) - 36usize];
     ["Offset of field: EcsOpaque::assign_id"]
-        [::std::mem::offset_of!(EcsOpaque, assign_id) - 72usize];
+        [::std::mem::offset_of!(EcsOpaque, assign_id) - 40usize];
     ["Offset of field: EcsOpaque::assign_null"]
-        [::std::mem::offset_of!(EcsOpaque, assign_null) - 80usize];
-    ["Offset of field: EcsOpaque::clear"][::std::mem::offset_of!(EcsOpaque, clear) - 88usize];
+        [::std::mem::offset_of!(EcsOpaque, assign_null) - 44usize];
+    ["Offset of field: EcsOpaque::clear"][::std::mem::offset_of!(EcsOpaque, clear) - 48usize];
     ["Offset of field: EcsOpaque::ensure_element"]
-        [::std::mem::offset_of!(EcsOpaque, ensure_element) - 96usize];
+        [::std::mem::offset_of!(EcsOpaque, ensure_element) - 52usize];
     ["Offset of field: EcsOpaque::ensure_member"]
-        [::std::mem::offset_of!(EcsOpaque, ensure_member) - 104usize];
-    ["Offset of field: EcsOpaque::count"][::std::mem::offset_of!(EcsOpaque, count) - 112usize];
-    ["Offset of field: EcsOpaque::resize"][::std::mem::offset_of!(EcsOpaque, resize) - 120usize];
+        [::std::mem::offset_of!(EcsOpaque, ensure_member) - 56usize];
+    ["Offset of field: EcsOpaque::count"][::std::mem::offset_of!(EcsOpaque, count) - 60usize];
+    ["Offset of field: EcsOpaque::resize"][::std::mem::offset_of!(EcsOpaque, resize) - 64usize];
 };
 #[doc = " Helper type to describe translation between two units. Note that this\n is not intended as a generic approach to unit conversions (e.g. from celsius\n to fahrenheit) but to translate between units that derive from the same base\n (e.g. meters to kilometers).\n\n Note that power is applied to the factor. When describing a translation of\n 1000, either use {factor = 1000, power = 1} or {factor = 1, power = 3}."]
 #[repr(C)]
@@ -11311,12 +11656,12 @@ pub struct EcsUnitPrefix {
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of EcsUnitPrefix"][::std::mem::size_of::<EcsUnitPrefix>() - 16usize];
-    ["Alignment of EcsUnitPrefix"][::std::mem::align_of::<EcsUnitPrefix>() - 8usize];
+    ["Size of EcsUnitPrefix"][::std::mem::size_of::<EcsUnitPrefix>() - 12usize];
+    ["Alignment of EcsUnitPrefix"][::std::mem::align_of::<EcsUnitPrefix>() - 4usize];
     ["Offset of field: EcsUnitPrefix::symbol"]
         [::std::mem::offset_of!(EcsUnitPrefix, symbol) - 0usize];
     ["Offset of field: EcsUnitPrefix::translation"]
-        [::std::mem::offset_of!(EcsUnitPrefix, translation) - 8usize];
+        [::std::mem::offset_of!(EcsUnitPrefix, translation) - 4usize];
 };
 pub const ecs_meta_type_op_kind_t_EcsOpArray: ecs_meta_type_op_kind_t = 0;
 pub const ecs_meta_type_op_kind_t_EcsOpVector: ecs_meta_type_op_kind_t = 1;
@@ -11349,7 +11694,7 @@ pub const ecs_meta_type_op_kind_t_EcsOpEntity: ecs_meta_type_op_kind_t = 25;
 pub const ecs_meta_type_op_kind_t_EcsOpId: ecs_meta_type_op_kind_t = 26;
 pub const ecs_meta_type_op_kind_t_EcsMetaTypeOpKindLast: ecs_meta_type_op_kind_t = 26;
 #[doc = " Serializer instruction opcodes.\n The meta type serializer works by generating a flattened array with\n instructions that tells a serializer what kind of fields can be found in a\n type at which offsets."]
-pub type ecs_meta_type_op_kind_t = ::std::os::raw::c_uint;
+pub type ecs_meta_type_op_kind_t = ::std::os::raw::c_int;
 #[doc = " Meta type serializer instruction data."]
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
@@ -11375,7 +11720,7 @@ pub struct ecs_meta_type_op_t {
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of ecs_meta_type_op_t"][::std::mem::size_of::<ecs_meta_type_op_t>() - 56usize];
+    ["Size of ecs_meta_type_op_t"][::std::mem::size_of::<ecs_meta_type_op_t>() - 40usize];
     ["Alignment of ecs_meta_type_op_t"][::std::mem::align_of::<ecs_meta_type_op_t>() - 8usize];
     ["Offset of field: ecs_meta_type_op_t::kind"]
         [::std::mem::offset_of!(ecs_meta_type_op_t, kind) - 0usize];
@@ -11384,17 +11729,17 @@ const _: () = {
     ["Offset of field: ecs_meta_type_op_t::count"]
         [::std::mem::offset_of!(ecs_meta_type_op_t, count) - 8usize];
     ["Offset of field: ecs_meta_type_op_t::name"]
-        [::std::mem::offset_of!(ecs_meta_type_op_t, name) - 16usize];
+        [::std::mem::offset_of!(ecs_meta_type_op_t, name) - 12usize];
     ["Offset of field: ecs_meta_type_op_t::op_count"]
-        [::std::mem::offset_of!(ecs_meta_type_op_t, op_count) - 24usize];
+        [::std::mem::offset_of!(ecs_meta_type_op_t, op_count) - 16usize];
     ["Offset of field: ecs_meta_type_op_t::size"]
-        [::std::mem::offset_of!(ecs_meta_type_op_t, size) - 28usize];
+        [::std::mem::offset_of!(ecs_meta_type_op_t, size) - 20usize];
     ["Offset of field: ecs_meta_type_op_t::type_"]
-        [::std::mem::offset_of!(ecs_meta_type_op_t, type_) - 32usize];
+        [::std::mem::offset_of!(ecs_meta_type_op_t, type_) - 24usize];
     ["Offset of field: ecs_meta_type_op_t::member_index"]
-        [::std::mem::offset_of!(ecs_meta_type_op_t, member_index) - 40usize];
+        [::std::mem::offset_of!(ecs_meta_type_op_t, member_index) - 32usize];
     ["Offset of field: ecs_meta_type_op_t::members"]
-        [::std::mem::offset_of!(ecs_meta_type_op_t, members) - 48usize];
+        [::std::mem::offset_of!(ecs_meta_type_op_t, members) - 36usize];
 };
 #[doc = " Component that stores the type serializer.\n Added to all types with reflection data."]
 #[repr(C)]
@@ -11405,8 +11750,8 @@ pub struct EcsTypeSerializer {
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of EcsTypeSerializer"][::std::mem::size_of::<EcsTypeSerializer>() - 16usize];
-    ["Alignment of EcsTypeSerializer"][::std::mem::align_of::<EcsTypeSerializer>() - 8usize];
+    ["Size of EcsTypeSerializer"][::std::mem::size_of::<EcsTypeSerializer>() - 12usize];
+    ["Alignment of EcsTypeSerializer"][::std::mem::align_of::<EcsTypeSerializer>() - 4usize];
     ["Offset of field: EcsTypeSerializer::ops"]
         [::std::mem::offset_of!(EcsTypeSerializer, ops) - 0usize];
 };
@@ -11445,36 +11790,36 @@ pub struct ecs_meta_scope_t {
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of ecs_meta_scope_t"][::std::mem::size_of::<ecs_meta_scope_t>() - 80usize];
+    ["Size of ecs_meta_scope_t"][::std::mem::size_of::<ecs_meta_scope_t>() - 56usize];
     ["Alignment of ecs_meta_scope_t"][::std::mem::align_of::<ecs_meta_scope_t>() - 8usize];
     ["Offset of field: ecs_meta_scope_t::type_"]
         [::std::mem::offset_of!(ecs_meta_scope_t, type_) - 0usize];
     ["Offset of field: ecs_meta_scope_t::ops"]
         [::std::mem::offset_of!(ecs_meta_scope_t, ops) - 8usize];
     ["Offset of field: ecs_meta_scope_t::op_count"]
-        [::std::mem::offset_of!(ecs_meta_scope_t, op_count) - 16usize];
+        [::std::mem::offset_of!(ecs_meta_scope_t, op_count) - 12usize];
     ["Offset of field: ecs_meta_scope_t::op_cur"]
-        [::std::mem::offset_of!(ecs_meta_scope_t, op_cur) - 20usize];
+        [::std::mem::offset_of!(ecs_meta_scope_t, op_cur) - 16usize];
     ["Offset of field: ecs_meta_scope_t::elem_cur"]
-        [::std::mem::offset_of!(ecs_meta_scope_t, elem_cur) - 24usize];
+        [::std::mem::offset_of!(ecs_meta_scope_t, elem_cur) - 20usize];
     ["Offset of field: ecs_meta_scope_t::prev_depth"]
-        [::std::mem::offset_of!(ecs_meta_scope_t, prev_depth) - 28usize];
+        [::std::mem::offset_of!(ecs_meta_scope_t, prev_depth) - 24usize];
     ["Offset of field: ecs_meta_scope_t::ptr"]
-        [::std::mem::offset_of!(ecs_meta_scope_t, ptr) - 32usize];
+        [::std::mem::offset_of!(ecs_meta_scope_t, ptr) - 28usize];
     ["Offset of field: ecs_meta_scope_t::comp"]
-        [::std::mem::offset_of!(ecs_meta_scope_t, comp) - 40usize];
+        [::std::mem::offset_of!(ecs_meta_scope_t, comp) - 32usize];
     ["Offset of field: ecs_meta_scope_t::opaque"]
-        [::std::mem::offset_of!(ecs_meta_scope_t, opaque) - 48usize];
+        [::std::mem::offset_of!(ecs_meta_scope_t, opaque) - 36usize];
     ["Offset of field: ecs_meta_scope_t::vector"]
-        [::std::mem::offset_of!(ecs_meta_scope_t, vector) - 56usize];
+        [::std::mem::offset_of!(ecs_meta_scope_t, vector) - 40usize];
     ["Offset of field: ecs_meta_scope_t::members"]
-        [::std::mem::offset_of!(ecs_meta_scope_t, members) - 64usize];
+        [::std::mem::offset_of!(ecs_meta_scope_t, members) - 44usize];
     ["Offset of field: ecs_meta_scope_t::is_collection"]
-        [::std::mem::offset_of!(ecs_meta_scope_t, is_collection) - 72usize];
+        [::std::mem::offset_of!(ecs_meta_scope_t, is_collection) - 48usize];
     ["Offset of field: ecs_meta_scope_t::is_inline_array"]
-        [::std::mem::offset_of!(ecs_meta_scope_t, is_inline_array) - 73usize];
+        [::std::mem::offset_of!(ecs_meta_scope_t, is_inline_array) - 49usize];
     ["Offset of field: ecs_meta_scope_t::is_empty_scope"]
-        [::std::mem::offset_of!(ecs_meta_scope_t, is_empty_scope) - 74usize];
+        [::std::mem::offset_of!(ecs_meta_scope_t, is_empty_scope) - 50usize];
 };
 #[doc = " Type that enables iterating/populating a value using reflection data."]
 #[repr(C)]
@@ -11503,22 +11848,22 @@ pub struct ecs_meta_cursor_t {
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of ecs_meta_cursor_t"][::std::mem::size_of::<ecs_meta_cursor_t>() - 2592usize];
+    ["Size of ecs_meta_cursor_t"][::std::mem::size_of::<ecs_meta_cursor_t>() - 1816usize];
     ["Alignment of ecs_meta_cursor_t"][::std::mem::align_of::<ecs_meta_cursor_t>() - 8usize];
     ["Offset of field: ecs_meta_cursor_t::world"]
         [::std::mem::offset_of!(ecs_meta_cursor_t, world) - 0usize];
     ["Offset of field: ecs_meta_cursor_t::scope"]
         [::std::mem::offset_of!(ecs_meta_cursor_t, scope) - 8usize];
     ["Offset of field: ecs_meta_cursor_t::depth"]
-        [::std::mem::offset_of!(ecs_meta_cursor_t, depth) - 2568usize];
+        [::std::mem::offset_of!(ecs_meta_cursor_t, depth) - 1800usize];
     ["Offset of field: ecs_meta_cursor_t::valid"]
-        [::std::mem::offset_of!(ecs_meta_cursor_t, valid) - 2572usize];
+        [::std::mem::offset_of!(ecs_meta_cursor_t, valid) - 1804usize];
     ["Offset of field: ecs_meta_cursor_t::is_primitive_scope"]
-        [::std::mem::offset_of!(ecs_meta_cursor_t, is_primitive_scope) - 2573usize];
+        [::std::mem::offset_of!(ecs_meta_cursor_t, is_primitive_scope) - 1805usize];
     ["Offset of field: ecs_meta_cursor_t::lookup_action"]
-        [::std::mem::offset_of!(ecs_meta_cursor_t, lookup_action) - 2576usize];
+        [::std::mem::offset_of!(ecs_meta_cursor_t, lookup_action) - 1808usize];
     ["Offset of field: ecs_meta_cursor_t::lookup_ctx"]
-        [::std::mem::offset_of!(ecs_meta_cursor_t, lookup_ctx) - 2584usize];
+        [::std::mem::offset_of!(ecs_meta_cursor_t, lookup_ctx) - 1812usize];
 };
 unsafe extern "C" {
     #[doc = " Create meta cursor.\n A meta cursor allows for walking over, reading and writing a value without\n having to know its type at compile time.\n\n When a value is assigned through the cursor API, it will get converted to\n the actual value of the underlying type. This allows the underlying type to\n change without having to update the serialized data. For example, an integer\n field can be set by a string, a floating point can be set as integer etc.\n\n @param world The world.\n @param type The type of the value.\n @param ptr Pointer to the value.\n @return A meta cursor for the value."]
@@ -11719,7 +12064,7 @@ pub struct ecs_enum_desc_t {
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of ecs_enum_desc_t"][::std::mem::size_of::<ecs_enum_desc_t>() - 776usize];
+    ["Size of ecs_enum_desc_t"][::std::mem::size_of::<ecs_enum_desc_t>() - 520usize];
     ["Alignment of ecs_enum_desc_t"][::std::mem::align_of::<ecs_enum_desc_t>() - 8usize];
     ["Offset of field: ecs_enum_desc_t::entity"]
         [::std::mem::offset_of!(ecs_enum_desc_t, entity) - 0usize];
@@ -11741,7 +12086,7 @@ pub struct ecs_bitmask_desc_t {
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of ecs_bitmask_desc_t"][::std::mem::size_of::<ecs_bitmask_desc_t>() - 776usize];
+    ["Size of ecs_bitmask_desc_t"][::std::mem::size_of::<ecs_bitmask_desc_t>() - 520usize];
     ["Alignment of ecs_bitmask_desc_t"][::std::mem::align_of::<ecs_bitmask_desc_t>() - 8usize];
     ["Offset of field: ecs_bitmask_desc_t::entity"]
         [::std::mem::offset_of!(ecs_bitmask_desc_t, entity) - 0usize];
@@ -11838,7 +12183,7 @@ pub struct ecs_opaque_desc_t {
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of ecs_opaque_desc_t"][::std::mem::size_of::<ecs_opaque_desc_t>() - 136usize];
+    ["Size of ecs_opaque_desc_t"][::std::mem::size_of::<ecs_opaque_desc_t>() - 80usize];
     ["Alignment of ecs_opaque_desc_t"][::std::mem::align_of::<ecs_opaque_desc_t>() - 8usize];
     ["Offset of field: ecs_opaque_desc_t::entity"]
         [::std::mem::offset_of!(ecs_opaque_desc_t, entity) - 0usize];
@@ -11913,7 +12258,7 @@ const _: () = {
     ["Offset of field: ecs_unit_prefix_desc_t::symbol"]
         [::std::mem::offset_of!(ecs_unit_prefix_desc_t, symbol) - 8usize];
     ["Offset of field: ecs_unit_prefix_desc_t::translation"]
-        [::std::mem::offset_of!(ecs_unit_prefix_desc_t, translation) - 16usize];
+        [::std::mem::offset_of!(ecs_unit_prefix_desc_t, translation) - 12usize];
 };
 unsafe extern "C" {
     #[doc = " Create a new unit prefix.\n\n @param world The world.\n @param desc The type descriptor.\n @return The new unit prefix, 0 if failed."]
@@ -11976,6 +12321,16 @@ unsafe extern "C" {
         c_name: *const ::std::os::raw::c_char,
         desc: *const ecs_component_desc_t,
     ) -> ecs_entity_t;
+}
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct __crt_locale_data {
+    pub _address: u8,
+}
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct __crt_multibyte_data {
+    pub _address: u8,
 }
 pub type __builtin_va_list = *mut ::std::os::raw::c_char;
 #[doc = "< Table cache of element. Of type ecs_id_record_t* for component index elements."]

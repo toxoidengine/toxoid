@@ -4,6 +4,7 @@ use toxoid_api::*;
 use crate::entities;
 
 pub fn init() {    
+    #[cfg(not(target_os = "emscripten"))]
     unsafe {
         toxoid_host::QUERY_TRAMPOLINE = Some(toxoid_runtime::query_trampoline);
     }
