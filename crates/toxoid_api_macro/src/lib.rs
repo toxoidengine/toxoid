@@ -258,13 +258,13 @@ pub fn component(input: TokenStream) -> TokenStream {
                                             self.component.as_mut().unwrap().get_member_u32_array(#field_offset)
                                         }
                                     }
-                                    #[cfg(target_arch = "wasm32")]
+                                    #[cfg(all(target_arch = "wasm32", not(target_os = "emscripten")))]
                                     pub fn #setter_name(&mut self, value: Vec<u32>) {
                                         unsafe {
                                             self.component.as_mut().unwrap().set_member_u32_array(#field_offset, value.as_slice());
                                         }
                                     }
-                                    #[cfg(not(target_arch = "wasm32"))]
+                                    #[cfg(any(not(target_arch = "wasm32"), target_os = "emscripten"))]
                                     pub fn #setter_name(&mut self, value: Vec<u32>) {
                                         unsafe {
                                             self.component.as_mut().unwrap().set_member_u32_array(#field_offset, value);
@@ -279,13 +279,13 @@ pub fn component(input: TokenStream) -> TokenStream {
                                             self.component.as_mut().unwrap().get_member_u64list(#field_offset)
                                         }
                                     }
-                                    #[cfg(target_arch = "wasm32")]
+                                    #[cfg(all(target_arch = "wasm32", not(target_os = "emscripten")))]
                                     pub fn #setter_name(&mut self, value: Vec<u64>) {
                                         unsafe {
                                             self.component.as_mut().unwrap().set_member_u64list(#field_offset, value.as_slice());
                                         }
                                     }
-                                    #[cfg(not(target_arch = "wasm32"))]
+                                    #[cfg(any(not(target_arch = "wasm32"), target_os = "emscripten"))]
                                     pub fn #setter_name(&mut self, value: Vec<u64>) {
                                         unsafe {
                                             self.component.as_mut().unwrap().set_member_u64list(#field_offset, value);
@@ -306,7 +306,7 @@ pub fn component(input: TokenStream) -> TokenStream {
                                             self.component.as_mut().unwrap().set_member_f32_array(#field_offset, value.as_slice());
                                         }
                                     }
-                                    #[cfg(not(target_arch = "wasm32"))]
+                                    #[cfg(any(not(target_arch = "wasm32"), target_os = "emscripten"))]
                                     pub fn #setter_name(&mut self, value: Vec<f32>) {
                                         unsafe {
                                             self.component.as_mut().unwrap().set_member_f32_array(#field_offset, value);
