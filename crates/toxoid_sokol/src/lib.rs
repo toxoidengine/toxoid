@@ -45,27 +45,50 @@ pub extern "C" fn sokol_init() {
     sg::setup(&sg::Desc {
         environment: sglue::environment(),
         logger: sg::Logger { func: Some(sokol::log::slog_func), ..Default::default() },
-        image_pool_size: 128 * SOKOL_POOL_MODIFIER,
-        buffer_pool_size: 128 * SOKOL_POOL_MODIFIER,
-        shader_pool_size: 32 * SOKOL_POOL_MODIFIER,
-        pipeline_pool_size: 64 * SOKOL_POOL_MODIFIER,
-        sampler_pool_size: 64 * SOKOL_POOL_MODIFIER,
-        uniform_buffer_size: 4 * 1024 * 1024 * SOKOL_POOL_MODIFIER,
-        attachments_pool_size: 64 * SOKOL_POOL_MODIFIER,
-        wgpu_bindgroups_cache_size: 64 * SOKOL_POOL_MODIFIER,
+        // image_pool_size: 128 * SOKOL_POOL_MODIFIER,
+        // buffer_pool_size: 128 * SOKOL_POOL_MODIFIER,
+        // shader_pool_size: 32 * SOKOL_POOL_MODIFIER,
+        // pipeline_pool_size: 64 * SOKOL_POOL_MODIFIER,
+        // sampler_pool_size: 64 * SOKOL_POOL_MODIFIER,
+        // uniform_buffer_size: 4 * 1024 * 1024 * SOKOL_POOL_MODIFIER,
+        // attachments_pool_size: 64 * SOKOL_POOL_MODIFIER,
+        // wgpu_bindgroups_cache_size: 64 * SOKOL_POOL_MODIFIER,
         ..Default::default()
     });
 
     unsafe {
-        // Initialize Sokol GP, adjust the size of command buffers for your own use.
-        let mut desc = sgp_desc {
-            max_commands: 0,
-            max_vertices: 0,
-            color_format: 0,
-            depth_format: 0,
-            sample_count: 0,
-        };
-        sgp_setup(&mut desc);
+        #[cfg(target_os = "emscripten")] 
+        {
+            // Get the default swapchain info first so we don't get a pipeline mismatch
+            let swapchain = sglue::swapchain();
+            
+            // Initialize Sokol GP with matching swapchain configuration
+            let mut desc = sgp_desc {
+                max_commands: 10000,
+                max_vertices: 50000,
+                // Match the color format with the swapchain
+                color_format: swapchain.color_format as i32,
+                // Match the depth format with the swapchain
+                depth_format: swapchain.depth_format as i32,
+                // Match the sample count with the swapchain
+                sample_count: swapchain.sample_count,
+            };
+
+            sgp_setup(&mut desc);
+        }
+
+        #[cfg(not(target_os = "emscripten"))]
+        {
+            // Initialize Sokol GP, adjust the size of command buffers for your own use.
+            let mut desc = sgp_desc {
+                max_commands: 0,
+                max_vertices: 0,
+                color_format: 0,
+                depth_format: 0,
+                sample_count: 0,
+            };
+            sgp_setup(&mut desc);
+        }
         
         // // Initialize SImGui
         // #[cfg(feature = "imgui")] 
@@ -117,43 +140,59 @@ pub fn init(sokol_init: extern "C" fn(), sokol_frame: extern "C" fn(), sokol_eve
     
     #[cfg(target_os = "emscripten")]
     unsafe {
-        // emscripten_set_canvas_element_size(canvas_id.as_ptr(), game_config.get_resolution_width() as i32, game_config.get_resolution_height() as i32);
+        emscripten_set_canvas_element_size(canvas_id.as_ptr(), GAME_WIDTH, GAME_HEIGHT);
     }
 
     // Initialize renderer
-    #[cfg(all(target_arch="wasm32", target_os="emscripten"))] {
-        sapp::run(&sapp::Desc {
-            init_cb: Some(sokol_init),
-            cleanup_cb: Some(sokol_cleanup),
-            event_cb: Some(sokol_event),
-            window_title,
-            width: GAME_WIDTH,
-            height: GAME_HEIGHT,
-            sample_count: 1,
-            icon: sapp::IconDesc {
-                sokol_default: true,
-                ..Default::default()
-            },
-            ..Default::default()
-        });
-        // sokol_init();
-    }
+    // #[cfg(target_os="emscripten")] {
+    //     sapp::run(&sapp::Desc {
+    //         init_cb: Some(sokol_init),
+    //         cleanup_cb: Some(sokol_cleanup),
+    //         event_cb: Some(sokol_event),
+    //         window_title,
+    //         width: GAME_WIDTH,
+    //         height: GAME_HEIGHT,
+    //         sample_count: 1,
+    //         icon: sapp::IconDesc {
+    //             sokol_default: true,
+    //             ..Default::default()
+    //         },
+    //         ..Default::default()
+    //     });
+    //     // sokol_init();
+    // }
 
-    #[cfg(not(target_arch="wasm32"))] {
-        sapp::run(&sapp::Desc {
-            init_cb: Some(sokol_init),
-            cleanup_cb: Some(sokol_cleanup),
-            frame_cb: Some(sokol_frame),
-            event_cb: Some(sokol_event),
-            window_title,
-            width: GAME_WIDTH,
-            height: GAME_HEIGHT,
-            sample_count: 1,
-            icon: sapp::IconDesc {
-                sokol_default: true,
-                ..Default::default()
-            },
+    sapp::run(&sapp::Desc {
+        init_cb: Some(sokol_init),
+        cleanup_cb: Some(sokol_cleanup),
+        frame_cb: Some(sokol_frame),
+        event_cb: Some(sokol_event),
+        window_title,
+        width: GAME_WIDTH,
+        height: GAME_HEIGHT,
+        sample_count: 1,
+        icon: sapp::IconDesc {
+            sokol_default: true,
             ..Default::default()
-        });
-    }
+        },
+        ..Default::default()
+    });
+
+    // #[cfg(not(target_arch="wasm32"))] {
+    //     sapp::run(&sapp::Desc {
+    //         init_cb: Some(sokol_init),
+    //         cleanup_cb: Some(sokol_cleanup),
+    //         frame_cb: Some(sokol_frame),
+    //         event_cb: Some(sokol_event),
+    //         window_title,
+    //         width: GAME_WIDTH,
+    //         height: GAME_HEIGHT,
+    //         sample_count: 1,
+    //         icon: sapp::IconDesc {
+    //             sokol_default: true,
+    //             ..Default::default()
+    //         },
+    //         ..Default::default()
+    //     });
+    // }
 }
