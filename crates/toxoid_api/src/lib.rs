@@ -3,7 +3,7 @@ pub mod components;
 pub use components::*;
 
 // Native
-#[cfg(not(target_arch = "wasm32"))]
+#[cfg(any(not(target_arch = "wasm32"), target_os = "emscripten"))]
 pub use toxoid_host::{
     Component as ToxoidComponent,
     ComponentType as ToxoidComponentType,
@@ -23,7 +23,7 @@ pub use toxoid_host::{
     },
     ToxoidApi
 };
-#[cfg(not(target_arch = "wasm32"))]
+#[cfg(any(not(target_arch = "wasm32"), target_os = "emscripten"))]
 pub use toxoid_host::bindings::exports::toxoid::engine::ecs::{
     EntityDesc,
     ComponentDesc,
@@ -33,7 +33,7 @@ pub use toxoid_host::bindings::exports::toxoid::engine::ecs::{
     Guest as WorldGuest,
 };
 // WASM
-#[cfg(target_arch = "wasm32")]
+#[cfg(all(target_arch = "wasm32", not(target_os = "emscripten")))]
 pub use toxoid_guest::bindings::{
     toxoid_component::component::ecs::{
         Component as ToxoidComponent,
@@ -54,7 +54,7 @@ pub use toxoid_guest::bindings::{
     exports::toxoid_component::component::callbacks::Guest as CallbacksGuest,
     Guest as WorldGuest,
 };
-#[cfg(target_arch = "wasm32")]
+#[cfg(all(target_arch = "wasm32", not(target_os = "emscripten")))]
 pub use toxoid_guest;
 // Both (Native + WASM)
 pub use toxoid_api_macro::component;
@@ -71,7 +71,7 @@ pub fn run_callback(iter: ToxoidIter, handle: i64) {
 
 // TODO: Create a WIT global function to get the component id directly instead of creating a component type
 // with the same name and fields as an existing component type, which is a lot of overhead
-#[cfg(target_arch = "wasm32")]
+#[cfg(all(target_arch = "wasm32", not(target_os = "emscripten")))]
 pub fn get_component_id(component_name: &str, member_names: Vec<String>, member_types: Vec<u8>) -> ecs_entity_t {
     let component_type = ToxoidComponentType::new(&ComponentDesc {
         name: component_name.to_string(),
@@ -83,7 +83,7 @@ pub fn get_component_id(component_name: &str, member_names: Vec<String>, member_
 
 // TODO: Create a WIT global function to get the component id directly instead of creating a component type
 // with the same name and fields as an existing component type, which is a lot of overhead
-#[cfg(not(target_arch = "wasm32"))]
+#[cfg(any(not(target_arch = "wasm32"), target_os = "emscripten"))]
 pub fn get_component_id(component_name: &str, member_names: Vec<String>, member_types: Vec<u8>) -> ecs_entity_t {
     // TODO: Instead of initializing a toxoid component type
     // we should have a conditional to check that it already exists.
@@ -106,9 +106,9 @@ pub trait ComponentType {
 }
 
 pub trait Component {
-    #[cfg(target_arch = "wasm32")]
+    #[cfg(all(target_arch = "wasm32", not(target_os = "emscripten")))]
     fn set_component(&mut self, ptr: toxoid_guest::bindings::toxoid_component::component::ecs::Component);
-    #[cfg(not(target_arch = "wasm32"))]
+    #[cfg(any(not(target_arch = "wasm32"), target_os = "emscripten"))]
     fn set_component(&mut self, ptr: ToxoidComponent);
 }
 
@@ -119,18 +119,18 @@ pub struct Entity {
 impl Entity {
     pub fn new(desc: Option<EntityDesc>) -> Self {
         let desc = desc.unwrap_or(EntityDesc { name: None });
-        #[cfg(not(target_arch = "wasm32"))]
+        #[cfg(any(not(target_arch = "wasm32"), target_os = "emscripten"))]
         let entity = ToxoidEntity::new(desc);
-        #[cfg(target_arch = "wasm32")]
+        #[cfg(all(target_arch = "wasm32", not(target_os = "emscripten")))]
         let entity = ToxoidEntity::new(&desc);
         Self { entity }
     }
 
     pub fn named(name: &str) -> Self {
         let desc = EntityDesc { name: Some(name.to_string()) };
-        #[cfg(not(target_arch = "wasm32"))]
+        #[cfg(any(not(target_arch = "wasm32"), target_os = "emscripten"))]
         let entity = ToxoidEntity::new(desc);
-        #[cfg(target_arch = "wasm32")]
+        #[cfg(all(target_arch = "wasm32", not(target_os = "emscripten")))]
         let entity = ToxoidEntity::new(&desc);
         Self { entity }
     }
@@ -142,9 +142,9 @@ impl Entity {
     pub fn get<T: Component + ComponentType + Default + 'static>(&mut self) -> T {
         let mut component = T::default();
         let component_ptr = self.entity.get(T::get_id());
-        #[cfg(not(target_arch = "wasm32"))]
+        #[cfg(any(not(target_arch = "wasm32"), target_os = "emscripten"))]
         let toxoid_component = ToxoidComponent::new(component_ptr);
-        #[cfg(target_arch = "wasm32")]
+        #[cfg(all(target_arch = "wasm32", not(target_os = "emscripten")))]
         let toxoid_component = component_ptr;
         component.set_component(toxoid_component);
         component
@@ -152,9 +152,9 @@ impl Entity {
 
     pub fn add<T: Component + ComponentType + 'static>(&mut self) -> &Self {
         let component_id = T::get_id();
-        #[cfg(not(target_arch = "wasm32"))]
+        #[cfg(any(not(target_arch = "wasm32"), target_os = "emscripten"))]
         self.entity.add(component_id);
-        #[cfg(target_arch = "wasm32")]
+        #[cfg(all(target_arch = "wasm32", not(target_os = "emscripten")))]
         self.entity.add(component_id);
         self
     }
@@ -171,9 +171,9 @@ pub struct Query {
 impl Query {
     pub fn new(desc: Option<QueryDesc>) -> Self {
         let desc = desc.unwrap_or(QueryDesc { expr: "".to_string() });
-        #[cfg(not(target_arch = "wasm32"))]
+        #[cfg(any(not(target_arch = "wasm32"), target_os = "emscripten"))]
         let query = ToxoidQuery::new(desc);
-        #[cfg(target_arch = "wasm32")]
+        #[cfg(all(target_arch = "wasm32", not(target_os = "emscripten")))]
         let query = ToxoidQuery::new(&desc);
         Self { query }
     }
@@ -199,12 +199,12 @@ impl Query {
         self.query.count()
     }
 
-    #[cfg(not(target_arch = "wasm32"))]
+    #[cfg(any(not(target_arch = "wasm32"), target_os = "emscripten"))]
     pub fn entities(&self) -> Vec<Entity> {
         unimplemented!()
     }
 
-    #[cfg(target_arch = "wasm32")]
+    #[cfg(all(target_arch = "wasm32", not(target_os = "emscripten")))]
     pub fn entities(&self) -> Vec<Entity> {
         self
             .query
@@ -222,12 +222,12 @@ pub struct System {
 }
 
 impl System {
-    // #[cfg(not(target_arch = "wasm32"))]
+    // #[cfg(any(not(target_arch = "wasm32"), target_os = "emscripten"))]
     // pub fn new(desc: Option<SystemDesc>) -> Self {
     //     unimplemented!()
     // }
 
-    #[cfg(target_arch = "wasm32")]
+    #[cfg(all(target_arch = "wasm32", not(target_os = "emscripten")))]
     pub fn new(desc: Option<SystemDesc>, callback_fn: fn(&Iter)) -> Self {
         // Register the callback in the guest environment
         let callback = Callback::new(callback_fn);
@@ -244,7 +244,7 @@ impl System {
         Self { system: ToxoidSystem::new(desc) }
     }
 
-    #[cfg(not(target_arch = "wasm32"))]
+    #[cfg(any(not(target_arch = "wasm32"), target_os = "emscripten"))]
     pub fn new(desc: Option<SystemDesc>, callback_fn: fn(&Iter)) -> Self {
         // Register the callback in the guest environment
         let callback = Callback::new(callback_fn);
@@ -261,7 +261,7 @@ impl System {
         Self { system: ToxoidSystem::new(desc) }
     }
 
-    #[cfg(target_arch = "wasm32")]
+    #[cfg(all(target_arch = "wasm32", not(target_os = "emscripten")))]
     pub fn dsl(dsl: &str, tick_rate: Option<i32>, callback_fn: fn(&Iter)) -> Self {
         // Register the callback in the guest environment
         let callback = Callback::new(callback_fn);
@@ -281,7 +281,7 @@ impl System {
         Self { system: ToxoidSystem::new(desc) }
     }
 
-    #[cfg(not(target_arch = "wasm32"))]
+    #[cfg(any(not(target_arch = "wasm32"), target_os = "emscripten"))]
     pub fn dsl(dsl: &str, tick_rate: Option<i32>, callback_fn: fn(&Iter)) -> Self {
         // Register the callback in the guest environment
         let callback = Callback::new(callback_fn);
@@ -348,12 +348,12 @@ impl Iter {
             .entities()
             .iter()
             .map(|entity| {
-                #[cfg(not(target_arch = "wasm32"))]
+                #[cfg(any(not(target_arch = "wasm32"), target_os = "emscripten"))]
                 // In native mode, we get a u64 ID directly
                 return Entity {
                     entity: ToxoidEntity { id: *entity }
                 };
-                #[cfg(target_arch = "wasm32")]
+                #[cfg(all(target_arch = "wasm32", not(target_os = "emscripten")))]
                 // In WASM mode, we're working with the guest component object
                 return Entity {
                     entity: ToxoidEntity::from_id(entity.get_id())
@@ -373,15 +373,15 @@ impl World {
     pub fn get_singleton<T: Component + ComponentType + Default + 'static>() -> T {
         let mut component = T::default();
         let component_id = T::get_id();
-        #[cfg(not(target_arch = "wasm32"))]
+        #[cfg(any(not(target_arch = "wasm32"), target_os = "emscripten"))]
         let component_ptr = ToxoidApi::get_singleton(component_id);
-        #[cfg(target_arch = "wasm32")]
+        #[cfg(all(target_arch = "wasm32", not(target_os = "emscripten")))]
         let component_resource = ToxoidApi::get_singleton(component_id);
-        #[cfg(not(target_arch = "wasm32"))]
+        #[cfg(any(not(target_arch = "wasm32"), target_os = "emscripten"))]
         let toxoid_component = ToxoidComponent::new(component_ptr);
-        #[cfg(not(target_arch = "wasm32"))]
+        #[cfg(any(not(target_arch = "wasm32"), target_os = "emscripten"))]
         component.set_component(toxoid_component);
-        #[cfg(target_arch = "wasm32")]
+        #[cfg(all(target_arch = "wasm32", not(target_os = "emscripten")))]
         component.set_component(component_resource);
         component
     }
@@ -392,9 +392,9 @@ impl World {
     }
 
     pub fn get_entity(entity_id: u64) -> Entity {
-        #[cfg(not(target_arch = "wasm32"))]
+        #[cfg(any(not(target_arch = "wasm32"), target_os = "emscripten"))]
         return Entity { entity: ToxoidEntity { id: entity_id } };
-        #[cfg(target_arch = "wasm32")]
+        #[cfg(all(target_arch = "wasm32", not(target_os = "emscripten")))]
         return Entity { entity: ToxoidEntity::from_id(entity_id) };
     }
 
@@ -403,9 +403,9 @@ impl World {
     }
 
     pub fn has_entity_named(name: String) -> bool {
-        #[cfg(not(target_arch = "wasm32"))]
+        #[cfg(any(not(target_arch = "wasm32"), target_os = "emscripten"))]
         return ToxoidApi::has_entity_named(name);
-        #[cfg(target_arch = "wasm32")]
+        #[cfg(all(target_arch = "wasm32", not(target_os = "emscripten")))]
         return ToxoidApi::has_entity_named(name.as_str());
     }
 }

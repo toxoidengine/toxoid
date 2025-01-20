@@ -4,11 +4,16 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-wit-bindgen-rt = { version = "0.32.0", features = ["bitflags"] }
 toxoid_flecs = { path = "../toxoid_flecs" }
 once_cell = "1.19.0"
 
+[target.'cfg(not(target_os = "emscripten"))'.dependencies]
+wit-bindgen-rt = { version = "0.32.0", features = ["bitflags"] }
+
 [lib]
+crate-type = ["rlib"]
+# Add cdylib only when not targeting emscripten
+[target.'cfg(not(target_os = "emscripten"))'.lib]
 crate-type = ["cdylib", "rlib"]
 
 [profile.release]

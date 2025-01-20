@@ -14,7 +14,9 @@ fn main() {
     // Check what target we are building for since cfg
     // does not work for build.rs
     let target = var("TARGET").unwrap();
-    let bindings = bindgen::Builder::default()
+    if !target.contains("emscripten") {
+        let bindings = bindgen::Builder::default()
+        // Arg for defining NO_STDIO
         .header(sokol_headers_path.join("sokol").join("sokol_app.h").to_str().unwrap())
         .header(sokol_headers_path.join("sokol").join("sokol_log.h").to_str().unwrap())
         .header(sokol_headers_path.join("sokol").join("sokol_time.h").to_str().unwrap())
@@ -24,12 +26,13 @@ fn main() {
         .header(sokol_headers_path.join("stb_image.h").to_str().unwrap())
         .generate()
         .expect("Unable to generate bindings");
-    // Write the bindings to the $OUT_DIR/bindings.rs file.
-    // let out_path = PathBuf::from(var("OUT_DIR").unwrap());
-    let out_path = PathBuf::from("./src");
-    bindings
-        .write_to_file(out_path.join("bindings.rs"))
-        .expect("Couldn't write bindings!");
+        // Write the bindings to the $OUT_DIR/bindings.rs file.
+        // let out_path = PathBuf::from(var("OUT_DIR").unwrap());
+        let out_path = PathBuf::from("./src");
+        bindings
+            .write_to_file(out_path.join("bindings.rs"))
+            .expect("Couldn't write bindings!");
+    }
 
     let mut build = cc::Build::new();
     // Flags
@@ -39,7 +42,7 @@ fn main() {
 
     // For Metal on macOS, we need to compile as Objective-C
     if target.contains("darwin") {
-        build
+        build//
             .define("SOKOL_METAL", None)
             .flag("-x")
             .flag("objective-c");
@@ -48,6 +51,8 @@ fn main() {
     } else if target.contains("linux") {
         build.define("SOKOL_GLCORE33", None);
     } else if target.contains("android") {
+        build.define("SOKOL_GLES3", None);
+    } else if target.contains("emscripten") {
         build.define("SOKOL_GLES3", None);
     } else if target.contains("ios") {
         build
@@ -79,6 +84,7 @@ fn main() {
     // }
     if var("CARGO_FEATURE_STB").is_ok() {
         build.define("TOXOID_STB", None);
+        build.define("STBI_NO_STDIO", None);
     }
     build
         .file(sokol_headers_path.join("sokol_wrapper.c"))
