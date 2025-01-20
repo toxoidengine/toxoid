@@ -359,6 +359,8 @@ pub fn component(input: TokenStream) -> TokenStream {
                 impl Default for #name {
                     fn default() -> Self {
                         Self {
+                            entity_added: 0,
+                            component_type: 0,
                             component: std::ptr::null_mut(),
                             singleton: false,
                             id: 0,
@@ -402,6 +404,8 @@ pub fn component(input: TokenStream) -> TokenStream {
                 #[repr(C)]
                 pub struct #name {
                     // #[serde(skip)]
+                    entity_added: ecs_entity_t,
+                    component_type: ecs_entity_t,
                     component: *mut ToxoidComponent,
                     singleton: bool,
                     id: ecs_entity_t,
@@ -425,6 +429,12 @@ pub fn component(input: TokenStream) -> TokenStream {
                     fn set_component(&mut self, component: ToxoidComponent) {
                         // TODO: Remove this boxed pointer for host (and possibly guest)
                         self.component = Box::into_raw(Box::new(component));
+                    }
+                    fn set_entity_added(&mut self, entity_id: ecs_entity_t) {
+                        self.entity_added = entity_id;
+                    }
+                    fn set_component_type(&mut self, component_type_id: ecs_entity_t) {
+                        self.component_type = component_type_id;
                     }
                 }
 

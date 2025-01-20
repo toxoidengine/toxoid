@@ -371,8 +371,8 @@ impl toxoid_component::component::ecs::HostComponentType for StoreState {
 }
 
 impl toxoid_component::component::ecs::HostComponent for StoreState {
-    fn new(&mut self, component_id: i64) -> Resource<ComponentProxy> {
-        let component = toxoid_host::Component::new(component_id);
+    fn new(&mut self, component_ptr: i64, entity_id: u64, component_type_id: u64) -> Resource<ComponentProxy> {
+        let component = toxoid_host::Component::new(component_ptr, entity_id, component_type_id);
         let boxed_component = Box::new(component);
         let boxed_component_ptr = Box::into_raw(boxed_component);
         self.table.push::<ComponentProxy>(ComponentProxy { ptr: boxed_component_ptr }).unwrap()

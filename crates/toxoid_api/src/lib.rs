@@ -110,6 +110,8 @@ pub trait Component {
     fn set_component(&mut self, ptr: toxoid_guest::bindings::toxoid_component::component::ecs::Component);
     #[cfg(any(not(target_arch = "wasm32"), target_os = "emscripten"))]
     fn set_component(&mut self, ptr: ToxoidComponent);
+    fn set_entity_added(&mut self, entity_id: ecs_entity_t);
+    fn set_component_type(&mut self, component_type_id: ecs_entity_t);
 }
 
 pub struct Entity {
@@ -143,10 +145,12 @@ impl Entity {
         let mut component = T::default();
         let component_ptr = self.entity.get(T::get_id());
         #[cfg(any(not(target_arch = "wasm32"), target_os = "emscripten"))]
-        let toxoid_component = ToxoidComponent::new(component_ptr);
+        let toxoid_component = ToxoidComponent::new(component_ptr, self.entity.get_id(), T::get_id());
         #[cfg(all(target_arch = "wasm32", not(target_os = "emscripten")))]
         let toxoid_component = component_ptr;
         component.set_component(toxoid_component);
+        component.set_entity_added(self.entity.get_id());
+        component.set_component_type(T::get_id());
         component
     }
 
@@ -378,7 +382,7 @@ impl World {
         #[cfg(all(target_arch = "wasm32", not(target_os = "emscripten")))]
         let component_resource = ToxoidApi::get_singleton(component_id);
         #[cfg(any(not(target_arch = "wasm32"), target_os = "emscripten"))]
-        let toxoid_component = ToxoidComponent::new(component_ptr);
+        let toxoid_component = ToxoidComponent::new(component_ptr, 0, component_id);
         #[cfg(any(not(target_arch = "wasm32"), target_os = "emscripten"))]
         component.set_component(toxoid_component);
         #[cfg(all(target_arch = "wasm32", not(target_os = "emscripten")))]

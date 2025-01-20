@@ -43,7 +43,9 @@ interface ecs {
     }
 
     resource component {
-        constructor(ptr: s64);
+        // This is a component instance so it will need a the entity it belongs to and the component type
+        // This is required for observers / events to work
+        constructor(ptr: s64, entity: ecs-entity-t, component-type: ecs-entity-t);
         set-member-u8: func(offset: u32, value: u8);
         get-member-u8: func(offset: u32) -> u8;
         set-member-u16: func(offset: u32, value: u16);

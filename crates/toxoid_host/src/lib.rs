@@ -167,7 +167,9 @@ impl GuestComponentType for ComponentType {
 }
 
 impl GuestComponent for Component {
-    fn new(ptr: i64) -> Component {
+    // This is a component instance so it will need a the entity it belongs to and the component type
+    // This is required for observers / events to work
+    fn new(ptr: i64, entity: ecs_entity_t, component: ecs_entity_t) -> Component {
         Component { ptr: ptr as *const c_void, field_offsets: vec![] }
     }
 
