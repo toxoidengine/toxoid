@@ -20,24 +20,24 @@ pub fn init() {
             let mut tails_entities = tails.get_entities();
 
             // Get current position of head
-            let mut pos = entity.get::<Position>();
-            let mut size = entity.get::<Size>();
+            let pos = entity.get::<Position>();
+            let size = entity.get::<Size>();
             let current_x = pos.get_x();
             let current_y = pos.get_y();
 
             // Get current position of food
-            let mut food_singleton = World::get_singleton::<FoodEntity>();
+            let food_singleton = World::get_singleton::<FoodEntity>();
             let food_entity_id = food_singleton.get_entity();
             let mut food_entity = World::get_entity(food_entity_id);
-            let mut food_pos = food_entity.get::<Position>();
-            let mut food_size = food_entity.get::<Size>();
+            let food_pos = food_entity.get::<Position>();
+            let food_size = food_entity.get::<Size>();
 
             // Check if head and food are colliding
             if aabb(&pos, &size, &food_pos, &food_size) {
                 // Set (respawning) random position for food   
                 let grid_size = 50;
                 let mut food_pos = food_entity.get::<Position>();
-                let mut food_size = food_entity.get::<Size>();
+                let food_size = food_entity.get::<Size>();
                 food_pos.set_x(get_random((SCREEN_WIDTH - 100) / grid_size) * grid_size);
                 food_pos.set_y(get_random((SCREEN_HEIGHT - 100) / grid_size) * grid_size);
                 // Increase the tail length
@@ -70,7 +70,6 @@ pub fn init() {
             entity.add::<Tail>();
 
             // println!("Tails entities: {:?}", tails_entities.clone());
-
             // // Remove the last tail entity
             // // println!("Tails entities max length: {:?}", tails.get_max_length());
             // if tails_entities.len() > tails.get_max_length() as usize {
