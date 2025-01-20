@@ -109,6 +109,10 @@ impl toxoid_component::component::ecs::Host for StoreState {
     }
 
     fn remove_entity(&mut self, entity: toxoid_component::component::ecs::EcsEntityT) {
+        // TODO: Clean up entity resources for WASM
+        // let entity_proxy = self.table.get(&entity).unwrap() as &EntityProxy;
+        // drop(unsafe { Box::from_raw(entity_proxy.ptr) });
+        // self.table.delete::<EntityProxy>(entity).unwrap();
         ToxoidApi::remove_entity(entity);
     }
 

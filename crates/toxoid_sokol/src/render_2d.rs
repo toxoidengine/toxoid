@@ -2,7 +2,6 @@
 use crate::bindings::*;
 #[cfg(target_os = "emscripten")]
 use crate::bindings_x86::*;
-use sokol::gfx::PassAction;
 use sokol::{app as sapp, gfx as sg, glue as sglue};
 use toxoid_render::{Renderer2D, RenderTarget, Sprite};
 use toxoid_api::components::{Position, Size, Color};
@@ -433,7 +432,7 @@ impl Renderer2D for SokolRenderer2D {
             let src_rect = sgp_rect { x: sx, y: sy, w: sw, h: sh };
     
             // Define the destination rectangle on the canvas
-            let mut dest_rect = sgp_rect { 
+            let dest_rect = sgp_rect { 
                 x: (dx * scale_factor).round(), 
                 y: (dy * scale_factor).round(), 
                 w: (dw as f32 * scale_factor).round(), 
