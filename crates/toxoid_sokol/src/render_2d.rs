@@ -1,4 +1,7 @@
+#[cfg(not(target_os = "emscripten"))]
 use crate::bindings::*;
+#[cfg(target_os = "emscripten")]
+use crate::bindings_x86::*;
 use sokol::gfx::PassAction;
 use sokol::{app as sapp, gfx as sg, glue as sglue};
 use toxoid_render::{Renderer2D, RenderTarget, Sprite};

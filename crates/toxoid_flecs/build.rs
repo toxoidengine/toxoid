@@ -5,15 +5,18 @@ fn main() {
     println!("cargo:rerun-if-changed=build.rs");
     println!("cargo:rerun-if-changed=flecs.h");
     println!("cargo:rerun-if-changed=flecs.c");
+    // println!("cargo:rustc-link-arg=-sUSE_WEBGL2");
 
     let target = std::env::var("TARGET").unwrap();
-    if target.contains("emscripten") {
-        // Get rid of the warning about unused command line arguments from emcc
-        std::env::set_var("CFLAGS", "-Wno-unused-command-line-argument");
-    };
+    // if target.contains("emscripten") {
+    //     // Get rid of the warning about unused command line arguments from emcc
+    //     std::env::set_var("CFLAGS", "-Wno-unused-command-line-argument");
+    // };
 
-    // Check of target is aarch64
-    let is_aarch64 = target.contains("aarch64");
+    // // Check of target is aarch64
+    let is_aarch64 = target.contains("aarch64-apple-darwin");
+    let is_x86_64 = target.contains("x86_64-apple-darwin");
+    if !target.contains("emscripten") {
     let bindings = bindgen::Builder::default()
         .clang_arg("-DFLECS_CUSTOM_BUILD")
         .clang_arg("-DFLECS_PERF_TRACE")
@@ -41,10 +44,11 @@ fn main() {
         .generate()
         .expect("Unable to generate bindings");
 
-    let out_path = PathBuf::from("./src");
-    bindings
-        .write_to_file(out_path.join("bindings.rs"))
-        .expect("Couldn't write bindings!");
+        let out_path = PathBuf::from("./src");
+        bindings
+            .write_to_file(out_path.join("bindings.rs"))
+            .expect("Couldn't write bindings!");
+    }
     
     // Compile Flecs
     let mut build = cc::Build::new();
@@ -66,14 +70,14 @@ fn main() {
         .define("FLECS_JSON", None)
         .define("FLECS_DOC", None)
         .define("FLECS_LOG", None)
-        .define("FLECS_APP", None)
+        // .define("FLECS_APP", None)
         .define("FLECS_OS_API_IMPL", None)
         // .define("FLECS_HTTP", None)
         // .define("FLECS_REST", None)
         .define("FLECS_JOURNAL", None)
         .define("NDEBUG", None);
     // Has a backtrace error otherwise. 
-    if is_aarch64 {
+    if is_aarch64 || is_x86_64 {
         build.define("__wasm32__", None);
     }
     build

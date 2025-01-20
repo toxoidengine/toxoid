@@ -11,7 +11,7 @@ extern "C" fn sokol_init() {
 
 #[no_mangle]
 extern "C" fn sokol_frame() {
-    // Frame update code for Sokol
+    // // Frame update code for Sokol
     SokolRenderer2D::begin();
     let delta_time = frame_duration();
     toxoid_host::toxoid_progress(delta_time as f32);
