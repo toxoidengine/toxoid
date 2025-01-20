@@ -220,6 +220,7 @@ pub const false_: u32 = 0;
 pub const SOKOL_LOG_INCLUDED: u32 = 1;
 pub const SOKOL_TIME_INCLUDED: u32 = 1;
 pub const SOKOL_GFX_INCLUDED: u32 = 1;
+pub const SOKOL_FETCH_INCLUDED: u32 = 1;
 pub const SOKOL_GP_INCLUDED: u32 = 1;
 pub const SGP_BATCH_OPTIMIZER_DEPTH: u32 = 8;
 pub const SGP_UNIFORM_CONTENT_SLOTS: u32 = 4;
@@ -5720,6 +5721,260 @@ unsafe extern "C" {
 }
 unsafe extern "C" {
     pub fn sglue_swapchain() -> sg_swapchain;
+}
+pub const sfetch_log_item_t_SFETCH_LOGITEM_OK: sfetch_log_item_t = 0;
+pub const sfetch_log_item_t_SFETCH_LOGITEM_MALLOC_FAILED: sfetch_log_item_t = 1;
+pub const sfetch_log_item_t_SFETCH_LOGITEM_FILE_PATH_UTF8_DECODING_FAILED: sfetch_log_item_t = 2;
+pub const sfetch_log_item_t_SFETCH_LOGITEM_SEND_QUEUE_FULL: sfetch_log_item_t = 3;
+pub const sfetch_log_item_t_SFETCH_LOGITEM_REQUEST_CHANNEL_INDEX_TOO_BIG: sfetch_log_item_t = 4;
+pub const sfetch_log_item_t_SFETCH_LOGITEM_REQUEST_PATH_IS_NULL: sfetch_log_item_t = 5;
+pub const sfetch_log_item_t_SFETCH_LOGITEM_REQUEST_PATH_TOO_LONG: sfetch_log_item_t = 6;
+pub const sfetch_log_item_t_SFETCH_LOGITEM_REQUEST_CALLBACK_MISSING: sfetch_log_item_t = 7;
+pub const sfetch_log_item_t_SFETCH_LOGITEM_REQUEST_CHUNK_SIZE_GREATER_BUFFER_SIZE:
+    sfetch_log_item_t = 8;
+pub const sfetch_log_item_t_SFETCH_LOGITEM_REQUEST_USERDATA_PTR_IS_SET_BUT_USERDATA_SIZE_IS_NULL:
+    sfetch_log_item_t = 9;
+pub const sfetch_log_item_t_SFETCH_LOGITEM_REQUEST_USERDATA_PTR_IS_NULL_BUT_USERDATA_SIZE_IS_NOT:
+    sfetch_log_item_t = 10;
+pub const sfetch_log_item_t_SFETCH_LOGITEM_REQUEST_USERDATA_SIZE_TOO_BIG: sfetch_log_item_t = 11;
+pub const sfetch_log_item_t_SFETCH_LOGITEM_CLAMPING_NUM_CHANNELS_TO_MAX_CHANNELS:
+    sfetch_log_item_t = 12;
+pub const sfetch_log_item_t_SFETCH_LOGITEM_REQUEST_POOL_EXHAUSTED: sfetch_log_item_t = 13;
+pub type sfetch_log_item_t = ::std::os::raw::c_uint;
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct sfetch_logger_t {
+    pub func: ::std::option::Option<
+        unsafe extern "C" fn(
+            tag: *const ::std::os::raw::c_char,
+            log_level: u32,
+            log_item_id: u32,
+            message_or_null: *const ::std::os::raw::c_char,
+            line_nr: u32,
+            filename_or_null: *const ::std::os::raw::c_char,
+            user_data: *mut ::std::os::raw::c_void,
+        ),
+    >,
+    pub user_data: *mut ::std::os::raw::c_void,
+}
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
+const _: () = {
+    ["Size of sfetch_logger_t"][::std::mem::size_of::<sfetch_logger_t>() - 16usize];
+    ["Alignment of sfetch_logger_t"][::std::mem::align_of::<sfetch_logger_t>() - 8usize];
+    ["Offset of field: sfetch_logger_t::func"]
+        [::std::mem::offset_of!(sfetch_logger_t, func) - 0usize];
+    ["Offset of field: sfetch_logger_t::user_data"]
+        [::std::mem::offset_of!(sfetch_logger_t, user_data) - 8usize];
+};
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct sfetch_range_t {
+    pub ptr: *const ::std::os::raw::c_void,
+    pub size: usize,
+}
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
+const _: () = {
+    ["Size of sfetch_range_t"][::std::mem::size_of::<sfetch_range_t>() - 16usize];
+    ["Alignment of sfetch_range_t"][::std::mem::align_of::<sfetch_range_t>() - 8usize];
+    ["Offset of field: sfetch_range_t::ptr"][::std::mem::offset_of!(sfetch_range_t, ptr) - 0usize];
+    ["Offset of field: sfetch_range_t::size"]
+        [::std::mem::offset_of!(sfetch_range_t, size) - 8usize];
+};
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct sfetch_allocator_t {
+    pub alloc_fn: ::std::option::Option<
+        unsafe extern "C" fn(
+            size: usize,
+            user_data: *mut ::std::os::raw::c_void,
+        ) -> *mut ::std::os::raw::c_void,
+    >,
+    pub free_fn: ::std::option::Option<
+        unsafe extern "C" fn(
+            ptr: *mut ::std::os::raw::c_void,
+            user_data: *mut ::std::os::raw::c_void,
+        ),
+    >,
+    pub user_data: *mut ::std::os::raw::c_void,
+}
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
+const _: () = {
+    ["Size of sfetch_allocator_t"][::std::mem::size_of::<sfetch_allocator_t>() - 24usize];
+    ["Alignment of sfetch_allocator_t"][::std::mem::align_of::<sfetch_allocator_t>() - 8usize];
+    ["Offset of field: sfetch_allocator_t::alloc_fn"]
+        [::std::mem::offset_of!(sfetch_allocator_t, alloc_fn) - 0usize];
+    ["Offset of field: sfetch_allocator_t::free_fn"]
+        [::std::mem::offset_of!(sfetch_allocator_t, free_fn) - 8usize];
+    ["Offset of field: sfetch_allocator_t::user_data"]
+        [::std::mem::offset_of!(sfetch_allocator_t, user_data) - 16usize];
+};
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct sfetch_desc_t {
+    pub max_requests: u32,
+    pub num_channels: u32,
+    pub num_lanes: u32,
+    pub allocator: sfetch_allocator_t,
+    pub logger: sfetch_logger_t,
+}
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
+const _: () = {
+    ["Size of sfetch_desc_t"][::std::mem::size_of::<sfetch_desc_t>() - 56usize];
+    ["Alignment of sfetch_desc_t"][::std::mem::align_of::<sfetch_desc_t>() - 8usize];
+    ["Offset of field: sfetch_desc_t::max_requests"]
+        [::std::mem::offset_of!(sfetch_desc_t, max_requests) - 0usize];
+    ["Offset of field: sfetch_desc_t::num_channels"]
+        [::std::mem::offset_of!(sfetch_desc_t, num_channels) - 4usize];
+    ["Offset of field: sfetch_desc_t::num_lanes"]
+        [::std::mem::offset_of!(sfetch_desc_t, num_lanes) - 8usize];
+    ["Offset of field: sfetch_desc_t::allocator"]
+        [::std::mem::offset_of!(sfetch_desc_t, allocator) - 16usize];
+    ["Offset of field: sfetch_desc_t::logger"]
+        [::std::mem::offset_of!(sfetch_desc_t, logger) - 40usize];
+};
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct sfetch_handle_t {
+    pub id: u32,
+}
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
+const _: () = {
+    ["Size of sfetch_handle_t"][::std::mem::size_of::<sfetch_handle_t>() - 4usize];
+    ["Alignment of sfetch_handle_t"][::std::mem::align_of::<sfetch_handle_t>() - 4usize];
+    ["Offset of field: sfetch_handle_t::id"][::std::mem::offset_of!(sfetch_handle_t, id) - 0usize];
+};
+pub const sfetch_error_t_SFETCH_ERROR_NO_ERROR: sfetch_error_t = 0;
+pub const sfetch_error_t_SFETCH_ERROR_FILE_NOT_FOUND: sfetch_error_t = 1;
+pub const sfetch_error_t_SFETCH_ERROR_NO_BUFFER: sfetch_error_t = 2;
+pub const sfetch_error_t_SFETCH_ERROR_BUFFER_TOO_SMALL: sfetch_error_t = 3;
+pub const sfetch_error_t_SFETCH_ERROR_UNEXPECTED_EOF: sfetch_error_t = 4;
+pub const sfetch_error_t_SFETCH_ERROR_INVALID_HTTP_STATUS: sfetch_error_t = 5;
+pub const sfetch_error_t_SFETCH_ERROR_CANCELLED: sfetch_error_t = 6;
+pub type sfetch_error_t = ::std::os::raw::c_uint;
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct sfetch_response_t {
+    pub handle: sfetch_handle_t,
+    pub dispatched: bool,
+    pub fetched: bool,
+    pub paused: bool,
+    pub finished: bool,
+    pub failed: bool,
+    pub cancelled: bool,
+    pub error_code: sfetch_error_t,
+    pub channel: u32,
+    pub lane: u32,
+    pub path: *const ::std::os::raw::c_char,
+    pub user_data: *mut ::std::os::raw::c_void,
+    pub data_offset: u32,
+    pub data: sfetch_range_t,
+    pub buffer: sfetch_range_t,
+}
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
+const _: () = {
+    ["Size of sfetch_response_t"][::std::mem::size_of::<sfetch_response_t>() - 80usize];
+    ["Alignment of sfetch_response_t"][::std::mem::align_of::<sfetch_response_t>() - 8usize];
+    ["Offset of field: sfetch_response_t::handle"]
+        [::std::mem::offset_of!(sfetch_response_t, handle) - 0usize];
+    ["Offset of field: sfetch_response_t::dispatched"]
+        [::std::mem::offset_of!(sfetch_response_t, dispatched) - 4usize];
+    ["Offset of field: sfetch_response_t::fetched"]
+        [::std::mem::offset_of!(sfetch_response_t, fetched) - 5usize];
+    ["Offset of field: sfetch_response_t::paused"]
+        [::std::mem::offset_of!(sfetch_response_t, paused) - 6usize];
+    ["Offset of field: sfetch_response_t::finished"]
+        [::std::mem::offset_of!(sfetch_response_t, finished) - 7usize];
+    ["Offset of field: sfetch_response_t::failed"]
+        [::std::mem::offset_of!(sfetch_response_t, failed) - 8usize];
+    ["Offset of field: sfetch_response_t::cancelled"]
+        [::std::mem::offset_of!(sfetch_response_t, cancelled) - 9usize];
+    ["Offset of field: sfetch_response_t::error_code"]
+        [::std::mem::offset_of!(sfetch_response_t, error_code) - 12usize];
+    ["Offset of field: sfetch_response_t::channel"]
+        [::std::mem::offset_of!(sfetch_response_t, channel) - 16usize];
+    ["Offset of field: sfetch_response_t::lane"]
+        [::std::mem::offset_of!(sfetch_response_t, lane) - 20usize];
+    ["Offset of field: sfetch_response_t::path"]
+        [::std::mem::offset_of!(sfetch_response_t, path) - 24usize];
+    ["Offset of field: sfetch_response_t::user_data"]
+        [::std::mem::offset_of!(sfetch_response_t, user_data) - 32usize];
+    ["Offset of field: sfetch_response_t::data_offset"]
+        [::std::mem::offset_of!(sfetch_response_t, data_offset) - 40usize];
+    ["Offset of field: sfetch_response_t::data"]
+        [::std::mem::offset_of!(sfetch_response_t, data) - 48usize];
+    ["Offset of field: sfetch_response_t::buffer"]
+        [::std::mem::offset_of!(sfetch_response_t, buffer) - 64usize];
+};
+pub type sfetch_callback_t =
+    ::std::option::Option<unsafe extern "C" fn(arg1: *const sfetch_response_t)>;
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct sfetch_request_t {
+    pub channel: u32,
+    pub path: *const ::std::os::raw::c_char,
+    pub callback: sfetch_callback_t,
+    pub chunk_size: u32,
+    pub buffer: sfetch_range_t,
+    pub user_data: sfetch_range_t,
+}
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
+const _: () = {
+    ["Size of sfetch_request_t"][::std::mem::size_of::<sfetch_request_t>() - 64usize];
+    ["Alignment of sfetch_request_t"][::std::mem::align_of::<sfetch_request_t>() - 8usize];
+    ["Offset of field: sfetch_request_t::channel"]
+        [::std::mem::offset_of!(sfetch_request_t, channel) - 0usize];
+    ["Offset of field: sfetch_request_t::path"]
+        [::std::mem::offset_of!(sfetch_request_t, path) - 8usize];
+    ["Offset of field: sfetch_request_t::callback"]
+        [::std::mem::offset_of!(sfetch_request_t, callback) - 16usize];
+    ["Offset of field: sfetch_request_t::chunk_size"]
+        [::std::mem::offset_of!(sfetch_request_t, chunk_size) - 24usize];
+    ["Offset of field: sfetch_request_t::buffer"]
+        [::std::mem::offset_of!(sfetch_request_t, buffer) - 32usize];
+    ["Offset of field: sfetch_request_t::user_data"]
+        [::std::mem::offset_of!(sfetch_request_t, user_data) - 48usize];
+};
+unsafe extern "C" {
+    pub fn sfetch_setup(desc: *const sfetch_desc_t);
+}
+unsafe extern "C" {
+    pub fn sfetch_shutdown();
+}
+unsafe extern "C" {
+    pub fn sfetch_valid() -> bool;
+}
+unsafe extern "C" {
+    pub fn sfetch_desc() -> sfetch_desc_t;
+}
+unsafe extern "C" {
+    pub fn sfetch_max_userdata_bytes() -> ::std::os::raw::c_int;
+}
+unsafe extern "C" {
+    pub fn sfetch_max_path() -> ::std::os::raw::c_int;
+}
+unsafe extern "C" {
+    pub fn sfetch_send(request: *const sfetch_request_t) -> sfetch_handle_t;
+}
+unsafe extern "C" {
+    pub fn sfetch_handle_valid(h: sfetch_handle_t) -> bool;
+}
+unsafe extern "C" {
+    pub fn sfetch_dowork();
+}
+unsafe extern "C" {
+    pub fn sfetch_bind_buffer(h: sfetch_handle_t, buffer: sfetch_range_t);
+}
+unsafe extern "C" {
+    pub fn sfetch_unbind_buffer(h: sfetch_handle_t) -> *mut ::std::os::raw::c_void;
+}
+unsafe extern "C" {
+    pub fn sfetch_cancel(h: sfetch_handle_t);
+}
+unsafe extern "C" {
+    pub fn sfetch_pause(h: sfetch_handle_t);
+}
+unsafe extern "C" {
+    pub fn sfetch_continue(h: sfetch_handle_t);
 }
 pub const sgp_error_SGP_NO_ERROR: sgp_error = 0;
 pub const sgp_error_SGP_ERROR_SOKOL_INVALID: sgp_error = 1;

@@ -22,6 +22,7 @@ fn main() {
         .header(sokol_headers_path.join("sokol").join("sokol_time.h").to_str().unwrap())
         .header(sokol_headers_path.join("sokol").join("sokol_gfx.h").to_str().unwrap())
         .header(sokol_headers_path.join("sokol").join("sokol_glue.h").to_str().unwrap())
+        .header(sokol_headers_path.join("sokol").join("sokol_fetch.h").to_str().unwrap())
         .header(sokol_headers_path.join("sokol_gp").join("sokol_gp.h").to_str().unwrap())
         .header(sokol_headers_path.join("stb_image.h").to_str().unwrap())
         .generate()
