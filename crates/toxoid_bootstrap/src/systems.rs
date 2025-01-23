@@ -63,4 +63,9 @@ pub fn init() {
         });
     })
         .build();
+
+    Observer::dsl("Position", vec![Event::OnSet], |iter| {
+        println!("Observer called");
+    })
+        .build();
 }
