@@ -21,6 +21,18 @@ interface ecs {
         f32array-t,
         pointer-t
     }
+
+    enum event {
+        on-set,
+        on-add,
+        on-remove,
+        on-delete,
+        on-delete-target,
+        on-table-create,
+        on-table-delete,
+        on-table-empty,
+        on-table-fill
+    }
     
     record component-desc {
         name: string,
@@ -120,6 +132,20 @@ interface ecs {
 
     resource system {
         constructor(desc: system-desc);
+        build: func();
+        callback: func() -> s64;
+    }
+
+    record observer-desc {
+        name: option<string>,
+        query-desc: query-desc,
+        events: list<event>,
+        callback: s64,
+        is-guest: bool
+    }
+
+    resource observer {
+        constructor(desc: observer-desc);
         build: func();
         callback: func() -> s64;
     }

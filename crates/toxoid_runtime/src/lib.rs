@@ -11,6 +11,7 @@ bindgen!({
         "toxoid-component:component/ecs/system": SystemProxy,
         "toxoid-component:component/ecs/callback": CallbackProxy,
         "toxoid-component:component/ecs/iter": IterProxy,
+        "toxoid-component:component/ecs/observer": ObserverProxy,
     },
 });
 
@@ -51,6 +52,10 @@ pub struct IterProxy {
     pub ptr: *mut toxoid_host::Iter
 }
 unsafe impl Send for IterProxy {}
+pub struct ObserverProxy {
+    pub ptr: *mut toxoid_host::Observer
+}
+unsafe impl Send for ObserverProxy {}
 // StoreState is the state of the WASM store.
 pub struct StoreState {
     pub ctx: WasiCtx,
@@ -71,7 +76,7 @@ impl toxoid_component::component::ecs::Host for StoreState {
         ToxoidApi::add_singleton(component);
         // TODO: Check if !ptr.is_null()
         let ptr = ToxoidApi::get_singleton(component);
-        let host_component = toxoid_host::Component::new(ptr);
+        let host_component = toxoid_host::Component::new(ptr, component, component);
         let boxed_component_ptr = Box::into_raw(Box::new(host_component));
         let resource = self.table.push::<ComponentProxy>(ComponentProxy {
             ptr: boxed_component_ptr 
@@ -169,6 +174,24 @@ impl toxoid_component::component::ecs::HostIter for StoreState {
     }
 
     fn drop(&mut self, _iter: Resource<IterProxy>) -> Result<(), wasmtime::Error> {
+        Ok(())
+    }
+}
+
+impl toxoid_component::component::ecs::HostObserver for StoreState {
+    fn new(&mut self, _desc: toxoid_component::component::ecs::ObserverDesc) -> Resource<ObserverProxy> {
+        unimplemented!()
+    }
+
+    fn build(&mut self, _observer: Resource<ObserverProxy>) -> () {
+        unimplemented!()
+    }
+
+    fn callback(&mut self, _observer: Resource<ObserverProxy>) -> Resource<CallbackProxy> {
+        unimplemented!()
+    }
+
+    fn drop(&mut self, _observer: Resource<ObserverProxy>) -> Result<(), wasmtime::Error> {
         Ok(())
     }
 }
@@ -283,13 +306,14 @@ impl toxoid_component::component::ecs::HostEntity for StoreState {
 
         // Get entity
         let entity = unsafe { Box::from_raw(entity_proxy.ptr) };
+        let entity_id = entity.get_id();
         
         // Retrieve the component
         let component = entity.get(component);
         Box::into_raw(entity);
 
         // Create component
-        let component = toxoid_host::Component::new(component);
+        let component = toxoid_host::Component::new(component, entity_id, component as u64);
 
         // Create boxed component
         let boxed_component = Box::new(component);
@@ -400,7 +424,7 @@ impl toxoid_component::component::ecs::HostComponent for StoreState {
         Box::into_raw(component);
     }
 
-    fn get_member_u16(&mut self, component: Resource<toxoid_component::component::ecs::Component>, offset: u32) -> u16 {
+    fn get_member_u16(&mut self, component: Resource<toxoid_component::component::ecs::Component>, offset: u32) -> u16 {  
         let component_proxy = self.table.get(&component).unwrap() as &ComponentProxy;
         let component = unsafe { Box::from_raw(component_proxy.ptr) };
         let value = component.get_member_u16(offset);

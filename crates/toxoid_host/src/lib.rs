@@ -2,10 +2,10 @@
 #![allow(warnings)]
 
 pub mod bindings;
-use bindings::exports::toxoid::engine::ecs::{EcsEntityT, GuestIter};
-use bindings::exports::toxoid::engine::ecs::{self, ComponentDesc, EntityDesc, Guest, GuestCallback, GuestComponent, GuestComponentType, GuestEntity, GuestQuery, GuestSystem, QueryDesc, SystemDesc};
+use bindings::exports::toxoid::engine::ecs::{EcsEntityT, GuestIter, GuestObserver, ObserverDesc};
+use bindings::exports::toxoid::engine::ecs::{self, ComponentDesc, EntityDesc, Guest, GuestCallback, GuestComponent, GuestComponentType, GuestEntity, GuestQuery, GuestSystem, QueryDesc, SystemDesc, Event};
 pub use toxoid_flecs::bindings::{ecs_add_id, ecs_entity_desc_t, ecs_entity_init, ecs_fini, ecs_get_mut_id, ecs_init, ecs_iter_t, ecs_lookup, ecs_make_pair, ecs_member_t, ecs_progress, ecs_query_desc_t, ecs_query_init, ecs_query_iter, ecs_query_next, ecs_query_t, ecs_struct_desc_t, ecs_struct_init, ecs_system_desc_t, ecs_system_init, ecs_system_t, ecs_world_t, EcsDependsOn, EcsOnUpdate, ecs_set_rate, ecs_get_id, ecs_remove_id};
-use toxoid_flecs::{ecs_delete, ecs_ensure_id};
+use toxoid_flecs::{ecs_delete, ecs_ensure_id, ecs_modified_id, ecs_observer_desc_t, ecs_observer_init, ecs_observer_t};
 use std::{borrow::BorrowMut, mem::MaybeUninit};
 use core::ffi::c_void;
 use core::ffi::c_char;
@@ -22,7 +22,9 @@ pub struct ComponentType {
 
 pub struct Component {
     pub ptr: *const c_void,
-    pub field_offsets: Vec<u8>
+    pub field_offsets: Vec<u8>,
+    pub entity_added: ecs_entity_t,
+    pub component_type_id: ecs_entity_t
 }
 
 pub struct Entity { 
@@ -39,6 +41,13 @@ pub struct System {
     pub desc: RefCell<ecs_system_desc_t>,
     pub entity: RefCell<ecs_entity_t>,
     pub system: RefCell<ecs_system_t>,
+    pub callback: RefCell<Callback>
+}
+
+pub struct Observer {
+    pub desc: RefCell<ecs_observer_desc_t>,
+    pub entity: RefCell<ecs_entity_t>,
+    pub observer: RefCell<ecs_observer_t>,
     pub callback: RefCell<Callback>
 }
 
@@ -95,7 +104,24 @@ pub fn toxoid_reset() {
     }
 }
 
-unsafe fn get_member_type(member_type: u8) -> ecs_entity_t {
+fn map_event(event: Event) -> ecs_entity_t {
+    unsafe {
+        match event {
+            Event::OnAdd => toxoid_flecs::EcsOnAdd,
+            Event::OnRemove => toxoid_flecs::EcsOnRemove,
+            Event::OnSet => toxoid_flecs::EcsOnSet,
+            Event::OnDelete => toxoid_flecs::EcsOnDelete,
+            Event::OnDeleteTarget => toxoid_flecs::EcsOnDeleteTarget,
+            Event::OnTableCreate => toxoid_flecs::EcsOnTableCreate,
+            Event::OnTableDelete => toxoid_flecs::EcsOnTableDelete,
+            Event::OnTableEmpty => toxoid_flecs::EcsOnTableEmpty,
+            Event::OnTableFill => toxoid_flecs::EcsOnTableFill,
+            _ => 0
+        }
+    }
+}
+
+unsafe fn map_member_type(member_type: u8) -> ecs_entity_t {
     match member_type {
         0 => toxoid_flecs::bindings::FLECS_IDecs_u8_tID_,
         1 => toxoid_flecs::bindings::FLECS_IDecs_u16_tID_,
@@ -145,7 +171,7 @@ impl GuestComponentType for ComponentType {
                 // Create component member
                 let mut member: ecs_member_t = MaybeUninit::zeroed().assume_init();
                 member.name = member_name.as_ptr() as *const i8;
-                member.type_ = get_member_type(desc.member_types[index]);
+                member.type_ = map_member_type(desc.member_types[index]);
                 struct_desc.members[index] = member;
             }
 
@@ -169,14 +195,20 @@ impl GuestComponentType for ComponentType {
 impl GuestComponent for Component {
     // This is a component instance so it will need a the entity it belongs to and the component type
     // This is required for observers / events to work
-    fn new(ptr: i64, entity: ecs_entity_t, component: ecs_entity_t) -> Component {
-        Component { ptr: ptr as *const c_void, field_offsets: vec![] }
+    fn new(ptr: i64, entity_added: ecs_entity_t, component_type_id: ecs_entity_t) -> Component {
+        Component { 
+            ptr: ptr as *const c_void, 
+            field_offsets: vec![], 
+            entity_added, 
+            component_type_id
+        }
     }
 
     fn set_member_u8(&self, offset: u32, value: u8) {
         unsafe {
             let member_ptr = self.ptr.offset(offset as isize) as *mut u8;
             *member_ptr = value;
+            ecs_modified_id(WORLD.0, self.entity_added, self.component_type_id);
         }
     }
 
@@ -192,6 +224,7 @@ impl GuestComponent for Component {
         unsafe {
             let member_ptr = self.ptr.offset(offset as isize) as *mut u16;
             *member_ptr = value;
+            ecs_modified_id(WORLD.0, self.entity_added, self.component_type_id);
         }
     }
 
@@ -207,6 +240,7 @@ impl GuestComponent for Component {
         unsafe {
             let member_ptr = self.ptr.offset(offset as isize) as *mut u32;
             *member_ptr = value;
+            ecs_modified_id(WORLD.0, self.entity_added, self.component_type_id);
         }
     }
 
@@ -222,6 +256,7 @@ impl GuestComponent for Component {
         unsafe {
             let member_ptr = self.ptr.offset(offset as isize) as *mut u64;
             *member_ptr = value;
+            ecs_modified_id(WORLD.0, self.entity_added, self.component_type_id);
         }
     }
 
@@ -237,6 +272,7 @@ impl GuestComponent for Component {
         unsafe {
             let member_ptr = self.ptr.offset(offset as isize) as *mut i8;
             *member_ptr = value;
+            ecs_modified_id(WORLD.0, self.entity_added, self.component_type_id);
         }
     }
 
@@ -252,6 +288,7 @@ impl GuestComponent for Component {
         unsafe {
             let member_ptr = self.ptr.offset(offset as isize) as *mut i16;
             *member_ptr = value;
+            ecs_modified_id(WORLD.0, self.entity_added, self.component_type_id);
         }
     }
 
@@ -267,6 +304,7 @@ impl GuestComponent for Component {
         unsafe {
             let member_ptr = self.ptr.offset(offset as isize) as *mut i32;
             *member_ptr = value;
+            ecs_modified_id(WORLD.0, self.entity_added, self.component_type_id);
         }
     }
 
@@ -282,6 +320,7 @@ impl GuestComponent for Component {
         unsafe {
             let member_ptr = self.ptr.offset(offset as isize) as *mut i64;
             *member_ptr = value;
+            ecs_modified_id(WORLD.0, self.entity_added, self.component_type_id);
         }
     }
 
@@ -297,6 +336,7 @@ impl GuestComponent for Component {
         unsafe {
             let member_ptr = self.ptr.offset(offset as isize) as *mut f32;
             *member_ptr = value;
+            ecs_modified_id(WORLD.0, self.entity_added, self.component_type_id);
         }
     }
 
@@ -312,6 +352,7 @@ impl GuestComponent for Component {
         unsafe {
             let member_ptr = self.ptr.offset(offset as isize) as *mut f64;
             *member_ptr = value;
+            ecs_modified_id(WORLD.0, self.entity_added, self.component_type_id);
         }
     }
 
@@ -327,9 +368,9 @@ impl GuestComponent for Component {
         unsafe {
             let member_ptr = self.ptr.offset(offset as isize) as *mut bool;
             *member_ptr = value;
+            ecs_modified_id(WORLD.0, self.entity_added, self.component_type_id);
         }
     }
-
 
     fn get_member_bool(&self, offset: u32) -> bool {
         unsafe {
@@ -343,6 +384,7 @@ impl GuestComponent for Component {
         unsafe {
             let member_ptr = self.ptr.offset(offset as isize) as *mut String;
             *member_ptr = value;
+            ecs_modified_id(WORLD.0, self.entity_added, self.component_type_id);
         }
     }
 
@@ -358,6 +400,7 @@ impl GuestComponent for Component {
         unsafe {
             let member_ptr = self.ptr.offset(offset as isize) as *mut Vec<u32>;
             *member_ptr = value;
+            ecs_modified_id(WORLD.0, self.entity_added, self.component_type_id);
         }
     }
 
@@ -373,6 +416,7 @@ impl GuestComponent for Component {
         unsafe {
             let member_ptr = self.ptr.offset(offset as isize) as *mut Vec<u64>;
             *member_ptr = value;
+            ecs_modified_id(WORLD.0, self.entity_added, self.component_type_id);
         }
     }
 
@@ -388,6 +432,7 @@ impl GuestComponent for Component {
         unsafe {
             let member_ptr = self.ptr.offset(offset as isize) as *mut Vec<f32>;
             *member_ptr = value;
+            ecs_modified_id(WORLD.0, self.entity_added, self.component_type_id);
         }
     }
 
@@ -543,7 +588,52 @@ impl GuestSystem for System {
         *self.entity.borrow_mut() = unsafe { ecs_system_init(WORLD.0, self.desc.as_ptr()) };
         // Set tickrate using world, system id, description, and 0 (to use frames as a source)
         unsafe { ecs_set_rate(WORLD.0, *self.entity.borrow(), self.desc.borrow().rate, 0) };
-        
+    }
+}
+
+impl GuestObserver for Observer {
+    fn new(desc: ObserverDesc) -> Observer {
+        let mut observer_desc: ecs_observer_desc_t = unsafe { MaybeUninit::zeroed().assume_init() };
+        let mut query_desc: ecs_query_desc_t = unsafe { MaybeUninit::zeroed().assume_init() };
+        // Create observer entity
+        let mut entity_desc: ecs_entity_desc_t = unsafe { MaybeUninit::zeroed().assume_init() };
+        if let Some(name) = desc.name.clone() {
+            entity_desc.name = c_string(&name);
+        }
+        let entity = unsafe { ecs_entity_init(WORLD.0, &entity_desc) };
+        observer_desc.entity = entity;
+        query_desc.expr = c_string(&desc.query_desc.expr);
+        observer_desc.query = query_desc;
+        if desc.is_guest {
+            observer_desc.ctx = 1 as *mut c_void;
+        } else {
+            observer_desc.ctx = std::ptr::null_mut();
+        }
+        observer_desc.callback_ctx = desc.callback as *mut c_void;
+        observer_desc.callback = Some(unsafe { QUERY_TRAMPOLINE.unwrap() });
+        observer_desc.events = desc
+            .events
+            .iter()
+            .map(|event| map_event(*event))
+            .collect::<Vec<u64>>()
+            .try_into()
+            .unwrap_or([0; 8]);
+        Observer { 
+            desc: RefCell::new(observer_desc),
+            entity: RefCell::new(entity),
+            observer: RefCell::new(unsafe { MaybeUninit::zeroed().assume_init() }),
+            callback: RefCell::new(Callback::new(desc.callback))
+        }
+    }
+
+    fn callback(&self) -> i64 {
+        self.callback.borrow().handle
+    }
+
+    fn build(&self) {
+        *self.entity.borrow_mut() = unsafe { 
+            ecs_observer_init(WORLD.0, self.desc.as_ptr()) 
+        };
     }
 }
 
@@ -589,9 +679,10 @@ impl Guest for ToxoidApi {
     type Entity = Entity;
     type Query = Query;
     type System = System;
+    type Observer = Observer;
     type Callback = Callback;
     type Iter = Iter;
-
+    
     fn add_singleton(component: ecs_entity_t) {
         unsafe { ecs_add_id(WORLD.0, component, component) };   
     }
