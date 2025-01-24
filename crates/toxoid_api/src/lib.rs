@@ -332,8 +332,21 @@ impl Observer {
 
     // WASM
     #[cfg(all(target_arch = "wasm32", not(target_os = "emscripten")))]
-    pub fn new(desc: Option<ObserverDesc>) -> Self {
-        unimplemented!()
+    pub fn new(desc: Option<ObserverDesc>, callback_fn: fn(&Iter)) -> Self {
+        // Register the callback in the guest environment
+        let callback = Callback::new(callback_fn);
+        // Create the Toxoid callback with the registered callback handle
+        let callback = ToxoidCallback::new(callback.cb_handle());
+        let query_desc = desc.as_ref().unwrap().query_desc.clone();
+        let events = desc.as_ref().unwrap().events.clone();
+        let desc = desc.unwrap_or(ObserverDesc { 
+            name: None, 
+            callback, 
+            query_desc, 
+            events, 
+            is_guest: true 
+        });
+        Self { observer: ToxoidObserver::new(desc) }
     }
 
     // Not wasm
@@ -354,7 +367,18 @@ impl Observer {
     // WASM
     #[cfg(all(target_arch = "wasm32", not(target_os = "emscripten")))]
     pub fn dsl(dsl: &str, events: Vec<Event>, callback_fn: fn(&Iter)) -> Self {
-        unimplemented!()
+        // Register the callback in the guest environment
+        let callback = Callback::new(callback_fn);
+        // Create the Toxoid callback with the registered callback handle
+        let callback = ToxoidCallback::new(callback.cb_handle());
+        let desc = ObserverDesc { 
+            name: None, 
+            callback, 
+            is_guest: true, 
+            query_desc: QueryDesc { expr: dsl.to_string() },
+            events
+        };
+        Self { observer: ToxoidObserver::new(desc) }
     }
 
     pub fn build(&mut self) {
