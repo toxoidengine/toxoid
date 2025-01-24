@@ -11,14 +11,16 @@ bindgen!({
         "toxoid-component:component/ecs/system": SystemProxy,
         "toxoid-component:component/ecs/callback": CallbackProxy,
         "toxoid-component:component/ecs/iter": IterProxy,
+        "toxoid-component:component/ecs/observer": ObserverProxy,
     },
 });
 
 use std::collections::HashMap;
+use toxoid_api::GuestObserver;
 use toxoid_host::bindings::exports::toxoid::engine::ecs::{Guest, GuestCallback, GuestComponent, GuestComponentType, GuestEntity, GuestIter, GuestQuery, GuestSystem};
 use toxoid_host::ToxoidApi;
 use wasmtime::component::{bindgen, Component, Linker, Resource, ResourceTable};
-use wasmtime::{Engine, Result, Store};
+use wasmtime::{Config, Engine, OptLevel, Result, Store};
 use wasmtime_wasi::{WasiCtx, WasiView, WasiCtxBuilder};
 use once_cell::sync::Lazy;
 use std::sync::Mutex;
@@ -51,6 +53,10 @@ pub struct IterProxy {
     pub ptr: *mut toxoid_host::Iter
 }
 unsafe impl Send for IterProxy {}
+pub struct ObserverProxy {
+    pub ptr: *mut toxoid_host::Observer
+}
+unsafe impl Send for ObserverProxy {}
 // StoreState is the state of the WASM store.
 pub struct StoreState {
     pub ctx: WasiCtx,
@@ -70,8 +76,8 @@ impl toxoid_component::component::ecs::Host for StoreState {
     fn add_singleton(&mut self, component: toxoid_component::component::ecs::EcsEntityT) {
         ToxoidApi::add_singleton(component);
         // TODO: Check if !ptr.is_null()
-        let ptr = ToxoidApi::get_singleton(component);
-        let host_component = toxoid_host::Component::new(ptr);
+        let component_ptr = ToxoidApi::get_singleton(component);
+        let host_component = toxoid_host::Component::new(component_ptr, component, component);
         let boxed_component_ptr = Box::into_raw(Box::new(host_component));
         let resource = self.table.push::<ComponentProxy>(ComponentProxy {
             ptr: boxed_component_ptr 
@@ -109,6 +115,10 @@ impl toxoid_component::component::ecs::Host for StoreState {
     }
 
     fn remove_entity(&mut self, entity: toxoid_component::component::ecs::EcsEntityT) {
+        // TODO: Clean up entity resources for WASM
+        // let entity_proxy = self.table.get(&entity).unwrap() as &EntityProxy;
+        // drop(unsafe { Box::from_raw(entity_proxy.ptr) });
+        // self.table.delete::<EntityProxy>(entity).unwrap();
         ToxoidApi::remove_entity(entity);
     }
 
@@ -247,6 +257,61 @@ impl toxoid_component::component::ecs::HostSystem for StoreState {
     }
 }
 
+impl toxoid_component::component::ecs::HostObserver for StoreState {
+    fn new(&mut self, desc: toxoid_component::component::ecs::ObserverDesc) -> Resource<ObserverProxy> {
+        let callback_proxy = self.table.get(&desc.callback).unwrap() as &CallbackProxy;
+        let callback = unsafe { Box::from_raw(callback_proxy.ptr) };
+        let query_desc = toxoid_host::bindings::exports::toxoid::engine::ecs::QueryDesc {
+            expr: desc.query_desc.expr,
+        };
+        let observer = <toxoid_host::Observer as toxoid_host::bindings::exports::toxoid::engine::ecs::GuestObserver>::new(toxoid_host::bindings::exports::toxoid::engine::ecs::ObserverDesc {
+            name: desc.name,
+            query_desc,
+            events: desc.events.iter().map(|event| match event {
+                toxoid_component::component::ecs::Event::OnSet => toxoid_api::Event::OnSet,
+                toxoid_component::component::ecs::Event::OnAdd => toxoid_api::Event::OnAdd,
+                toxoid_component::component::ecs::Event::OnRemove => toxoid_api::Event::OnRemove,
+                toxoid_component::component::ecs::Event::OnDelete => toxoid_api::Event::OnDelete,
+                toxoid_component::component::ecs::Event::OnDeleteTarget => toxoid_api::Event::OnDeleteTarget,
+                toxoid_component::component::ecs::Event::OnTableCreate => toxoid_api::Event::OnTableCreate,
+                toxoid_component::component::ecs::Event::OnTableDelete => toxoid_api::Event::OnTableDelete,
+                toxoid_component::component::ecs::Event::OnTableEmpty => toxoid_api::Event::OnTableEmpty,
+                toxoid_component::component::ecs::Event::OnTableFill => toxoid_api::Event::OnTableFill
+            })
+                .collect::<Vec<toxoid_api::Event>>(),
+            callback: callback.cb_handle(),
+            is_guest: true
+        });
+        let id = self
+            .table
+            .push::<ObserverProxy>(ObserverProxy {
+                ptr: Box::into_raw(Box::new(observer))
+            })
+            .unwrap();
+        Box::into_raw(callback);
+        id
+    }
+
+    fn callback(&mut self, _observer: Resource<ObserverProxy>) -> Resource<CallbackProxy> {
+        let observer_proxy = self.table.get(&_observer).unwrap() as &ObserverProxy;
+        let observer = unsafe { Box::from_raw(observer_proxy.ptr) };
+        let callback_handle = observer.callback();
+        let callback = <toxoid_host::Callback as toxoid_host::bindings::exports::toxoid::engine::ecs::GuestCallback>::new(callback_handle);
+        self.table.push::<CallbackProxy>(CallbackProxy { ptr: Box::into_raw(Box::new(callback)) }).unwrap()
+    }
+
+    fn build(&mut self, _observer: Resource<ObserverProxy>) -> () {
+        let observer_proxy = self.table.get(&_observer).unwrap() as &ObserverProxy;
+        let mut observer = unsafe { Box::from_raw(observer_proxy.ptr) };
+        observer.as_mut().build();
+        Box::into_raw(observer);
+     }
+
+    fn drop(&mut self, _observer: Resource<ObserverProxy>) -> Result<(), wasmtime::Error> {
+        Ok(())
+    }
+}
+
 impl toxoid_component::component::ecs::HostEntity for StoreState {
     fn new(&mut self, desc: toxoid_component::component::ecs::EntityDesc) -> Resource<EntityProxy> {
         let entity = toxoid_host::Entity::new(toxoid_host::bindings::exports::toxoid::engine::ecs::EntityDesc {
@@ -279,13 +344,14 @@ impl toxoid_component::component::ecs::HostEntity for StoreState {
 
         // Get entity
         let entity = unsafe { Box::from_raw(entity_proxy.ptr) };
+        let entity_id = entity.get_id();
         
         // Retrieve the component
-        let component = entity.get(component);
+        let component_ptr = entity.get(component);
         Box::into_raw(entity);
 
         // Create component
-        let component = toxoid_host::Component::new(component);
+        let component = toxoid_host::Component::new(component_ptr, entity_id, component);
 
         // Create boxed component
         let boxed_component = Box::new(component);
@@ -367,8 +433,8 @@ impl toxoid_component::component::ecs::HostComponentType for StoreState {
 }
 
 impl toxoid_component::component::ecs::HostComponent for StoreState {
-    fn new(&mut self, component_id: i64) -> Resource<ComponentProxy> {
-        let component = toxoid_host::Component::new(component_id);
+    fn new(&mut self, component_ptr: i64, entity_id: u64, component_type_id: u64) -> Resource<ComponentProxy> {
+        let component = toxoid_host::Component::new(component_ptr, entity_id, component_type_id);
         let boxed_component = Box::new(component);
         let boxed_component_ptr = Box::into_raw(boxed_component);
         self.table.push::<ComponentProxy>(ComponentProxy { ptr: boxed_component_ptr }).unwrap()
@@ -396,7 +462,7 @@ impl toxoid_component::component::ecs::HostComponent for StoreState {
         Box::into_raw(component);
     }
 
-    fn get_member_u16(&mut self, component: Resource<toxoid_component::component::ecs::Component>, offset: u32) -> u16 {
+    fn get_member_u16(&mut self, component: Resource<toxoid_component::component::ecs::Component>, offset: u32) -> u16 {  
         let component_proxy = self.table.get(&component).unwrap() as &ComponentProxy;
         let component = unsafe { Box::from_raw(component_proxy.ptr) };
         let value = component.get_member_u16(offset);
@@ -677,7 +743,15 @@ impl toxoid_component::component::ecs::HostQuery for StoreState {
 }
 
 // Instantiate the WASM engine
-pub static ENGINE: Lazy<Engine> = Lazy::new(Engine::default);
+pub static ENGINE: Lazy<Engine> = Lazy::new(|| { 
+    // TODO: Base on debug flag
+    Engine::new(
+        Config::new()
+            .debug_info(true)
+            .cranelift_opt_level(OptLevel::None),   
+    )
+        .unwrap()
+});
 
 // Create WASM Component Linker
 static LINKER: Lazy<Linker<StoreState>> = Lazy::new(|| {

@@ -11,6 +11,7 @@ pub use toxoid_host::{
     Query as ToxoidQuery,
     System as ToxoidSystem,
     Callback as ToxoidCallback,
+    Observer as ToxoidObserver,
     Iter as ToxoidIter,
     bindings::exports::toxoid::engine::ecs::{
         GuestComponent,
@@ -18,6 +19,7 @@ pub use toxoid_host::{
         GuestEntity,
         GuestQuery,
         GuestSystem,
+        GuestObserver,
         GuestCallback,
         GuestIter,
     },
@@ -29,7 +31,9 @@ pub use toxoid_host::bindings::exports::toxoid::engine::ecs::{
     ComponentDesc,
     QueryDesc,
     SystemDesc,
+    ObserverDesc,
     MemberType,
+    Event,
     Guest as WorldGuest,
 };
 // WASM
@@ -41,13 +45,16 @@ pub use toxoid_guest::bindings::{
         Entity as ToxoidEntity,
         Query as ToxoidQuery,
         System as ToxoidSystem,
+        Observer as ToxoidObserver,
         Callback as ToxoidCallback,
         Iter as ToxoidIter,
         EntityDesc,
         ComponentDesc,
         QueryDesc,
         SystemDesc,
+        ObserverDesc,
         MemberType,
+        Event,
         self as ToxoidApi
     },
     self,
@@ -110,6 +117,8 @@ pub trait Component {
     fn set_component(&mut self, ptr: toxoid_guest::bindings::toxoid_component::component::ecs::Component);
     #[cfg(any(not(target_arch = "wasm32"), target_os = "emscripten"))]
     fn set_component(&mut self, ptr: ToxoidComponent);
+    fn set_entity_added(&mut self, entity_id: ecs_entity_t);
+    fn set_component_type(&mut self, component_type_id: ecs_entity_t);
 }
 
 pub struct Entity {
@@ -143,10 +152,12 @@ impl Entity {
         let mut component = T::default();
         let component_ptr = self.entity.get(T::get_id());
         #[cfg(any(not(target_arch = "wasm32"), target_os = "emscripten"))]
-        let toxoid_component = ToxoidComponent::new(component_ptr);
+        let toxoid_component = ToxoidComponent::new(component_ptr, self.entity.get_id(), T::get_id());
         #[cfg(all(target_arch = "wasm32", not(target_os = "emscripten")))]
         let toxoid_component = component_ptr;
         component.set_component(toxoid_component);
+        component.set_entity_added(self.entity.get_id());
+        component.set_component_type(T::get_id());
         component
     }
 
@@ -300,6 +311,93 @@ impl System {
     }
 }
 
+pub struct Observer {
+    observer: ToxoidObserver
+}
+
+impl Observer {
+    // Not wasm
+    #[cfg(any(not(target_arch = "wasm32"), target_os = "emscripten"))]
+    pub fn new(desc: Option<ObserverDesc>, callback_fn: fn(&Iter)) -> Self {
+        let callback = Callback::new(callback_fn);
+        let desc = desc.unwrap_or(ObserverDesc { 
+            name: None, 
+            query_desc: QueryDesc { expr: "".to_string() }, 
+            events: vec![], 
+            callback: callback.cb_handle(), 
+            is_guest: false 
+        });
+        Self { observer: ToxoidObserver::new(desc) }
+    }
+
+    // WASM
+    #[cfg(all(target_arch = "wasm32", not(target_os = "emscripten")))]
+    pub fn new(desc: Option<ObserverDesc>, callback_fn: fn(&Iter)) -> Self {
+        // Register the callback in the guest environment
+        let callback = Callback::new(callback_fn);
+        // Create the Toxoid callback with the registered callback handle
+        let callback = ToxoidCallback::new(callback.cb_handle());
+        let query_desc = desc.as_ref().unwrap().query_desc.clone();
+        let events = desc.as_ref().unwrap().events.clone();
+        let desc = desc.unwrap_or(ObserverDesc { 
+            name: None, 
+            callback, 
+            query_desc, 
+            events, 
+            is_guest: true 
+        });
+        Self { observer: ToxoidObserver::new(desc) }
+    }
+
+    // Not wasm
+    #[cfg(any(not(target_arch = "wasm32"), target_os = "emscripten"))]
+    pub fn dsl(dsl: &str, events: Vec<Event>, callback_fn: fn(&Iter)) -> Self {
+        // TODO: Make this work in WASM without using toxoid_host::get_event
+        let callback = Callback::new(callback_fn);
+        let desc = ObserverDesc { 
+            name: None, 
+            query_desc: QueryDesc { expr: dsl.to_string() }, 
+            events, 
+            callback: callback.cb_handle(), 
+            is_guest: false
+        };
+        Self { observer: ToxoidObserver::new(desc) }
+    }
+
+    // WASM
+    #[cfg(all(target_arch = "wasm32", not(target_os = "emscripten")))]
+    pub fn dsl(dsl: &str, events: Vec<Event>, callback_fn: fn(&Iter)) -> Self {
+        // Register the callback in the guest environment
+        let callback = Callback::new(callback_fn);
+        // Create the Toxoid callback with the registered callback handle
+        let callback = ToxoidCallback::new(callback.cb_handle());
+        let desc = ObserverDesc { 
+            name: None, 
+            callback, 
+            is_guest: true, 
+            query_desc: QueryDesc { expr: dsl.to_string() },
+            events
+        };
+        Self { observer: ToxoidObserver::new(desc) }
+    }
+
+    pub fn build(&mut self) {
+        self.observer.build();
+    }
+
+    // Not wasm
+    #[cfg(any(not(target_arch = "wasm32"), target_os = "emscripten"))]      
+    pub fn callback(&self) -> i64 {
+        self.observer.callback()
+    }
+
+    // WASM
+    #[cfg(all(target_arch = "wasm32", not(target_os = "emscripten")))]
+    pub fn callback(&self) -> i64 {
+        unimplemented!()
+    }
+}
+
 pub struct Callback {
     callback: ToxoidCallback,
 }
@@ -378,7 +476,7 @@ impl World {
         #[cfg(all(target_arch = "wasm32", not(target_os = "emscripten")))]
         let component_resource = ToxoidApi::get_singleton(component_id);
         #[cfg(any(not(target_arch = "wasm32"), target_os = "emscripten"))]
-        let toxoid_component = ToxoidComponent::new(component_ptr);
+        let toxoid_component = ToxoidComponent::new(component_ptr, component_id, component_id);
         #[cfg(any(not(target_arch = "wasm32"), target_os = "emscripten"))]
         component.set_component(toxoid_component);
         #[cfg(all(target_arch = "wasm32", not(target_os = "emscripten")))]

@@ -2,6 +2,9 @@ install:
 	cargo install cargo-component --locked
 	cargo install --locked wasm-tools
 
+install-osx:
+	brew install llvm
+
 submodule:
 	git submodule update --init
 
@@ -31,6 +34,8 @@ build-wit:
 build:
 	cd app/guest && cargo component build
 	cp target/wasm32-wasip1/debug/guest.wasm app/host/guest.wasm
+	cp target/wasm32-wasip1/debug/guest.wasm guest.wasm
+	cd app/host && cargo build
 
 build-host:
 	cd crates/toxoid_host && cargo component build
@@ -61,5 +66,3 @@ run:
 
 run-cli:
 	cargo run --package toxoid_cli -- watch
-
-
