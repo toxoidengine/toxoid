@@ -32,7 +32,11 @@ enum Commands {
         out_path: PathBuf,
 
         // Host path for the WASM file
+        #[cfg(target_os = "windows")]
         #[arg(short = 'x', long, default_value = "app/host/guest.wasm")]
+        host_path: PathBuf,
+        #[cfg(target_os = "macos")]
+        #[arg(short = 'x', long, default_value = "guest.wasm")]
         host_path: PathBuf,
 
         // TODO: Add a static linking feature that doesn't use WASM hot reloading

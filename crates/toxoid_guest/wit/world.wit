@@ -21,6 +21,18 @@ interface ecs {
         f32array-t,
         pointer-t
     }
+
+    enum event {
+        on-set,
+        on-add,
+        on-remove,
+        on-delete,
+        on-delete-target,
+        on-table-create,
+        on-table-delete,
+        on-table-empty,
+        on-table-fill
+    }
     
     record component-desc {
         name: string,
@@ -42,9 +54,10 @@ interface ecs {
     }
 
     resource component {
-        constructor(ptr: s64);
-        // TODO: Change this to offset index instead of offset so that WASM guest does not have
-        // direct access to host memory.
+        // This is a component instance so it will need a the entity it belongs to and the component type
+        // This is required for observers / events to work
+        constructor(ptr: s64, entity: ecs-entity-t, component-type: ecs-entity-t);
+        // TODO: Change this to offset index instead of offset so that WASM guest does not have direct access to host memory.
         set-member-u8: func(offset: u32, value: u8);
         get-member-u8: func(offset: u32) -> u8;
         set-member-u16: func(offset: u32, value: u16);
@@ -113,6 +126,20 @@ interface ecs {
 
     resource system {
         constructor(desc: system-desc);
+        build: func();
+        callback: func() -> callback;
+    }
+
+    record observer-desc {
+        name: option<string>,
+        query-desc: query-desc,
+        events: list<event>,
+        callback: callback,
+        is-guest: bool
+    }
+
+    resource observer {
+        constructor(desc: observer-desc);
         build: func();
         callback: func() -> callback;
     }

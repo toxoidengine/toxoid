@@ -74,33 +74,33 @@ pub fn create_new_head() -> Entity {
     new_head_entity
 }
 
-pub fn create_food() {
-    let mut food = Entity::named("FoodNamedEntity");
-    food.add::<Food>();
-    food.add::<Position>();
-    food.add::<Size>();
-    food.add::<Color>();
-    food.add::<Renderable>();
-    food.add::<Rect>();
+// pub fn create_food() {
+//     let mut food = Entity::named("FoodNamedEntity");
+//     food.add::<Food>();
+//     food.add::<Position>();
+//     food.add::<Size>();
+//     food.add::<Color>();
+//     food.add::<Renderable>();
+//     food.add::<Rect>();
 
-    let mut pos = food.get::<Position>();
-    let grid_size = 50;
-    pos.set_x(get_random((SCREEN_WIDTH - 100) / grid_size) * grid_size);
-    pos.set_y(get_random((SCREEN_HEIGHT - 100) / grid_size) * grid_size);
+//     let mut pos = food.get::<Position>();
+//     let grid_size = 50;
+//     pos.set_x(get_random((SCREEN_WIDTH - 100) / grid_size) * grid_size);
+//     pos.set_y(get_random((SCREEN_HEIGHT - 100) / grid_size) * grid_size);
 
-    let mut size = food.get::<Size>();
-    size.set_width(50);
-    size.set_height(50);
+//     let mut size = food.get::<Size>();
+//     size.set_width(50);
+//     size.set_height(50);
 
-    let mut color = food.get::<Color>();
-    color.set_r(1.);
-    color.set_g(0.);
-    color.set_b(0.);
-    color.set_a(1.);
+//     let mut color = food.get::<Color>();
+//     color.set_r(1.);
+//     color.set_g(0.);
+//     color.set_b(0.);
+//     color.set_a(1.);
 
-    let mut food_entity = World::get_singleton::<FoodEntity>();
-    food_entity.set_entity(food.get_id());
-}
+//     let mut food_entity = World::get_singleton::<FoodEntity>();
+//     food_entity.set_entity(food.get_id());
+// }
 
 pub fn create_food_init() {
     // Check if the entity exists for hot reloading conditionals
@@ -141,7 +141,6 @@ pub fn init() {
     let mut tails = World::get_singleton::<Tails>();
     tails.set_max_length(1);
     tails.set_entities(vec![]);
-    let mut tails = World::get_singleton::<Tails>();
     if !World::has_entity_named("CreateSnakeOnce".to_string()) {
         create_snake();
         Entity::named("CreateSnakeOnce");
