@@ -16,6 +16,7 @@ bindgen!({
 });
 
 use std::collections::HashMap;
+use toxoid_api::GuestObserver;
 use toxoid_host::bindings::exports::toxoid::engine::ecs::{Guest, GuestCallback, GuestComponent, GuestComponentType, GuestEntity, GuestIter, GuestQuery, GuestSystem};
 use toxoid_host::ToxoidApi;
 use wasmtime::component::{bindgen, Component, Linker, Resource, ResourceTable};
@@ -178,24 +179,6 @@ impl toxoid_component::component::ecs::HostIter for StoreState {
     }
 }
 
-impl toxoid_component::component::ecs::HostObserver for StoreState {
-    fn new(&mut self, _desc: toxoid_component::component::ecs::ObserverDesc) -> Resource<ObserverProxy> {
-        unimplemented!()
-    }
-
-    fn build(&mut self, _observer: Resource<ObserverProxy>) -> () {
-        unimplemented!()
-    }
-
-    fn callback(&mut self, _observer: Resource<ObserverProxy>) -> Resource<CallbackProxy> {
-        unimplemented!()
-    }
-
-    fn drop(&mut self, _observer: Resource<ObserverProxy>) -> Result<(), wasmtime::Error> {
-        Ok(())
-    }
-}
-
 impl toxoid_component::component::ecs::HostCallback for StoreState {
     fn new(&mut self, handle: i64) -> Resource<CallbackProxy> {
         let callback = <toxoid_host::Callback as toxoid_host::bindings::exports::toxoid::engine::ecs::GuestCallback>::new(handle);
@@ -270,6 +253,61 @@ impl toxoid_component::component::ecs::HostSystem for StoreState {
     }
 
     fn drop(&mut self, _system: Resource<toxoid_component::component::ecs::System>) -> Result<(), wasmtime::Error> {
+        Ok(())
+    }
+}
+
+impl toxoid_component::component::ecs::HostObserver for StoreState {
+    fn new(&mut self, desc: toxoid_component::component::ecs::ObserverDesc) -> Resource<ObserverProxy> {
+        let callback_proxy = self.table.get(&desc.callback).unwrap() as &CallbackProxy;
+        let callback = unsafe { Box::from_raw(callback_proxy.ptr) };
+        let query_desc = toxoid_host::bindings::exports::toxoid::engine::ecs::QueryDesc {
+            expr: desc.query_desc.expr,
+        };
+        let observer = <toxoid_host::Observer as toxoid_host::bindings::exports::toxoid::engine::ecs::GuestObserver>::new(toxoid_host::bindings::exports::toxoid::engine::ecs::ObserverDesc {
+            name: desc.name,
+            query_desc,
+            events: desc.events.iter().map(|event| match event {
+                toxoid_component::component::ecs::Event::OnSet => toxoid_api::Event::OnSet,
+                toxoid_component::component::ecs::Event::OnAdd => toxoid_api::Event::OnAdd,
+                toxoid_component::component::ecs::Event::OnRemove => toxoid_api::Event::OnRemove,
+                toxoid_component::component::ecs::Event::OnDelete => toxoid_api::Event::OnDelete,
+                toxoid_component::component::ecs::Event::OnDeleteTarget => toxoid_api::Event::OnDeleteTarget,
+                toxoid_component::component::ecs::Event::OnTableCreate => toxoid_api::Event::OnTableCreate,
+                toxoid_component::component::ecs::Event::OnTableDelete => toxoid_api::Event::OnTableDelete,
+                toxoid_component::component::ecs::Event::OnTableEmpty => toxoid_api::Event::OnTableEmpty,
+                toxoid_component::component::ecs::Event::OnTableFill => toxoid_api::Event::OnTableFill
+            })
+                .collect::<Vec<toxoid_api::Event>>(),
+            callback: callback.cb_handle(),
+            is_guest: true
+        });
+        let id = self
+            .table
+            .push::<ObserverProxy>(ObserverProxy {
+                ptr: Box::into_raw(Box::new(observer))
+            })
+            .unwrap();
+        Box::into_raw(callback);
+        id
+    }
+
+    fn callback(&mut self, _observer: Resource<ObserverProxy>) -> Resource<CallbackProxy> {
+        let observer_proxy = self.table.get(&_observer).unwrap() as &ObserverProxy;
+        let observer = unsafe { Box::from_raw(observer_proxy.ptr) };
+        let callback_handle = observer.callback();
+        let callback = <toxoid_host::Callback as toxoid_host::bindings::exports::toxoid::engine::ecs::GuestCallback>::new(callback_handle);
+        self.table.push::<CallbackProxy>(CallbackProxy { ptr: Box::into_raw(Box::new(callback)) }).unwrap()
+    }
+
+    fn build(&mut self, _observer: Resource<ObserverProxy>) -> () {
+        let observer_proxy = self.table.get(&_observer).unwrap() as &ObserverProxy;
+        let mut observer = unsafe { Box::from_raw(observer_proxy.ptr) };
+        observer.as_mut().build();
+        Box::into_raw(observer);
+     }
+
+    fn drop(&mut self, _observer: Resource<ObserverProxy>) -> Result<(), wasmtime::Error> {
         Ok(())
     }
 }

@@ -108,4 +108,13 @@ pub fn init() {
         });
     })
         .build();
+
+    // Observer::dsl("Position", vec![Event::OnSet], |iter| {
+    //     println!("Observer from guest called");
+    //     iter.entities().iter_mut().for_each(|entity| {
+    //         let pos = entity.get::<Position>();
+    //         println!("Position: {:?}", pos.get_x());
+    //     });
+    // })
+    //     .build();
 }
