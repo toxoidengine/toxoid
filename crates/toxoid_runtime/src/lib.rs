@@ -19,7 +19,7 @@ use std::collections::HashMap;
 use toxoid_host::bindings::exports::toxoid::engine::ecs::{Guest, GuestCallback, GuestComponent, GuestComponentType, GuestEntity, GuestIter, GuestQuery, GuestSystem};
 use toxoid_host::ToxoidApi;
 use wasmtime::component::{bindgen, Component, Linker, Resource, ResourceTable};
-use wasmtime::{Engine, Result, Store};
+use wasmtime::{Config, Engine, OptLevel, Result, Store};
 use wasmtime_wasi::{WasiCtx, WasiView, WasiCtxBuilder};
 use once_cell::sync::Lazy;
 use std::sync::Mutex;
@@ -75,8 +75,8 @@ impl toxoid_component::component::ecs::Host for StoreState {
     fn add_singleton(&mut self, component: toxoid_component::component::ecs::EcsEntityT) {
         ToxoidApi::add_singleton(component);
         // TODO: Check if !ptr.is_null()
-        let ptr = ToxoidApi::get_singleton(component);
-        let host_component = toxoid_host::Component::new(ptr, component, component);
+        let component_ptr = ToxoidApi::get_singleton(component);
+        let host_component = toxoid_host::Component::new(component_ptr, component, component);
         let boxed_component_ptr = Box::into_raw(Box::new(host_component));
         let resource = self.table.push::<ComponentProxy>(ComponentProxy {
             ptr: boxed_component_ptr 
@@ -309,11 +309,11 @@ impl toxoid_component::component::ecs::HostEntity for StoreState {
         let entity_id = entity.get_id();
         
         // Retrieve the component
-        let component = entity.get(component);
+        let component_ptr = entity.get(component);
         Box::into_raw(entity);
 
         // Create component
-        let component = toxoid_host::Component::new(component, entity_id, component as u64);
+        let component = toxoid_host::Component::new(component_ptr, entity_id, component);
 
         // Create boxed component
         let boxed_component = Box::new(component);
@@ -705,7 +705,15 @@ impl toxoid_component::component::ecs::HostQuery for StoreState {
 }
 
 // Instantiate the WASM engine
-pub static ENGINE: Lazy<Engine> = Lazy::new(Engine::default);
+pub static ENGINE: Lazy<Engine> = Lazy::new(|| { 
+    // TODO: Base on debug flag
+    Engine::new(
+        Config::new()
+            .debug_info(true)
+            .cranelift_opt_level(OptLevel::None),   
+    )
+        .unwrap()
+});
 
 // Create WASM Component Linker
 static LINKER: Lazy<Linker<StoreState>> = Lazy::new(|| {

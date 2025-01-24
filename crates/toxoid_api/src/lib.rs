@@ -439,7 +439,7 @@ impl World {
         #[cfg(all(target_arch = "wasm32", not(target_os = "emscripten")))]
         let component_resource = ToxoidApi::get_singleton(component_id);
         #[cfg(any(not(target_arch = "wasm32"), target_os = "emscripten"))]
-        let toxoid_component = ToxoidComponent::new(component_ptr, 0, component_id);
+        let toxoid_component = ToxoidComponent::new(component_ptr, component_id, component_id);
         #[cfg(any(not(target_arch = "wasm32"), target_os = "emscripten"))]
         component.set_component(toxoid_component);
         #[cfg(all(target_arch = "wasm32", not(target_os = "emscripten")))]
