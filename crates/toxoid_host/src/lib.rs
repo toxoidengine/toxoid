@@ -611,13 +611,18 @@ impl GuestObserver for Observer {
         }
         observer_desc.callback_ctx = desc.callback as *mut c_void;
         observer_desc.callback = Some(unsafe { QUERY_TRAMPOLINE.unwrap() });
-        observer_desc.events = desc
+        let mut events = desc
             .events
             .iter()
             .map(|event| map_event(*event))
-            .collect::<Vec<u64>>()
-            .try_into()
-            .unwrap_or([0; 8]);
+            .collect::<Vec<u64>>();
+        // Pad with zeros until length is 8
+        while events.len() < 8 {
+            events.push(0);
+        }
+        // Truncate if longer than 8
+        events.truncate(8);
+        observer_desc.events = events.try_into().unwrap();
         Observer { 
             desc: RefCell::new(observer_desc),
             entity: RefCell::new(entity),

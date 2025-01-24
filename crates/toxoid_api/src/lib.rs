@@ -318,8 +318,15 @@ pub struct Observer {
 impl Observer {
     // Not wasm
     #[cfg(any(not(target_arch = "wasm32"), target_os = "emscripten"))]
-    pub fn new(desc: Option<ObserverDesc>) -> Self {
-        let desc = desc.unwrap_or(ObserverDesc { name: None, query_desc: QueryDesc { expr: "".to_string() }, events: vec![], callback: 0, is_guest: true });
+    pub fn new(desc: Option<ObserverDesc>, callback_fn: fn(&Iter)) -> Self {
+        let callback = Callback::new(callback_fn);
+        let desc = desc.unwrap_or(ObserverDesc { 
+            name: None, 
+            query_desc: QueryDesc { expr: "".to_string() }, 
+            events: vec![], 
+            callback: callback.cb_handle(), 
+            is_guest: false 
+        });
         Self { observer: ToxoidObserver::new(desc) }
     }
 
@@ -334,7 +341,13 @@ impl Observer {
     pub fn dsl(dsl: &str, events: Vec<Event>, callback_fn: fn(&Iter)) -> Self {
         // TODO: Make this work in WASM without using toxoid_host::get_event
         let callback = Callback::new(callback_fn);
-        let desc = ObserverDesc { name: Some(dsl.to_string()), query_desc: QueryDesc { expr: dsl.to_string() }, events, callback: callback.cb_handle(), is_guest: true };
+        let desc = ObserverDesc { 
+            name: None, 
+            query_desc: QueryDesc { expr: dsl.to_string() }, 
+            events, 
+            callback: callback.cb_handle(), 
+            is_guest: false
+        };
         Self { observer: ToxoidObserver::new(desc) }
     }
 
