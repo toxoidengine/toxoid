@@ -38,7 +38,8 @@ component! {
     Rect {},
     Renderable {},
     // General
-    Loading {}
+    Loading {},
+    Loaded {}
 }
 
 pub fn init() {
@@ -55,6 +56,7 @@ pub fn init() {
     Rect::register();
     Renderable::register();
     Loading::register();
+    Loaded::register();
     
     // Add singletons
     World::add_singleton::<KeyboardInput>();

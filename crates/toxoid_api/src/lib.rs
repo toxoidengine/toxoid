@@ -112,6 +112,16 @@ impl Entity {
         self.entity.get_id()
     }
 
+    #[cfg(all(target_arch = "wasm32", not(target_os = "emscripten")))]
+    pub fn from_id(id: u64) -> Self {
+        Self { entity: ToxoidEntity::from_id(id) }
+    }
+
+    #[cfg(any(not(target_arch = "wasm32"), target_os = "emscripten"))]
+    pub fn from_id(id: u64) -> Self {
+        Self { entity: unsafe { *Box::from_raw(ToxoidEntity::from_id(id) as usize as *mut ToxoidEntity) } }
+    }
+
     pub fn get_name(&self) -> String {
         self.entity.get_name()
     }

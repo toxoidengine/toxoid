@@ -4,9 +4,32 @@ use toxoid_sokol::bindings::*;
 #[no_mangle]
 pub extern "C" fn fetch_callback(response: *const sfetch_response_t) {
     println!("Fetch callback called");
+    let response = unsafe { *response };
+    // Get user data / entity 
+    let entity_id = unsafe { *(response.user_data as *mut u64) };
+    // println!("User data: {:?}", unsafe { *user_data });
+    // println!("Data: {:?}", response.data.ptr);
+    // println!("Data size: {:?}", response.data.size);
+    // println!("Failed: {:?}", response.failed);
+    let mut entity = Entity::from_id(entity_id);
+    let mut fetch_request = entity.get::<FetchRequest>();
+    // Slice from data
+    println!("Data ptr: {:?}", response.data.ptr);
+    println!("Data size: {:?}", response.data.size);
+    let data = unsafe { std::slice::from_raw_parts(response.data.ptr as *const u8, response.data.size) };
+    // Convert byte slice into Vec<u64>
+    // TODO: Make this a Vec<u8> instead after we implement into toxoid_api_macro
+    let data = data.to_vec();
+    let data = data.into_iter().map(|x| x as u64).collect::<Vec<u64>>();
+    fetch_request.set_data(data);
+    println!("Lets go!");
+    let data = fetch_request.get_data();
+    println!("Data: {:?}", data);
+    entity.remove::<Loading>();
+    entity.add::<Loaded>();
 }
 
-fn sokol_fetch(path: &str) {
+fn sokol_fetch(path: &str, entity: &mut Entity) {
     // Create fetch description
     let mut sfetch_request: sfetch_request_t = unsafe { core::mem::MaybeUninit::zeroed().assume_init() };
     let path = std::ffi::CString::new(path).unwrap();
@@ -26,23 +49,36 @@ fn sokol_fetch(path: &str) {
         size: file_size
     };
     sfetch_request.callback = Some(fetch_callback);
-    let user_data = std::ptr::null_mut();
-    let user_data_size = 0;
+    // Store entity in the user data / ctx of request so that
+    // we can associate the entity with the fetch request / response
+    let entity_id = Box::into_raw(Box::new(entity.get_id()));
+    let ptr = entity_id as *mut core::ffi::c_void;
+    let size = core::mem::size_of::<u64>();
     sfetch_request.user_data = sfetch_range_t {
-        ptr: user_data,
-        size: user_data_size
+        ptr,
+        size
     };
     unsafe { sfetch_send(&sfetch_request) };
 }
 
 // Fetch Observers
 pub fn init() {
-    Observer::dsl("FetchRequest, Loading", vec![Event::OnSet], |iter| {
+    Observer::dsl("FetchRequest, Loading", vec![Event::OnAdd], |iter| {
         iter.entities().iter_mut().for_each(|entity| {
             let fetch_request = entity.get::<FetchRequest>();
             let path = fetch_request.get_path();
             println!("Fetching asset: {:?}", path);
-            sokol_fetch(&path);
+            sokol_fetch(&path, entity);
+        });
+    })
+        .build();
+
+    Observer::dsl("FetchRequest, Loaded", vec![Event::OnAdd], |iter| {
+        println!("Hello world!");
+        iter.entities().iter_mut().for_each(|entity| {
+            let fetch_request = entity.get::<FetchRequest>();
+            let data = fetch_request.get_data();
+            // println!("Data loaded: {:?}", data);
         });
     })
         .build();

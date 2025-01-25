@@ -9,7 +9,7 @@ extern "C" fn sokol_init() {
     toxoid_sokol::sokol_init();
 
     // Test fetch
-    toxoid_api::fetch("assets/test.png");
+    toxoid_api::fetch("./sprite.png");
 }
 
 #[no_mangle]
