@@ -148,6 +148,10 @@ impl Entity {
         self.entity.get_id()
     }
 
+    pub fn get_name(&self) -> String {
+        self.entity.get_name()
+    }
+
     pub fn get<T: Component + ComponentType + Default + 'static>(&mut self) -> T {
         let mut component = T::default();
         let component_ptr = self.entity.get(T::get_id());
