@@ -94,6 +94,7 @@ interface ecs {
         constructor(init: entity-desc);
         from-id: static func(id: u64) -> entity;
         get-id: func() -> ecs-entity-t;
+        get-name: func() -> string;
         get: func(component: ecs-entity-t) -> component;
         add: func(component: ecs-entity-t);
         remove: func(component: ecs-entity-t);
