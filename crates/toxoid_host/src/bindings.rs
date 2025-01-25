@@ -1807,6 +1807,30 @@ pub mod exports {
                 }
                 #[doc(hidden)]
                 #[allow(non_snake_case)]
+                pub unsafe fn _export_method_entity_add_relationship_cabi<
+                    T: GuestEntity,
+                >(arg0: *mut u8, arg1: i64, arg2: i64) {
+                    #[cfg(target_arch = "wasm32")] _rt::run_ctors_once();
+                    T::add_relationship(
+                        EntityBorrow::lift(arg0 as u32 as usize).get(),
+                        arg1 as u64,
+                        arg2 as u64,
+                    );
+                }
+                #[doc(hidden)]
+                #[allow(non_snake_case)]
+                pub unsafe fn _export_method_entity_remove_relationship_cabi<
+                    T: GuestEntity,
+                >(arg0: *mut u8, arg1: i64, arg2: i64) {
+                    #[cfg(target_arch = "wasm32")] _rt::run_ctors_once();
+                    T::remove_relationship(
+                        EntityBorrow::lift(arg0 as u32 as usize).get(),
+                        arg1 as u64,
+                        arg2 as u64,
+                    );
+                }
+                #[doc(hidden)]
+                #[allow(non_snake_case)]
                 pub unsafe fn _export_constructor_query_cabi<T: GuestQuery>(
                     arg0: *mut u8,
                     arg1: usize,
@@ -2374,6 +2398,16 @@ pub mod exports {
                     fn get(&self, component: EcsEntityT) -> i64;
                     fn add(&self, component: EcsEntityT);
                     fn remove(&self, component: EcsEntityT);
+                    fn add_relationship(
+                        &self,
+                        relationship: EcsEntityT,
+                        target: EcsEntityT,
+                    );
+                    fn remove_relationship(
+                        &self,
+                        relationship: EcsEntityT,
+                        target: EcsEntityT,
+                    );
                 }
                 pub trait GuestQuery: 'static {
                     #[doc(hidden)]
@@ -2861,6 +2895,18 @@ pub mod exports {
                         export_method_entity_remove(arg0 : * mut u8, arg1 : i64,) {
                         $($path_to_types)*:: _export_method_entity_remove_cabi::<<$ty as
                         $($path_to_types)*:: Guest >::Entity > (arg0, arg1) }
+                        #[export_name =
+                        "toxoid:engine/ecs#[method]entity.add-relationship"] unsafe
+                        extern "C" fn export_method_entity_add_relationship(arg0 : * mut
+                        u8, arg1 : i64, arg2 : i64,) { $($path_to_types)*::
+                        _export_method_entity_add_relationship_cabi::<<$ty as
+                        $($path_to_types)*:: Guest >::Entity > (arg0, arg1, arg2) }
+                        #[export_name =
+                        "toxoid:engine/ecs#[method]entity.remove-relationship"] unsafe
+                        extern "C" fn export_method_entity_remove_relationship(arg0 : *
+                        mut u8, arg1 : i64, arg2 : i64,) { $($path_to_types)*::
+                        _export_method_entity_remove_relationship_cabi::<<$ty as
+                        $($path_to_types)*:: Guest >::Entity > (arg0, arg1, arg2) }
                         #[export_name = "toxoid:engine/ecs#[constructor]query"] unsafe
                         extern "C" fn export_constructor_query(arg0 : * mut u8, arg1 :
                         usize,) -> i32 { $($path_to_types)*::
@@ -3106,6 +3152,7 @@ mod _rt {
     #[cfg(target_arch = "wasm32")]
     pub fn run_ctors_once() {
         #[cfg(not(target_os = "emscripten"))]
+#[cfg(not(target_os = "emscripten"))]
 wit_bindgen_rt::run_ctors_once();
     }
     pub unsafe fn string_lift(bytes: Vec<u8>) -> String {
@@ -3292,9 +3339,9 @@ pub(crate) use __export_toxoid_engine_world_impl as export;
 #[cfg(target_arch = "wasm32")]
 #[link_section = "component-type:wit-bindgen:0.35.0:toxoid:engine:toxoid-engine-world:encoded world"]
 #[doc(hidden)]
-pub static __WIT_BINDGEN_COMPONENT_TYPE: [u8; 4022] = *b"\
-\0asm\x0d\0\x01\0\0\x19\x16wit-component-encoding\x04\0\x07\xac\x1e\x01A\x02\x01\
-A\x02\x01B\xaf\x01\x01w\x04\0\x0cecs-entity-t\x03\0\0\x01m\x10\x04u8-t\x05u16-t\x05\
+pub static __WIT_BINDGEN_COMPONENT_TYPE: [u8; 4131] = *b"\
+\0asm\x0d\0\x01\0\0\x19\x16wit-component-encoding\x04\0\x07\x99\x1f\x01A\x02\x01\
+A\x02\x01B\xb2\x01\x01w\x04\0\x0cecs-entity-t\x03\0\0\x01m\x10\x04u8-t\x05u16-t\x05\
 u32-t\x05u64-t\x04i8-t\x05i16-t\x05i32-t\x05i64-t\x05f32-t\x05f64-t\x06bool-t\x08\
 string-t\x07array-t\x0au32array-t\x0af32array-t\x09pointer-t\x04\0\x0bmember-typ\
 e\x03\0\x02\x01m\x09\x06on-set\x06on-add\x09on-remove\x09on-delete\x10on-delete-\
@@ -3347,34 +3394,37 @@ t\x01D\x01i\x11\x01@\x01\x04desc\x0c\0\xc5\0\x04\0\x13[constructor]entity\x01F\x
 h\x11\x01@\x01\x04self\xc7\0\0\x01\x04\0\x15[method]entity.get-id\x01H\x01@\x01\x02\
 idw\0x\x04\0\x16[static]entity.from-id\x01I\x01@\x02\x04self\xc7\0\x09component\x01\
 \0x\x04\0\x12[method]entity.get\x01J\x01@\x02\x04self\xc7\0\x09component\x01\x01\
-\0\x04\0\x12[method]entity.add\x01K\x04\0\x15[method]entity.remove\x01K\x01i\x12\
-\x01@\x01\x04desc\x0e\0\xcc\0\x04\0\x12[constructor]query\x01M\x01h\x12\x01@\x02\
-\x04self\xce\0\x04exprs\x01\0\x04\0\x12[method]query.expr\x01O\x01@\x01\x04self\xce\
-\0\x01\0\x04\0\x13[method]query.build\x01P\x04\0\x12[method]query.iter\x01P\x01@\
-\x01\x04self\xce\0\0\x7f\x04\0\x12[method]query.next\x01Q\x01@\x01\x04self\xce\0\
-\0z\x04\0\x13[method]query.count\x01R\x01p\x01\x01@\x01\x04self\xce\0\0\xd3\0\x04\
-\0\x16[method]query.entities\x01T\x01i\x13\x01@\x01\x06handlex\0\xd5\0\x04\0\x15\
-[constructor]callback\x01V\x01h\x13\x01i\x1c\x01@\x02\x04self\xd7\0\x04iter\xd8\0\
-\x01\0\x04\0\x14[method]callback.run\x01Y\x01@\x01\x04self\xd7\0\0x\x04\0\x1a[me\
-thod]callback.cb-handle\x01Z\x01i\x17\x01@\x01\x04desc\x16\0\xdb\0\x04\0\x13[con\
-structor]system\x01\\\x01h\x17\x01@\x01\x04self\xdd\0\x01\0\x04\0\x14[method]sys\
-tem.build\x01^\x01@\x01\x04self\xdd\0\0x\x04\0\x17[method]system.callback\x01_\x01\
-i\x1b\x01@\x01\x04desc\x1a\0\xe0\0\x04\0\x15[constructor]observer\x01a\x01h\x1b\x01\
-@\x01\x04self\xe2\0\x01\0\x04\0\x16[method]observer.build\x01c\x01@\x01\x04self\xe2\
-\0\0x\x04\0\x19[method]observer.callback\x01d\x01@\x01\x03ptrx\0\xd8\0\x04\0\x11\
-[constructor]iter\x01e\x01h\x1c\x01@\x01\x04self\xe6\0\0\x7f\x04\0\x11[method]it\
-er.next\x01g\x01@\x01\x04self\xe6\0\0z\x04\0\x12[method]iter.count\x01h\x01@\x01\
-\x04self\xe6\0\0\xd3\0\x04\0\x15[method]iter.entities\x01i\x01@\x01\x0ccomponent\
--id\x01\x01\0\x04\0\x0dadd-singleton\x01j\x01@\x01\x0ccomponent-id\x01\0x\x04\0\x0d\
-get-singleton\x01k\x04\0\x10remove-singleton\x01j\x01@\x01\x09entity-id\x01\x01\0\
-\x04\0\x0aadd-entity\x01l\x04\0\x0dremove-entity\x01l\x01@\x01\x04names\0\x7f\x04\
-\0\x10has-entity-named\x01m\x04\0\x11toxoid:engine/ecs\x05\0\x04\0!toxoid:engine\
-/toxoid-engine-world\x04\0\x0b\x19\x01\0\x13toxoid-engine-world\x03\0\0\0G\x09pr\
-oducers\x01\x0cprocessed-by\x02\x0dwit-component\x070.220.0\x10wit-bindgen-rust\x06\
-0.35.0";
+\0\x04\0\x12[method]entity.add\x01K\x04\0\x15[method]entity.remove\x01K\x01@\x03\
+\x04self\xc7\0\x0crelationship\x01\x06target\x01\x01\0\x04\0\x1f[method]entity.a\
+dd-relationship\x01L\x04\0\"[method]entity.remove-relationship\x01L\x01i\x12\x01\
+@\x01\x04desc\x0e\0\xcd\0\x04\0\x12[constructor]query\x01N\x01h\x12\x01@\x02\x04\
+self\xcf\0\x04exprs\x01\0\x04\0\x12[method]query.expr\x01P\x01@\x01\x04self\xcf\0\
+\x01\0\x04\0\x13[method]query.build\x01Q\x04\0\x12[method]query.iter\x01Q\x01@\x01\
+\x04self\xcf\0\0\x7f\x04\0\x12[method]query.next\x01R\x01@\x01\x04self\xcf\0\0z\x04\
+\0\x13[method]query.count\x01S\x01p\x01\x01@\x01\x04self\xcf\0\0\xd4\0\x04\0\x16\
+[method]query.entities\x01U\x01i\x13\x01@\x01\x06handlex\0\xd6\0\x04\0\x15[const\
+ructor]callback\x01W\x01h\x13\x01i\x1c\x01@\x02\x04self\xd8\0\x04iter\xd9\0\x01\0\
+\x04\0\x14[method]callback.run\x01Z\x01@\x01\x04self\xd8\0\0x\x04\0\x1a[method]c\
+allback.cb-handle\x01[\x01i\x17\x01@\x01\x04desc\x16\0\xdc\0\x04\0\x13[construct\
+or]system\x01]\x01h\x17\x01@\x01\x04self\xde\0\x01\0\x04\0\x14[method]system.bui\
+ld\x01_\x01@\x01\x04self\xde\0\0x\x04\0\x17[method]system.callback\x01`\x01i\x1b\
+\x01@\x01\x04desc\x1a\0\xe1\0\x04\0\x15[constructor]observer\x01b\x01h\x1b\x01@\x01\
+\x04self\xe3\0\x01\0\x04\0\x16[method]observer.build\x01d\x01@\x01\x04self\xe3\0\
+\0x\x04\0\x19[method]observer.callback\x01e\x01@\x01\x03ptrx\0\xd9\0\x04\0\x11[c\
+onstructor]iter\x01f\x01h\x1c\x01@\x01\x04self\xe7\0\0\x7f\x04\0\x11[method]iter\
+.next\x01h\x01@\x01\x04self\xe7\0\0z\x04\0\x12[method]iter.count\x01i\x01@\x01\x04\
+self\xe7\0\0\xd4\0\x04\0\x15[method]iter.entities\x01j\x01@\x01\x0ccomponent-id\x01\
+\x01\0\x04\0\x0dadd-singleton\x01k\x01@\x01\x0ccomponent-id\x01\0x\x04\0\x0dget-\
+singleton\x01l\x04\0\x10remove-singleton\x01k\x01@\x01\x09entity-id\x01\x01\0\x04\
+\0\x0aadd-entity\x01m\x04\0\x0dremove-entity\x01m\x01@\x01\x04names\0\x7f\x04\0\x10\
+has-entity-named\x01n\x04\0\x11toxoid:engine/ecs\x05\0\x04\0!toxoid:engine/toxoi\
+d-engine-world\x04\0\x0b\x19\x01\0\x13toxoid-engine-world\x03\0\0\0G\x09producer\
+s\x01\x0cprocessed-by\x02\x0dwit-component\x070.220.0\x10wit-bindgen-rust\x060.3\
+5.0";
 #[inline(never)]
 #[doc(hidden)]
 pub fn __link_custom_section_describing_imports() {
     #[cfg(not(target_os = "emscripten"))]
+#[cfg(not(target_os = "emscripten"))]
 wit_bindgen_rt::maybe_link_cabi_realloc();
 }

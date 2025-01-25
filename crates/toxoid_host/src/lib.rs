@@ -485,6 +485,20 @@ impl GuestEntity for Entity {
             ecs_ensure_id(WORLD.0, self.id, component) as i64
         }
     }
+
+    fn add_relationship(&self, relationship: ecs_entity_t, target: ecs_entity_t) {
+        unsafe { 
+            let pair = ecs_make_pair(relationship, target);
+            ecs_add_id(WORLD.0, self.id, pair); 
+        };
+    }
+
+    fn remove_relationship(&self, relationship: ecs_entity_t, target: ecs_entity_t) {
+        unsafe {
+            let pair = ecs_make_pair(relationship, target);
+            ecs_remove_id(WORLD.0, self.id, pair);
+        }
+    }
 }
 
 impl GuestQuery for Query {
