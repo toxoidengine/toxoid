@@ -26,6 +26,9 @@ component! {
         b: f32,
         a: f32
     },
+    Sprite {
+        sprite: u64
+    },
     // Fetch
     FetchRequest {
         path: String,
@@ -50,6 +53,7 @@ pub fn init() {
     Position::register();
     Size::register();
     Color::register();
+    Sprite::register();
     FetchRequest::register();
     
     // Register tags
