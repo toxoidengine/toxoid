@@ -7,11 +7,15 @@ extern "C" fn sokol_init() {
     // Initialization code for Sokol
     // println!("Sokol initialized");
     toxoid_sokol::sokol_init();
+
+    // Test fetch
+    toxoid_api::fetch("assets/test.png");
 }
 
 #[no_mangle]
 extern "C" fn sokol_frame() {
-    // // Frame update code for Sokol
+    // Frame update code for Sokol
+    unsafe { toxoid_sokol::bindings::sfetch_dowork() };
     SokolRenderer2D::begin();
     let delta_time = frame_duration();
     toxoid_host::toxoid_progress(delta_time as f32);
