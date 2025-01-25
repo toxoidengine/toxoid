@@ -28,7 +28,9 @@ component! {
     },
     // Fetch
     FetchRequest {
-        path: String
+        path: String,
+        // TODO: Make this a Vec<u8> after we implement that in toxoid_api_macro
+        data: Vec::<u64>
     },
 
     // -- Tags --

@@ -1,7 +1,6 @@
-use toxoid_sokol::SokolRenderer2D;
-use toxoid_render::Renderer2D;
+mod render;
+mod fetch;
 use toxoid_api::*;
-use crate::entities;
 
 // Trampoline closure from Rust using C callback and binding_ctx field to call a Rust closure
 #[no_mangle]
@@ -47,31 +46,10 @@ pub unsafe extern "C" fn query_trampoline(iter: *mut toxoid_host::ecs_iter_t) {
         callback(&iter);
     }
 }
-
 pub fn init() {    
     unsafe {
         toxoid_host::QUERY_TRAMPOLINE = Some(query_trampoline);
     }
-    
-    // Rendering System
-    System::dsl("Rect, Position, Size, Color, Renderable", None, |iter| {
-        iter.entities().iter_mut().for_each(|entity| {
-            let pos = entity.get::<Position>();
-            let size = entity.get::<Size>();
-            let color = entity.get::<Color>();
-            SokolRenderer2D::draw_filled_rect(&pos, &size, &color);
-        });
-    })
-        .build();
-
-    Observer::dsl("FetchRequest, Loading", vec![Event::OnSet], |iter| {
-        iter.entities().iter_mut().for_each(|entity| {
-            let fetch_request = entity.get::<FetchRequest>();
-            let path = fetch_request.get_path();
-            println!("Fetching asset: {:?}", path);
-        });
-    })
-        .build();
-
-    toxoid_api::fetch("assets/test.png");
+    render::init();
+    fetch::init();
 }
