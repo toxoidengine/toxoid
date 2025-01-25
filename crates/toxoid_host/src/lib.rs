@@ -403,16 +403,20 @@ impl GuestComponent for Component {
 
     fn set_member_string(&self, offset: u32, value: String) {
         unsafe {
-            let member_ptr = self.ptr.offset(offset as isize) as *mut String;
-            *member_ptr = value;
+            // Convert to c_string
+            let c_string = std::ffi::CString::new(value).expect("CString::new failed");
+            let c_ptr = c_string.as_ptr();
+            std::mem::forget(c_string); // Prevent CString from being deallocated
+            let member_ptr = self.ptr.offset(offset as isize) as *mut *const i8;
+            *member_ptr = c_ptr;
             ecs_modified_id(WORLD.0, self.entity_added, self.component_type_id);
         }
     }
 
     fn get_member_string(&self, offset: u32) -> String {
-        unsafe {
-            let member_ptr = self.ptr.offset(offset as isize) as *mut String;
-            let member_value: String = (*member_ptr).clone();
+        unsafe {        
+            let member_ptr = self.ptr.offset(offset as isize) as *mut *const i8;
+            let member_value: String = unsafe { CStr::from_ptr(*member_ptr).to_string_lossy().into_owned() };
             member_value
         }
     }

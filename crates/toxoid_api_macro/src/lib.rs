@@ -244,6 +244,13 @@ pub fn component(input: TokenStream) -> TokenStream {
                                             self.component.as_mut().unwrap().get_member_string(#field_offset)
                                         }
                                     }
+                                    #[cfg(all(target_arch = "wasm32", not(target_os = "emscripten")))]
+                                    pub fn #setter_name(&mut self, value: String) {
+                                        unsafe {
+                                            self.component.as_mut().unwrap().set_member_string(#field_offset, value.as_str());
+                                        }
+                                    }
+                                    #[cfg(any(not(target_arch = "wasm32"), target_os = "emscripten"))]
                                     pub fn #setter_name(&mut self, value: String) {
                                         unsafe {
                                             self.component.as_mut().unwrap().set_member_string(#field_offset, value);
@@ -300,7 +307,7 @@ pub fn component(input: TokenStream) -> TokenStream {
                                             self.component.as_mut().unwrap().get_member_f32_array(#field_offset)
                                         }
                                     }
-                                    #[cfg(target_arch = "wasm32")   ]
+                                    #[cfg(all(target_arch = "wasm32", not(target_os = "emscripten")))]
                                     pub fn #setter_name(&mut self, value: Vec<f32>) {
                                         unsafe {
                                             self.component.as_mut().unwrap().set_member_f32_array(#field_offset, value.as_slice());

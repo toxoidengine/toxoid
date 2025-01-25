@@ -63,4 +63,15 @@ pub fn init() {
         });
     })
         .build();
+
+    Observer::dsl("FetchRequest, Loading", vec![Event::OnSet], |iter| {
+        iter.entities().iter_mut().for_each(|entity| {
+            let fetch_request = entity.get::<FetchRequest>();
+            let path = fetch_request.get_path();
+            println!("Fetching asset: {:?}", path);
+        });
+    })
+        .build();
+
+    toxoid_api::fetch("assets/test.png");
 }
