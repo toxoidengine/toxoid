@@ -170,6 +170,14 @@ impl Entity {
         self
     }
 
+    pub fn add_relationship(&mut self, relationship: Entity, target: Entity) {
+        self.entity.add_relationship(relationship.get_id(), target.get_id());
+    }
+
+    pub fn remove_relationship(&mut self, relationship: Entity, target: Entity) {
+        self.entity.remove_relationship(relationship.get_id(), target.get_id());
+    }
+
     pub fn remove<T: Component + ComponentType + 'static>(&mut self) {  
         self.entity.remove(T::get_id());
     }

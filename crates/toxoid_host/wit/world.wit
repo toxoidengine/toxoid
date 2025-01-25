@@ -102,6 +102,11 @@ interface ecs {
         get: func(component: ecs-entity-t) -> s64;
         add: func(component: ecs-entity-t);
         remove: func(component: ecs-entity-t);
+        add-relationship: func(relationship: ecs-entity-t, target: ecs-entity-t);
+        remove-relationship: func(relationship: ecs-entity-t, target: ecs-entity-t);
+        // children: func() -> list<ecs-entity-t>;
+        // parents: func() -> list<ecs-entity-t>;
+        // relationships: func() -> list<ecs-entity-t>;
     }
 
     resource query {
