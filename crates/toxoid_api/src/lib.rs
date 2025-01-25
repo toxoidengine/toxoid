@@ -106,6 +106,26 @@ pub fn get_component_id(component_name: &str, member_names: Vec<String>, member_
     component_type.get_id()
 }
 
+#[cfg(all(target_arch = "wasm32", not(target_os = "emscripten")))]
+pub fn register_component(component_name: &str, member_names: Vec<String>, member_types: Vec<u8>) -> ecs_entity_t {
+    let component_type = ToxoidComponentType::new(&ComponentDesc {
+        name: component_name.to_string(),
+        member_names,
+        member_types,
+    });
+    component_type.get_id()
+}
+
+#[cfg(any(not(target_arch = "wasm32"), target_os = "emscripten"))]
+pub fn register_component(component_name: &str, member_names: Vec<String>, member_types: Vec<u8>) -> ecs_entity_t {
+    let component_type = ToxoidComponentType::new(ComponentDesc {
+        name: component_name.to_string(),
+        member_names,
+        member_types,
+    });
+    component_type.get_id()
+}
+
 pub trait ComponentType {
     fn get_name() -> &'static str;
     fn get_id() -> ecs_entity_t;

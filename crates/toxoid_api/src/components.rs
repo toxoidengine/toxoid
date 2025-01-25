@@ -26,14 +26,8 @@ component! {
     },
 
     // Tags
-    // TODO: Implement tags so we don't have to use 
-    // these placeholder fields
-    Rect {
-        foo: bool
-    },
-    Renderable {
-        foo: bool
-    }
+    Rect {},
+    Renderable {}
 }
 
 pub fn init() {

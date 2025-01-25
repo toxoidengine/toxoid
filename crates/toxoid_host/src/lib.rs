@@ -150,40 +150,60 @@ fn c_string(rust_str: &str) -> *const i8 {
 impl GuestComponentType for ComponentType {
     fn new(desc: ComponentDesc) -> ComponentType {
         unsafe {
-            // Create component entity
-            let mut ent_desc: ecs_entity_desc_t = MaybeUninit::zeroed().assume_init();
-            ent_desc.name = c_string(&desc.name);
-            let lookup = ecs_lookup(WORLD.0, ent_desc.name);
-            let mut component_entity: ecs_entity_t;
-            if lookup == 0 {
-                component_entity = ecs_entity_init(WORLD.0, &ent_desc);
+            let is_tag = desc.member_names.len() == 0 || desc.member_types.len() == 0;
+            if is_tag {
+                let mut ent_desc: ecs_entity_desc_t = MaybeUninit::zeroed().assume_init();
+                ent_desc.name = c_string(&desc.name);
+                let mut tag_entity = ecs_entity_init(WORLD.0, &ent_desc);
+                // TODO: Maybe there is some Flecs compiler flag to optimize out debug
+                // errors for duplicate component and tag names.
+                let lookup = ecs_lookup(WORLD.0, ent_desc.name);
+                if lookup == 0 {
+                    tag_entity = ecs_entity_init(WORLD.0, &ent_desc);
+                } else {
+                    tag_entity = ecs_lookup(WORLD.0, ent_desc.name);
+                }
+                ComponentType {
+                    id: tag_entity
+                }
             } else {
-                component_entity = ecs_lookup(WORLD.0, ent_desc.name);
-            }
+                // Create component entity
+                let mut ent_desc: ecs_entity_desc_t = MaybeUninit::zeroed().assume_init();
+                ent_desc.name = c_string(&desc.name);
+                // TODO: Maybe there is some Flecs compiler flag to optimize out debug
+                // errors for duplicate component and tag names.
+                let lookup = ecs_lookup(WORLD.0, ent_desc.name);
+                let mut component_entity: ecs_entity_t;
+                if lookup == 0 {
+                    component_entity = ecs_entity_init(WORLD.0, &ent_desc);
+                } else {
+                    component_entity = ecs_lookup(WORLD.0, ent_desc.name);
+                }
 
-            // Create runtime component description
-            let mut struct_desc: ecs_struct_desc_t = MaybeUninit::zeroed().assume_init();
-            struct_desc.entity = component_entity;
-            let member: ecs_member_t = MaybeUninit::zeroed().assume_init();
-            struct_desc.members = [member; 32usize];
-            
-            // Iterate through member names
-            for (index, member_name) in desc.member_names.iter().enumerate() {
-                // Create component member
-                let mut member: ecs_member_t = MaybeUninit::zeroed().assume_init();
-                member.name = member_name.as_ptr() as *const i8;
-                member.type_ = map_member_type(desc.member_types[index]);
-                struct_desc.members[index] = member;
-            }
+                // Create runtime component description
+                let mut struct_desc: ecs_struct_desc_t = MaybeUninit::zeroed().assume_init();
+                struct_desc.entity = component_entity;
+                let member: ecs_member_t = MaybeUninit::zeroed().assume_init();
+                struct_desc.members = [member; 32usize];
+                
+                // Iterate through member names
+                for (index, member_name) in desc.member_names.iter().enumerate() {
+                    // Create component member
+                    let mut member: ecs_member_t = MaybeUninit::zeroed().assume_init();
+                    member.name = member_name.as_ptr() as *const i8;
+                    member.type_ = map_member_type(desc.member_types[index]);
+                    struct_desc.members[index] = member;
+                }
 
-            // Initialize component
-            if lookup == 0 {
-                ecs_struct_init(WORLD.0, &struct_desc);
-            }
+                // Initialize component
+                if lookup == 0 {
+                    ecs_struct_init(WORLD.0, &struct_desc);
+                }
 
-            // Return component 
-            ComponentType {
-                id: component_entity
+                // Return component 
+                ComponentType {
+                    id: component_entity
+                }
             }
         }
     }

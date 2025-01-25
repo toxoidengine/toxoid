@@ -63,17 +63,4 @@ pub fn init() {
         });
     })
         .build();
-
-    // let mut player = Entity::named("Player");
-    // let likes = Entity::named("Likes");
-    // let apples = Entity::named("Apples");
-    // player.add_relationship(likes, apples);
-
-    // System::dsl("(Likes, Apples)", None, |iter| {
-    //     iter.entities().iter_mut().for_each(|entity| {
-    //         println!("{:?} Likes Apples", entity.get_name())
-    //     });
-    // })
-    // .build();
-    // println!("Testing relationships...");
 }
