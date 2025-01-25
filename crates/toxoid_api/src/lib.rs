@@ -148,6 +148,10 @@ impl Entity {
         self.entity.get_id()
     }
 
+    pub fn get_name(&self) -> String {
+        self.entity.get_name()
+    }
+
     pub fn get<T: Component + ComponentType + Default + 'static>(&mut self) -> T {
         let mut component = T::default();
         let component_ptr = self.entity.get(T::get_id());
@@ -168,6 +172,14 @@ impl Entity {
         #[cfg(all(target_arch = "wasm32", not(target_os = "emscripten")))]
         self.entity.add(component_id);
         self
+    }
+
+    pub fn add_relationship(&mut self, relationship: Entity, target: Entity) {
+        self.entity.add_relationship(relationship.get_id(), target.get_id());
+    }
+
+    pub fn remove_relationship(&mut self, relationship: Entity, target: Entity) {
+        self.entity.remove_relationship(relationship.get_id(), target.get_id());
     }
 
     pub fn remove<T: Component + ComponentType + 'static>(&mut self) {  

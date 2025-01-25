@@ -94,9 +94,15 @@ interface ecs {
         constructor(init: entity-desc);
         from-id: static func(id: u64) -> entity;
         get-id: func() -> ecs-entity-t;
+        get-name: func() -> string;
         get: func(component: ecs-entity-t) -> component;
         add: func(component: ecs-entity-t);
         remove: func(component: ecs-entity-t);
+        add-relationship: func(relationship: ecs-entity-t, target: ecs-entity-t);
+        remove-relationship: func(relationship: ecs-entity-t, target: ecs-entity-t);
+        // children: func() -> list<ecs-entity-t>;
+        // parents: func() -> list<ecs-entity-t>;
+        // relationships: func() -> list<ecs-entity-t>;
     }
 
     resource query {

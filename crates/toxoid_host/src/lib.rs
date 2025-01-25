@@ -5,7 +5,8 @@ pub mod bindings;
 use bindings::exports::toxoid::engine::ecs::{EcsEntityT, GuestIter, GuestObserver, ObserverDesc};
 use bindings::exports::toxoid::engine::ecs::{self, ComponentDesc, EntityDesc, Guest, GuestCallback, GuestComponent, GuestComponentType, GuestEntity, GuestQuery, GuestSystem, QueryDesc, SystemDesc, Event};
 pub use toxoid_flecs::bindings::{ecs_add_id, ecs_entity_desc_t, ecs_entity_init, ecs_fini, ecs_get_mut_id, ecs_init, ecs_iter_t, ecs_lookup, ecs_make_pair, ecs_member_t, ecs_progress, ecs_query_desc_t, ecs_query_init, ecs_query_iter, ecs_query_next, ecs_query_t, ecs_struct_desc_t, ecs_struct_init, ecs_system_desc_t, ecs_system_init, ecs_system_t, ecs_world_t, EcsDependsOn, EcsOnUpdate, ecs_set_rate, ecs_get_id, ecs_remove_id};
-use toxoid_flecs::{ecs_delete, ecs_ensure_id, ecs_modified_id, ecs_observer_desc_t, ecs_observer_init, ecs_observer_t};
+use toxoid_flecs::{ecs_delete, ecs_ensure_id, ecs_get_name, ecs_modified_id, ecs_observer_desc_t, ecs_observer_init, ecs_observer_t};
+use std::ffi::CStr;
 use std::{borrow::BorrowMut, mem::MaybeUninit};
 use core::ffi::c_void;
 use core::ffi::c_char;
@@ -461,6 +462,14 @@ impl GuestEntity for Entity {
         self.id
     }
 
+    fn get_name(&self) -> String {
+        unsafe {
+            let name = ecs_get_name(WORLD.0, self.id);
+            let name_str = unsafe { CStr::from_ptr(name) };
+            name_str.to_str().unwrap().to_string()
+        }
+    }
+
     fn add(&self, component: ecs_entity_t) {
         unsafe {
             // println!("Adding component {:?} to entity {:?}", component, self.id);
@@ -483,6 +492,20 @@ impl GuestEntity for Entity {
         unsafe {
             // println!("Getting component {:?} from entity {:?}", component, self.id);
             ecs_ensure_id(WORLD.0, self.id, component) as i64
+        }
+    }
+
+    fn add_relationship(&self, relationship: ecs_entity_t, target: ecs_entity_t) {
+        unsafe { 
+            let pair = ecs_make_pair(relationship, target);
+            ecs_add_id(WORLD.0, self.id, pair); 
+        };
+    }
+
+    fn remove_relationship(&self, relationship: ecs_entity_t, target: ecs_entity_t) {
+        unsafe {
+            let pair = ecs_make_pair(relationship, target);
+            ecs_remove_id(WORLD.0, self.id, pair);
         }
     }
 }

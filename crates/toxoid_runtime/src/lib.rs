@@ -338,6 +338,14 @@ impl toxoid_component::component::ecs::HostEntity for StoreState {
         id
     }
 
+    fn get_name(&mut self, entity: Resource<toxoid_component::component::ecs::Entity>) -> String {
+        let entity_proxy = self.table.get(&entity).unwrap() as &EntityProxy;
+        let entity = unsafe { Box::from_raw(entity_proxy.ptr) };
+        let name = entity.get_name();
+        Box::into_raw(entity);
+        name
+    }
+
     fn get(&mut self, entity: Resource<toxoid_component::component::ecs::Entity>, component: toxoid_component::component::ecs::EcsEntityT) -> Resource<ComponentProxy> {
         // Safely retrieve the entity proxy
         let entity_proxy = self.table.get(&entity).expect("Entity not found in table") as &EntityProxy;
@@ -383,6 +391,20 @@ impl toxoid_component::component::ecs::HostEntity for StoreState {
         let entity_proxy = self.table.get(&entity).unwrap() as &EntityProxy;
         let entity = unsafe { Box::from_raw(entity_proxy.ptr) };
         entity.remove(component);
+        Box::into_raw(entity);
+    }
+
+    fn add_relationship(&mut self, entity: Resource<toxoid_component::component::ecs::Entity>, relationship: toxoid_component::component::ecs::EcsEntityT, target: toxoid_component::component::ecs::EcsEntityT) -> () {
+        let entity_proxy = self.table.get(&entity).unwrap() as &EntityProxy;
+        let entity = unsafe { Box::from_raw(entity_proxy.ptr) };
+        entity.add_relationship(relationship, target);
+        Box::into_raw(entity);
+    }
+
+    fn remove_relationship(&mut self, entity: Resource<toxoid_component::component::ecs::Entity>, relationship: toxoid_component::component::ecs::EcsEntityT, target: toxoid_component::component::ecs::EcsEntityT) -> () {
+        let entity_proxy = self.table.get(&entity).unwrap() as &EntityProxy;
+        let entity = unsafe { Box::from_raw(entity_proxy.ptr) };
+        entity.remove_relationship(relationship, target);
         Box::into_raw(entity);
     }
 
