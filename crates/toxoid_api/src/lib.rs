@@ -70,62 +70,6 @@ pub type ecs_entity_t = u64;
 
 pub struct ToxoidWasmComponent;
 
-pub fn run_callback(iter: ToxoidIter, handle: i64) {
-    let iter = Iter::new(iter);
-    let callback = unsafe { CALLBACKS[handle as usize].as_ref() };
-    callback(&iter);
-}
-
-// TODO: Create a WIT global function to get the component id directly instead of creating a component type
-// with the same name and fields as an existing component type, which is a lot of overhead
-#[cfg(all(target_arch = "wasm32", not(target_os = "emscripten")))]
-pub fn get_component_id(component_name: &str, member_names: Vec<String>, member_types: Vec<u8>) -> ecs_entity_t {
-    let component_type = ToxoidComponentType::new(&ComponentDesc {
-        name: component_name.to_string(),
-        member_names: member_names,
-        member_types: member_types,
-    });
-    component_type.get_id()
-}
-
-// TODO: Create a WIT global function to get the component id directly instead of creating a component type
-// with the same name and fields as an existing component type, which is a lot of overhead
-#[cfg(any(not(target_arch = "wasm32"), target_os = "emscripten"))]
-pub fn get_component_id(component_name: &str, member_names: Vec<String>, member_types: Vec<u8>) -> ecs_entity_t {
-    // TODO: Instead of initializing a toxoid component type
-    // we should have a conditional to check that it already exists.
-    // This is already happening under the hood in Flecs, but we don't need to pass 
-    // all these parameters in and instantiate a new component type.
-    // Haven't checked the overhead but we definitely want to come back and optimize 
-    // these unnecessary operations.
-    let component_type = ToxoidComponentType::new(ComponentDesc {
-        name: component_name.to_string(),
-        member_names: member_names,
-        member_types: member_types,
-    });
-    component_type.get_id()
-}
-
-#[cfg(all(target_arch = "wasm32", not(target_os = "emscripten")))]
-pub fn register_component(component_name: &str, member_names: Vec<String>, member_types: Vec<u8>) -> ecs_entity_t {
-    let component_type = ToxoidComponentType::new(&ComponentDesc {
-        name: component_name.to_string(),
-        member_names,
-        member_types,
-    });
-    component_type.get_id()
-}
-
-#[cfg(any(not(target_arch = "wasm32"), target_os = "emscripten"))]
-pub fn register_component(component_name: &str, member_names: Vec<String>, member_types: Vec<u8>) -> ecs_entity_t {
-    let component_type = ToxoidComponentType::new(ComponentDesc {
-        name: component_name.to_string(),
-        member_names,
-        member_types,
-    });
-    component_type.get_id()
-}
-
 pub trait ComponentType {
     fn get_name() -> &'static str;
     fn get_id() -> ecs_entity_t;
@@ -538,4 +482,69 @@ impl World {
         #[cfg(all(target_arch = "wasm32", not(target_os = "emscripten")))]
         return ToxoidApi::has_entity_named(name.as_str());
     }
+}
+
+pub fn run_callback(iter: ToxoidIter, handle: i64) {
+    let iter = Iter::new(iter);
+    let callback = unsafe { CALLBACKS[handle as usize].as_ref() };
+    callback(&iter);
+}
+
+// TODO: Create a WIT global function to get the component id directly instead of creating a component type
+// with the same name and fields as an existing component type, which is a lot of overhead
+#[cfg(all(target_arch = "wasm32", not(target_os = "emscripten")))]
+pub fn get_component_id(component_name: &str, member_names: Vec<String>, member_types: Vec<u8>) -> ecs_entity_t {
+    let component_type = ToxoidComponentType::new(&ComponentDesc {
+        name: component_name.to_string(),
+        member_names: member_names,
+        member_types: member_types,
+    });
+    component_type.get_id()
+}
+
+// TODO: Create a WIT global function to get the component id directly instead of creating a component type
+// with the same name and fields as an existing component type, which is a lot of overhead
+#[cfg(any(not(target_arch = "wasm32"), target_os = "emscripten"))]
+pub fn get_component_id(component_name: &str, member_names: Vec<String>, member_types: Vec<u8>) -> ecs_entity_t {
+    // TODO: Instead of initializing a toxoid component type
+    // we should have a conditional to check that it already exists.
+    // This is already happening under the hood in Flecs, but we don't need to pass 
+    // all these parameters in and instantiate a new component type.
+    // Haven't checked the overhead but we definitely want to come back and optimize 
+    // these unnecessary operations.
+    let component_type = ToxoidComponentType::new(ComponentDesc {
+        name: component_name.to_string(),
+        member_names: member_names,
+        member_types: member_types,
+    });
+    component_type.get_id()
+}
+
+#[cfg(all(target_arch = "wasm32", not(target_os = "emscripten")))]
+pub fn register_component(component_name: &str, member_names: Vec<String>, member_types: Vec<u8>) -> ecs_entity_t {
+    let component_type = ToxoidComponentType::new(&ComponentDesc {
+        name: component_name.to_string(),
+        member_names,
+        member_types,
+    });
+    component_type.get_id()
+}
+
+#[cfg(any(not(target_arch = "wasm32"), target_os = "emscripten"))]
+pub fn register_component(component_name: &str, member_names: Vec<String>, member_types: Vec<u8>) -> ecs_entity_t {
+    let component_type = ToxoidComponentType::new(ComponentDesc {
+        name: component_name.to_string(),
+        member_names,
+        member_types,
+    });
+    component_type.get_id()
+}
+
+// Fetch assets / resources from the asset server or local file system
+pub fn fetch(path: &str) {
+    let mut entity = Entity::new(None);
+    entity.add::<FetchRequest>();
+    let mut fetch_request = entity.get::<FetchRequest>();
+    fetch_request.set_path(path.to_string());
+    entity.add::<Loading>();
 }
