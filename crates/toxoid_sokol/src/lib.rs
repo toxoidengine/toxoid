@@ -90,12 +90,12 @@ pub extern "C" fn sokol_init() {
             sgp_setup(&mut desc);
         }
         
-        // // Initialize SImGui
-        // #[cfg(feature = "imgui")] 
-        // {
-        //     let mut sgui_desc: simgui_desc_t = core::mem::MaybeUninit::zeroed().assume_init();
-        //     simgui_setup(&mut sgui_desc);
-        // }
+        // Initialize SImGui
+        #[cfg(feature = "imgui")] 
+        {
+            let mut sgui_desc: simgui_desc_t = core::mem::MaybeUninit::zeroed().assume_init();
+            simgui_setup(&mut sgui_desc);
+        }
         
         // // Initialize Spine
         // let mut sspine_desc_obj: sspine_desc = core::mem::MaybeUninit::zeroed().assume_init();
@@ -142,25 +142,6 @@ pub fn init(sokol_init: extern "C" fn(), sokol_frame: extern "C" fn(), sokol_eve
         emscripten_set_canvas_element_size(canvas_id.as_ptr(), GAME_WIDTH, GAME_HEIGHT);
     }
 
-    // Initialize renderer
-    // #[cfg(target_os="emscripten")] {
-    //     sapp::run(&sapp::Desc {
-    //         init_cb: Some(sokol_init),
-    //         cleanup_cb: Some(sokol_cleanup),
-    //         event_cb: Some(sokol_event),
-    //         window_title,
-    //         width: GAME_WIDTH,
-    //         height: GAME_HEIGHT,
-    //         sample_count: 1,
-    //         icon: sapp::IconDesc {
-    //             sokol_default: true,
-    //             ..Default::default()
-    //         },
-    //         ..Default::default()
-    //     });
-    //     // sokol_init();
-    // }
-
     sapp::run(&sapp::Desc {
         init_cb: Some(sokol_init),
         cleanup_cb: Some(sokol_cleanup),
@@ -176,22 +157,4 @@ pub fn init(sokol_init: extern "C" fn(), sokol_frame: extern "C" fn(), sokol_eve
         },
         ..Default::default()
     });
-
-    // #[cfg(not(target_arch="wasm32"))] {
-    //     sapp::run(&sapp::Desc {
-    //         init_cb: Some(sokol_init),
-    //         cleanup_cb: Some(sokol_cleanup),
-    //         frame_cb: Some(sokol_frame),
-    //         event_cb: Some(sokol_event),
-    //         window_title,
-    //         width: GAME_WIDTH,
-    //         height: GAME_HEIGHT,
-    //         sample_count: 1,
-    //         icon: sapp::IconDesc {
-    //             sokol_default: true,
-    //             ..Default::default()
-    //         },
-    //         ..Default::default()
-    //     });
-    // }
 }

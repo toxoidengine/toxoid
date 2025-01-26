@@ -26,12 +26,12 @@ default = [
     "fetch", 
     "audio", 
     "stb",
-    # "imgui"
-    # "spine"
+    "imgui",
+    "spine"
 ]
 render = []
-# spine = []
-# imgui = []
+spine = []
+imgui = []
 fetch = []
 audio = []
 stb = []
