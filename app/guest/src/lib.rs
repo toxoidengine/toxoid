@@ -6,7 +6,7 @@ mod systems;
 mod wasm;
 
 pub fn init() {
-    // components::init();
-    // entities::init();
-    // systems::init();
+    components::init();
+    entities::init();
+    systems::init();
 }

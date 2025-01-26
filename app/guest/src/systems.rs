@@ -69,17 +69,17 @@ pub fn init() {
             entity.remove::<Head>(); 
             entity.add::<Tail>();
 
-            // println!("Tails entities: {:?}", tails_entities.clone());
-            // // Remove the last tail entity
-            // // println!("Tails entities max length: {:?}", tails.get_max_length());
-            // if tails_entities.len() > tails.get_max_length() as usize {
-            //     // println!("Removing last tail entity");
-            //     let last_tail_entity_id = tails_entities.remove(0);
-            //     let mut last_tail_entity = World::get_entity(last_tail_entity_id);
-            //     last_tail_entity.remove::<Tail>();
-            //     tails.set_entities(tails_entities.clone());
-            //     World::remove_entity(last_tail_entity_id);
-            // }
+            println!("Tails entities: {:?}", tails_entities.clone());
+            // Remove the last tail entity
+            // println!("Tails entities max length: {:?}", tails.get_max_length());
+            if tails_entities.len() > tails.get_max_length() as usize {
+                // println!("Removing last tail entity");
+                let last_tail_entity_id = tails_entities.remove(0);
+                let mut last_tail_entity = World::get_entity(last_tail_entity_id);
+                last_tail_entity.remove::<Tail>();
+                tails.set_entities(tails_entities.clone());
+                World::remove_entity(last_tail_entity_id);
+            }
         });
     })
         .build();
