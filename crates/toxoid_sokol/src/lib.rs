@@ -109,18 +109,17 @@ pub extern "C" fn sokol_init() {
         // sspine_desc_obj.logger.func = Some(sokol::log::slog_func);
         // sspine_setup(&sspine_desc_obj);
 
-        // // Initialize SFetch
-        // let mut sfetch_desc: sfetch_desc_t = core::mem::MaybeUninit::zeroed().assume_init();
-        // sfetch_desc.max_requests = 1024;
-        // sfetch_desc.num_channels = 4;
-        // sfetch_desc.num_lanes = 8;
-        // sfetch_desc.logger.func = Some(sokol::log::slog_func);     
-        // let sfetch_desc = Box::into_raw(Box::new(sfetch_desc));
-        // sfetch_setup(sfetch_desc); 
-        // // sfetch_setup(&mut sfetch_desc);
-        // if !sfetch_valid() {
-        //     panic!("sfetch is not valid");
-        // }
+        // Initialize SFetch
+        let mut sfetch_desc: sfetch_desc_t = core::mem::MaybeUninit::zeroed().assume_init();
+        sfetch_desc.max_requests = 1024;
+        sfetch_desc.num_channels = 4;
+        sfetch_desc.num_lanes = 8;
+        sfetch_desc.logger.func = Some(sokol::log::slog_func);     
+        let sfetch_desc = Box::into_raw(Box::new(sfetch_desc));
+        sfetch_setup(sfetch_desc); 
+        if !sfetch_valid() {
+            panic!("sfetch is not valid");
+        }
     }
 }
 
