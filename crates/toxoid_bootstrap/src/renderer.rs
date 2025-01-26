@@ -7,9 +7,6 @@ extern "C" fn sokol_init() {
     // Initialization code for Sokol
     // println!("Sokol initialized");
     toxoid_sokol::sokol_init();
-
-    // Test fetch
-    toxoid_api::fetch("./sprite.png");
 }
 
 #[no_mangle]
