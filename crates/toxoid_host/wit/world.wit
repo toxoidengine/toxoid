@@ -16,9 +16,17 @@ interface ecs {
         f64-t,
         bool-t,
         string-t,
-        array-t,
-        u32array-t,
-        f32array-t,
+        list-t,
+        u8list-t,
+        u16list-t,
+        u32list-t,
+        u64list-t,
+        i8list-t,
+        i16list-t,
+        i32list-t,
+        i64list-t,
+        f32list-t,
+        f64list-t,
         pointer-t
     }
 
@@ -57,7 +65,7 @@ interface ecs {
     resource component {
         // This is a component instance so it will need a the entity it belongs to and the component type
         // This is required for observers / events to work
-        constructor(ptr: s64, entity: ecs-entity-t, component-type: ecs-entity-t);
+        constructor(ptr: u64, entity: ecs-entity-t, component-type: ecs-entity-t);
         set-member-u8: func(offset: u32, value: u8);
         get-member-u8: func(offset: u32) -> u8;
         set-member-u16: func(offset: u32, value: u16);
@@ -82,12 +90,28 @@ interface ecs {
         get-member-bool: func(offset: u32) -> bool;
         set-member-string: func(offset: u32, value: string);
         get-member-string: func(offset: u32) -> string;
+        set-member-u8list: func(offset: u32, value: list<u8>);
+        get-member-u8list: func(offset: u32) -> list<u8>;
+        set-member-u16list: func(offset: u32, value: list<u16>);
+        get-member-u16list: func(offset: u32) -> list<u16>;
         set-member-u32list: func(offset: u32, value: list<u32>);
         get-member-u32list: func(offset: u32) -> list<u32>;
         set-member-u64list: func(offset: u32, value: list<u64>);
         get-member-u64list: func(offset: u32) -> list<u64>;
+        set-member-i8list: func(offset: u32, value: list<s8>);
+        get-member-i8list: func(offset: u32) -> list<s8>;
+        set-member-i16list: func(offset: u32, value: list<s16>);
+        get-member-i16list: func(offset: u32) -> list<s16>;
+        set-member-i32list: func(offset: u32, value: list<s32>);
+        get-member-i32list: func(offset: u32) -> list<s32>;
+        set-member-i64list: func(offset: u32, value: list<s64>);
+        get-member-i64list: func(offset: u32) -> list<s64>;
         set-member-f32list: func(offset: u32, value: list<f32>);
         get-member-f32list: func(offset: u32) -> list<f32>;
+        set-member-f64list: func(offset: u32, value: list<f64>);
+        get-member-f64list: func(offset: u32) -> list<f64>;
+        set-member-pointer: func(offset: u32, value: u64);
+        get-member-pointer: func(offset: u32) -> u64;
     }
 
     // resource tag {
@@ -99,8 +123,8 @@ interface ecs {
         constructor(desc: entity-desc);
         get-id: func() -> ecs-entity-t;
         get-name: func() -> string;
-        from-id: static func(id: u64) -> s64;
-        get: func(component: ecs-entity-t) -> s64;
+        from-id: static func(id: u64) -> u64;
+        get: func(component: ecs-entity-t) -> u64;
         add: func(component: ecs-entity-t);
         remove: func(component: ecs-entity-t);
         add-relationship: func(relationship: ecs-entity-t, target: ecs-entity-t);
@@ -122,16 +146,16 @@ interface ecs {
     }
 
     resource callback {
-        constructor(handle: s64);
+        constructor(handle: u64);
         run: func(iter: iter);
         // This is prefixed because resources already have a `handle` method.
-        cb-handle: func() -> s64;
+        cb-handle: func() -> u64;
     }
 
     record system-desc {
         name: option<string>,
         tick-rate: option<s32>,
-        callback: s64,
+        callback: u64,
         query-desc: query-desc,
         is-guest: bool
     }
@@ -139,37 +163,37 @@ interface ecs {
     resource system {
         constructor(desc: system-desc);
         build: func();
-        callback: func() -> s64;
+        callback: func() -> u64;
     }
 
     record observer-desc {
         name: option<string>,
         query-desc: query-desc,
         events: list<event>,
-        callback: s64,
+        callback: u64,
         is-guest: bool
     }
 
     resource observer {
         constructor(desc: observer-desc);
         build: func();
-        callback: func() -> s64;
+        callback: func() -> u64;
     }
 
     resource iter {
-        constructor(ptr: s64);
+        constructor(ptr: u64);
         next: func() -> bool;
         count: func() -> s32;
         entities: func() -> list<ecs-entity-t>;
     }
 
     add-singleton: func(component-id: ecs-entity-t);
-    get-singleton: func(component-id: ecs-entity-t) -> s64;
+    get-singleton: func(component-id: ecs-entity-t) -> u64;
     remove-singleton: func(component-id: ecs-entity-t);
     add-entity: func(entity-id: ecs-entity-t);
-    // get-entity: func(entity-id: ecs-entity-t) -> s64;
+    // get-entity: func(entity-id: ecs-entity-t) -> u64;
     remove-entity: func(entity-id: ecs-entity-t);
-    // get-entity-named: func(name: string) -> s64;
+    // get-entity-named: func(name: string) -> u64;
     has-entity-named: func(name: string) -> bool;
 }
 
