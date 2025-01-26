@@ -178,10 +178,19 @@ impl Renderer2D for SokolRenderer2D {
             // Set drawing coordinate space to (left=0, right=width, top=0, bottom=height).
             sgp_project(0.0, window_width as f32, 0.0, window_height as f32);
             // Clear the frame buffer.
-            sgp_set_color(1., 1., 1., 1.);
+            // sgp_set_color(1., 1., 1., 1.);
             // TODO: Make customizable
             // sgp_set_color(0.1, 0.1, 0.1, 1.0);
-            sgp_clear();
+            // sgp_clear();
+
+            // Initialize ImGui frame
+            let desc = simgui_frame_desc_t {
+                width: window_width,
+                height: window_height, 
+                delta_time: sapp::frame_duration(),
+                dpi_scale: sapp::dpi_scale(),
+            };
+            simgui_new_frame(&desc)
         }
     }
 
@@ -202,8 +211,10 @@ impl Renderer2D for SokolRenderer2D {
             sgp_end();
 
             // Render ImGui
+            let hello_world = std::ffi::CString::new("Hello, world!").unwrap();
+            igText(hello_world.as_ptr() as *const i8);
             // #[cfg(feature = "imgui")]
-            // simgui_render();
+            simgui_render();
         }
         // End render pass.
         sg::end_pass();

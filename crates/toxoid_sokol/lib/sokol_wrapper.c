@@ -25,7 +25,7 @@
 
 #ifdef TOXOID_IMGUI
 #define CIMGUI_DEFINE_ENUMS_AND_STRUCTS
-#include "cimgui/cimgui.h"
+#include "cimgui/imgui/imgui.h"
 #include "sokol/util/sokol_imgui.h"
 #endif
 
