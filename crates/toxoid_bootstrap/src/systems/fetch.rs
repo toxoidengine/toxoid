@@ -1,6 +1,16 @@
 use toxoid_api::*;
 use toxoid_render::Renderer2D;
-use toxoid_sokol::{bindings::*, SokolRenderer2D};
+use toxoid_sokol::{bindings::*, SokolRenderer2D}; 
+
+enum DataType {
+    Raw,
+    Image,
+    Spine,
+    Worldmap,
+    Cell,
+    Audio,
+    Font
+}
 
 #[no_mangle]
 pub extern "C" fn fetch_callback(response: *const sfetch_response_t) {
