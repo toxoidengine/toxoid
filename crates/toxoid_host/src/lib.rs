@@ -53,7 +53,7 @@ pub struct Observer {
 }
 
 pub struct Callback {
-    pub handle: i64
+    pub handle: u64
 }
 
 pub struct Iter {
@@ -78,9 +78,16 @@ enum FieldType {
     F64,
     Bool,
     String,
+    U8List,
+    U16List,
     U32List,
     U64List,
+    I8List,
+    I16List,
+    I32List,
+    I64List,
     F32List,
+    F64List,
     Pointer
 }
 
@@ -216,7 +223,7 @@ impl GuestComponentType for ComponentType {
 impl GuestComponent for Component {
     // This is a component instance so it will need a the entity it belongs to and the component type
     // This is required for observers / events to work
-    fn new(ptr: i64, entity_added: ecs_entity_t, component_type_id: ecs_entity_t) -> Component {
+    fn new(ptr: u64, entity_added: ecs_entity_t, component_type_id: ecs_entity_t) -> Component {
         Component { 
             ptr: ptr as *const c_void, 
             field_offsets: vec![], 
@@ -421,21 +428,92 @@ impl GuestComponent for Component {
         }
     }
 
+    fn set_member_u8list(&self, offset: u32, value: Vec<u8>) {
+        unsafe {
+            let member_ptr = self.ptr.offset(offset as isize) as *mut *mut u8;
+            // Allocate memory for length (usize) + array data
+            let layout = std::alloc::Layout::array::<u8>(value.len() + 1).unwrap();
+            let ptr = std::alloc::alloc(layout) as *mut u8;
+            
+            // Store length at start of allocation
+            *ptr = value.len() as u8;
+            // Copy array data after length
+            std::ptr::copy_nonoverlapping(value.as_ptr(), ptr.add(1), value.len());
+            
+            // Store the pointer
+            *member_ptr = ptr;
+            ecs_modified_id(WORLD.0, self.entity_added, self.component_type_id);
+        }
+    }
+
+    fn get_member_u8list(&self, offset: u32) -> Vec<u8> {
+        unsafe {
+            let member_ptr = self.ptr.offset(offset as isize) as *mut *mut u8;
+            let ptr = *member_ptr;
+            let length = *ptr as usize;
+            let slice = std::slice::from_raw_parts(ptr.add(1), length);
+            slice.to_vec()
+        }
+    }
+
+    fn set_member_u16list(&self, offset: u32, value: Vec<u16>) {
+        unsafe {
+            let member_ptr = self.ptr.offset(offset as isize) as *mut *mut u16;
+            // Allocate memory for length (usize) + array data
+            let layout = std::alloc::Layout::array::<u16>(value.len() + 1).unwrap();
+            let ptr = std::alloc::alloc(layout) as *mut u16;
+            
+            // Store length at start of allocation
+            *ptr = value.len() as u16;
+            // Copy array data after length
+            std::ptr::copy_nonoverlapping(value.as_ptr(), ptr.add(1), value.len());
+            
+            // Store the pointer
+            *member_ptr = ptr;
+            ecs_modified_id(WORLD.0, self.entity_added, self.component_type_id);
+        }
+    }
+
+    fn get_member_u16list(&self, offset: u32) -> Vec<u16> {
+        unsafe {
+            let member_ptr = self.ptr.offset(offset as isize) as *mut *mut u16;
+            let ptr = *member_ptr;
+            
+            // Read length from start of allocation
+            let length = *ptr as usize;
+            // Create slice starting after length
+            let slice = std::slice::from_raw_parts(ptr.add(1), length);
+            slice.to_vec()
+        }
+    }
+
     fn set_member_u32list(&self, offset: u32, value: Vec<u32>) {
         unsafe {
-            let member_ptr = self.ptr.offset(offset as isize) as *mut Vec<u32>;
-            *member_ptr = value;
+            let member_ptr = self.ptr.offset(offset as isize) as *mut *mut u32;
+            // Allocate memory for length (usize) + array data
+            let layout = std::alloc::Layout::array::<u32>(value.len() + 1).unwrap();
+            let ptr = std::alloc::alloc(layout) as *mut u32;
+            
+            // Store length at start of allocation
+            *ptr = value.len() as u32;
+            // Copy array data after length
+            std::ptr::copy_nonoverlapping(value.as_ptr(), ptr.add(1), value.len());
+            
+            // Store the pointer
+            *member_ptr = ptr;
             ecs_modified_id(WORLD.0, self.entity_added, self.component_type_id);
         }
     }
 
     fn get_member_u32list(&self, offset: u32) -> Vec<u32> {
         unsafe {
-            let member_ptr = self.ptr.offset(offset as isize) as *mut Vec<u32>;
-            let member_value: Vec<u32> = (*member_ptr).clone();
-            member_value
+            let member_ptr = self.ptr.offset(offset as isize) as *mut *mut u32;
+            let ptr = *member_ptr;
+            let length = *ptr as usize;
+            let slice = std::slice::from_raw_parts(ptr.add(1), length);
+            slice.to_vec()
         }
-    }   
+    }
 
     fn set_member_u64list(&self, offset: u32, value: Vec<u64>) {
         unsafe {
@@ -468,19 +546,188 @@ impl GuestComponent for Component {
         }
     }
 
+    fn set_member_i8list(&self, offset: u32, value: Vec<i8>) {
+        unsafe {
+            let member_ptr = self.ptr.offset(offset as isize) as *mut *mut i8;
+            // Allocate memory for length (usize) + array data
+            let layout = std::alloc::Layout::array::<i8>(value.len() + 1).unwrap();
+            let ptr = std::alloc::alloc(layout) as *mut i8;
+            
+            // Store length at start of allocation
+            *ptr = value.len() as i8;
+            // Copy array data after length
+            std::ptr::copy_nonoverlapping(value.as_ptr(), ptr.add(1), value.len());
+            
+            // Store the pointer
+            *member_ptr = ptr;
+            ecs_modified_id(WORLD.0, self.entity_added, self.component_type_id);
+        }
+    }
+
+    fn get_member_i8list(&self, offset: u32) -> Vec<i8> {
+        unsafe {
+            let member_ptr = self.ptr.offset(offset as isize) as *mut *mut i8;
+            let ptr = *member_ptr;
+            let length = *ptr as usize;
+            let slice = std::slice::from_raw_parts(ptr.add(1), length);
+            slice.to_vec()
+        }
+    }
+
+    fn set_member_i16list(&self, offset: u32, value: Vec<i16>) {
+        unsafe {
+            let member_ptr = self.ptr.offset(offset as isize) as *mut *mut i16;
+            // Allocate memory for length (usize) + array data
+            let layout = std::alloc::Layout::array::<i16>(value.len() + 1).unwrap();
+            let ptr = std::alloc::alloc(layout) as *mut i16;
+            
+            // Store length at start of allocation
+            *ptr = value.len() as i16;
+            // Copy array data after length
+            std::ptr::copy_nonoverlapping(value.as_ptr(), ptr.add(1), value.len());
+            
+            // Store the pointer
+            *member_ptr = ptr;
+            ecs_modified_id(WORLD.0, self.entity_added, self.component_type_id);
+        }
+    }
+
+    fn get_member_i16list(&self, offset: u32) -> Vec<i16> {
+        unsafe {
+            let member_ptr = self.ptr.offset(offset as isize) as *mut *mut i16;
+            let ptr = *member_ptr;
+            let length = *ptr as usize;
+            let slice = std::slice::from_raw_parts(ptr.add(1), length);
+            slice.to_vec()
+        }
+    }
+
+    fn set_member_i32list(&self, offset: u32, value: Vec<i32>) {
+        unsafe {
+            let member_ptr = self.ptr.offset(offset as isize) as *mut *mut i32;
+            // Allocate memory for length (usize) + array data
+            let layout = std::alloc::Layout::array::<i32>(value.len() + 1).unwrap();
+            let ptr = std::alloc::alloc(layout) as *mut i32;
+            
+            // Store length at start of allocation
+            *ptr = value.len() as i32;
+            // Copy array data after length
+            std::ptr::copy_nonoverlapping(value.as_ptr(), ptr.add(1), value.len());
+            
+            // Store the pointer
+            *member_ptr = ptr;
+            ecs_modified_id(WORLD.0, self.entity_added, self.component_type_id);
+        }
+    }
+
+    fn get_member_i32list(&self, offset: u32) -> Vec<i32> {
+        unsafe {
+            let member_ptr = self.ptr.offset(offset as isize) as *mut *mut i32;
+            let ptr = *member_ptr;
+            let length = *ptr as usize;
+            let slice = std::slice::from_raw_parts(ptr.add(1), length);
+            slice.to_vec()
+        }
+    }
+
+    fn set_member_i64list(&self, offset: u32, value: Vec<i64>) {
+        unsafe {
+            let member_ptr = self.ptr.offset(offset as isize) as *mut *mut i64;
+            // Allocate memory for length (usize) + array data
+            let layout = std::alloc::Layout::array::<i64>(value.len() + 1).unwrap();
+            let ptr = std::alloc::alloc(layout) as *mut i64;   
+
+            // Store length at start of allocation
+            *ptr = value.len() as i64;
+            // Copy array data after length
+            std::ptr::copy_nonoverlapping(value.as_ptr(), ptr.add(1), value.len());
+            
+            // Store the pointer
+            *member_ptr = ptr;
+            ecs_modified_id(WORLD.0, self.entity_added, self.component_type_id);
+        }
+    }
+
+    fn get_member_i64list(&self, offset: u32) -> Vec<i64> {
+        unsafe {
+            let member_ptr = self.ptr.offset(offset as isize) as *mut *mut i64;
+            let ptr = *member_ptr;
+            let length = *ptr as usize;
+            let slice = std::slice::from_raw_parts(ptr.add(1), length);
+            slice.to_vec()
+        }
+    }
+
     fn set_member_f32list(&self, offset: u32, value: Vec<f32>) {
         unsafe {
-            let member_ptr = self.ptr.offset(offset as isize) as *mut Vec<f32>;
-            *member_ptr = value;
+            let member_ptr = self.ptr.offset(offset as isize) as *mut *mut f32;
+            // Allocate memory for length (usize) + array data
+            let layout = std::alloc::Layout::array::<f32>(value.len() + 1).unwrap();
+            let ptr = std::alloc::alloc(layout) as *mut f32;
+            
+            // Store length at start of allocation
+            *ptr = value.len() as f32;
+            // Copy array data after length
+            std::ptr::copy_nonoverlapping(value.as_ptr(), ptr.add(1), value.len());
+            
+            // Store the pointer
+            *member_ptr = ptr;
             ecs_modified_id(WORLD.0, self.entity_added, self.component_type_id);
         }
     }
 
     fn get_member_f32list(&self, offset: u32) -> Vec<f32> {
         unsafe {
-            let member_ptr = self.ptr.offset(offset as isize) as *mut Vec<f32>;
-            let member_value: Vec<f32> = (*member_ptr).clone();
-            member_value
+            let member_ptr = self.ptr.offset(offset as isize) as *mut *mut f32;
+            let ptr = *member_ptr;
+            
+            // Read length from start of allocation
+            let length = *ptr as usize;
+            // Create slice starting after length
+            let slice = std::slice::from_raw_parts(ptr.add(1), length);
+            slice.to_vec()
+        }
+    }
+
+    fn set_member_f64list(&self, offset: u32, value: Vec<f64>) {
+        unsafe {
+            let member_ptr = self.ptr.offset(offset as isize) as *mut *mut f64;
+            // Allocate memory for length (usize) + array data
+            let layout = std::alloc::Layout::array::<f64>(value.len() + 1).unwrap();
+            let ptr = std::alloc::alloc(layout) as *mut f64;   
+
+            // Store length at start of allocation
+            *ptr = value.len() as f64;
+            // Copy array data after length
+            std::ptr::copy_nonoverlapping(value.as_ptr(), ptr.add(1), value.len());
+            
+            // Store the pointer
+            *member_ptr = ptr;
+            ecs_modified_id(WORLD.0, self.entity_added, self.component_type_id);
+        }
+    }
+
+    fn get_member_f64list(&self, offset: u32) -> Vec<f64> {
+        unsafe {
+            let member_ptr = self.ptr.offset(offset as isize) as *mut *mut f64;
+            let ptr = *member_ptr;
+            let length = *ptr as usize;
+            let slice = std::slice::from_raw_parts(ptr.add(1), length);
+            slice.to_vec()
+        }
+    }
+
+    fn set_member_pointer(&self, offset: u32, value: u64) {
+        unsafe {
+            let member_ptr = self.ptr.offset(offset as isize) as *mut *mut u64;
+            *member_ptr = value as *mut u64;
+        }
+    }
+
+    fn get_member_pointer(&self, offset: u32) -> u64 {
+        unsafe {
+            let member_ptr = self.ptr.offset(offset as isize) as *mut *mut u64;
+            *member_ptr as u64
         }
     }
 }
@@ -523,14 +770,14 @@ impl GuestEntity for Entity {
         }
     }
 
-    fn from_id(id: u64) -> i64 {
-        Box::into_raw(Box::new(Entity { id })) as i64
+    fn from_id(id: u64) -> u64 {
+        Box::into_raw(Box::new(Entity { id })) as u64
     }
 
-    fn get(&self, component: ecs_entity_t) -> i64 {
+    fn get(&self, component: ecs_entity_t) -> u64 {
         unsafe {
             // println!("Getting component {:?} from entity {:?}", component, self.id);
-            ecs_ensure_id(WORLD.0, self.id, component) as i64
+            ecs_ensure_id(WORLD.0, self.id, component) as u64
         }
     }
 
@@ -642,7 +889,7 @@ impl GuestSystem for System {
         }
     }
 
-    fn callback(&self) -> i64 {
+    fn callback(&self) -> u64 {
        self.callback.borrow().handle
     }
 
@@ -693,7 +940,7 @@ impl GuestObserver for Observer {
         }
     }
 
-    fn callback(&self) -> i64 {
+    fn callback(&self) -> u64 {
         self.callback.borrow().handle
     }
 
@@ -705,11 +952,11 @@ impl GuestObserver for Observer {
 }
 
 impl GuestCallback for Callback {
-    fn new(handle: i64) -> Callback {
+    fn new(handle: u64) -> Callback {
         Callback { handle }
     }
 
-    fn cb_handle(&self) -> i64 {
+    fn cb_handle(&self) -> u64 {
         self.handle
     }
 
@@ -719,7 +966,7 @@ impl GuestCallback for Callback {
 }
 
 impl GuestIter for Iter {
-    fn new(ptr: i64) -> Iter {
+    fn new(ptr: u64) -> Iter {
         Iter { ptr: ptr as *mut c_void }
     }
 
@@ -754,9 +1001,9 @@ impl Guest for ToxoidApi {
         unsafe { ecs_add_id(WORLD.0, component, component) };   
     }
 
-    fn get_singleton(component: ecs_entity_t) -> i64 {
-        // unsafe { ecs_get_mut_id(WORLD.0, component, component) as i64 }
-        unsafe { ecs_ensure_id(WORLD.0, component, component) as i64 }  
+    fn get_singleton(component: ecs_entity_t) -> u64 {
+        // unsafe { ecs_get_mut_id(WORLD.0, component, component) as u64 }
+        unsafe { ecs_ensure_id(WORLD.0, component, component) as u64 }  
     }
 
     fn remove_singleton(component: ecs_entity_t) {

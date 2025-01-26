@@ -3,7 +3,7 @@ use toxoid_api::*;
 pub struct ToxoidWasmComponent;
 
 impl CallbacksGuest for ToxoidWasmComponent {
-    fn run(iter: ToxoidIter, handle: i64) {
+    fn run(iter: ToxoidIter, handle: u64) {
         run_callback(iter, handle);
     }
 }

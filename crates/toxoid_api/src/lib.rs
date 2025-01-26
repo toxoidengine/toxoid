@@ -373,7 +373,7 @@ impl Observer {
 
     // Not wasm
     #[cfg(any(not(target_arch = "wasm32"), target_os = "emscripten"))]      
-    pub fn callback(&self) -> i64 {
+    pub fn callback(&self) -> u64 {
         self.observer.callback()
     }
 
@@ -393,7 +393,7 @@ pub static mut CALLBACKS: once_cell::sync::Lazy<Vec<Box<dyn Fn(&Iter)>>> = once_
 impl Callback {
     pub fn new(callback_fn: fn(&Iter)) -> Self {
         let handle = unsafe { CALLBACKS.push(Box::new(callback_fn)); CALLBACKS.len() - 1 };
-        Self { callback: ToxoidCallback::new(handle as i64) }   
+        Self { callback: ToxoidCallback::new(handle as u64) }   
     }
 
     pub fn run(&self, iter: &Iter) {
@@ -401,7 +401,7 @@ impl Callback {
         callback(iter);
     }
 
-    pub fn cb_handle(&self) -> i64 {
+    pub fn cb_handle(&self) -> u64 {
         self.callback.cb_handle()
     }
 }
@@ -494,7 +494,7 @@ impl World {
     }
 }
 
-pub fn run_callback(iter: ToxoidIter, handle: i64) {
+pub fn run_callback(iter: ToxoidIter, handle: u64) {
     let iter = Iter::new(iter);
     let callback = unsafe { CALLBACKS[handle as usize].as_ref() };
     callback(&iter);
