@@ -13,6 +13,7 @@ use core::ffi::c_char;
 use std::cell::RefCell;
 use std::collections::HashMap;
 use once_cell::sync::Lazy;
+use std::sync::Mutex;
 type ecs_entity_t = u64;
 
 pub struct ToxoidApi;
@@ -53,7 +54,7 @@ pub struct Observer {
 }
 
 pub struct Callback {
-    pub handle: i64
+    pub handle: u64
 }
 
 pub struct Iter {
@@ -78,9 +79,16 @@ enum FieldType {
     F64,
     Bool,
     String,
+    U8List,
+    U16List,
     U32List,
     U64List,
+    I8List,
+    I16List,
+    I32List,
+    I64List,
     F32List,
+    F64List,
     Pointer
 }
 
@@ -91,6 +99,16 @@ pub static mut WORLD: Lazy<EcsWorldPtr> = Lazy::new(||
         world
     })
 );
+
+// Create a wrapper type for the pointer that implements Send
+#[derive(Hash, Eq, PartialEq, Clone, Copy)]
+struct ThreadSafePtr(*const c_void);
+unsafe impl Send for ThreadSafePtr {}
+unsafe impl Sync for ThreadSafePtr {}
+
+// Global cache for array lengths
+static ARRAY_LENGTH_CACHE: Lazy<Mutex<HashMap<(ThreadSafePtr, u32), usize>>> = 
+    Lazy::new(|| Mutex::new(HashMap::new()));
 
 // Progress the world - game loop tick
 pub fn toxoid_progress(delta_time: f32) -> bool {
@@ -216,7 +234,7 @@ impl GuestComponentType for ComponentType {
 impl GuestComponent for Component {
     // This is a component instance so it will need a the entity it belongs to and the component type
     // This is required for observers / events to work
-    fn new(ptr: i64, entity_added: ecs_entity_t, component_type_id: ecs_entity_t) -> Component {
+    fn new(ptr: u64, entity_added: ecs_entity_t, component_type_id: ecs_entity_t) -> Component {
         Component { 
             ptr: ptr as *const c_void, 
             field_offsets: vec![], 
@@ -421,36 +439,119 @@ impl GuestComponent for Component {
         }
     }
 
+    fn set_member_u8list(&self, offset: u32, value: Vec<u8>) {
+        unsafe {
+            // Get pointer to member
+            let member_ptr = self.ptr.offset(offset as isize) as *mut *mut u8;
+            // Allocate memory for array data
+            let layout = std::alloc::Layout::array::<u8>(value.len()).unwrap();
+            // Allocate memory for length (usize) + array data
+            let ptr = std::alloc::alloc(layout) as *mut u8;
+            // Copy array data to allocated memory
+            std::ptr::copy_nonoverlapping(value.as_ptr(), ptr, value.len());
+            
+            // Store pointer to allocated memory
+            *member_ptr = ptr;
+            // Store length of array
+            // Use the actual array pointer as the key
+            ARRAY_LENGTH_CACHE.lock().unwrap().insert((ThreadSafePtr(ptr as *const c_void), offset), value.len());
+            
+            // Mark component as modified
+            ecs_modified_id(WORLD.0, self.entity_added, self.component_type_id);
+        }
+    }
+
+    fn get_member_u8list(&self, offset: u32) -> Vec<u8> {
+        unsafe {
+            // Get pointer to member
+            let member_ptr = self.ptr.offset(offset as isize) as *mut *mut u8;
+            // Get pointer to allocated memory
+            let ptr = *member_ptr;
+            
+            // Use the actual array pointer as the key
+            let length = ARRAY_LENGTH_CACHE.lock().unwrap()
+                .get(&(ThreadSafePtr(ptr as *const c_void), offset))
+                .copied()
+                .unwrap_or(0);
+
+            // Create slice from allocated memory
+            let slice = std::slice::from_raw_parts(ptr, length);
+            // Return slice as vector
+            slice.to_vec()
+        }
+    }
+
+    fn set_member_u16list(&self, offset: u32, value: Vec<u16>) {
+        unsafe {
+            let member_ptr = self.ptr.offset(offset as isize) as *mut *mut u16;
+            let layout = std::alloc::Layout::array::<u16>(value.len()).unwrap();
+            let ptr = std::alloc::alloc(layout) as *mut u16;
+            
+            std::ptr::copy_nonoverlapping(value.as_ptr(), ptr, value.len());
+            
+            *member_ptr = ptr;
+            // Use the actual array pointer as the key
+            ARRAY_LENGTH_CACHE.lock().unwrap().insert((ThreadSafePtr(ptr as *const c_void), offset), value.len());
+            
+            ecs_modified_id(WORLD.0, self.entity_added, self.component_type_id);
+        }
+    }
+
+    fn get_member_u16list(&self, offset: u32) -> Vec<u16> {
+        unsafe {
+            let member_ptr = self.ptr.offset(offset as isize) as *mut *mut u16;
+            let ptr = *member_ptr;
+            
+            // Use the actual array pointer as the key
+            let length = ARRAY_LENGTH_CACHE.lock().unwrap()
+                .get(&(ThreadSafePtr(ptr as *const c_void), offset))
+                .copied()
+                .unwrap_or(0);
+            let slice = std::slice::from_raw_parts(ptr, length);
+            slice.to_vec()
+        }
+    }
+
     fn set_member_u32list(&self, offset: u32, value: Vec<u32>) {
         unsafe {
-            let member_ptr = self.ptr.offset(offset as isize) as *mut Vec<u32>;
-            *member_ptr = value;
+            let member_ptr = self.ptr.offset(offset as isize) as *mut *mut u32;
+            let layout = std::alloc::Layout::array::<u32>(value.len()).unwrap();
+            let ptr = std::alloc::alloc(layout) as *mut u32;
+            
+            std::ptr::copy_nonoverlapping(value.as_ptr(), ptr, value.len());
+            
+            *member_ptr = ptr;
+            ARRAY_LENGTH_CACHE.lock().unwrap().insert((ThreadSafePtr(ptr as *const c_void), offset), value.len());
+            
             ecs_modified_id(WORLD.0, self.entity_added, self.component_type_id);
         }
     }
 
     fn get_member_u32list(&self, offset: u32) -> Vec<u32> {
         unsafe {
-            let member_ptr = self.ptr.offset(offset as isize) as *mut Vec<u32>;
-            let member_value: Vec<u32> = (*member_ptr).clone();
-            member_value
+            let member_ptr = self.ptr.offset(offset as isize) as *mut *mut u32;
+            let ptr = *member_ptr;
+            
+            let length = ARRAY_LENGTH_CACHE.lock().unwrap()
+                .get(&(ThreadSafePtr(ptr as *const c_void), offset))
+                .copied()
+                .unwrap_or(0);
+            let slice = std::slice::from_raw_parts(ptr, length);
+            slice.to_vec()
         }
-    }   
+    }
 
     fn set_member_u64list(&self, offset: u32, value: Vec<u64>) {
         unsafe {
             let member_ptr = self.ptr.offset(offset as isize) as *mut *mut u64;
-            // Allocate memory for length (usize) + array data
-            let layout = std::alloc::Layout::array::<u64>(value.len() + 1).unwrap();
+            let layout = std::alloc::Layout::array::<u64>(value.len()).unwrap();
             let ptr = std::alloc::alloc(layout) as *mut u64;
             
-            // Store length at start of allocation
-            *ptr = value.len() as u64;
-            // Copy array data after length
-            std::ptr::copy_nonoverlapping(value.as_ptr(), ptr.add(1), value.len());
+            std::ptr::copy_nonoverlapping(value.as_ptr(), ptr, value.len());
             
-            // Store the pointer
             *member_ptr = ptr;
+            ARRAY_LENGTH_CACHE.lock().unwrap().insert((ThreadSafePtr(ptr as *const c_void), offset), value.len());
+            
             ecs_modified_id(WORLD.0, self.entity_added, self.component_type_id);
         }
     }
@@ -460,27 +561,200 @@ impl GuestComponent for Component {
             let member_ptr = self.ptr.offset(offset as isize) as *mut *mut u64;
             let ptr = *member_ptr;
             
-            // Read length from start of allocation
-            let length = *ptr as usize;
-            // Create slice starting after length
-            let slice = std::slice::from_raw_parts(ptr.add(1), length);
+            let length = ARRAY_LENGTH_CACHE.lock().unwrap()
+                .get(&(ThreadSafePtr(ptr as *const c_void), offset))
+                .copied()
+                .unwrap_or(0);
+            let slice = std::slice::from_raw_parts(ptr, length);
+            slice.to_vec()
+        }
+    }
+
+    fn set_member_i8list(&self, offset: u32, value: Vec<i8>) {
+        unsafe {
+            let member_ptr = self.ptr.offset(offset as isize) as *mut *mut i8;
+            let layout = std::alloc::Layout::array::<i8>(value.len()).unwrap();
+            let ptr = std::alloc::alloc(layout) as *mut i8;
+            
+            std::ptr::copy_nonoverlapping(value.as_ptr(), ptr, value.len());
+            
+            *member_ptr = ptr;
+            ARRAY_LENGTH_CACHE.lock().unwrap().insert((ThreadSafePtr(ptr as *const c_void), offset), value.len());
+            
+            ecs_modified_id(WORLD.0, self.entity_added, self.component_type_id);
+        }
+    }
+
+    fn get_member_i8list(&self, offset: u32) -> Vec<i8> {
+        unsafe {
+            let member_ptr = self.ptr.offset(offset as isize) as *mut *mut i8;
+            let ptr = *member_ptr;
+            
+            let length = ARRAY_LENGTH_CACHE.lock().unwrap()
+                .get(&(ThreadSafePtr(ptr as *const c_void), offset))
+                .copied()
+                .unwrap_or(0);
+            let slice = std::slice::from_raw_parts(ptr, length);
+            slice.to_vec()
+        }
+    }
+
+    fn set_member_i16list(&self, offset: u32, value: Vec<i16>) {
+        unsafe {
+            let member_ptr = self.ptr.offset(offset as isize) as *mut *mut i16;
+            let layout = std::alloc::Layout::array::<i16>(value.len()).unwrap();
+            let ptr = std::alloc::alloc(layout) as *mut i16;
+            
+            std::ptr::copy_nonoverlapping(value.as_ptr(), ptr, value.len());
+            
+            *member_ptr = ptr;
+            ARRAY_LENGTH_CACHE.lock().unwrap().insert((ThreadSafePtr(ptr as *const c_void), offset), value.len());
+            
+            ecs_modified_id(WORLD.0, self.entity_added, self.component_type_id);
+        }
+    }
+
+    fn get_member_i16list(&self, offset: u32) -> Vec<i16> {
+        unsafe {
+            let member_ptr = self.ptr.offset(offset as isize) as *mut *mut i16;
+            let ptr = *member_ptr;
+            
+            let length = ARRAY_LENGTH_CACHE.lock().unwrap()
+                .get(&(ThreadSafePtr(ptr as *const c_void), offset))
+                .copied()
+                .unwrap_or(0);
+            let slice = std::slice::from_raw_parts(ptr, length);
+            slice.to_vec()
+        }
+    }
+
+    fn set_member_i32list(&self, offset: u32, value: Vec<i32>) {
+        unsafe {
+            let member_ptr = self.ptr.offset(offset as isize) as *mut *mut i32;
+            let layout = std::alloc::Layout::array::<i32>(value.len()).unwrap();
+            let ptr = std::alloc::alloc(layout) as *mut i32;
+            
+            std::ptr::copy_nonoverlapping(value.as_ptr(), ptr, value.len());
+            
+            *member_ptr = ptr;
+            ARRAY_LENGTH_CACHE.lock().unwrap().insert((ThreadSafePtr(ptr as *const c_void), offset), value.len());
+            
+            ecs_modified_id(WORLD.0, self.entity_added, self.component_type_id);
+        }
+    }
+
+    fn get_member_i32list(&self, offset: u32) -> Vec<i32> {
+        unsafe {
+            let member_ptr = self.ptr.offset(offset as isize) as *mut *mut i32;
+            let ptr = *member_ptr;
+            
+            let length = ARRAY_LENGTH_CACHE.lock().unwrap()
+                .get(&(ThreadSafePtr(ptr as *const c_void), offset))
+                .copied()
+                .unwrap_or(0);
+            let slice = std::slice::from_raw_parts(ptr, length);
+            slice.to_vec()
+        }
+    }
+
+    fn set_member_i64list(&self, offset: u32, value: Vec<i64>) {
+        unsafe {
+            let member_ptr = self.ptr.offset(offset as isize) as *mut *mut i64;
+            let layout = std::alloc::Layout::array::<i64>(value.len()).unwrap();
+            let ptr = std::alloc::alloc(layout) as *mut i64;
+            
+            std::ptr::copy_nonoverlapping(value.as_ptr(), ptr, value.len());
+            
+            *member_ptr = ptr;
+            ARRAY_LENGTH_CACHE.lock().unwrap().insert((ThreadSafePtr(ptr as *const c_void), offset), value.len());
+            
+            ecs_modified_id(WORLD.0, self.entity_added, self.component_type_id);
+        }
+    }
+
+    fn get_member_i64list(&self, offset: u32) -> Vec<i64> {
+        unsafe {
+            let member_ptr = self.ptr.offset(offset as isize) as *mut *mut i64;
+            let ptr = *member_ptr;
+            
+            let length = ARRAY_LENGTH_CACHE.lock().unwrap()
+                .get(&(ThreadSafePtr(ptr as *const c_void), offset))
+                .copied()
+                .unwrap_or(0);
+            let slice = std::slice::from_raw_parts(ptr, length);
             slice.to_vec()
         }
     }
 
     fn set_member_f32list(&self, offset: u32, value: Vec<f32>) {
         unsafe {
-            let member_ptr = self.ptr.offset(offset as isize) as *mut Vec<f32>;
-            *member_ptr = value;
+            let member_ptr = self.ptr.offset(offset as isize) as *mut *mut f32;
+            let layout = std::alloc::Layout::array::<f32>(value.len()).unwrap();
+            let ptr = std::alloc::alloc(layout) as *mut f32;
+            
+            std::ptr::copy_nonoverlapping(value.as_ptr(), ptr, value.len());
+            
+            *member_ptr = ptr;
+            ARRAY_LENGTH_CACHE.lock().unwrap().insert((ThreadSafePtr(ptr as *const c_void), offset), value.len());
+            
             ecs_modified_id(WORLD.0, self.entity_added, self.component_type_id);
         }
     }
 
     fn get_member_f32list(&self, offset: u32) -> Vec<f32> {
         unsafe {
-            let member_ptr = self.ptr.offset(offset as isize) as *mut Vec<f32>;
-            let member_value: Vec<f32> = (*member_ptr).clone();
-            member_value
+            let member_ptr = self.ptr.offset(offset as isize) as *mut *mut f32;
+            let ptr = *member_ptr;
+            
+            let length = ARRAY_LENGTH_CACHE.lock().unwrap()
+                .get(&(ThreadSafePtr(ptr as *const c_void), offset))
+                .copied()
+                .unwrap_or(0);
+            let slice = std::slice::from_raw_parts(ptr, length);
+            slice.to_vec()
+        }
+    }
+
+    fn set_member_f64list(&self, offset: u32, value: Vec<f64>) {
+        unsafe {
+            let member_ptr = self.ptr.offset(offset as isize) as *mut *mut f64;
+            let layout = std::alloc::Layout::array::<f64>(value.len()).unwrap();
+            let ptr = std::alloc::alloc(layout) as *mut f64;
+            
+            std::ptr::copy_nonoverlapping(value.as_ptr(), ptr, value.len());
+            
+            *member_ptr = ptr;
+            ARRAY_LENGTH_CACHE.lock().unwrap().insert((ThreadSafePtr(ptr as *const c_void), offset), value.len());
+            
+            ecs_modified_id(WORLD.0, self.entity_added, self.component_type_id);
+        }
+    }
+
+    fn get_member_f64list(&self, offset: u32) -> Vec<f64> {
+        unsafe {
+            let member_ptr = self.ptr.offset(offset as isize) as *mut *mut f64;
+            let ptr = *member_ptr;
+            
+            let length = ARRAY_LENGTH_CACHE.lock().unwrap()
+                .get(&(ThreadSafePtr(ptr as *const c_void), offset))
+                .copied()
+                .unwrap_or(0);
+            let slice = std::slice::from_raw_parts(ptr, length);
+            slice.to_vec()
+        }
+    }
+
+    fn set_member_pointer(&self, offset: u32, value: u64) {
+        unsafe {
+            let member_ptr = self.ptr.offset(offset as isize) as *mut *mut u64;
+            *member_ptr = value as *mut u64;
+        }
+    }
+
+    fn get_member_pointer(&self, offset: u32) -> u64 {
+        unsafe {
+            let member_ptr = self.ptr.offset(offset as isize) as *mut *mut u64;
+            *member_ptr as u64
         }
     }
 }
@@ -523,14 +797,14 @@ impl GuestEntity for Entity {
         }
     }
 
-    fn from_id(id: u64) -> i64 {
-        Box::into_raw(Box::new(Entity { id })) as i64
+    fn from_id(id: u64) -> u64 {
+        Box::into_raw(Box::new(Entity { id })) as u64
     }
 
-    fn get(&self, component: ecs_entity_t) -> i64 {
+    fn get(&self, component: ecs_entity_t) -> u64 {
         unsafe {
             // println!("Getting component {:?} from entity {:?}", component, self.id);
-            ecs_ensure_id(WORLD.0, self.id, component) as i64
+            ecs_ensure_id(WORLD.0, self.id, component) as u64
         }
     }
 
@@ -642,7 +916,7 @@ impl GuestSystem for System {
         }
     }
 
-    fn callback(&self) -> i64 {
+    fn callback(&self) -> u64 {
        self.callback.borrow().handle
     }
 
@@ -693,7 +967,7 @@ impl GuestObserver for Observer {
         }
     }
 
-    fn callback(&self) -> i64 {
+    fn callback(&self) -> u64 {
         self.callback.borrow().handle
     }
 
@@ -705,11 +979,11 @@ impl GuestObserver for Observer {
 }
 
 impl GuestCallback for Callback {
-    fn new(handle: i64) -> Callback {
+    fn new(handle: u64) -> Callback {
         Callback { handle }
     }
 
-    fn cb_handle(&self) -> i64 {
+    fn cb_handle(&self) -> u64 {
         self.handle
     }
 
@@ -719,7 +993,7 @@ impl GuestCallback for Callback {
 }
 
 impl GuestIter for Iter {
-    fn new(ptr: i64) -> Iter {
+    fn new(ptr: u64) -> Iter {
         Iter { ptr: ptr as *mut c_void }
     }
 
@@ -754,9 +1028,9 @@ impl Guest for ToxoidApi {
         unsafe { ecs_add_id(WORLD.0, component, component) };   
     }
 
-    fn get_singleton(component: ecs_entity_t) -> i64 {
-        // unsafe { ecs_get_mut_id(WORLD.0, component, component) as i64 }
-        unsafe { ecs_ensure_id(WORLD.0, component, component) as i64 }  
+    fn get_singleton(component: ecs_entity_t) -> u64 {
+        // unsafe { ecs_get_mut_id(WORLD.0, component, component) as u64 }
+        unsafe { ecs_ensure_id(WORLD.0, component, component) as u64 }  
     }
 
     fn remove_singleton(component: ecs_entity_t) {
@@ -776,4 +1050,10 @@ impl Guest for ToxoidApi {
         let c_name = c_string(&name);
         unsafe { ecs_lookup(WORLD.0, c_name) != 0 }
     }
+}
+
+// TODO: Don't forget to clean up the cache when components are deleted!
+// I'll need to hook this into your component lifecycle management
+fn cleanup_array_lengths(ptr: *const c_void) {
+    ARRAY_LENGTH_CACHE.lock().unwrap().retain(|&(array_ptr, _), _| array_ptr.0 != ptr);
 }

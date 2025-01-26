@@ -32,8 +32,7 @@ component! {
     // Fetch
     FetchRequest {
         path: String,
-        // TODO: Make this a Vec<u8> after we implement that in toxoid_api_macro
-        data: Vec::<u64>,
+        data: Vec::<u8>,
         data_type: u8
     },
 

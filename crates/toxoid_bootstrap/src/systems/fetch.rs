@@ -24,11 +24,8 @@ pub extern "C" fn fetch_callback(response: *const sfetch_response_t) {
     let mut entity = Entity::from_id(entity_id);
     let mut fetch_request = entity.get::<FetchRequest>();
     let data = unsafe { std::slice::from_raw_parts(response.data.ptr as *const u8, response.data.size) };
-    // Convert byte slice into Vec<u64>
-    // TODO: Make this a Vec<u8> instead after we implement into toxoid_api_macro
     let data = data.to_vec();
-    let data = data.into_iter().map(|x| x as u64).collect::<Vec<u64>>();
-    fetch_request.set_data(data.clone());
+    fetch_request.set_data(data);
     entity.remove::<Loading>();
     entity.add::<Loaded>();
 }
@@ -82,7 +79,6 @@ pub fn init() {
             let fetch_request = entity.get::<FetchRequest>();
             let data = fetch_request.get_data();
             let size = data.len() as usize;
-            let data = data.into_iter().map(|x| x as u8).collect::<Vec<u8>>();
             let data = data.as_slice().as_ptr();
             let sokol_sprite = SokolRenderer2D::create_sprite(data, size);
             let mut entity = Entity::new(None);
