@@ -178,9 +178,9 @@ impl Renderer2D for SokolRenderer2D {
             // Set drawing coordinate space to (left=0, right=width, top=0, bottom=height).
             sgp_project(0.0, window_width as f32, 0.0, window_height as f32);
             // Clear the frame buffer.
-            // sgp_set_color(1., 1., 1., 1.);
+            sgp_set_color(1., 1., 1., 1.);
             // TODO: Make customizable
-            sgp_set_color(0.1, 0.1, 0.1, 1.0);
+            // sgp_set_color(0.1, 0.1, 0.1, 1.0);
             sgp_clear();
         }
     }

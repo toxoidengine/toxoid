@@ -1,7 +1,7 @@
 use crate::*;
 
 component! {
-    // Singletons
+    // -- Singletons --
     KeyboardInput {
         up: bool,
         down: bool,
@@ -9,7 +9,8 @@ component! {
         right: bool, 
     },
 
-    // Components
+    // -- Components --
+    // Space
     Position {
         x: u32,
         y: u32
@@ -18,16 +19,31 @@ component! {
         width: u32,
         height: u32
     },
+    // Rendering
     Color {
         r: f32,
         g: f32,
         b: f32,
         a: f32
     },
+    Sprite {
+        sprite: u64
+    },
+    // Fetch
+    FetchRequest {
+        path: String,
+        // TODO: Make this a Vec<u8> after we implement that in toxoid_api_macro
+        data: Vec::<u64>,
+        data_type: u8
+    },
 
-    // Tags
+    // -- Tags --
+    // Rendering
     Rect {},
-    Renderable {}
+    Renderable {},
+    // General
+    Loading {},
+    Loaded {}
 }
 
 pub fn init() {
@@ -38,11 +54,15 @@ pub fn init() {
     Position::register();
     Size::register();
     Color::register();
-
+    Sprite::register();
+    FetchRequest::register();
+    
     // Register tags
     Rect::register();
     Renderable::register();
-
+    Loading::register();
+    Loaded::register();
+    
     // Add singletons
     World::add_singleton::<KeyboardInput>();
 }
