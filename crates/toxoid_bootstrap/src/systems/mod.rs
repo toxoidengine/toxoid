@@ -5,7 +5,7 @@ use toxoid_api::*;
 // Trampoline closure from Rust using C callback and binding_ctx field to call a Rust closure
 #[no_mangle]
 pub unsafe extern "C" fn query_trampoline(iter: *mut toxoid_host::ecs_iter_t) {
-    let handle = (*iter).callback_ctx as i64;
+    let handle = (*iter).callback_ctx as u64;
     let is_guest = (*iter).ctx != std::ptr::null_mut();
     if is_guest {
         // If target is not emscripten
@@ -15,7 +15,7 @@ pub unsafe extern "C" fn query_trampoline(iter: *mut toxoid_host::ecs_iter_t) {
             let mut store_guard = unsafe { toxoid_runtime::STORE.lock().unwrap() };
             let store = &mut *store_guard;
 
-            let iter = Box::into_raw(Box::new(toxoid_host::Iter::new(iter as i64)));
+            let iter = Box::into_raw(Box::new(toxoid_host::Iter::new(iter as u64)));
             let iter_resource_id = store
                 .data_mut()
                 .table.push::<toxoid_runtime::IterProxy>(toxoid_runtime::IterProxy { ptr: iter })

@@ -26,9 +26,17 @@ pub mod exports {
                     F64T,
                     BoolT,
                     StringT,
-                    ArrayT,
-                    U32arrayT,
-                    F32arrayT,
+                    ListT,
+                    U8listT,
+                    U16listT,
+                    U32listT,
+                    U64listT,
+                    I8listT,
+                    I16listT,
+                    I32listT,
+                    I64listT,
+                    F32listT,
+                    F64listT,
                     PointerT,
                 }
                 impl ::core::fmt::Debug for MemberType {
@@ -69,14 +77,38 @@ pub mod exports {
                             MemberType::StringT => {
                                 f.debug_tuple("MemberType::StringT").finish()
                             }
-                            MemberType::ArrayT => {
-                                f.debug_tuple("MemberType::ArrayT").finish()
+                            MemberType::ListT => {
+                                f.debug_tuple("MemberType::ListT").finish()
                             }
-                            MemberType::U32arrayT => {
-                                f.debug_tuple("MemberType::U32arrayT").finish()
+                            MemberType::U8listT => {
+                                f.debug_tuple("MemberType::U8listT").finish()
                             }
-                            MemberType::F32arrayT => {
-                                f.debug_tuple("MemberType::F32arrayT").finish()
+                            MemberType::U16listT => {
+                                f.debug_tuple("MemberType::U16listT").finish()
+                            }
+                            MemberType::U32listT => {
+                                f.debug_tuple("MemberType::U32listT").finish()
+                            }
+                            MemberType::U64listT => {
+                                f.debug_tuple("MemberType::U64listT").finish()
+                            }
+                            MemberType::I8listT => {
+                                f.debug_tuple("MemberType::I8listT").finish()
+                            }
+                            MemberType::I16listT => {
+                                f.debug_tuple("MemberType::I16listT").finish()
+                            }
+                            MemberType::I32listT => {
+                                f.debug_tuple("MemberType::I32listT").finish()
+                            }
+                            MemberType::I64listT => {
+                                f.debug_tuple("MemberType::I64listT").finish()
+                            }
+                            MemberType::F32listT => {
+                                f.debug_tuple("MemberType::F32listT").finish()
+                            }
+                            MemberType::F64listT => {
+                                f.debug_tuple("MemberType::F64listT").finish()
                             }
                             MemberType::PointerT => {
                                 f.debug_tuple("MemberType::PointerT").finish()
@@ -103,10 +135,18 @@ pub mod exports {
                             9 => MemberType::F64T,
                             10 => MemberType::BoolT,
                             11 => MemberType::StringT,
-                            12 => MemberType::ArrayT,
-                            13 => MemberType::U32arrayT,
-                            14 => MemberType::F32arrayT,
-                            15 => MemberType::PointerT,
+                            12 => MemberType::ListT,
+                            13 => MemberType::U8listT,
+                            14 => MemberType::U16listT,
+                            15 => MemberType::U32listT,
+                            16 => MemberType::U64listT,
+                            17 => MemberType::I8listT,
+                            18 => MemberType::I16listT,
+                            19 => MemberType::I32listT,
+                            20 => MemberType::I64listT,
+                            21 => MemberType::F32listT,
+                            22 => MemberType::F64listT,
+                            23 => MemberType::PointerT,
                             _ => panic!("invalid enum discriminant"),
                         }
                     }
@@ -820,7 +860,7 @@ pub mod exports {
                 pub struct SystemDesc {
                     pub name: Option<_rt::String>,
                     pub tick_rate: Option<i32>,
-                    pub callback: i64,
+                    pub callback: u64,
                     pub query_desc: QueryDesc,
                     pub is_guest: bool,
                 }
@@ -962,7 +1002,7 @@ pub mod exports {
                     pub name: Option<_rt::String>,
                     pub query_desc: QueryDesc,
                     pub events: _rt::Vec<Event>,
-                    pub callback: i64,
+                    pub callback: u64,
                     pub is_guest: bool,
                 }
                 impl ::core::fmt::Debug for ObserverDesc {
@@ -1280,7 +1320,9 @@ pub mod exports {
                     arg2: i64,
                 ) -> i32 {
                     #[cfg(target_arch = "wasm32")] _rt::run_ctors_once();
-                    let result0 = Component::new(T::new(arg0, arg1 as u64, arg2 as u64));
+                    let result0 = Component::new(
+                        T::new(arg0 as u64, arg1 as u64, arg2 as u64),
+                    );
                     (result0).take_handle() as i32
                 }
                 #[doc(hidden)]
@@ -1594,6 +1636,92 @@ pub mod exports {
                 }
                 #[doc(hidden)]
                 #[allow(non_snake_case)]
+                pub unsafe fn _export_method_component_set_member_u8list_cabi<
+                    T: GuestComponent,
+                >(arg0: *mut u8, arg1: i32, arg2: *mut u8, arg3: usize) {
+                    #[cfg(target_arch = "wasm32")] _rt::run_ctors_once();
+                    let len0 = arg3;
+                    T::set_member_u8list(
+                        ComponentBorrow::lift(arg0 as u32 as usize).get(),
+                        arg1 as u32,
+                        _rt::Vec::from_raw_parts(arg2.cast(), len0, len0),
+                    );
+                }
+                #[doc(hidden)]
+                #[allow(non_snake_case)]
+                pub unsafe fn _export_method_component_get_member_u8list_cabi<
+                    T: GuestComponent,
+                >(arg0: *mut u8, arg1: i32) -> *mut u8 {
+                    #[cfg(target_arch = "wasm32")] _rt::run_ctors_once();
+                    let result0 = T::get_member_u8list(
+                        ComponentBorrow::lift(arg0 as u32 as usize).get(),
+                        arg1 as u32,
+                    );
+                    let ptr1 = _RET_AREA.0.as_mut_ptr().cast::<u8>();
+                    let vec2 = (result0).into_boxed_slice();
+                    let ptr2 = vec2.as_ptr().cast::<u8>();
+                    let len2 = vec2.len();
+                    ::core::mem::forget(vec2);
+                    *ptr1.add(4).cast::<usize>() = len2;
+                    *ptr1.add(0).cast::<*mut u8>() = ptr2.cast_mut();
+                    ptr1
+                }
+                #[doc(hidden)]
+                #[allow(non_snake_case)]
+                pub unsafe fn __post_return_method_component_get_member_u8list<
+                    T: GuestComponent,
+                >(arg0: *mut u8) {
+                    let l0 = *arg0.add(0).cast::<*mut u8>();
+                    let l1 = *arg0.add(4).cast::<usize>();
+                    let base2 = l0;
+                    let len2 = l1;
+                    _rt::cabi_dealloc(base2, len2 * 1, 1);
+                }
+                #[doc(hidden)]
+                #[allow(non_snake_case)]
+                pub unsafe fn _export_method_component_set_member_u16list_cabi<
+                    T: GuestComponent,
+                >(arg0: *mut u8, arg1: i32, arg2: *mut u8, arg3: usize) {
+                    #[cfg(target_arch = "wasm32")] _rt::run_ctors_once();
+                    let len0 = arg3;
+                    T::set_member_u16list(
+                        ComponentBorrow::lift(arg0 as u32 as usize).get(),
+                        arg1 as u32,
+                        _rt::Vec::from_raw_parts(arg2.cast(), len0, len0),
+                    );
+                }
+                #[doc(hidden)]
+                #[allow(non_snake_case)]
+                pub unsafe fn _export_method_component_get_member_u16list_cabi<
+                    T: GuestComponent,
+                >(arg0: *mut u8, arg1: i32) -> *mut u8 {
+                    #[cfg(target_arch = "wasm32")] _rt::run_ctors_once();
+                    let result0 = T::get_member_u16list(
+                        ComponentBorrow::lift(arg0 as u32 as usize).get(),
+                        arg1 as u32,
+                    );
+                    let ptr1 = _RET_AREA.0.as_mut_ptr().cast::<u8>();
+                    let vec2 = (result0).into_boxed_slice();
+                    let ptr2 = vec2.as_ptr().cast::<u8>();
+                    let len2 = vec2.len();
+                    ::core::mem::forget(vec2);
+                    *ptr1.add(4).cast::<usize>() = len2;
+                    *ptr1.add(0).cast::<*mut u8>() = ptr2.cast_mut();
+                    ptr1
+                }
+                #[doc(hidden)]
+                #[allow(non_snake_case)]
+                pub unsafe fn __post_return_method_component_get_member_u16list<
+                    T: GuestComponent,
+                >(arg0: *mut u8) {
+                    let l0 = *arg0.add(0).cast::<*mut u8>();
+                    let l1 = *arg0.add(4).cast::<usize>();
+                    let base2 = l0;
+                    let len2 = l1;
+                    _rt::cabi_dealloc(base2, len2 * 2, 2);
+                }
+                #[doc(hidden)]
+                #[allow(non_snake_case)]
                 pub unsafe fn _export_method_component_set_member_u32list_cabi<
                     T: GuestComponent,
                 >(arg0: *mut u8, arg1: i32, arg2: *mut u8, arg3: usize) {
@@ -1680,6 +1808,178 @@ pub mod exports {
                 }
                 #[doc(hidden)]
                 #[allow(non_snake_case)]
+                pub unsafe fn _export_method_component_set_member_i8list_cabi<
+                    T: GuestComponent,
+                >(arg0: *mut u8, arg1: i32, arg2: *mut u8, arg3: usize) {
+                    #[cfg(target_arch = "wasm32")] _rt::run_ctors_once();
+                    let len0 = arg3;
+                    T::set_member_i8list(
+                        ComponentBorrow::lift(arg0 as u32 as usize).get(),
+                        arg1 as u32,
+                        _rt::Vec::from_raw_parts(arg2.cast(), len0, len0),
+                    );
+                }
+                #[doc(hidden)]
+                #[allow(non_snake_case)]
+                pub unsafe fn _export_method_component_get_member_i8list_cabi<
+                    T: GuestComponent,
+                >(arg0: *mut u8, arg1: i32) -> *mut u8 {
+                    #[cfg(target_arch = "wasm32")] _rt::run_ctors_once();
+                    let result0 = T::get_member_i8list(
+                        ComponentBorrow::lift(arg0 as u32 as usize).get(),
+                        arg1 as u32,
+                    );
+                    let ptr1 = _RET_AREA.0.as_mut_ptr().cast::<u8>();
+                    let vec2 = (result0).into_boxed_slice();
+                    let ptr2 = vec2.as_ptr().cast::<u8>();
+                    let len2 = vec2.len();
+                    ::core::mem::forget(vec2);
+                    *ptr1.add(4).cast::<usize>() = len2;
+                    *ptr1.add(0).cast::<*mut u8>() = ptr2.cast_mut();
+                    ptr1
+                }
+                #[doc(hidden)]
+                #[allow(non_snake_case)]
+                pub unsafe fn __post_return_method_component_get_member_i8list<
+                    T: GuestComponent,
+                >(arg0: *mut u8) {
+                    let l0 = *arg0.add(0).cast::<*mut u8>();
+                    let l1 = *arg0.add(4).cast::<usize>();
+                    let base2 = l0;
+                    let len2 = l1;
+                    _rt::cabi_dealloc(base2, len2 * 1, 1);
+                }
+                #[doc(hidden)]
+                #[allow(non_snake_case)]
+                pub unsafe fn _export_method_component_set_member_i16list_cabi<
+                    T: GuestComponent,
+                >(arg0: *mut u8, arg1: i32, arg2: *mut u8, arg3: usize) {
+                    #[cfg(target_arch = "wasm32")] _rt::run_ctors_once();
+                    let len0 = arg3;
+                    T::set_member_i16list(
+                        ComponentBorrow::lift(arg0 as u32 as usize).get(),
+                        arg1 as u32,
+                        _rt::Vec::from_raw_parts(arg2.cast(), len0, len0),
+                    );
+                }
+                #[doc(hidden)]
+                #[allow(non_snake_case)]
+                pub unsafe fn _export_method_component_get_member_i16list_cabi<
+                    T: GuestComponent,
+                >(arg0: *mut u8, arg1: i32) -> *mut u8 {
+                    #[cfg(target_arch = "wasm32")] _rt::run_ctors_once();
+                    let result0 = T::get_member_i16list(
+                        ComponentBorrow::lift(arg0 as u32 as usize).get(),
+                        arg1 as u32,
+                    );
+                    let ptr1 = _RET_AREA.0.as_mut_ptr().cast::<u8>();
+                    let vec2 = (result0).into_boxed_slice();
+                    let ptr2 = vec2.as_ptr().cast::<u8>();
+                    let len2 = vec2.len();
+                    ::core::mem::forget(vec2);
+                    *ptr1.add(4).cast::<usize>() = len2;
+                    *ptr1.add(0).cast::<*mut u8>() = ptr2.cast_mut();
+                    ptr1
+                }
+                #[doc(hidden)]
+                #[allow(non_snake_case)]
+                pub unsafe fn __post_return_method_component_get_member_i16list<
+                    T: GuestComponent,
+                >(arg0: *mut u8) {
+                    let l0 = *arg0.add(0).cast::<*mut u8>();
+                    let l1 = *arg0.add(4).cast::<usize>();
+                    let base2 = l0;
+                    let len2 = l1;
+                    _rt::cabi_dealloc(base2, len2 * 2, 2);
+                }
+                #[doc(hidden)]
+                #[allow(non_snake_case)]
+                pub unsafe fn _export_method_component_set_member_i32list_cabi<
+                    T: GuestComponent,
+                >(arg0: *mut u8, arg1: i32, arg2: *mut u8, arg3: usize) {
+                    #[cfg(target_arch = "wasm32")] _rt::run_ctors_once();
+                    let len0 = arg3;
+                    T::set_member_i32list(
+                        ComponentBorrow::lift(arg0 as u32 as usize).get(),
+                        arg1 as u32,
+                        _rt::Vec::from_raw_parts(arg2.cast(), len0, len0),
+                    );
+                }
+                #[doc(hidden)]
+                #[allow(non_snake_case)]
+                pub unsafe fn _export_method_component_get_member_i32list_cabi<
+                    T: GuestComponent,
+                >(arg0: *mut u8, arg1: i32) -> *mut u8 {
+                    #[cfg(target_arch = "wasm32")] _rt::run_ctors_once();
+                    let result0 = T::get_member_i32list(
+                        ComponentBorrow::lift(arg0 as u32 as usize).get(),
+                        arg1 as u32,
+                    );
+                    let ptr1 = _RET_AREA.0.as_mut_ptr().cast::<u8>();
+                    let vec2 = (result0).into_boxed_slice();
+                    let ptr2 = vec2.as_ptr().cast::<u8>();
+                    let len2 = vec2.len();
+                    ::core::mem::forget(vec2);
+                    *ptr1.add(4).cast::<usize>() = len2;
+                    *ptr1.add(0).cast::<*mut u8>() = ptr2.cast_mut();
+                    ptr1
+                }
+                #[doc(hidden)]
+                #[allow(non_snake_case)]
+                pub unsafe fn __post_return_method_component_get_member_i32list<
+                    T: GuestComponent,
+                >(arg0: *mut u8) {
+                    let l0 = *arg0.add(0).cast::<*mut u8>();
+                    let l1 = *arg0.add(4).cast::<usize>();
+                    let base2 = l0;
+                    let len2 = l1;
+                    _rt::cabi_dealloc(base2, len2 * 4, 4);
+                }
+                #[doc(hidden)]
+                #[allow(non_snake_case)]
+                pub unsafe fn _export_method_component_set_member_i64list_cabi<
+                    T: GuestComponent,
+                >(arg0: *mut u8, arg1: i32, arg2: *mut u8, arg3: usize) {
+                    #[cfg(target_arch = "wasm32")] _rt::run_ctors_once();
+                    let len0 = arg3;
+                    T::set_member_i64list(
+                        ComponentBorrow::lift(arg0 as u32 as usize).get(),
+                        arg1 as u32,
+                        _rt::Vec::from_raw_parts(arg2.cast(), len0, len0),
+                    );
+                }
+                #[doc(hidden)]
+                #[allow(non_snake_case)]
+                pub unsafe fn _export_method_component_get_member_i64list_cabi<
+                    T: GuestComponent,
+                >(arg0: *mut u8, arg1: i32) -> *mut u8 {
+                    #[cfg(target_arch = "wasm32")] _rt::run_ctors_once();
+                    let result0 = T::get_member_i64list(
+                        ComponentBorrow::lift(arg0 as u32 as usize).get(),
+                        arg1 as u32,
+                    );
+                    let ptr1 = _RET_AREA.0.as_mut_ptr().cast::<u8>();
+                    let vec2 = (result0).into_boxed_slice();
+                    let ptr2 = vec2.as_ptr().cast::<u8>();
+                    let len2 = vec2.len();
+                    ::core::mem::forget(vec2);
+                    *ptr1.add(4).cast::<usize>() = len2;
+                    *ptr1.add(0).cast::<*mut u8>() = ptr2.cast_mut();
+                    ptr1
+                }
+                #[doc(hidden)]
+                #[allow(non_snake_case)]
+                pub unsafe fn __post_return_method_component_get_member_i64list<
+                    T: GuestComponent,
+                >(arg0: *mut u8) {
+                    let l0 = *arg0.add(0).cast::<*mut u8>();
+                    let l1 = *arg0.add(4).cast::<usize>();
+                    let base2 = l0;
+                    let len2 = l1;
+                    _rt::cabi_dealloc(base2, len2 * 8, 8);
+                }
+                #[doc(hidden)]
+                #[allow(non_snake_case)]
                 pub unsafe fn _export_method_component_set_member_f32list_cabi<
                     T: GuestComponent,
                 >(arg0: *mut u8, arg1: i32, arg2: *mut u8, arg3: usize) {
@@ -1720,6 +2020,73 @@ pub mod exports {
                     let base2 = l0;
                     let len2 = l1;
                     _rt::cabi_dealloc(base2, len2 * 4, 4);
+                }
+                #[doc(hidden)]
+                #[allow(non_snake_case)]
+                pub unsafe fn _export_method_component_set_member_f64list_cabi<
+                    T: GuestComponent,
+                >(arg0: *mut u8, arg1: i32, arg2: *mut u8, arg3: usize) {
+                    #[cfg(target_arch = "wasm32")] _rt::run_ctors_once();
+                    let len0 = arg3;
+                    T::set_member_f64list(
+                        ComponentBorrow::lift(arg0 as u32 as usize).get(),
+                        arg1 as u32,
+                        _rt::Vec::from_raw_parts(arg2.cast(), len0, len0),
+                    );
+                }
+                #[doc(hidden)]
+                #[allow(non_snake_case)]
+                pub unsafe fn _export_method_component_get_member_f64list_cabi<
+                    T: GuestComponent,
+                >(arg0: *mut u8, arg1: i32) -> *mut u8 {
+                    #[cfg(target_arch = "wasm32")] _rt::run_ctors_once();
+                    let result0 = T::get_member_f64list(
+                        ComponentBorrow::lift(arg0 as u32 as usize).get(),
+                        arg1 as u32,
+                    );
+                    let ptr1 = _RET_AREA.0.as_mut_ptr().cast::<u8>();
+                    let vec2 = (result0).into_boxed_slice();
+                    let ptr2 = vec2.as_ptr().cast::<u8>();
+                    let len2 = vec2.len();
+                    ::core::mem::forget(vec2);
+                    *ptr1.add(4).cast::<usize>() = len2;
+                    *ptr1.add(0).cast::<*mut u8>() = ptr2.cast_mut();
+                    ptr1
+                }
+                #[doc(hidden)]
+                #[allow(non_snake_case)]
+                pub unsafe fn __post_return_method_component_get_member_f64list<
+                    T: GuestComponent,
+                >(arg0: *mut u8) {
+                    let l0 = *arg0.add(0).cast::<*mut u8>();
+                    let l1 = *arg0.add(4).cast::<usize>();
+                    let base2 = l0;
+                    let len2 = l1;
+                    _rt::cabi_dealloc(base2, len2 * 8, 8);
+                }
+                #[doc(hidden)]
+                #[allow(non_snake_case)]
+                pub unsafe fn _export_method_component_set_member_pointer_cabi<
+                    T: GuestComponent,
+                >(arg0: *mut u8, arg1: i32, arg2: i64) {
+                    #[cfg(target_arch = "wasm32")] _rt::run_ctors_once();
+                    T::set_member_pointer(
+                        ComponentBorrow::lift(arg0 as u32 as usize).get(),
+                        arg1 as u32,
+                        arg2 as u64,
+                    );
+                }
+                #[doc(hidden)]
+                #[allow(non_snake_case)]
+                pub unsafe fn _export_method_component_get_member_pointer_cabi<
+                    T: GuestComponent,
+                >(arg0: *mut u8, arg1: i32) -> i64 {
+                    #[cfg(target_arch = "wasm32")] _rt::run_ctors_once();
+                    let result0 = T::get_member_pointer(
+                        ComponentBorrow::lift(arg0 as u32 as usize).get(),
+                        arg1 as u32,
+                    );
+                    _rt::as_i64(result0)
                 }
                 #[doc(hidden)]
                 #[allow(non_snake_case)]
@@ -1961,7 +2328,7 @@ pub mod exports {
                     arg0: i64,
                 ) -> i32 {
                     #[cfg(target_arch = "wasm32")] _rt::run_ctors_once();
-                    let result0 = Callback::new(T::new(arg0));
+                    let result0 = Callback::new(T::new(arg0 as u64));
                     (result0).take_handle() as i32
                 }
                 #[doc(hidden)]
@@ -2029,7 +2396,7 @@ pub mod exports {
                                 }
                                 _ => _rt::invalid_enum_discriminant(),
                             },
-                            callback: arg5,
+                            callback: arg5 as u64,
                             query_desc: QueryDesc {
                                 expr: _rt::string_lift(bytes1),
                             },
@@ -2107,7 +2474,7 @@ pub mod exports {
                                 expr: _rt::string_lift(bytes1),
                             },
                             events: result3,
-                            callback: arg7,
+                            callback: arg7 as u64,
                             is_guest: _rt::bool_lift(arg8 as u8),
                         }),
                     );
@@ -2138,7 +2505,7 @@ pub mod exports {
                     arg0: i64,
                 ) -> i32 {
                     #[cfg(target_arch = "wasm32")] _rt::run_ctors_once();
-                    let result0 = Iter::new(T::new(arg0));
+                    let result0 = Iter::new(T::new(arg0 as u64));
                     (result0).take_handle() as i32
                 }
                 #[doc(hidden)]
@@ -2247,12 +2614,12 @@ pub mod exports {
                     type Observer: GuestObserver;
                     type Iter: GuestIter;
                     fn add_singleton(component_id: EcsEntityT);
-                    fn get_singleton(component_id: EcsEntityT) -> i64;
+                    fn get_singleton(component_id: EcsEntityT) -> u64;
                     fn remove_singleton(component_id: EcsEntityT);
                     fn add_entity(entity_id: EcsEntityT);
-                    /// get-entity: func(entity-id: ecs-entity-t) -> s64;
+                    /// get-entity: func(entity-id: ecs-entity-t) -> u64;
                     fn remove_entity(entity_id: EcsEntityT);
-                    /// get-entity-named: func(name: string) -> s64;
+                    /// get-entity-named: func(name: string) -> u64;
                     fn has_entity_named(name: _rt::String) -> bool;
                 }
                 pub trait GuestComponentType: 'static {
@@ -2343,7 +2710,7 @@ pub mod exports {
                     /// This is a component instance so it will need a the entity it belongs to and the component type
                     /// This is required for observers / events to work
                     fn new(
-                        ptr: i64,
+                        ptr: u64,
                         entity: EcsEntityT,
                         component_type: EcsEntityT,
                     ) -> Self;
@@ -2371,12 +2738,28 @@ pub mod exports {
                     fn get_member_bool(&self, offset: u32) -> bool;
                     fn set_member_string(&self, offset: u32, value: _rt::String);
                     fn get_member_string(&self, offset: u32) -> _rt::String;
+                    fn set_member_u8list(&self, offset: u32, value: _rt::Vec<u8>);
+                    fn get_member_u8list(&self, offset: u32) -> _rt::Vec<u8>;
+                    fn set_member_u16list(&self, offset: u32, value: _rt::Vec<u16>);
+                    fn get_member_u16list(&self, offset: u32) -> _rt::Vec<u16>;
                     fn set_member_u32list(&self, offset: u32, value: _rt::Vec<u32>);
                     fn get_member_u32list(&self, offset: u32) -> _rt::Vec<u32>;
                     fn set_member_u64list(&self, offset: u32, value: _rt::Vec<u64>);
                     fn get_member_u64list(&self, offset: u32) -> _rt::Vec<u64>;
+                    fn set_member_i8list(&self, offset: u32, value: _rt::Vec<i8>);
+                    fn get_member_i8list(&self, offset: u32) -> _rt::Vec<i8>;
+                    fn set_member_i16list(&self, offset: u32, value: _rt::Vec<i16>);
+                    fn get_member_i16list(&self, offset: u32) -> _rt::Vec<i16>;
+                    fn set_member_i32list(&self, offset: u32, value: _rt::Vec<i32>);
+                    fn get_member_i32list(&self, offset: u32) -> _rt::Vec<i32>;
+                    fn set_member_i64list(&self, offset: u32, value: _rt::Vec<i64>);
+                    fn get_member_i64list(&self, offset: u32) -> _rt::Vec<i64>;
                     fn set_member_f32list(&self, offset: u32, value: _rt::Vec<f32>);
                     fn get_member_f32list(&self, offset: u32) -> _rt::Vec<f32>;
+                    fn set_member_f64list(&self, offset: u32, value: _rt::Vec<f64>);
+                    fn get_member_f64list(&self, offset: u32) -> _rt::Vec<f64>;
+                    fn set_member_pointer(&self, offset: u32, value: u64);
+                    fn get_member_pointer(&self, offset: u32) -> u64;
                 }
                 pub trait GuestEntity: 'static {
                     #[doc(hidden)]
@@ -2422,8 +2805,8 @@ pub mod exports {
                     fn new(desc: EntityDesc) -> Self;
                     fn get_id(&self) -> EcsEntityT;
                     fn get_name(&self) -> _rt::String;
-                    fn from_id(id: u64) -> i64;
-                    fn get(&self, component: EcsEntityT) -> i64;
+                    fn from_id(id: u64) -> u64;
+                    fn get(&self, component: EcsEntityT) -> u64;
                     fn add(&self, component: EcsEntityT);
                     fn remove(&self, component: EcsEntityT);
                     fn add_relationship(
@@ -2527,10 +2910,10 @@ pub mod exports {
                             unsafe { rep(handle) }
                         }
                     }
-                    fn new(handle: i64) -> Self;
+                    fn new(handle: u64) -> Self;
                     fn run(&self, iter: Iter);
                     /// This is prefixed because resources already have a `handle` method.
-                    fn cb_handle(&self) -> i64;
+                    fn cb_handle(&self) -> u64;
                 }
                 pub trait GuestSystem: 'static {
                     #[doc(hidden)]
@@ -2575,7 +2958,7 @@ pub mod exports {
                     }
                     fn new(desc: SystemDesc) -> Self;
                     fn build(&self);
-                    fn callback(&self) -> i64;
+                    fn callback(&self) -> u64;
                 }
                 pub trait GuestObserver: 'static {
                     #[doc(hidden)]
@@ -2620,7 +3003,7 @@ pub mod exports {
                     }
                     fn new(desc: ObserverDesc) -> Self;
                     fn build(&self);
-                    fn callback(&self) -> i64;
+                    fn callback(&self) -> u64;
                 }
                 pub trait GuestIter: 'static {
                     #[doc(hidden)]
@@ -2663,7 +3046,7 @@ pub mod exports {
                             unsafe { rep(handle) }
                         }
                     }
-                    fn new(ptr: i64) -> Self;
+                    fn new(ptr: u64) -> Self;
                     fn next(&self) -> bool;
                     fn count(&self) -> i32;
                     fn entities(&self) -> _rt::Vec<EcsEntityT>;
@@ -2840,6 +3223,44 @@ pub mod exports {
                         { $($path_to_types)*::
                         __post_return_method_component_get_member_string::<<$ty as
                         $($path_to_types)*:: Guest >::Component > (arg0) } #[export_name
+                        = "toxoid:engine/ecs#[method]component.set-member-u8list"] unsafe
+                        extern "C" fn export_method_component_set_member_u8list(arg0 : *
+                        mut u8, arg1 : i32, arg2 : * mut u8, arg3 : usize,) {
+                        $($path_to_types)*::
+                        _export_method_component_set_member_u8list_cabi::<<$ty as
+                        $($path_to_types)*:: Guest >::Component > (arg0, arg1, arg2,
+                        arg3) } #[export_name =
+                        "toxoid:engine/ecs#[method]component.get-member-u8list"] unsafe
+                        extern "C" fn export_method_component_get_member_u8list(arg0 : *
+                        mut u8, arg1 : i32,) -> * mut u8 { $($path_to_types)*::
+                        _export_method_component_get_member_u8list_cabi::<<$ty as
+                        $($path_to_types)*:: Guest >::Component > (arg0, arg1) }
+                        #[export_name =
+                        "cabi_post_toxoid:engine/ecs#[method]component.get-member-u8list"]
+                        unsafe extern "C" fn
+                        _post_return_method_component_get_member_u8list(arg0 : * mut u8,)
+                        { $($path_to_types)*::
+                        __post_return_method_component_get_member_u8list::<<$ty as
+                        $($path_to_types)*:: Guest >::Component > (arg0) } #[export_name
+                        = "toxoid:engine/ecs#[method]component.set-member-u16list"]
+                        unsafe extern "C" fn
+                        export_method_component_set_member_u16list(arg0 : * mut u8, arg1
+                        : i32, arg2 : * mut u8, arg3 : usize,) { $($path_to_types)*::
+                        _export_method_component_set_member_u16list_cabi::<<$ty as
+                        $($path_to_types)*:: Guest >::Component > (arg0, arg1, arg2,
+                        arg3) } #[export_name =
+                        "toxoid:engine/ecs#[method]component.get-member-u16list"] unsafe
+                        extern "C" fn export_method_component_get_member_u16list(arg0 : *
+                        mut u8, arg1 : i32,) -> * mut u8 { $($path_to_types)*::
+                        _export_method_component_get_member_u16list_cabi::<<$ty as
+                        $($path_to_types)*:: Guest >::Component > (arg0, arg1) }
+                        #[export_name =
+                        "cabi_post_toxoid:engine/ecs#[method]component.get-member-u16list"]
+                        unsafe extern "C" fn
+                        _post_return_method_component_get_member_u16list(arg0 : * mut
+                        u8,) { $($path_to_types)*::
+                        __post_return_method_component_get_member_u16list::<<$ty as
+                        $($path_to_types)*:: Guest >::Component > (arg0) } #[export_name
                         = "toxoid:engine/ecs#[method]component.set-member-u32list"]
                         unsafe extern "C" fn
                         export_method_component_set_member_u32list(arg0 : * mut u8, arg1
@@ -2878,6 +3299,82 @@ pub mod exports {
                         u8,) { $($path_to_types)*::
                         __post_return_method_component_get_member_u64list::<<$ty as
                         $($path_to_types)*:: Guest >::Component > (arg0) } #[export_name
+                        = "toxoid:engine/ecs#[method]component.set-member-i8list"] unsafe
+                        extern "C" fn export_method_component_set_member_i8list(arg0 : *
+                        mut u8, arg1 : i32, arg2 : * mut u8, arg3 : usize,) {
+                        $($path_to_types)*::
+                        _export_method_component_set_member_i8list_cabi::<<$ty as
+                        $($path_to_types)*:: Guest >::Component > (arg0, arg1, arg2,
+                        arg3) } #[export_name =
+                        "toxoid:engine/ecs#[method]component.get-member-i8list"] unsafe
+                        extern "C" fn export_method_component_get_member_i8list(arg0 : *
+                        mut u8, arg1 : i32,) -> * mut u8 { $($path_to_types)*::
+                        _export_method_component_get_member_i8list_cabi::<<$ty as
+                        $($path_to_types)*:: Guest >::Component > (arg0, arg1) }
+                        #[export_name =
+                        "cabi_post_toxoid:engine/ecs#[method]component.get-member-i8list"]
+                        unsafe extern "C" fn
+                        _post_return_method_component_get_member_i8list(arg0 : * mut u8,)
+                        { $($path_to_types)*::
+                        __post_return_method_component_get_member_i8list::<<$ty as
+                        $($path_to_types)*:: Guest >::Component > (arg0) } #[export_name
+                        = "toxoid:engine/ecs#[method]component.set-member-i16list"]
+                        unsafe extern "C" fn
+                        export_method_component_set_member_i16list(arg0 : * mut u8, arg1
+                        : i32, arg2 : * mut u8, arg3 : usize,) { $($path_to_types)*::
+                        _export_method_component_set_member_i16list_cabi::<<$ty as
+                        $($path_to_types)*:: Guest >::Component > (arg0, arg1, arg2,
+                        arg3) } #[export_name =
+                        "toxoid:engine/ecs#[method]component.get-member-i16list"] unsafe
+                        extern "C" fn export_method_component_get_member_i16list(arg0 : *
+                        mut u8, arg1 : i32,) -> * mut u8 { $($path_to_types)*::
+                        _export_method_component_get_member_i16list_cabi::<<$ty as
+                        $($path_to_types)*:: Guest >::Component > (arg0, arg1) }
+                        #[export_name =
+                        "cabi_post_toxoid:engine/ecs#[method]component.get-member-i16list"]
+                        unsafe extern "C" fn
+                        _post_return_method_component_get_member_i16list(arg0 : * mut
+                        u8,) { $($path_to_types)*::
+                        __post_return_method_component_get_member_i16list::<<$ty as
+                        $($path_to_types)*:: Guest >::Component > (arg0) } #[export_name
+                        = "toxoid:engine/ecs#[method]component.set-member-i32list"]
+                        unsafe extern "C" fn
+                        export_method_component_set_member_i32list(arg0 : * mut u8, arg1
+                        : i32, arg2 : * mut u8, arg3 : usize,) { $($path_to_types)*::
+                        _export_method_component_set_member_i32list_cabi::<<$ty as
+                        $($path_to_types)*:: Guest >::Component > (arg0, arg1, arg2,
+                        arg3) } #[export_name =
+                        "toxoid:engine/ecs#[method]component.get-member-i32list"] unsafe
+                        extern "C" fn export_method_component_get_member_i32list(arg0 : *
+                        mut u8, arg1 : i32,) -> * mut u8 { $($path_to_types)*::
+                        _export_method_component_get_member_i32list_cabi::<<$ty as
+                        $($path_to_types)*:: Guest >::Component > (arg0, arg1) }
+                        #[export_name =
+                        "cabi_post_toxoid:engine/ecs#[method]component.get-member-i32list"]
+                        unsafe extern "C" fn
+                        _post_return_method_component_get_member_i32list(arg0 : * mut
+                        u8,) { $($path_to_types)*::
+                        __post_return_method_component_get_member_i32list::<<$ty as
+                        $($path_to_types)*:: Guest >::Component > (arg0) } #[export_name
+                        = "toxoid:engine/ecs#[method]component.set-member-i64list"]
+                        unsafe extern "C" fn
+                        export_method_component_set_member_i64list(arg0 : * mut u8, arg1
+                        : i32, arg2 : * mut u8, arg3 : usize,) { $($path_to_types)*::
+                        _export_method_component_set_member_i64list_cabi::<<$ty as
+                        $($path_to_types)*:: Guest >::Component > (arg0, arg1, arg2,
+                        arg3) } #[export_name =
+                        "toxoid:engine/ecs#[method]component.get-member-i64list"] unsafe
+                        extern "C" fn export_method_component_get_member_i64list(arg0 : *
+                        mut u8, arg1 : i32,) -> * mut u8 { $($path_to_types)*::
+                        _export_method_component_get_member_i64list_cabi::<<$ty as
+                        $($path_to_types)*:: Guest >::Component > (arg0, arg1) }
+                        #[export_name =
+                        "cabi_post_toxoid:engine/ecs#[method]component.get-member-i64list"]
+                        unsafe extern "C" fn
+                        _post_return_method_component_get_member_i64list(arg0 : * mut
+                        u8,) { $($path_to_types)*::
+                        __post_return_method_component_get_member_i64list::<<$ty as
+                        $($path_to_types)*:: Guest >::Component > (arg0) } #[export_name
                         = "toxoid:engine/ecs#[method]component.set-member-f32list"]
                         unsafe extern "C" fn
                         export_method_component_set_member_f32list(arg0 : * mut u8, arg1
@@ -2897,9 +3394,40 @@ pub mod exports {
                         u8,) { $($path_to_types)*::
                         __post_return_method_component_get_member_f32list::<<$ty as
                         $($path_to_types)*:: Guest >::Component > (arg0) } #[export_name
-                        = "toxoid:engine/ecs#[constructor]entity"] unsafe extern "C" fn
-                        export_constructor_entity(arg0 : i32, arg1 : * mut u8, arg2 :
-                        usize,) -> i32 { $($path_to_types)*::
+                        = "toxoid:engine/ecs#[method]component.set-member-f64list"]
+                        unsafe extern "C" fn
+                        export_method_component_set_member_f64list(arg0 : * mut u8, arg1
+                        : i32, arg2 : * mut u8, arg3 : usize,) { $($path_to_types)*::
+                        _export_method_component_set_member_f64list_cabi::<<$ty as
+                        $($path_to_types)*:: Guest >::Component > (arg0, arg1, arg2,
+                        arg3) } #[export_name =
+                        "toxoid:engine/ecs#[method]component.get-member-f64list"] unsafe
+                        extern "C" fn export_method_component_get_member_f64list(arg0 : *
+                        mut u8, arg1 : i32,) -> * mut u8 { $($path_to_types)*::
+                        _export_method_component_get_member_f64list_cabi::<<$ty as
+                        $($path_to_types)*:: Guest >::Component > (arg0, arg1) }
+                        #[export_name =
+                        "cabi_post_toxoid:engine/ecs#[method]component.get-member-f64list"]
+                        unsafe extern "C" fn
+                        _post_return_method_component_get_member_f64list(arg0 : * mut
+                        u8,) { $($path_to_types)*::
+                        __post_return_method_component_get_member_f64list::<<$ty as
+                        $($path_to_types)*:: Guest >::Component > (arg0) } #[export_name
+                        = "toxoid:engine/ecs#[method]component.set-member-pointer"]
+                        unsafe extern "C" fn
+                        export_method_component_set_member_pointer(arg0 : * mut u8, arg1
+                        : i32, arg2 : i64,) { $($path_to_types)*::
+                        _export_method_component_set_member_pointer_cabi::<<$ty as
+                        $($path_to_types)*:: Guest >::Component > (arg0, arg1, arg2) }
+                        #[export_name =
+                        "toxoid:engine/ecs#[method]component.get-member-pointer"] unsafe
+                        extern "C" fn export_method_component_get_member_pointer(arg0 : *
+                        mut u8, arg1 : i32,) -> i64 { $($path_to_types)*::
+                        _export_method_component_get_member_pointer_cabi::<<$ty as
+                        $($path_to_types)*:: Guest >::Component > (arg0, arg1) }
+                        #[export_name = "toxoid:engine/ecs#[constructor]entity"] unsafe
+                        extern "C" fn export_constructor_entity(arg0 : i32, arg1 : * mut
+                        u8, arg2 : usize,) -> i32 { $($path_to_types)*::
                         _export_constructor_entity_cabi::<<$ty as $($path_to_types)*::
                         Guest >::Entity > (arg0, arg1, arg2) } #[export_name =
                         "toxoid:engine/ecs#[method]entity.get-id"] unsafe extern "C" fn
@@ -3375,88 +3903,108 @@ pub(crate) use __export_toxoid_engine_world_impl as export;
 #[cfg(target_arch = "wasm32")]
 #[link_section = "component-type:wit-bindgen:0.35.0:toxoid:engine:toxoid-engine-world:encoded world"]
 #[doc(hidden)]
-pub static __WIT_BINDGEN_COMPONENT_TYPE: [u8; 4171] = *b"\
-\0asm\x0d\0\x01\0\0\x19\x16wit-component-encoding\x04\0\x07\xc1\x1f\x01A\x02\x01\
-A\x02\x01B\xb4\x01\x01w\x04\0\x0cecs-entity-t\x03\0\0\x01m\x10\x04u8-t\x05u16-t\x05\
-u32-t\x05u64-t\x04i8-t\x05i16-t\x05i32-t\x05i64-t\x05f32-t\x05f64-t\x06bool-t\x08\
-string-t\x07array-t\x0au32array-t\x0af32array-t\x09pointer-t\x04\0\x0bmember-typ\
-e\x03\0\x02\x01m\x09\x06on-set\x06on-add\x09on-remove\x09on-delete\x10on-delete-\
-target\x0fon-table-create\x0fon-table-delete\x0eon-table-empty\x0don-table-fill\x04\
-\0\x05event\x03\0\x04\x01ps\x01p}\x01r\x03\x04names\x0cmember-names\x06\x0cmembe\
-r-types\x07\x04\0\x0ecomponent-desc\x03\0\x08\x01ks\x01r\x01\x04name\x0a\x04\0\x0b\
-entity-desc\x03\0\x0b\x01r\x01\x04exprs\x04\0\x0aquery-desc\x03\0\x0d\x04\0\x0ec\
-omponent-type\x03\x01\x04\0\x09component\x03\x01\x04\0\x06entity\x03\x01\x04\0\x05\
-query\x03\x01\x04\0\x08callback\x03\x01\x01kz\x01r\x05\x04name\x0a\x09tick-rate\x14\
-\x08callbackx\x0aquery-desc\x0e\x08is-guest\x7f\x04\0\x0bsystem-desc\x03\0\x15\x04\
-\0\x06system\x03\x01\x01p\x05\x01r\x05\x04name\x0a\x0aquery-desc\x0e\x06events\x18\
-\x08callbackx\x08is-guest\x7f\x04\0\x0dobserver-desc\x03\0\x19\x04\0\x08observer\
-\x03\x01\x04\0\x04iter\x03\x01\x01i\x0f\x01@\x01\x04desc\x09\0\x1d\x04\0\x1b[con\
-structor]component-type\x01\x1e\x01h\x0f\x01@\x01\x04self\x1f\0\x01\x04\0\x1d[me\
-thod]component-type.get-id\x01\x20\x01i\x10\x01@\x03\x03ptrx\x06entity\x01\x0eco\
-mponent-type\x01\0!\x04\0\x16[constructor]component\x01\"\x01h\x10\x01@\x03\x04s\
-elf#\x06offsety\x05value}\x01\0\x04\0\x1f[method]component.set-member-u8\x01$\x01\
-@\x02\x04self#\x06offsety\0}\x04\0\x1f[method]component.get-member-u8\x01%\x01@\x03\
-\x04self#\x06offsety\x05value{\x01\0\x04\0\x20[method]component.set-member-u16\x01\
-&\x01@\x02\x04self#\x06offsety\0{\x04\0\x20[method]component.get-member-u16\x01'\
-\x01@\x03\x04self#\x06offsety\x05valuey\x01\0\x04\0\x20[method]component.set-mem\
-ber-u32\x01(\x01@\x02\x04self#\x06offsety\0y\x04\0\x20[method]component.get-memb\
-er-u32\x01)\x01@\x03\x04self#\x06offsety\x05valuew\x01\0\x04\0\x20[method]compon\
-ent.set-member-u64\x01*\x01@\x02\x04self#\x06offsety\0w\x04\0\x20[method]compone\
-nt.get-member-u64\x01+\x01@\x03\x04self#\x06offsety\x05value~\x01\0\x04\0\x1f[me\
-thod]component.set-member-i8\x01,\x01@\x02\x04self#\x06offsety\0~\x04\0\x1f[meth\
-od]component.get-member-i8\x01-\x01@\x03\x04self#\x06offsety\x05value|\x01\0\x04\
-\0\x20[method]component.set-member-i16\x01.\x01@\x02\x04self#\x06offsety\0|\x04\0\
-\x20[method]component.get-member-i16\x01/\x01@\x03\x04self#\x06offsety\x05valuez\
-\x01\0\x04\0\x20[method]component.set-member-i32\x010\x01@\x02\x04self#\x06offse\
-ty\0z\x04\0\x20[method]component.get-member-i32\x011\x01@\x03\x04self#\x06offset\
-y\x05valuex\x01\0\x04\0\x20[method]component.set-member-i64\x012\x01@\x02\x04sel\
-f#\x06offsety\0x\x04\0\x20[method]component.get-member-i64\x013\x01@\x03\x04self\
-#\x06offsety\x05valuev\x01\0\x04\0\x20[method]component.set-member-f32\x014\x01@\
-\x02\x04self#\x06offsety\0v\x04\0\x20[method]component.get-member-f32\x015\x01@\x03\
-\x04self#\x06offsety\x05valueu\x01\0\x04\0\x20[method]component.set-member-f64\x01\
-6\x01@\x02\x04self#\x06offsety\0u\x04\0\x20[method]component.get-member-f64\x017\
-\x01@\x03\x04self#\x06offsety\x05value\x7f\x01\0\x04\0![method]component.set-mem\
-ber-bool\x018\x01@\x02\x04self#\x06offsety\0\x7f\x04\0![method]component.get-mem\
-ber-bool\x019\x01@\x03\x04self#\x06offsety\x05values\x01\0\x04\0#[method]compone\
-nt.set-member-string\x01:\x01@\x02\x04self#\x06offsety\0s\x04\0#[method]componen\
-t.get-member-string\x01;\x01py\x01@\x03\x04self#\x06offsety\x05value<\x01\0\x04\0\
-$[method]component.set-member-u32list\x01=\x01@\x02\x04self#\x06offsety\0<\x04\0\
-$[method]component.get-member-u32list\x01>\x01pw\x01@\x03\x04self#\x06offsety\x05\
-value?\x01\0\x04\0$[method]component.set-member-u64list\x01@\x01@\x02\x04self#\x06\
-offsety\0?\x04\0$[method]component.get-member-u64list\x01A\x01pv\x01@\x03\x04sel\
-f#\x06offsety\x05value\xc2\0\x01\0\x04\0$[method]component.set-member-f32list\x01\
-C\x01@\x02\x04self#\x06offsety\0\xc2\0\x04\0$[method]component.get-member-f32lis\
-t\x01D\x01i\x11\x01@\x01\x04desc\x0c\0\xc5\0\x04\0\x13[constructor]entity\x01F\x01\
-h\x11\x01@\x01\x04self\xc7\0\0\x01\x04\0\x15[method]entity.get-id\x01H\x01@\x01\x04\
-self\xc7\0\0s\x04\0\x17[method]entity.get-name\x01I\x01@\x01\x02idw\0x\x04\0\x16\
-[static]entity.from-id\x01J\x01@\x02\x04self\xc7\0\x09component\x01\0x\x04\0\x12\
-[method]entity.get\x01K\x01@\x02\x04self\xc7\0\x09component\x01\x01\0\x04\0\x12[\
-method]entity.add\x01L\x04\0\x15[method]entity.remove\x01L\x01@\x03\x04self\xc7\0\
+pub static __WIT_BINDGEN_COMPONENT_TYPE: [u8; 5251] = *b"\
+\0asm\x0d\0\x01\0\0\x19\x16wit-component-encoding\x04\0\x07\xf9'\x01A\x02\x01A\x02\
+\x01B\xd8\x01\x01w\x04\0\x0cecs-entity-t\x03\0\0\x01m\x18\x04u8-t\x05u16-t\x05u3\
+2-t\x05u64-t\x04i8-t\x05i16-t\x05i32-t\x05i64-t\x05f32-t\x05f64-t\x06bool-t\x08s\
+tring-t\x06list-t\x08u8list-t\x09u16list-t\x09u32list-t\x09u64list-t\x08i8list-t\
+\x09i16list-t\x09i32list-t\x09i64list-t\x09f32list-t\x09f64list-t\x09pointer-t\x04\
+\0\x0bmember-type\x03\0\x02\x01m\x09\x06on-set\x06on-add\x09on-remove\x09on-dele\
+te\x10on-delete-target\x0fon-table-create\x0fon-table-delete\x0eon-table-empty\x0d\
+on-table-fill\x04\0\x05event\x03\0\x04\x01ps\x01p}\x01r\x03\x04names\x0cmember-n\
+ames\x06\x0cmember-types\x07\x04\0\x0ecomponent-desc\x03\0\x08\x01ks\x01r\x01\x04\
+name\x0a\x04\0\x0bentity-desc\x03\0\x0b\x01r\x01\x04exprs\x04\0\x0aquery-desc\x03\
+\0\x0d\x04\0\x0ecomponent-type\x03\x01\x04\0\x09component\x03\x01\x04\0\x06entit\
+y\x03\x01\x04\0\x05query\x03\x01\x04\0\x08callback\x03\x01\x01kz\x01r\x05\x04nam\
+e\x0a\x09tick-rate\x14\x08callbackw\x0aquery-desc\x0e\x08is-guest\x7f\x04\0\x0bs\
+ystem-desc\x03\0\x15\x04\0\x06system\x03\x01\x01p\x05\x01r\x05\x04name\x0a\x0aqu\
+ery-desc\x0e\x06events\x18\x08callbackw\x08is-guest\x7f\x04\0\x0dobserver-desc\x03\
+\0\x19\x04\0\x08observer\x03\x01\x04\0\x04iter\x03\x01\x01i\x0f\x01@\x01\x04desc\
+\x09\0\x1d\x04\0\x1b[constructor]component-type\x01\x1e\x01h\x0f\x01@\x01\x04sel\
+f\x1f\0\x01\x04\0\x1d[method]component-type.get-id\x01\x20\x01i\x10\x01@\x03\x03\
+ptrw\x06entity\x01\x0ecomponent-type\x01\0!\x04\0\x16[constructor]component\x01\"\
+\x01h\x10\x01@\x03\x04self#\x06offsety\x05value}\x01\0\x04\0\x1f[method]componen\
+t.set-member-u8\x01$\x01@\x02\x04self#\x06offsety\0}\x04\0\x1f[method]component.\
+get-member-u8\x01%\x01@\x03\x04self#\x06offsety\x05value{\x01\0\x04\0\x20[method\
+]component.set-member-u16\x01&\x01@\x02\x04self#\x06offsety\0{\x04\0\x20[method]\
+component.get-member-u16\x01'\x01@\x03\x04self#\x06offsety\x05valuey\x01\0\x04\0\
+\x20[method]component.set-member-u32\x01(\x01@\x02\x04self#\x06offsety\0y\x04\0\x20\
+[method]component.get-member-u32\x01)\x01@\x03\x04self#\x06offsety\x05valuew\x01\
+\0\x04\0\x20[method]component.set-member-u64\x01*\x01@\x02\x04self#\x06offsety\0\
+w\x04\0\x20[method]component.get-member-u64\x01+\x01@\x03\x04self#\x06offsety\x05\
+value~\x01\0\x04\0\x1f[method]component.set-member-i8\x01,\x01@\x02\x04self#\x06\
+offsety\0~\x04\0\x1f[method]component.get-member-i8\x01-\x01@\x03\x04self#\x06of\
+fsety\x05value|\x01\0\x04\0\x20[method]component.set-member-i16\x01.\x01@\x02\x04\
+self#\x06offsety\0|\x04\0\x20[method]component.get-member-i16\x01/\x01@\x03\x04s\
+elf#\x06offsety\x05valuez\x01\0\x04\0\x20[method]component.set-member-i32\x010\x01\
+@\x02\x04self#\x06offsety\0z\x04\0\x20[method]component.get-member-i32\x011\x01@\
+\x03\x04self#\x06offsety\x05valuex\x01\0\x04\0\x20[method]component.set-member-i\
+64\x012\x01@\x02\x04self#\x06offsety\0x\x04\0\x20[method]component.get-member-i6\
+4\x013\x01@\x03\x04self#\x06offsety\x05valuev\x01\0\x04\0\x20[method]component.s\
+et-member-f32\x014\x01@\x02\x04self#\x06offsety\0v\x04\0\x20[method]component.ge\
+t-member-f32\x015\x01@\x03\x04self#\x06offsety\x05valueu\x01\0\x04\0\x20[method]\
+component.set-member-f64\x016\x01@\x02\x04self#\x06offsety\0u\x04\0\x20[method]c\
+omponent.get-member-f64\x017\x01@\x03\x04self#\x06offsety\x05value\x7f\x01\0\x04\
+\0![method]component.set-member-bool\x018\x01@\x02\x04self#\x06offsety\0\x7f\x04\
+\0![method]component.get-member-bool\x019\x01@\x03\x04self#\x06offsety\x05values\
+\x01\0\x04\0#[method]component.set-member-string\x01:\x01@\x02\x04self#\x06offse\
+ty\0s\x04\0#[method]component.get-member-string\x01;\x01@\x03\x04self#\x06offset\
+y\x05value\x07\x01\0\x04\0#[method]component.set-member-u8list\x01<\x01@\x02\x04\
+self#\x06offsety\0\x07\x04\0#[method]component.get-member-u8list\x01=\x01p{\x01@\
+\x03\x04self#\x06offsety\x05value>\x01\0\x04\0$[method]component.set-member-u16l\
+ist\x01?\x01@\x02\x04self#\x06offsety\0>\x04\0$[method]component.get-member-u16l\
+ist\x01@\x01py\x01@\x03\x04self#\x06offsety\x05value\xc1\0\x01\0\x04\0$[method]c\
+omponent.set-member-u32list\x01B\x01@\x02\x04self#\x06offsety\0\xc1\0\x04\0$[met\
+hod]component.get-member-u32list\x01C\x01pw\x01@\x03\x04self#\x06offsety\x05valu\
+e\xc4\0\x01\0\x04\0$[method]component.set-member-u64list\x01E\x01@\x02\x04self#\x06\
+offsety\0\xc4\0\x04\0$[method]component.get-member-u64list\x01F\x01p~\x01@\x03\x04\
+self#\x06offsety\x05value\xc7\0\x01\0\x04\0#[method]component.set-member-i8list\x01\
+H\x01@\x02\x04self#\x06offsety\0\xc7\0\x04\0#[method]component.get-member-i8list\
+\x01I\x01p|\x01@\x03\x04self#\x06offsety\x05value\xca\0\x01\0\x04\0$[method]comp\
+onent.set-member-i16list\x01K\x01@\x02\x04self#\x06offsety\0\xca\0\x04\0$[method\
+]component.get-member-i16list\x01L\x01pz\x01@\x03\x04self#\x06offsety\x05value\xcd\
+\0\x01\0\x04\0$[method]component.set-member-i32list\x01N\x01@\x02\x04self#\x06of\
+fsety\0\xcd\0\x04\0$[method]component.get-member-i32list\x01O\x01px\x01@\x03\x04\
+self#\x06offsety\x05value\xd0\0\x01\0\x04\0$[method]component.set-member-i64list\
+\x01Q\x01@\x02\x04self#\x06offsety\0\xd0\0\x04\0$[method]component.get-member-i6\
+4list\x01R\x01pv\x01@\x03\x04self#\x06offsety\x05value\xd3\0\x01\0\x04\0$[method\
+]component.set-member-f32list\x01T\x01@\x02\x04self#\x06offsety\0\xd3\0\x04\0$[m\
+ethod]component.get-member-f32list\x01U\x01pu\x01@\x03\x04self#\x06offsety\x05va\
+lue\xd6\0\x01\0\x04\0$[method]component.set-member-f64list\x01W\x01@\x02\x04self\
+#\x06offsety\0\xd6\0\x04\0$[method]component.get-member-f64list\x01X\x04\0$[meth\
+od]component.set-member-pointer\x01*\x04\0$[method]component.get-member-pointer\x01\
++\x01i\x11\x01@\x01\x04desc\x0c\0\xd9\0\x04\0\x13[constructor]entity\x01Z\x01h\x11\
+\x01@\x01\x04self\xdb\0\0\x01\x04\0\x15[method]entity.get-id\x01\\\x01@\x01\x04s\
+elf\xdb\0\0s\x04\0\x17[method]entity.get-name\x01]\x01@\x01\x02idw\0w\x04\0\x16[\
+static]entity.from-id\x01^\x01@\x02\x04self\xdb\0\x09component\x01\0w\x04\0\x12[\
+method]entity.get\x01_\x01@\x02\x04self\xdb\0\x09component\x01\x01\0\x04\0\x12[m\
+ethod]entity.add\x01`\x04\0\x15[method]entity.remove\x01`\x01@\x03\x04self\xdb\0\
 \x0crelationship\x01\x06target\x01\x01\0\x04\0\x1f[method]entity.add-relationshi\
-p\x01M\x04\0\"[method]entity.remove-relationship\x01M\x01i\x12\x01@\x01\x04desc\x0e\
-\0\xce\0\x04\0\x12[constructor]query\x01O\x01h\x12\x01@\x02\x04self\xd0\0\x04exp\
-rs\x01\0\x04\0\x12[method]query.expr\x01Q\x01@\x01\x04self\xd0\0\x01\0\x04\0\x13\
-[method]query.build\x01R\x04\0\x12[method]query.iter\x01R\x01@\x01\x04self\xd0\0\
-\0\x7f\x04\0\x12[method]query.next\x01S\x01@\x01\x04self\xd0\0\0z\x04\0\x13[meth\
-od]query.count\x01T\x01p\x01\x01@\x01\x04self\xd0\0\0\xd5\0\x04\0\x16[method]que\
-ry.entities\x01V\x01i\x13\x01@\x01\x06handlex\0\xd7\0\x04\0\x15[constructor]call\
-back\x01X\x01h\x13\x01i\x1c\x01@\x02\x04self\xd9\0\x04iter\xda\0\x01\0\x04\0\x14\
-[method]callback.run\x01[\x01@\x01\x04self\xd9\0\0x\x04\0\x1a[method]callback.cb\
--handle\x01\\\x01i\x17\x01@\x01\x04desc\x16\0\xdd\0\x04\0\x13[constructor]system\
-\x01^\x01h\x17\x01@\x01\x04self\xdf\0\x01\0\x04\0\x14[method]system.build\x01`\x01\
-@\x01\x04self\xdf\0\0x\x04\0\x17[method]system.callback\x01a\x01i\x1b\x01@\x01\x04\
-desc\x1a\0\xe2\0\x04\0\x15[constructor]observer\x01c\x01h\x1b\x01@\x01\x04self\xe4\
-\0\x01\0\x04\0\x16[method]observer.build\x01e\x01@\x01\x04self\xe4\0\0x\x04\0\x19\
-[method]observer.callback\x01f\x01@\x01\x03ptrx\0\xda\0\x04\0\x11[constructor]it\
-er\x01g\x01h\x1c\x01@\x01\x04self\xe8\0\0\x7f\x04\0\x11[method]iter.next\x01i\x01\
-@\x01\x04self\xe8\0\0z\x04\0\x12[method]iter.count\x01j\x01@\x01\x04self\xe8\0\0\
-\xd5\0\x04\0\x15[method]iter.entities\x01k\x01@\x01\x0ccomponent-id\x01\x01\0\x04\
-\0\x0dadd-singleton\x01l\x01@\x01\x0ccomponent-id\x01\0x\x04\0\x0dget-singleton\x01\
-m\x04\0\x10remove-singleton\x01l\x01@\x01\x09entity-id\x01\x01\0\x04\0\x0aadd-en\
-tity\x01n\x04\0\x0dremove-entity\x01n\x01@\x01\x04names\0\x7f\x04\0\x10has-entit\
-y-named\x01o\x04\0\x11toxoid:engine/ecs\x05\0\x04\0!toxoid:engine/toxoid-engine-\
-world\x04\0\x0b\x19\x01\0\x13toxoid-engine-world\x03\0\0\0G\x09producers\x01\x0c\
-processed-by\x02\x0dwit-component\x070.220.0\x10wit-bindgen-rust\x060.35.0";
+p\x01a\x04\0\"[method]entity.remove-relationship\x01a\x01i\x12\x01@\x01\x04desc\x0e\
+\0\xe2\0\x04\0\x12[constructor]query\x01c\x01h\x12\x01@\x02\x04self\xe4\0\x04exp\
+rs\x01\0\x04\0\x12[method]query.expr\x01e\x01@\x01\x04self\xe4\0\x01\0\x04\0\x13\
+[method]query.build\x01f\x04\0\x12[method]query.iter\x01f\x01@\x01\x04self\xe4\0\
+\0\x7f\x04\0\x12[method]query.next\x01g\x01@\x01\x04self\xe4\0\0z\x04\0\x13[meth\
+od]query.count\x01h\x01p\x01\x01@\x01\x04self\xe4\0\0\xe9\0\x04\0\x16[method]que\
+ry.entities\x01j\x01i\x13\x01@\x01\x06handlew\0\xeb\0\x04\0\x15[constructor]call\
+back\x01l\x01h\x13\x01i\x1c\x01@\x02\x04self\xed\0\x04iter\xee\0\x01\0\x04\0\x14\
+[method]callback.run\x01o\x01@\x01\x04self\xed\0\0w\x04\0\x1a[method]callback.cb\
+-handle\x01p\x01i\x17\x01@\x01\x04desc\x16\0\xf1\0\x04\0\x13[constructor]system\x01\
+r\x01h\x17\x01@\x01\x04self\xf3\0\x01\0\x04\0\x14[method]system.build\x01t\x01@\x01\
+\x04self\xf3\0\0w\x04\0\x17[method]system.callback\x01u\x01i\x1b\x01@\x01\x04des\
+c\x1a\0\xf6\0\x04\0\x15[constructor]observer\x01w\x01h\x1b\x01@\x01\x04self\xf8\0\
+\x01\0\x04\0\x16[method]observer.build\x01y\x01@\x01\x04self\xf8\0\0w\x04\0\x19[\
+method]observer.callback\x01z\x01@\x01\x03ptrw\0\xee\0\x04\0\x11[constructor]ite\
+r\x01{\x01h\x1c\x01@\x01\x04self\xfc\0\0\x7f\x04\0\x11[method]iter.next\x01}\x01\
+@\x01\x04self\xfc\0\0z\x04\0\x12[method]iter.count\x01~\x01@\x01\x04self\xfc\0\0\
+\xe9\0\x04\0\x15[method]iter.entities\x01\x7f\x01@\x01\x0ccomponent-id\x01\x01\0\
+\x04\0\x0dadd-singleton\x01\x80\x01\x01@\x01\x0ccomponent-id\x01\0w\x04\0\x0dget\
+-singleton\x01\x81\x01\x04\0\x10remove-singleton\x01\x80\x01\x01@\x01\x09entity-\
+id\x01\x01\0\x04\0\x0aadd-entity\x01\x82\x01\x04\0\x0dremove-entity\x01\x82\x01\x01\
+@\x01\x04names\0\x7f\x04\0\x10has-entity-named\x01\x83\x01\x04\0\x11toxoid:engin\
+e/ecs\x05\0\x04\0!toxoid:engine/toxoid-engine-world\x04\0\x0b\x19\x01\0\x13toxoi\
+d-engine-world\x03\0\0\0G\x09producers\x01\x0cprocessed-by\x02\x0dwit-component\x07\
+0.220.0\x10wit-bindgen-rust\x060.35.0";
 #[inline(never)]
 #[doc(hidden)]
 pub fn __link_custom_section_describing_imports() {
