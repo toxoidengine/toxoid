@@ -69,7 +69,7 @@ pub fn init() {
             entity.remove::<Head>(); 
             entity.add::<Tail>();
 
-            println!("Tails entities: {:?}", tails_entities.clone());
+            // println!("Tails entities: {:?}", tails_entities.clone());
             // Remove the last tail entity
             // println!("Tails entities max length: {:?}", tails.get_max_length());
             if tails_entities.len() > tails.get_max_length() as usize {

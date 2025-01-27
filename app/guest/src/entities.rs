@@ -139,7 +139,7 @@ pub fn create_food_init() {
 pub fn init() {
     // Initialize Tails singleton
     let mut tails = World::get_singleton::<Tails>();
-    tails.set_max_length(1);
+    tails.set_max_length(3);
     tails.set_entities(vec![]);
     if !World::has_entity_named("CreateSnakeOnce".to_string()) {
         create_snake();
