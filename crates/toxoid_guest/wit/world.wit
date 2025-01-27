@@ -189,6 +189,7 @@ interface ecs {
     remove-entity: func(entity: ecs-entity-t);
     // get-entity-named: func(name: string) -> entity;
     has-entity-named: func(name: string) -> bool;
+    get-component-id: func(component-name: string) -> ecs-entity-t;
 }
 
 interface callbacks {

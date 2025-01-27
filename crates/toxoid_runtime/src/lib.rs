@@ -130,6 +130,10 @@ impl toxoid_component::component::ecs::Host for StoreState {
     fn has_entity_named(&mut self, name: String) -> bool {
         ToxoidApi::has_entity_named(name)
     }
+
+    fn get_component_id(&mut self, component_name: String) -> toxoid_component::component::ecs::EcsEntityT {
+        ToxoidApi::get_component_id(component_name)
+    }
 }
 
 impl toxoid_component::component::ecs::HostIter for StoreState {

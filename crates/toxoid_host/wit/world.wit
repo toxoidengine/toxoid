@@ -195,6 +195,7 @@ interface ecs {
     remove-entity: func(entity-id: ecs-entity-t);
     // get-entity-named: func(name: string) -> u64;
     has-entity-named: func(name: string) -> bool;
+    get-component-id: func(component-name: string) -> ecs-entity-t;
 }
 
 world toxoid-engine-world {

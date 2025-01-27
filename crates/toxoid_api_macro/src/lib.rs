@@ -366,7 +366,7 @@ pub fn component(input: TokenStream) -> TokenStream {
             // Create the register implementation.
             let register_fn = quote! {
                 fn register() -> u64 {
-                    get_component_id(#struct_name_str, vec![#(#field_names_str.to_string()),*], vec![#(#field_types_code),*])
+                    register_component(#struct_name_str, vec![#(#field_names_str.to_string()),*], vec![#(#field_types_code),*])
                 }
             };
             
@@ -376,13 +376,9 @@ pub fn component(input: TokenStream) -> TokenStream {
                     #type_name
                 }
             };
-            let field_names_str = field_names.clone().map(|f| f.clone().unwrap().to_string());
-            let field_types_code = field_types.clone().map(|f| get_type_code(f));
             let type_get_id_fn = quote! {
                 fn get_id() -> u64 {
-                    // TODO: This is a hack to get the component id.
-                    // Get it with a name lookup instead.
-                    get_component_id(#struct_name_str, vec![#(#field_names_str.to_string()),*], vec![#(#field_types_code),*])
+                    get_component_id(#struct_name_str)
                 }
             };
             quote! {

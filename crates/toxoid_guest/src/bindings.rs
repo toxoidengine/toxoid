@@ -10,7 +10,6 @@ pub trait Guest {
 #[doc(hidden)]
 #[macro_export]
 #[macro_export]
-#[macro_export]
 macro_rules! __export_world_toxoid_component_world_cabi {
     ($ty:ident with_types_in $($path_to_types:tt)*) => {
         const _ : () = { #[export_name = "init"] unsafe extern "C" fn export_init() {
@@ -2710,6 +2709,26 @@ pub mod toxoid_component {
                     _rt::bool_lift(ret as u8)
                 }
             }
+            #[allow(unused_unsafe, clippy::all)]
+            pub fn get_component_id(component_name: &str) -> EcsEntityT {
+                unsafe {
+                    let vec0 = component_name;
+                    let ptr0 = vec0.as_ptr().cast::<u8>();
+                    let len0 = vec0.len();
+                    #[cfg(target_arch = "wasm32")]
+                    #[link(wasm_import_module = "toxoid-component:component/ecs")]
+                    extern "C" {
+                        #[link_name = "get-component-id"]
+                        fn wit_import(_: *mut u8, _: usize) -> i64;
+                    }
+                    #[cfg(not(target_arch = "wasm32"))]
+                    fn wit_import(_: *mut u8, _: usize) -> i64 {
+                        unreachable!()
+                    }
+                    let ret = wit_import(ptr0.cast_mut(), len0);
+                    ret as u64
+                }
+            }
         }
     }
 }
@@ -2742,7 +2761,6 @@ pub mod exports {
                 }
                 #[doc(hidden)]
                 #[macro_export]
-#[macro_export]
 #[macro_export]
 macro_rules! __export_toxoid_component_component_callbacks_cabi {
                     ($ty:ident with_types_in $($path_to_types:tt)*) => {
@@ -3019,9 +3037,9 @@ pub use __export_toxoid_component_world_impl as export;
 #[cfg(target_arch = "wasm32")]
 #[link_section = "component-type:wit-bindgen:0.35.0:toxoid-component:component:toxoid-component-world:encoded world"]
 #[doc(hidden)]
-pub static __WIT_BINDGEN_COMPONENT_TYPE: [u8; 5387] = *b"\
-\0asm\x0d\0\x01\0\0\x19\x16wit-component-encoding\x04\0\x07\xfe(\x01A\x02\x01A\x07\
-\x01B\xd8\x01\x01w\x04\0\x0cecs-entity-t\x03\0\0\x01m\x18\x04u8-t\x05u16-t\x05u3\
+pub static __WIT_BINDGEN_COMPONENT_TYPE: [u8; 5430] = *b"\
+\0asm\x0d\0\x01\0\0\x19\x16wit-component-encoding\x04\0\x07\xa9)\x01A\x02\x01A\x07\
+\x01B\xda\x01\x01w\x04\0\x0cecs-entity-t\x03\0\0\x01m\x18\x04u8-t\x05u16-t\x05u3\
 2-t\x05u64-t\x04i8-t\x05i16-t\x05i32-t\x05i64-t\x05f32-t\x05f64-t\x06bool-t\x08s\
 tring-t\x06list-t\x08u8list-t\x09u16list-t\x09u32list-t\x09u64list-t\x08i8list-t\
 \x09i16list-t\x09i32list-t\x09i64list-t\x09f32list-t\x09f64list-t\x09pointer-t\x04\
@@ -3117,13 +3135,14 @@ ethod]observer.callback\x01z\x01@\x01\x03ptrw\0\xee\0\x04\0\x11[constructor]iter
 add-singleton\x01\x80\x01\x01@\x01\x09component\x01\0\"\x04\0\x0dget-singleton\x01\
 \x81\x01\x04\0\x10remove-singleton\x01\x80\x01\x01@\x01\x06entity\x01\x01\0\x04\0\
 \x0aadd-entity\x01\x82\x01\x04\0\x0dremove-entity\x01\x82\x01\x01@\x01\x04names\0\
-\x7f\x04\0\x10has-entity-named\x01\x83\x01\x03\0\x1etoxoid-component:component/e\
-cs\x05\0\x01@\0\x01\0\x04\0\x04init\x01\x01\x02\x03\0\0\x04iter\x01B\x05\x02\x03\
-\x02\x01\x02\x04\0\x04iter\x03\0\0\x01i\x01\x01@\x02\x04iter\x02\x06handlew\x01\0\
-\x04\0\x03run\x01\x03\x04\0$toxoid-component:component/callbacks\x05\x03\x04\01t\
-oxoid-component:component/toxoid-component-world\x04\0\x0b\x1c\x01\0\x16toxoid-c\
-omponent-world\x03\0\0\0G\x09producers\x01\x0cprocessed-by\x02\x0dwit-component\x07\
-0.220.0\x10wit-bindgen-rust\x060.35.0";
+\x7f\x04\0\x10has-entity-named\x01\x83\x01\x01@\x01\x0ecomponent-names\0\x01\x04\
+\0\x10get-component-id\x01\x84\x01\x03\0\x1etoxoid-component:component/ecs\x05\0\
+\x01@\0\x01\0\x04\0\x04init\x01\x01\x02\x03\0\0\x04iter\x01B\x05\x02\x03\x02\x01\
+\x02\x04\0\x04iter\x03\0\0\x01i\x01\x01@\x02\x04iter\x02\x06handlew\x01\0\x04\0\x03\
+run\x01\x03\x04\0$toxoid-component:component/callbacks\x05\x03\x04\01toxoid-comp\
+onent:component/toxoid-component-world\x04\0\x0b\x1c\x01\0\x16toxoid-component-w\
+orld\x03\0\0\0G\x09producers\x01\x0cprocessed-by\x02\x0dwit-component\x070.220.0\
+\x10wit-bindgen-rust\x060.35.0";
 #[inline(never)]
 #[doc(hidden)]
 pub fn __link_custom_section_describing_imports() {
