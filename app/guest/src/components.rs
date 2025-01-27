@@ -1,6 +1,7 @@
 use toxoid_api::*;
 
 component! {
+    // Components
     Direction {
         direction: u8
     },
@@ -13,18 +14,12 @@ component! {
         max_length: u32,
         entities: Vec::<u64>
     },
-    Head {
-        foo: bool
-    },
-    Tail {
-        foo: bool
-    },
-    Player {
-        foo: bool
-    },
-    Food {
-        foo: bool
-    },
+    // Tags
+    Head {},
+    Tail {},
+    Player {},
+    Food {},
+    // Singleton
     FoodEntity {
         entity: u64
     }

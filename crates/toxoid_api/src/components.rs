@@ -40,6 +40,10 @@ component! {
     // Rendering
     Rect {},
     Renderable {},
+    // UI
+    Window {},
+    Text {},
+    Button {},
     // General
     Loading {},
     Loaded {}
