@@ -2604,6 +2604,18 @@ pub mod exports {
                         false => 0,
                     }
                 }
+                #[doc(hidden)]
+                #[allow(non_snake_case)]
+                pub unsafe fn _export_get_component_id_cabi<T: Guest>(
+                    arg0: *mut u8,
+                    arg1: usize,
+                ) -> i64 {
+                    #[cfg(target_arch = "wasm32")] _rt::run_ctors_once();
+                    let len0 = arg1;
+                    let bytes0 = _rt::Vec::from_raw_parts(arg0.cast(), len0, len0);
+                    let result1 = T::get_component_id(_rt::string_lift(bytes0));
+                    _rt::as_i64(result1)
+                }
                 pub trait Guest {
                     type ComponentType: GuestComponentType;
                     type Component: GuestComponent;
@@ -2621,6 +2633,7 @@ pub mod exports {
                     fn remove_entity(entity_id: EcsEntityT);
                     /// get-entity-named: func(name: string) -> u64;
                     fn has_entity_named(name: _rt::String) -> bool;
+                    fn get_component_id(component_name: _rt::String) -> EcsEntityT;
                 }
                 pub trait GuestComponentType: 'static {
                     #[doc(hidden)]
@@ -3588,7 +3601,11 @@ pub mod exports {
                         "toxoid:engine/ecs#has-entity-named"] unsafe extern "C" fn
                         export_has_entity_named(arg0 : * mut u8, arg1 : usize,) -> i32 {
                         $($path_to_types)*:: _export_has_entity_named_cabi::<$ty > (arg0,
-                        arg1) } const _ : () = { #[doc(hidden)] #[export_name =
+                        arg1) } #[export_name = "toxoid:engine/ecs#get-component-id"]
+                        unsafe extern "C" fn export_get_component_id(arg0 : * mut u8,
+                        arg1 : usize,) -> i64 { $($path_to_types)*::
+                        _export_get_component_id_cabi::<$ty > (arg0, arg1) } const _ : ()
+                        = { #[doc(hidden)] #[export_name =
                         "toxoid:engine/ecs#[dtor]component-type"]
                         #[allow(non_snake_case)] unsafe extern "C" fn dtor(rep : * mut
                         u8) { $($path_to_types)*:: ComponentType::dtor::< <$ty as
@@ -3717,8 +3734,6 @@ mod _rt {
     #[cfg(target_arch = "wasm32")]
     pub fn run_ctors_once() {
         #[cfg(not(target_os = "emscripten"))]
-#[cfg(not(target_os = "emscripten"))]
-#[cfg(not(target_os = "emscripten"))]
 #[cfg(not(target_os = "emscripten"))]
 #[cfg(not(target_os = "emscripten"))]
 wit_bindgen_rt::run_ctors_once();
@@ -3907,9 +3922,9 @@ pub(crate) use __export_toxoid_engine_world_impl as export;
 #[cfg(target_arch = "wasm32")]
 #[link_section = "component-type:wit-bindgen:0.35.0:toxoid:engine:toxoid-engine-world:encoded world"]
 #[doc(hidden)]
-pub static __WIT_BINDGEN_COMPONENT_TYPE: [u8; 5251] = *b"\
-\0asm\x0d\0\x01\0\0\x19\x16wit-component-encoding\x04\0\x07\xf9'\x01A\x02\x01A\x02\
-\x01B\xd8\x01\x01w\x04\0\x0cecs-entity-t\x03\0\0\x01m\x18\x04u8-t\x05u16-t\x05u3\
+pub static __WIT_BINDGEN_COMPONENT_TYPE: [u8; 5294] = *b"\
+\0asm\x0d\0\x01\0\0\x19\x16wit-component-encoding\x04\0\x07\xa4(\x01A\x02\x01A\x02\
+\x01B\xda\x01\x01w\x04\0\x0cecs-entity-t\x03\0\0\x01m\x18\x04u8-t\x05u16-t\x05u3\
 2-t\x05u64-t\x04i8-t\x05i16-t\x05i32-t\x05i64-t\x05f32-t\x05f64-t\x06bool-t\x08s\
 tring-t\x06list-t\x08u8list-t\x09u16list-t\x09u32list-t\x09u64list-t\x08i8list-t\
 \x09i16list-t\x09i32list-t\x09i64list-t\x09f32list-t\x09f64list-t\x09pointer-t\x04\
@@ -4005,16 +4020,15 @@ r\x01{\x01h\x1c\x01@\x01\x04self\xfc\0\0\x7f\x04\0\x11[method]iter.next\x01}\x01
 \x04\0\x0dadd-singleton\x01\x80\x01\x01@\x01\x0ccomponent-id\x01\0w\x04\0\x0dget\
 -singleton\x01\x81\x01\x04\0\x10remove-singleton\x01\x80\x01\x01@\x01\x09entity-\
 id\x01\x01\0\x04\0\x0aadd-entity\x01\x82\x01\x04\0\x0dremove-entity\x01\x82\x01\x01\
-@\x01\x04names\0\x7f\x04\0\x10has-entity-named\x01\x83\x01\x04\0\x11toxoid:engin\
-e/ecs\x05\0\x04\0!toxoid:engine/toxoid-engine-world\x04\0\x0b\x19\x01\0\x13toxoi\
-d-engine-world\x03\0\0\0G\x09producers\x01\x0cprocessed-by\x02\x0dwit-component\x07\
-0.220.0\x10wit-bindgen-rust\x060.35.0";
+@\x01\x04names\0\x7f\x04\0\x10has-entity-named\x01\x83\x01\x01@\x01\x0ecomponent\
+-names\0\x01\x04\0\x10get-component-id\x01\x84\x01\x04\0\x11toxoid:engine/ecs\x05\
+\0\x04\0!toxoid:engine/toxoid-engine-world\x04\0\x0b\x19\x01\0\x13toxoid-engine-\
+world\x03\0\0\0G\x09producers\x01\x0cprocessed-by\x02\x0dwit-component\x070.220.\
+0\x10wit-bindgen-rust\x060.35.0";
 #[inline(never)]
 #[doc(hidden)]
 pub fn __link_custom_section_describing_imports() {
     #[cfg(not(target_os = "emscripten"))]
-#[cfg(not(target_os = "emscripten"))]
-#[cfg(not(target_os = "emscripten"))]
 #[cfg(not(target_os = "emscripten"))]
 #[cfg(not(target_os = "emscripten"))]
 wit_bindgen_rt::maybe_link_cabi_realloc();

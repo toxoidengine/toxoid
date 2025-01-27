@@ -1050,6 +1050,11 @@ impl Guest for ToxoidApi {
         let c_name = c_string(&name);
         unsafe { ecs_lookup(WORLD.0, c_name) != 0 }
     }
+
+    fn get_component_id(component_name: String) -> ecs_entity_t {
+        let c_name = c_string(&component_name);
+        unsafe { ecs_lookup(WORLD.0, c_name) }
+    }
 }
 
 // TODO: Don't forget to clean up the cache when components are deleted!
