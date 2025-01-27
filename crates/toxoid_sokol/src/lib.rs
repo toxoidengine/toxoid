@@ -132,7 +132,7 @@ pub const GAME_WIDTH: i32 = 800;
 pub const GAME_HEIGHT: i32 = 600;
 
 #[cfg(feature = "render")]
-pub fn init(sokol_init: extern "C" fn(), sokol_frame: extern "C" fn(), sokol_event: extern "C" fn(*const Event)) {
+pub fn init(sokol_init: extern "C" fn(*mut core::ffi::c_void), sokol_frame: extern "C" fn(), sokol_event: extern "C" fn(*const Event), user_data: *mut core::ffi::c_void) {
     // let game_config = World::get_singleton::<GameConfig>();
     let window_title = b"Toxoid Engine Demo\0".as_ptr() as _;
     let canvas_id = std::ffi::CString::new("canvas").unwrap();
@@ -143,7 +143,9 @@ pub fn init(sokol_init: extern "C" fn(), sokol_frame: extern "C" fn(), sokol_eve
     }
 
     sapp::run(&sapp::Desc {
-        init_cb: Some(sokol_init),
+        // init_cb: Some(sokol_init),
+        init_userdata_cb: Some(sokol_init),
+        user_data,
         cleanup_cb: Some(sokol_cleanup),
         frame_cb: Some(sokol_frame),
         event_cb: Some(sokol_event),

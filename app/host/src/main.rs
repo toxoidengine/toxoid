@@ -1,6 +1,9 @@
+#[no_mangle]
+pub extern "C" fn init_host() {
+    #[cfg(feature = "static-linking")]
+    guest::init();
+}
+
 fn main() {
-    toxoid_bootstrap::init_ecs();
-    // #[cfg(feature = "static-linking")]
-    // guest::init();
-    toxoid_bootstrap::init_renderer();
+    toxoid_bootstrap::init(init_host);
 }

@@ -3,7 +3,7 @@ bindgen!({
     world: "toxoid-component-world",
     path: "../toxoid_guest/wit",
     with: {
-        // Specify that our host resource is going to point to the `ComponentProxy`
+        // Specify that our host resource is going to point to the `ComponentTypeProxy`, `ComponentProxy`, etc.
         "toxoid-component:component/ecs/component-type": ComponentTypeProxy,
         "toxoid-component:component/ecs/component": ComponentProxy,
         "toxoid-component:component/ecs/entity": EntityProxy,
