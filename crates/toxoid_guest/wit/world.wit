@@ -2,6 +2,13 @@ package toxoid-component:component;
 
 interface ecs {
     type ecs-entity-t = u64;
+    type pointer-t = u64;
+
+    variant relationship {
+        is-a,
+        child-of,
+        custom(ecs-entity-t)
+    }
 
     enum member-type {
         u8-t,
@@ -64,7 +71,7 @@ interface ecs {
     resource component {
         // This is a component instance so it will need a the entity it belongs to and the component type
         // This is required for observers / events to work
-        constructor(ptr: u64, entity: ecs-entity-t, component-type: ecs-entity-t);
+        constructor(ptr: pointer-t, entity: ecs-entity-t, component-type: ecs-entity-t);
         // TODO: Change this to offset index instead of offset so that WASM guest does not have direct access to host memory.
         set-member-u8: func(offset: u32, value: u8);
         get-member-u8: func(offset: u32) -> u8;
@@ -122,11 +129,13 @@ interface ecs {
         get: func(component: ecs-entity-t) -> component;
         add: func(component: ecs-entity-t);
         remove: func(component: ecs-entity-t);
-        add-relationship: func(relationship: ecs-entity-t, target: ecs-entity-t);
-        remove-relationship: func(relationship: ecs-entity-t, target: ecs-entity-t);
-        // children: func() -> list<ecs-entity-t>;
-        // parents: func() -> list<ecs-entity-t>;
-        // relationships: func() -> list<ecs-entity-t>;
+        add-relationship: func(relationship: relationship, target: ecs-entity-t);
+        remove-relationship: func(relationship: relationship, target: ecs-entity-t);
+        parent-of: func(target: ecs-entity-t);
+        child-of: func(target: ecs-entity-t);
+        parent: func() -> entity;
+        children: func() -> list<entity>;
+        relationships: func() -> list<entity>;
     }
 
     resource query {
@@ -143,7 +152,7 @@ interface ecs {
         constructor(handle: u64);
         run: func(iter: iter);
         // This is prefixed because resources already have a `handle` method.
-        cb-handle: func() -> u64;
+        cb-handle: func() -> pointer-t;
     }
 
     record system-desc {
