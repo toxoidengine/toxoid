@@ -11,6 +11,31 @@ pub mod exports {
                 static __FORCE_SECTION_REF: fn() = super::super::super::super::__link_custom_section_describing_imports;
                 use super::super::super::super::_rt;
                 pub type EcsEntityT = u64;
+                pub type PointerT = u64;
+                #[derive(Clone, Copy)]
+                pub enum Relationship {
+                    IsA,
+                    ChildOf,
+                    Custom(EcsEntityT),
+                }
+                impl ::core::fmt::Debug for Relationship {
+                    fn fmt(
+                        &self,
+                        f: &mut ::core::fmt::Formatter<'_>,
+                    ) -> ::core::fmt::Result {
+                        match self {
+                            Relationship::IsA => {
+                                f.debug_tuple("Relationship::IsA").finish()
+                            }
+                            Relationship::ChildOf => {
+                                f.debug_tuple("Relationship::ChildOf").finish()
+                            }
+                            Relationship::Custom(e) => {
+                                f.debug_tuple("Relationship::Custom").field(e).finish()
+                            }
+                        }
+                    }
+                }
                 #[repr(u8)]
                 #[derive(Clone, Copy, Eq, Ord, PartialEq, PartialOrd)]
                 pub enum MemberType {
@@ -1002,7 +1027,7 @@ pub mod exports {
                     pub name: Option<_rt::String>,
                     pub query_desc: QueryDesc,
                     pub events: _rt::Vec<Event>,
-                    pub callback: u64,
+                    pub callback: PointerT,
                     pub is_guest: bool,
                 }
                 impl ::core::fmt::Debug for ObserverDesc {
@@ -2203,25 +2228,136 @@ pub mod exports {
                 #[allow(non_snake_case)]
                 pub unsafe fn _export_method_entity_add_relationship_cabi<
                     T: GuestEntity,
-                >(arg0: *mut u8, arg1: i64, arg2: i64) {
+                >(arg0: *mut u8, arg1: i32, arg2: i64, arg3: i64) {
                     #[cfg(target_arch = "wasm32")] _rt::run_ctors_once();
+                    let v0 = match arg1 {
+                        0 => Relationship::IsA,
+                        1 => Relationship::ChildOf,
+                        n => {
+                            debug_assert_eq!(n, 2, "invalid enum discriminant");
+                            let e0 = arg2 as u64;
+                            Relationship::Custom(e0)
+                        }
+                    };
                     T::add_relationship(
                         EntityBorrow::lift(arg0 as u32 as usize).get(),
-                        arg1 as u64,
-                        arg2 as u64,
+                        v0,
+                        arg3 as u64,
                     );
                 }
                 #[doc(hidden)]
                 #[allow(non_snake_case)]
                 pub unsafe fn _export_method_entity_remove_relationship_cabi<
                     T: GuestEntity,
-                >(arg0: *mut u8, arg1: i64, arg2: i64) {
+                >(arg0: *mut u8, arg1: i32, arg2: i64, arg3: i64) {
                     #[cfg(target_arch = "wasm32")] _rt::run_ctors_once();
+                    let v0 = match arg1 {
+                        0 => Relationship::IsA,
+                        1 => Relationship::ChildOf,
+                        n => {
+                            debug_assert_eq!(n, 2, "invalid enum discriminant");
+                            let e0 = arg2 as u64;
+                            Relationship::Custom(e0)
+                        }
+                    };
                     T::remove_relationship(
                         EntityBorrow::lift(arg0 as u32 as usize).get(),
-                        arg1 as u64,
-                        arg2 as u64,
+                        v0,
+                        arg3 as u64,
                     );
+                }
+                #[doc(hidden)]
+                #[allow(non_snake_case)]
+                pub unsafe fn _export_method_entity_parent_of_cabi<T: GuestEntity>(
+                    arg0: *mut u8,
+                    arg1: i64,
+                ) {
+                    #[cfg(target_arch = "wasm32")] _rt::run_ctors_once();
+                    T::parent_of(
+                        EntityBorrow::lift(arg0 as u32 as usize).get(),
+                        arg1 as u64,
+                    );
+                }
+                #[doc(hidden)]
+                #[allow(non_snake_case)]
+                pub unsafe fn _export_method_entity_child_of_cabi<T: GuestEntity>(
+                    arg0: *mut u8,
+                    arg1: i64,
+                ) {
+                    #[cfg(target_arch = "wasm32")] _rt::run_ctors_once();
+                    T::child_of(
+                        EntityBorrow::lift(arg0 as u32 as usize).get(),
+                        arg1 as u64,
+                    );
+                }
+                #[doc(hidden)]
+                #[allow(non_snake_case)]
+                pub unsafe fn _export_method_entity_parent_cabi<T: GuestEntity>(
+                    arg0: *mut u8,
+                ) -> i64 {
+                    #[cfg(target_arch = "wasm32")] _rt::run_ctors_once();
+                    let result0 = T::parent(
+                        EntityBorrow::lift(arg0 as u32 as usize).get(),
+                    );
+                    _rt::as_i64(result0)
+                }
+                #[doc(hidden)]
+                #[allow(non_snake_case)]
+                pub unsafe fn _export_method_entity_children_cabi<T: GuestEntity>(
+                    arg0: *mut u8,
+                ) -> *mut u8 {
+                    #[cfg(target_arch = "wasm32")] _rt::run_ctors_once();
+                    let result0 = T::children(
+                        EntityBorrow::lift(arg0 as u32 as usize).get(),
+                    );
+                    let ptr1 = _RET_AREA.0.as_mut_ptr().cast::<u8>();
+                    let vec2 = (result0).into_boxed_slice();
+                    let ptr2 = vec2.as_ptr().cast::<u8>();
+                    let len2 = vec2.len();
+                    ::core::mem::forget(vec2);
+                    *ptr1.add(4).cast::<usize>() = len2;
+                    *ptr1.add(0).cast::<*mut u8>() = ptr2.cast_mut();
+                    ptr1
+                }
+                #[doc(hidden)]
+                #[allow(non_snake_case)]
+                pub unsafe fn __post_return_method_entity_children<T: GuestEntity>(
+                    arg0: *mut u8,
+                ) {
+                    let l0 = *arg0.add(0).cast::<*mut u8>();
+                    let l1 = *arg0.add(4).cast::<usize>();
+                    let base2 = l0;
+                    let len2 = l1;
+                    _rt::cabi_dealloc(base2, len2 * 8, 8);
+                }
+                #[doc(hidden)]
+                #[allow(non_snake_case)]
+                pub unsafe fn _export_method_entity_relationships_cabi<T: GuestEntity>(
+                    arg0: *mut u8,
+                ) -> *mut u8 {
+                    #[cfg(target_arch = "wasm32")] _rt::run_ctors_once();
+                    let result0 = T::relationships(
+                        EntityBorrow::lift(arg0 as u32 as usize).get(),
+                    );
+                    let ptr1 = _RET_AREA.0.as_mut_ptr().cast::<u8>();
+                    let vec2 = (result0).into_boxed_slice();
+                    let ptr2 = vec2.as_ptr().cast::<u8>();
+                    let len2 = vec2.len();
+                    ::core::mem::forget(vec2);
+                    *ptr1.add(4).cast::<usize>() = len2;
+                    *ptr1.add(0).cast::<*mut u8>() = ptr2.cast_mut();
+                    ptr1
+                }
+                #[doc(hidden)]
+                #[allow(non_snake_case)]
+                pub unsafe fn __post_return_method_entity_relationships<T: GuestEntity>(
+                    arg0: *mut u8,
+                ) {
+                    let l0 = *arg0.add(0).cast::<*mut u8>();
+                    let l1 = *arg0.add(4).cast::<usize>();
+                    let base2 = l0;
+                    let len2 = l1;
+                    _rt::cabi_dealloc(base2, len2 * 8, 8);
                 }
                 #[doc(hidden)]
                 #[allow(non_snake_case)]
@@ -2723,7 +2859,7 @@ pub mod exports {
                     /// This is a component instance so it will need a the entity it belongs to and the component type
                     /// This is required for observers / events to work
                     fn new(
-                        ptr: u64,
+                        ptr: PointerT,
                         entity: EcsEntityT,
                         component_type: EcsEntityT,
                     ) -> Self;
@@ -2818,20 +2954,25 @@ pub mod exports {
                     fn new(desc: EntityDesc) -> Self;
                     fn get_id(&self) -> EcsEntityT;
                     fn get_name(&self) -> _rt::String;
-                    fn from_id(id: u64) -> u64;
-                    fn get(&self, component: EcsEntityT) -> u64;
+                    fn from_id(id: u64) -> PointerT;
+                    fn get(&self, component: EcsEntityT) -> PointerT;
                     fn add(&self, component: EcsEntityT);
                     fn remove(&self, component: EcsEntityT);
                     fn add_relationship(
                         &self,
-                        relationship: EcsEntityT,
+                        relationship: Relationship,
                         target: EcsEntityT,
                     );
                     fn remove_relationship(
                         &self,
-                        relationship: EcsEntityT,
+                        relationship: Relationship,
                         target: EcsEntityT,
                     );
+                    fn parent_of(&self, target: EcsEntityT);
+                    fn child_of(&self, target: EcsEntityT);
+                    fn parent(&self) -> EcsEntityT;
+                    fn children(&self) -> _rt::Vec<EcsEntityT>;
+                    fn relationships(&self) -> _rt::Vec<EcsEntityT>;
                 }
                 pub trait GuestQuery: 'static {
                     #[doc(hidden)]
@@ -2926,7 +3067,7 @@ pub mod exports {
                     fn new(handle: u64) -> Self;
                     fn run(&self, iter: Iter);
                     /// This is prefixed because resources already have a `handle` method.
-                    fn cb_handle(&self) -> u64;
+                    fn cb_handle(&self) -> PointerT;
                 }
                 pub trait GuestSystem: 'static {
                     #[doc(hidden)]
@@ -3016,7 +3157,7 @@ pub mod exports {
                     }
                     fn new(desc: ObserverDesc) -> Self;
                     fn build(&self);
-                    fn callback(&self) -> u64;
+                    fn callback(&self) -> PointerT;
                 }
                 pub trait GuestIter: 'static {
                     #[doc(hidden)]
@@ -3476,23 +3617,58 @@ pub mod exports {
                         #[export_name =
                         "toxoid:engine/ecs#[method]entity.add-relationship"] unsafe
                         extern "C" fn export_method_entity_add_relationship(arg0 : * mut
-                        u8, arg1 : i64, arg2 : i64,) { $($path_to_types)*::
+                        u8, arg1 : i32, arg2 : i64, arg3 : i64,) { $($path_to_types)*::
                         _export_method_entity_add_relationship_cabi::<<$ty as
-                        $($path_to_types)*:: Guest >::Entity > (arg0, arg1, arg2) }
+                        $($path_to_types)*:: Guest >::Entity > (arg0, arg1, arg2, arg3) }
                         #[export_name =
                         "toxoid:engine/ecs#[method]entity.remove-relationship"] unsafe
                         extern "C" fn export_method_entity_remove_relationship(arg0 : *
-                        mut u8, arg1 : i64, arg2 : i64,) { $($path_to_types)*::
+                        mut u8, arg1 : i32, arg2 : i64, arg3 : i64,) {
+                        $($path_to_types)*::
                         _export_method_entity_remove_relationship_cabi::<<$ty as
-                        $($path_to_types)*:: Guest >::Entity > (arg0, arg1, arg2) }
-                        #[export_name = "toxoid:engine/ecs#[constructor]query"] unsafe
-                        extern "C" fn export_constructor_query(arg0 : * mut u8, arg1 :
-                        usize,) -> i32 { $($path_to_types)*::
-                        _export_constructor_query_cabi::<<$ty as $($path_to_types)*::
-                        Guest >::Query > (arg0, arg1) } #[export_name =
-                        "toxoid:engine/ecs#[method]query.expr"] unsafe extern "C" fn
-                        export_method_query_expr(arg0 : * mut u8, arg1 : * mut u8, arg2 :
-                        usize,) { $($path_to_types)*::
+                        $($path_to_types)*:: Guest >::Entity > (arg0, arg1, arg2, arg3) }
+                        #[export_name = "toxoid:engine/ecs#[method]entity.parent-of"]
+                        unsafe extern "C" fn export_method_entity_parent_of(arg0 : * mut
+                        u8, arg1 : i64,) { $($path_to_types)*::
+                        _export_method_entity_parent_of_cabi::<<$ty as
+                        $($path_to_types)*:: Guest >::Entity > (arg0, arg1) }
+                        #[export_name = "toxoid:engine/ecs#[method]entity.child-of"]
+                        unsafe extern "C" fn export_method_entity_child_of(arg0 : * mut
+                        u8, arg1 : i64,) { $($path_to_types)*::
+                        _export_method_entity_child_of_cabi::<<$ty as
+                        $($path_to_types)*:: Guest >::Entity > (arg0, arg1) }
+                        #[export_name = "toxoid:engine/ecs#[method]entity.parent"] unsafe
+                        extern "C" fn export_method_entity_parent(arg0 : * mut u8,) ->
+                        i64 { $($path_to_types)*::
+                        _export_method_entity_parent_cabi::<<$ty as $($path_to_types)*::
+                        Guest >::Entity > (arg0) } #[export_name =
+                        "toxoid:engine/ecs#[method]entity.children"] unsafe extern "C" fn
+                        export_method_entity_children(arg0 : * mut u8,) -> * mut u8 {
+                        $($path_to_types)*:: _export_method_entity_children_cabi::<<$ty
+                        as $($path_to_types)*:: Guest >::Entity > (arg0) } #[export_name
+                        = "cabi_post_toxoid:engine/ecs#[method]entity.children"] unsafe
+                        extern "C" fn _post_return_method_entity_children(arg0 : * mut
+                        u8,) { $($path_to_types)*::
+                        __post_return_method_entity_children::<<$ty as
+                        $($path_to_types)*:: Guest >::Entity > (arg0) } #[export_name =
+                        "toxoid:engine/ecs#[method]entity.relationships"] unsafe extern
+                        "C" fn export_method_entity_relationships(arg0 : * mut u8,) -> *
+                        mut u8 { $($path_to_types)*::
+                        _export_method_entity_relationships_cabi::<<$ty as
+                        $($path_to_types)*:: Guest >::Entity > (arg0) } #[export_name =
+                        "cabi_post_toxoid:engine/ecs#[method]entity.relationships"]
+                        unsafe extern "C" fn
+                        _post_return_method_entity_relationships(arg0 : * mut u8,) {
+                        $($path_to_types)*::
+                        __post_return_method_entity_relationships::<<$ty as
+                        $($path_to_types)*:: Guest >::Entity > (arg0) } #[export_name =
+                        "toxoid:engine/ecs#[constructor]query"] unsafe extern "C" fn
+                        export_constructor_query(arg0 : * mut u8, arg1 : usize,) -> i32 {
+                        $($path_to_types)*:: _export_constructor_query_cabi::<<$ty as
+                        $($path_to_types)*:: Guest >::Query > (arg0, arg1) }
+                        #[export_name = "toxoid:engine/ecs#[method]query.expr"] unsafe
+                        extern "C" fn export_method_query_expr(arg0 : * mut u8, arg1 : *
+                        mut u8, arg2 : usize,) { $($path_to_types)*::
                         _export_method_query_expr_cabi::<<$ty as $($path_to_types)*::
                         Guest >::Query > (arg0, arg1, arg2) } #[export_name =
                         "toxoid:engine/ecs#[method]query.build"] unsafe extern "C" fn
@@ -3734,8 +3910,6 @@ mod _rt {
     #[cfg(target_arch = "wasm32")]
     pub fn run_ctors_once() {
         #[cfg(not(target_os = "emscripten"))]
-#[cfg(not(target_os = "emscripten"))]
-#[cfg(not(target_os = "emscripten"))]
 wit_bindgen_rt::run_ctors_once();
     }
     pub unsafe fn string_lift(bytes: Vec<u8>) -> String {
@@ -3922,114 +4096,117 @@ pub(crate) use __export_toxoid_engine_world_impl as export;
 #[cfg(target_arch = "wasm32")]
 #[link_section = "component-type:wit-bindgen:0.35.0:toxoid:engine:toxoid-engine-world:encoded world"]
 #[doc(hidden)]
-pub static __WIT_BINDGEN_COMPONENT_TYPE: [u8; 5294] = *b"\
-\0asm\x0d\0\x01\0\0\x19\x16wit-component-encoding\x04\0\x07\xa4(\x01A\x02\x01A\x02\
-\x01B\xda\x01\x01w\x04\0\x0cecs-entity-t\x03\0\0\x01m\x18\x04u8-t\x05u16-t\x05u3\
-2-t\x05u64-t\x04i8-t\x05i16-t\x05i32-t\x05i64-t\x05f32-t\x05f64-t\x06bool-t\x08s\
-tring-t\x06list-t\x08u8list-t\x09u16list-t\x09u32list-t\x09u64list-t\x08i8list-t\
-\x09i16list-t\x09i32list-t\x09i64list-t\x09f32list-t\x09f64list-t\x09pointer-t\x04\
-\0\x0bmember-type\x03\0\x02\x01m\x09\x06on-set\x06on-add\x09on-remove\x09on-dele\
-te\x10on-delete-target\x0fon-table-create\x0fon-table-delete\x0eon-table-empty\x0d\
-on-table-fill\x04\0\x05event\x03\0\x04\x01ps\x01p}\x01r\x03\x04names\x0cmember-n\
-ames\x06\x0cmember-types\x07\x04\0\x0ecomponent-desc\x03\0\x08\x01ks\x01r\x01\x04\
-name\x0a\x04\0\x0bentity-desc\x03\0\x0b\x01r\x01\x04exprs\x04\0\x0aquery-desc\x03\
-\0\x0d\x04\0\x0ecomponent-type\x03\x01\x04\0\x09component\x03\x01\x04\0\x06entit\
-y\x03\x01\x04\0\x05query\x03\x01\x04\0\x08callback\x03\x01\x01kz\x01r\x05\x04nam\
-e\x0a\x09tick-rate\x14\x08callbackw\x0aquery-desc\x0e\x08is-guest\x7f\x04\0\x0bs\
-ystem-desc\x03\0\x15\x04\0\x06system\x03\x01\x01p\x05\x01r\x05\x04name\x0a\x0aqu\
-ery-desc\x0e\x06events\x18\x08callbackw\x08is-guest\x7f\x04\0\x0dobserver-desc\x03\
-\0\x19\x04\0\x08observer\x03\x01\x04\0\x04iter\x03\x01\x01i\x0f\x01@\x01\x04desc\
-\x09\0\x1d\x04\0\x1b[constructor]component-type\x01\x1e\x01h\x0f\x01@\x01\x04sel\
-f\x1f\0\x01\x04\0\x1d[method]component-type.get-id\x01\x20\x01i\x10\x01@\x03\x03\
-ptrw\x06entity\x01\x0ecomponent-type\x01\0!\x04\0\x16[constructor]component\x01\"\
-\x01h\x10\x01@\x03\x04self#\x06offsety\x05value}\x01\0\x04\0\x1f[method]componen\
-t.set-member-u8\x01$\x01@\x02\x04self#\x06offsety\0}\x04\0\x1f[method]component.\
-get-member-u8\x01%\x01@\x03\x04self#\x06offsety\x05value{\x01\0\x04\0\x20[method\
-]component.set-member-u16\x01&\x01@\x02\x04self#\x06offsety\0{\x04\0\x20[method]\
-component.get-member-u16\x01'\x01@\x03\x04self#\x06offsety\x05valuey\x01\0\x04\0\
-\x20[method]component.set-member-u32\x01(\x01@\x02\x04self#\x06offsety\0y\x04\0\x20\
-[method]component.get-member-u32\x01)\x01@\x03\x04self#\x06offsety\x05valuew\x01\
-\0\x04\0\x20[method]component.set-member-u64\x01*\x01@\x02\x04self#\x06offsety\0\
-w\x04\0\x20[method]component.get-member-u64\x01+\x01@\x03\x04self#\x06offsety\x05\
-value~\x01\0\x04\0\x1f[method]component.set-member-i8\x01,\x01@\x02\x04self#\x06\
-offsety\0~\x04\0\x1f[method]component.get-member-i8\x01-\x01@\x03\x04self#\x06of\
-fsety\x05value|\x01\0\x04\0\x20[method]component.set-member-i16\x01.\x01@\x02\x04\
-self#\x06offsety\0|\x04\0\x20[method]component.get-member-i16\x01/\x01@\x03\x04s\
-elf#\x06offsety\x05valuez\x01\0\x04\0\x20[method]component.set-member-i32\x010\x01\
-@\x02\x04self#\x06offsety\0z\x04\0\x20[method]component.get-member-i32\x011\x01@\
-\x03\x04self#\x06offsety\x05valuex\x01\0\x04\0\x20[method]component.set-member-i\
-64\x012\x01@\x02\x04self#\x06offsety\0x\x04\0\x20[method]component.get-member-i6\
-4\x013\x01@\x03\x04self#\x06offsety\x05valuev\x01\0\x04\0\x20[method]component.s\
-et-member-f32\x014\x01@\x02\x04self#\x06offsety\0v\x04\0\x20[method]component.ge\
-t-member-f32\x015\x01@\x03\x04self#\x06offsety\x05valueu\x01\0\x04\0\x20[method]\
-component.set-member-f64\x016\x01@\x02\x04self#\x06offsety\0u\x04\0\x20[method]c\
-omponent.get-member-f64\x017\x01@\x03\x04self#\x06offsety\x05value\x7f\x01\0\x04\
-\0![method]component.set-member-bool\x018\x01@\x02\x04self#\x06offsety\0\x7f\x04\
-\0![method]component.get-member-bool\x019\x01@\x03\x04self#\x06offsety\x05values\
-\x01\0\x04\0#[method]component.set-member-string\x01:\x01@\x02\x04self#\x06offse\
-ty\0s\x04\0#[method]component.get-member-string\x01;\x01@\x03\x04self#\x06offset\
-y\x05value\x07\x01\0\x04\0#[method]component.set-member-u8list\x01<\x01@\x02\x04\
-self#\x06offsety\0\x07\x04\0#[method]component.get-member-u8list\x01=\x01p{\x01@\
-\x03\x04self#\x06offsety\x05value>\x01\0\x04\0$[method]component.set-member-u16l\
-ist\x01?\x01@\x02\x04self#\x06offsety\0>\x04\0$[method]component.get-member-u16l\
-ist\x01@\x01py\x01@\x03\x04self#\x06offsety\x05value\xc1\0\x01\0\x04\0$[method]c\
-omponent.set-member-u32list\x01B\x01@\x02\x04self#\x06offsety\0\xc1\0\x04\0$[met\
-hod]component.get-member-u32list\x01C\x01pw\x01@\x03\x04self#\x06offsety\x05valu\
-e\xc4\0\x01\0\x04\0$[method]component.set-member-u64list\x01E\x01@\x02\x04self#\x06\
-offsety\0\xc4\0\x04\0$[method]component.get-member-u64list\x01F\x01p~\x01@\x03\x04\
-self#\x06offsety\x05value\xc7\0\x01\0\x04\0#[method]component.set-member-i8list\x01\
-H\x01@\x02\x04self#\x06offsety\0\xc7\0\x04\0#[method]component.get-member-i8list\
-\x01I\x01p|\x01@\x03\x04self#\x06offsety\x05value\xca\0\x01\0\x04\0$[method]comp\
-onent.set-member-i16list\x01K\x01@\x02\x04self#\x06offsety\0\xca\0\x04\0$[method\
-]component.get-member-i16list\x01L\x01pz\x01@\x03\x04self#\x06offsety\x05value\xcd\
-\0\x01\0\x04\0$[method]component.set-member-i32list\x01N\x01@\x02\x04self#\x06of\
-fsety\0\xcd\0\x04\0$[method]component.get-member-i32list\x01O\x01px\x01@\x03\x04\
-self#\x06offsety\x05value\xd0\0\x01\0\x04\0$[method]component.set-member-i64list\
-\x01Q\x01@\x02\x04self#\x06offsety\0\xd0\0\x04\0$[method]component.get-member-i6\
-4list\x01R\x01pv\x01@\x03\x04self#\x06offsety\x05value\xd3\0\x01\0\x04\0$[method\
-]component.set-member-f32list\x01T\x01@\x02\x04self#\x06offsety\0\xd3\0\x04\0$[m\
-ethod]component.get-member-f32list\x01U\x01pu\x01@\x03\x04self#\x06offsety\x05va\
-lue\xd6\0\x01\0\x04\0$[method]component.set-member-f64list\x01W\x01@\x02\x04self\
-#\x06offsety\0\xd6\0\x04\0$[method]component.get-member-f64list\x01X\x04\0$[meth\
-od]component.set-member-pointer\x01*\x04\0$[method]component.get-member-pointer\x01\
-+\x01i\x11\x01@\x01\x04desc\x0c\0\xd9\0\x04\0\x13[constructor]entity\x01Z\x01h\x11\
-\x01@\x01\x04self\xdb\0\0\x01\x04\0\x15[method]entity.get-id\x01\\\x01@\x01\x04s\
-elf\xdb\0\0s\x04\0\x17[method]entity.get-name\x01]\x01@\x01\x02idw\0w\x04\0\x16[\
-static]entity.from-id\x01^\x01@\x02\x04self\xdb\0\x09component\x01\0w\x04\0\x12[\
-method]entity.get\x01_\x01@\x02\x04self\xdb\0\x09component\x01\x01\0\x04\0\x12[m\
-ethod]entity.add\x01`\x04\0\x15[method]entity.remove\x01`\x01@\x03\x04self\xdb\0\
-\x0crelationship\x01\x06target\x01\x01\0\x04\0\x1f[method]entity.add-relationshi\
-p\x01a\x04\0\"[method]entity.remove-relationship\x01a\x01i\x12\x01@\x01\x04desc\x0e\
-\0\xe2\0\x04\0\x12[constructor]query\x01c\x01h\x12\x01@\x02\x04self\xe4\0\x04exp\
-rs\x01\0\x04\0\x12[method]query.expr\x01e\x01@\x01\x04self\xe4\0\x01\0\x04\0\x13\
-[method]query.build\x01f\x04\0\x12[method]query.iter\x01f\x01@\x01\x04self\xe4\0\
-\0\x7f\x04\0\x12[method]query.next\x01g\x01@\x01\x04self\xe4\0\0z\x04\0\x13[meth\
-od]query.count\x01h\x01p\x01\x01@\x01\x04self\xe4\0\0\xe9\0\x04\0\x16[method]que\
-ry.entities\x01j\x01i\x13\x01@\x01\x06handlew\0\xeb\0\x04\0\x15[constructor]call\
-back\x01l\x01h\x13\x01i\x1c\x01@\x02\x04self\xed\0\x04iter\xee\0\x01\0\x04\0\x14\
-[method]callback.run\x01o\x01@\x01\x04self\xed\0\0w\x04\0\x1a[method]callback.cb\
--handle\x01p\x01i\x17\x01@\x01\x04desc\x16\0\xf1\0\x04\0\x13[constructor]system\x01\
-r\x01h\x17\x01@\x01\x04self\xf3\0\x01\0\x04\0\x14[method]system.build\x01t\x01@\x01\
-\x04self\xf3\0\0w\x04\0\x17[method]system.callback\x01u\x01i\x1b\x01@\x01\x04des\
-c\x1a\0\xf6\0\x04\0\x15[constructor]observer\x01w\x01h\x1b\x01@\x01\x04self\xf8\0\
-\x01\0\x04\0\x16[method]observer.build\x01y\x01@\x01\x04self\xf8\0\0w\x04\0\x19[\
-method]observer.callback\x01z\x01@\x01\x03ptrw\0\xee\0\x04\0\x11[constructor]ite\
-r\x01{\x01h\x1c\x01@\x01\x04self\xfc\0\0\x7f\x04\0\x11[method]iter.next\x01}\x01\
-@\x01\x04self\xfc\0\0z\x04\0\x12[method]iter.count\x01~\x01@\x01\x04self\xfc\0\0\
-\xe9\0\x04\0\x15[method]iter.entities\x01\x7f\x01@\x01\x0ccomponent-id\x01\x01\0\
-\x04\0\x0dadd-singleton\x01\x80\x01\x01@\x01\x0ccomponent-id\x01\0w\x04\0\x0dget\
--singleton\x01\x81\x01\x04\0\x10remove-singleton\x01\x80\x01\x01@\x01\x09entity-\
-id\x01\x01\0\x04\0\x0aadd-entity\x01\x82\x01\x04\0\x0dremove-entity\x01\x82\x01\x01\
-@\x01\x04names\0\x7f\x04\0\x10has-entity-named\x01\x83\x01\x01@\x01\x0ecomponent\
--names\0\x01\x04\0\x10get-component-id\x01\x84\x01\x04\0\x11toxoid:engine/ecs\x05\
-\0\x04\0!toxoid:engine/toxoid-engine-world\x04\0\x0b\x19\x01\0\x13toxoid-engine-\
-world\x03\0\0\0G\x09producers\x01\x0cprocessed-by\x02\x0dwit-component\x070.220.\
-0\x10wit-bindgen-rust\x060.35.0";
+pub static __WIT_BINDGEN_COMPONENT_TYPE: [u8; 5544] = *b"\
+\0asm\x0d\0\x01\0\0\x19\x16wit-component-encoding\x04\0\x07\x9e*\x01A\x02\x01A\x02\
+\x01B\xe5\x01\x01w\x04\0\x0cecs-entity-t\x03\0\0\x01w\x04\0\x09pointer-t\x03\0\x02\
+\x01q\x03\x04is-a\0\0\x08child-of\0\0\x06custom\x01\x01\0\x04\0\x0crelationship\x03\
+\0\x04\x01m\x18\x04u8-t\x05u16-t\x05u32-t\x05u64-t\x04i8-t\x05i16-t\x05i32-t\x05\
+i64-t\x05f32-t\x05f64-t\x06bool-t\x08string-t\x06list-t\x08u8list-t\x09u16list-t\
+\x09u32list-t\x09u64list-t\x08i8list-t\x09i16list-t\x09i32list-t\x09i64list-t\x09\
+f32list-t\x09f64list-t\x09pointer-t\x04\0\x0bmember-type\x03\0\x06\x01m\x09\x06o\
+n-set\x06on-add\x09on-remove\x09on-delete\x10on-delete-target\x0fon-table-create\
+\x0fon-table-delete\x0eon-table-empty\x0don-table-fill\x04\0\x05event\x03\0\x08\x01\
+ps\x01p}\x01r\x03\x04names\x0cmember-names\x0a\x0cmember-types\x0b\x04\0\x0ecomp\
+onent-desc\x03\0\x0c\x01ks\x01r\x01\x04name\x0e\x04\0\x0bentity-desc\x03\0\x0f\x01\
+r\x01\x04exprs\x04\0\x0aquery-desc\x03\0\x11\x04\0\x0ecomponent-type\x03\x01\x04\
+\0\x09component\x03\x01\x04\0\x06entity\x03\x01\x04\0\x05query\x03\x01\x04\0\x08\
+callback\x03\x01\x01kz\x01r\x05\x04name\x0e\x09tick-rate\x18\x08callbackw\x0aque\
+ry-desc\x12\x08is-guest\x7f\x04\0\x0bsystem-desc\x03\0\x19\x04\0\x06system\x03\x01\
+\x01p\x09\x01r\x05\x04name\x0e\x0aquery-desc\x12\x06events\x1c\x08callback\x03\x08\
+is-guest\x7f\x04\0\x0dobserver-desc\x03\0\x1d\x04\0\x08observer\x03\x01\x04\0\x04\
+iter\x03\x01\x01i\x13\x01@\x01\x04desc\x0d\0!\x04\0\x1b[constructor]component-ty\
+pe\x01\"\x01h\x13\x01@\x01\x04self#\0\x01\x04\0\x1d[method]component-type.get-id\
+\x01$\x01i\x14\x01@\x03\x03ptr\x03\x06entity\x01\x0ecomponent-type\x01\0%\x04\0\x16\
+[constructor]component\x01&\x01h\x14\x01@\x03\x04self'\x06offsety\x05value}\x01\0\
+\x04\0\x1f[method]component.set-member-u8\x01(\x01@\x02\x04self'\x06offsety\0}\x04\
+\0\x1f[method]component.get-member-u8\x01)\x01@\x03\x04self'\x06offsety\x05value\
+{\x01\0\x04\0\x20[method]component.set-member-u16\x01*\x01@\x02\x04self'\x06offs\
+ety\0{\x04\0\x20[method]component.get-member-u16\x01+\x01@\x03\x04self'\x06offse\
+ty\x05valuey\x01\0\x04\0\x20[method]component.set-member-u32\x01,\x01@\x02\x04se\
+lf'\x06offsety\0y\x04\0\x20[method]component.get-member-u32\x01-\x01@\x03\x04sel\
+f'\x06offsety\x05valuew\x01\0\x04\0\x20[method]component.set-member-u64\x01.\x01\
+@\x02\x04self'\x06offsety\0w\x04\0\x20[method]component.get-member-u64\x01/\x01@\
+\x03\x04self'\x06offsety\x05value~\x01\0\x04\0\x1f[method]component.set-member-i\
+8\x010\x01@\x02\x04self'\x06offsety\0~\x04\0\x1f[method]component.get-member-i8\x01\
+1\x01@\x03\x04self'\x06offsety\x05value|\x01\0\x04\0\x20[method]component.set-me\
+mber-i16\x012\x01@\x02\x04self'\x06offsety\0|\x04\0\x20[method]component.get-mem\
+ber-i16\x013\x01@\x03\x04self'\x06offsety\x05valuez\x01\0\x04\0\x20[method]compo\
+nent.set-member-i32\x014\x01@\x02\x04self'\x06offsety\0z\x04\0\x20[method]compon\
+ent.get-member-i32\x015\x01@\x03\x04self'\x06offsety\x05valuex\x01\0\x04\0\x20[m\
+ethod]component.set-member-i64\x016\x01@\x02\x04self'\x06offsety\0x\x04\0\x20[me\
+thod]component.get-member-i64\x017\x01@\x03\x04self'\x06offsety\x05valuev\x01\0\x04\
+\0\x20[method]component.set-member-f32\x018\x01@\x02\x04self'\x06offsety\0v\x04\0\
+\x20[method]component.get-member-f32\x019\x01@\x03\x04self'\x06offsety\x05valueu\
+\x01\0\x04\0\x20[method]component.set-member-f64\x01:\x01@\x02\x04self'\x06offse\
+ty\0u\x04\0\x20[method]component.get-member-f64\x01;\x01@\x03\x04self'\x06offset\
+y\x05value\x7f\x01\0\x04\0![method]component.set-member-bool\x01<\x01@\x02\x04se\
+lf'\x06offsety\0\x7f\x04\0![method]component.get-member-bool\x01=\x01@\x03\x04se\
+lf'\x06offsety\x05values\x01\0\x04\0#[method]component.set-member-string\x01>\x01\
+@\x02\x04self'\x06offsety\0s\x04\0#[method]component.get-member-string\x01?\x01@\
+\x03\x04self'\x06offsety\x05value\x0b\x01\0\x04\0#[method]component.set-member-u\
+8list\x01@\x01@\x02\x04self'\x06offsety\0\x0b\x04\0#[method]component.get-member\
+-u8list\x01A\x01p{\x01@\x03\x04self'\x06offsety\x05value\xc2\0\x01\0\x04\0$[meth\
+od]component.set-member-u16list\x01C\x01@\x02\x04self'\x06offsety\0\xc2\0\x04\0$\
+[method]component.get-member-u16list\x01D\x01py\x01@\x03\x04self'\x06offsety\x05\
+value\xc5\0\x01\0\x04\0$[method]component.set-member-u32list\x01F\x01@\x02\x04se\
+lf'\x06offsety\0\xc5\0\x04\0$[method]component.get-member-u32list\x01G\x01pw\x01\
+@\x03\x04self'\x06offsety\x05value\xc8\0\x01\0\x04\0$[method]component.set-membe\
+r-u64list\x01I\x01@\x02\x04self'\x06offsety\0\xc8\0\x04\0$[method]component.get-\
+member-u64list\x01J\x01p~\x01@\x03\x04self'\x06offsety\x05value\xcb\0\x01\0\x04\0\
+#[method]component.set-member-i8list\x01L\x01@\x02\x04self'\x06offsety\0\xcb\0\x04\
+\0#[method]component.get-member-i8list\x01M\x01p|\x01@\x03\x04self'\x06offsety\x05\
+value\xce\0\x01\0\x04\0$[method]component.set-member-i16list\x01O\x01@\x02\x04se\
+lf'\x06offsety\0\xce\0\x04\0$[method]component.get-member-i16list\x01P\x01pz\x01\
+@\x03\x04self'\x06offsety\x05value\xd1\0\x01\0\x04\0$[method]component.set-membe\
+r-i32list\x01R\x01@\x02\x04self'\x06offsety\0\xd1\0\x04\0$[method]component.get-\
+member-i32list\x01S\x01px\x01@\x03\x04self'\x06offsety\x05value\xd4\0\x01\0\x04\0\
+$[method]component.set-member-i64list\x01U\x01@\x02\x04self'\x06offsety\0\xd4\0\x04\
+\0$[method]component.get-member-i64list\x01V\x01pv\x01@\x03\x04self'\x06offsety\x05\
+value\xd7\0\x01\0\x04\0$[method]component.set-member-f32list\x01X\x01@\x02\x04se\
+lf'\x06offsety\0\xd7\0\x04\0$[method]component.get-member-f32list\x01Y\x01pu\x01\
+@\x03\x04self'\x06offsety\x05value\xda\0\x01\0\x04\0$[method]component.set-membe\
+r-f64list\x01[\x01@\x02\x04self'\x06offsety\0\xda\0\x04\0$[method]component.get-\
+member-f64list\x01\\\x04\0$[method]component.set-member-pointer\x01.\x04\0$[meth\
+od]component.get-member-pointer\x01/\x01i\x15\x01@\x01\x04desc\x10\0\xdd\0\x04\0\
+\x13[constructor]entity\x01^\x01h\x15\x01@\x01\x04self\xdf\0\0\x01\x04\0\x15[met\
+hod]entity.get-id\x01`\x01@\x01\x04self\xdf\0\0s\x04\0\x17[method]entity.get-nam\
+e\x01a\x01@\x01\x02idw\0\x03\x04\0\x16[static]entity.from-id\x01b\x01@\x02\x04se\
+lf\xdf\0\x09component\x01\0\x03\x04\0\x12[method]entity.get\x01c\x01@\x02\x04sel\
+f\xdf\0\x09component\x01\x01\0\x04\0\x12[method]entity.add\x01d\x04\0\x15[method\
+]entity.remove\x01d\x01@\x03\x04self\xdf\0\x0crelationship\x05\x06target\x01\x01\
+\0\x04\0\x1f[method]entity.add-relationship\x01e\x04\0\"[method]entity.remove-re\
+lationship\x01e\x01@\x02\x04self\xdf\0\x06target\x01\x01\0\x04\0\x18[method]enti\
+ty.parent-of\x01f\x04\0\x17[method]entity.child-of\x01f\x04\0\x15[method]entity.\
+parent\x01`\x01p\x01\x01@\x01\x04self\xdf\0\0\xe7\0\x04\0\x17[method]entity.chil\
+dren\x01h\x04\0\x1c[method]entity.relationships\x01h\x01i\x16\x01@\x01\x04desc\x12\
+\0\xe9\0\x04\0\x12[constructor]query\x01j\x01h\x16\x01@\x02\x04self\xeb\0\x04exp\
+rs\x01\0\x04\0\x12[method]query.expr\x01l\x01@\x01\x04self\xeb\0\x01\0\x04\0\x13\
+[method]query.build\x01m\x04\0\x12[method]query.iter\x01m\x01@\x01\x04self\xeb\0\
+\0\x7f\x04\0\x12[method]query.next\x01n\x01@\x01\x04self\xeb\0\0z\x04\0\x13[meth\
+od]query.count\x01o\x01@\x01\x04self\xeb\0\0\xe7\0\x04\0\x16[method]query.entiti\
+es\x01p\x01i\x17\x01@\x01\x06handlew\0\xf1\0\x04\0\x15[constructor]callback\x01r\
+\x01h\x17\x01i\x20\x01@\x02\x04self\xf3\0\x04iter\xf4\0\x01\0\x04\0\x14[method]c\
+allback.run\x01u\x01@\x01\x04self\xf3\0\0\x03\x04\0\x1a[method]callback.cb-handl\
+e\x01v\x01i\x1b\x01@\x01\x04desc\x1a\0\xf7\0\x04\0\x13[constructor]system\x01x\x01\
+h\x1b\x01@\x01\x04self\xf9\0\x01\0\x04\0\x14[method]system.build\x01z\x01@\x01\x04\
+self\xf9\0\0w\x04\0\x17[method]system.callback\x01{\x01i\x1f\x01@\x01\x04desc\x1e\
+\0\xfc\0\x04\0\x15[constructor]observer\x01}\x01h\x1f\x01@\x01\x04self\xfe\0\x01\
+\0\x04\0\x16[method]observer.build\x01\x7f\x01@\x01\x04self\xfe\0\0\x03\x04\0\x19\
+[method]observer.callback\x01\x80\x01\x01@\x01\x03ptrw\0\xf4\0\x04\0\x11[constru\
+ctor]iter\x01\x81\x01\x01h\x20\x01@\x01\x04self\x82\x01\0\x7f\x04\0\x11[method]i\
+ter.next\x01\x83\x01\x01@\x01\x04self\x82\x01\0z\x04\0\x12[method]iter.count\x01\
+\x84\x01\x01@\x01\x04self\x82\x01\0\xe7\0\x04\0\x15[method]iter.entities\x01\x85\
+\x01\x01@\x01\x0ccomponent-id\x01\x01\0\x04\0\x0dadd-singleton\x01\x86\x01\x01@\x01\
+\x0ccomponent-id\x01\0w\x04\0\x0dget-singleton\x01\x87\x01\x04\0\x10remove-singl\
+eton\x01\x86\x01\x01@\x01\x09entity-id\x01\x01\0\x04\0\x0aadd-entity\x01\x88\x01\
+\x04\0\x0dremove-entity\x01\x88\x01\x01@\x01\x04names\0\x7f\x04\0\x10has-entity-\
+named\x01\x89\x01\x01@\x01\x0ecomponent-names\0\x01\x04\0\x10get-component-id\x01\
+\x8a\x01\x04\0\x11toxoid:engine/ecs\x05\0\x04\0!toxoid:engine/toxoid-engine-worl\
+d\x04\0\x0b\x19\x01\0\x13toxoid-engine-world\x03\0\0\0G\x09producers\x01\x0cproc\
+essed-by\x02\x0dwit-component\x070.220.0\x10wit-bindgen-rust\x060.35.0";
 #[inline(never)]
 #[doc(hidden)]
 pub fn __link_custom_section_describing_imports() {
     #[cfg(not(target_os = "emscripten"))]
-#[cfg(not(target_os = "emscripten"))]
-#[cfg(not(target_os = "emscripten"))]
 wit_bindgen_rt::maybe_link_cabi_realloc();
 }
