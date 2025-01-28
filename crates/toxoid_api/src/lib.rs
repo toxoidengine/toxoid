@@ -182,7 +182,7 @@ impl Entity {
 
     #[cfg(any(not(target_arch = "wasm32"), target_os = "emscripten"))]
     pub fn children(&self) -> Vec<Entity> {
-        self.entity.children().iter().map(|child| Entity { entity: unsafe { *Box::from_raw(ToxoidEntity::from_id(*child) as usize as *mut ToxoidEntity) } }).collect()
+        self.entity.children().iter().map(|child| Entity { entity: ToxoidEntity { id: *child } }).collect()
     }
 
     #[cfg(all(target_arch = "wasm32", not(target_os = "emscripten")))]
@@ -201,7 +201,7 @@ impl Entity {
             .entity
             .relationships()
             .iter()
-            .map(|relationship| Entity { entity: unsafe { *Box::from_raw(ToxoidEntity::from_id(*relationship) as usize as *mut ToxoidEntity) } })
+            .map(|relationship| Entity { entity: ToxoidEntity { id: *relationship } })
             .collect()
     }
 
