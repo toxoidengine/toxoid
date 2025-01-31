@@ -12,3 +12,17 @@ rand = "0.8.5"
 
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]
 toxoid_runtime = { path = "../toxoid_runtime" }
+
+[features]
+default = [
+    # "runtime",
+    # "sokol",
+    # "render",
+    # "fetch",
+    # "imgui"
+]
+# runtime = []
+# sokol = []
+# render = []
+# fetch = []
+# imgui = []

@@ -350,6 +350,13 @@ impl toxoid_component::component::ecs::HostEntity for StoreState {
         name
     }
 
+    fn set_name(&mut self, entity: Resource<toxoid_component::component::ecs::Entity>, name: String) -> () {
+        let entity_proxy = self.table.get(&entity).unwrap() as &EntityProxy;
+        let entity = unsafe { Box::from_raw(entity_proxy.ptr) };
+        entity.set_name(name);
+        Box::into_raw(entity);
+    }
+
     fn get(&mut self, entity: Resource<toxoid_component::component::ecs::Entity>, component: toxoid_component::component::ecs::EcsEntityT) -> Resource<ComponentProxy> {
         // Safely retrieve the entity proxy
         let entity_proxy = self.table.get(&entity).expect("Entity not found in table") as &EntityProxy;
@@ -398,18 +405,66 @@ impl toxoid_component::component::ecs::HostEntity for StoreState {
         Box::into_raw(entity);
     }
 
-    fn add_relationship(&mut self, entity: Resource<toxoid_component::component::ecs::Entity>, relationship: toxoid_component::component::ecs::EcsEntityT, target: toxoid_component::component::ecs::EcsEntityT) -> () {
+    fn add_relationship(&mut self, entity: Resource<toxoid_component::component::ecs::Entity>, relationship: toxoid_component::component::ecs::Relationship, target: toxoid_component::component::ecs::EcsEntityT) -> () {
         let entity_proxy = self.table.get(&entity).unwrap() as &EntityProxy;
         let entity = unsafe { Box::from_raw(entity_proxy.ptr) };
+        let relationship = match relationship {
+            toxoid_component::component::ecs::Relationship::IsA => toxoid_api::Relationship::IsA,
+            toxoid_component::component::ecs::Relationship::ChildOf => toxoid_api::Relationship::ChildOf,
+            toxoid_component::component::ecs::Relationship::Custom(entity) => toxoid_api::Relationship::Custom(entity)
+        };
         entity.add_relationship(relationship, target);
         Box::into_raw(entity);
     }
 
-    fn remove_relationship(&mut self, entity: Resource<toxoid_component::component::ecs::Entity>, relationship: toxoid_component::component::ecs::EcsEntityT, target: toxoid_component::component::ecs::EcsEntityT) -> () {
+    fn remove_relationship(&mut self, entity: Resource<toxoid_component::component::ecs::Entity>, relationship: toxoid_component::component::ecs::Relationship, target: toxoid_component::component::ecs::EcsEntityT) -> () {
         let entity_proxy = self.table.get(&entity).unwrap() as &EntityProxy;
         let entity = unsafe { Box::from_raw(entity_proxy.ptr) };
+        let relationship = match relationship {
+            toxoid_component::component::ecs::Relationship::IsA => toxoid_api::Relationship::IsA,
+            toxoid_component::component::ecs::Relationship::ChildOf => toxoid_api::Relationship::ChildOf,
+            toxoid_component::component::ecs::Relationship::Custom(entity) => toxoid_api::Relationship::Custom(entity)
+        };
         entity.remove_relationship(relationship, target);
         Box::into_raw(entity);
+    }
+
+    fn parent_of(&mut self, entity: Resource<toxoid_component::component::ecs::Entity>, target: toxoid_component::component::ecs::EcsEntityT) -> () {
+        let entity_proxy = self.table.get(&entity).unwrap() as &EntityProxy;
+        let entity = unsafe { Box::from_raw(entity_proxy.ptr) };
+        entity.parent_of(target);
+        Box::into_raw(entity);
+    }
+
+    fn child_of(&mut self, entity: Resource<toxoid_component::component::ecs::Entity>, target: toxoid_component::component::ecs::EcsEntityT) -> () {
+        let entity_proxy = self.table.get(&entity).unwrap() as &EntityProxy;
+        let entity = unsafe { Box::from_raw(entity_proxy.ptr) };
+        entity.child_of(target);
+        Box::into_raw(entity);
+    }
+
+    fn parent(&mut self, entity: Resource<toxoid_component::component::ecs::Entity>) -> Resource<EntityProxy> {
+        let entity_proxy = self.table.get(&entity).unwrap() as &EntityProxy;
+        let entity = unsafe { Box::from_raw(entity_proxy.ptr) };
+        let parent = entity.parent();
+        Box::into_raw(entity);
+        self.from_id(parent)
+    }
+
+    fn children(&mut self, entity: Resource<toxoid_component::component::ecs::Entity>) -> Vec<Resource<EntityProxy>> {
+        let entity_proxy = self.table.get(&entity).unwrap() as &EntityProxy;
+        let entity = unsafe { Box::from_raw(entity_proxy.ptr) };
+        let children = entity.children();
+        Box::into_raw(entity);
+        children.iter().map(|child| self.from_id(*child)).collect()
+    }
+
+    fn relationships(&mut self, entity: Resource<toxoid_component::component::ecs::Entity>) -> Vec<Resource<EntityProxy>> {
+        let entity_proxy = self.table.get(&entity).unwrap() as &EntityProxy;
+        let entity = unsafe { Box::from_raw(entity_proxy.ptr) };
+        let relationships = entity.relationships();
+        Box::into_raw(entity);
+        relationships.iter().map(|relationship| self.from_id(*relationship)).collect()
     }
 
     fn drop(&mut self, _entity: Resource<toxoid_component::component::ecs::Entity>) -> Result<(), wasmtime::Error> {

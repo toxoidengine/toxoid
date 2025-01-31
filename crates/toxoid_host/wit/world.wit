@@ -2,6 +2,13 @@ package toxoid:engine;
 
 interface ecs {
     type ecs-entity-t = u64;
+    type pointer-t = u64;
+
+    variant relationship {
+        is-a,
+        child-of,
+        custom(ecs-entity-t)
+    }
     
     enum member-type {
         u8-t,
@@ -65,7 +72,7 @@ interface ecs {
     resource component {
         // This is a component instance so it will need a the entity it belongs to and the component type
         // This is required for observers / events to work
-        constructor(ptr: u64, entity: ecs-entity-t, component-type: ecs-entity-t);
+        constructor(ptr: pointer-t, entity: ecs-entity-t, component-type: ecs-entity-t);
         set-member-u8: func(offset: u32, value: u8);
         get-member-u8: func(offset: u32) -> u8;
         set-member-u16: func(offset: u32, value: u16);
@@ -123,15 +130,18 @@ interface ecs {
         constructor(desc: entity-desc);
         get-id: func() -> ecs-entity-t;
         get-name: func() -> string;
-        from-id: static func(id: u64) -> u64;
-        get: func(component: ecs-entity-t) -> u64;
+        set-name: func(name: string);
+        from-id: static func(id: u64) -> pointer-t;
+        get: func(component: ecs-entity-t) -> pointer-t;
         add: func(component: ecs-entity-t);
         remove: func(component: ecs-entity-t);
-        add-relationship: func(relationship: ecs-entity-t, target: ecs-entity-t);
-        remove-relationship: func(relationship: ecs-entity-t, target: ecs-entity-t);
-        // children: func() -> list<ecs-entity-t>;
-        // parents: func() -> list<ecs-entity-t>;
-        // relationships: func() -> list<ecs-entity-t>;
+        add-relationship: func(relationship: relationship, target: ecs-entity-t);
+        remove-relationship: func(relationship: relationship, target: ecs-entity-t);
+        parent-of: func(target: ecs-entity-t);
+        child-of: func(target: ecs-entity-t);
+        parent: func() -> ecs-entity-t;
+        children: func() -> list<ecs-entity-t>;
+        relationships: func() -> list<ecs-entity-t>;
     }
 
     resource query {
@@ -142,14 +152,17 @@ interface ecs {
         next: func() -> bool;
         count: func() -> s32;
         entities: func() -> list<ecs-entity-t>;
-        // ptrs: func(component-query-index: u32) -> *mut *mut c_void;
     }
+
+    // resource filter {
+    //     constructor(query: query-desc);
+    // }
 
     resource callback {
         constructor(handle: u64);
         run: func(iter: iter);
         // This is prefixed because resources already have a `handle` method.
-        cb-handle: func() -> u64;
+        cb-handle: func() -> pointer-t;
     }
 
     record system-desc {
@@ -170,14 +183,14 @@ interface ecs {
         name: option<string>,
         query-desc: query-desc,
         events: list<event>,
-        callback: u64,
+        callback: pointer-t,
         is-guest: bool
     }
 
     resource observer {
         constructor(desc: observer-desc);
         build: func();
-        callback: func() -> u64;
+        callback: func() -> pointer-t;
     }
 
     resource iter {
@@ -191,8 +204,8 @@ interface ecs {
     get-singleton: func(component-id: ecs-entity-t) -> u64;
     remove-singleton: func(component-id: ecs-entity-t);
     add-entity: func(entity-id: ecs-entity-t);
-    // get-entity: func(entity-id: ecs-entity-t) -> u64;
     remove-entity: func(entity-id: ecs-entity-t);
+    // get-entity: func(entity-id: ecs-entity-t) -> u64;
     // get-entity-named: func(name: string) -> u64;
     has-entity-named: func(name: string) -> bool;
     get-component-id: func(component-name: string) -> ecs-entity-t;

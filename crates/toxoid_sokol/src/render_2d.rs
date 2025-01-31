@@ -184,13 +184,16 @@ impl Renderer2D for SokolRenderer2D {
             // sgp_clear();
 
             // Initialize ImGui frame
-            let desc = simgui_frame_desc_t {
-                width: window_width,
-                height: window_height, 
-                delta_time: sapp::frame_duration(),
-                dpi_scale: sapp::dpi_scale(),
-            };
-            simgui_new_frame(&desc)
+            #[cfg(feature = "imgui")]
+            {
+                let desc = simgui_frame_desc_t {
+                    width: window_width,
+                    height: window_height, 
+                    delta_time: sapp::frame_duration(),
+                    dpi_scale: sapp::dpi_scale(),
+                };
+                simgui_new_frame(&desc)
+            }
         }
     }
 
@@ -211,10 +214,12 @@ impl Renderer2D for SokolRenderer2D {
             sgp_end();
 
             // Render ImGui
-            let hello_world = std::ffi::CString::new("Hello, world!").unwrap();
-            igText(hello_world.as_ptr() as *const i8);
-            // #[cfg(feature = "imgui")]
-            simgui_render();
+            #[cfg(feature = "imgui")]
+            {
+                let hello_world = std::ffi::CString::new("Hello, world!").unwrap();
+                igText(hello_world.as_ptr() as *const i8);
+                simgui_render();
+            }
         }
         // End render pass.
         sg::end_pass();

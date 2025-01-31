@@ -9,7 +9,6 @@ pub trait Guest {
 }
 #[doc(hidden)]
 #[macro_export]
-#[macro_export]
 macro_rules! __export_world_toxoid_component_world_cabi {
     ($ty:ident with_types_in $($path_to_types:tt)*) => {
         const _ : () = { #[export_name = "init"] unsafe extern "C" fn export_init() {
@@ -29,6 +28,29 @@ pub mod toxoid_component {
             static __FORCE_SECTION_REF: fn() = super::super::super::__link_custom_section_describing_imports;
             use super::super::super::_rt;
             pub type EcsEntityT = u64;
+            pub type PointerT = u64;
+            #[derive(Clone, Copy)]
+            pub enum Relationship {
+                IsA,
+                ChildOf,
+                Custom(EcsEntityT),
+            }
+            impl ::core::fmt::Debug for Relationship {
+                fn fmt(
+                    &self,
+                    f: &mut ::core::fmt::Formatter<'_>,
+                ) -> ::core::fmt::Result {
+                    match self {
+                        Relationship::IsA => f.debug_tuple("Relationship::IsA").finish(),
+                        Relationship::ChildOf => {
+                            f.debug_tuple("Relationship::ChildOf").finish()
+                        }
+                        Relationship::Custom(e) => {
+                            f.debug_tuple("Relationship::Custom").field(e).finish()
+                        }
+                    }
+                }
+            }
             #[repr(u8)]
             #[derive(Clone, Copy, Eq, Ord, PartialEq, PartialOrd)]
             pub enum MemberType {
@@ -693,7 +715,7 @@ pub mod toxoid_component {
                 /// This is a component instance so it will need a the entity it belongs to and the component type
                 /// This is required for observers / events to work
                 pub fn new(
-                    ptr: u64,
+                    ptr: PointerT,
                     entity: EcsEntityT,
                     component_type: EcsEntityT,
                 ) -> Self {
@@ -709,7 +731,7 @@ pub mod toxoid_component {
                             unreachable!()
                         }
                         let ret = wit_import(
-                            _rt::as_i64(&ptr),
+                            _rt::as_i64(ptr),
                             _rt::as_i64(entity),
                             _rt::as_i64(component_type),
                         );
@@ -1942,6 +1964,27 @@ pub mod toxoid_component {
             }
             impl Entity {
                 #[allow(unused_unsafe, clippy::all)]
+                pub fn set_name(&self, name: &str) {
+                    unsafe {
+                        let vec0 = name;
+                        let ptr0 = vec0.as_ptr().cast::<u8>();
+                        let len0 = vec0.len();
+                        #[cfg(target_arch = "wasm32")]
+                        #[link(wasm_import_module = "toxoid-component:component/ecs")]
+                        extern "C" {
+                            #[link_name = "[method]entity.set-name"]
+                            fn wit_import(_: i32, _: *mut u8, _: usize);
+                        }
+                        #[cfg(not(target_arch = "wasm32"))]
+                        fn wit_import(_: i32, _: *mut u8, _: usize) {
+                            unreachable!()
+                        }
+                        wit_import((self).handle() as i32, ptr0.cast_mut(), len0);
+                    }
+                }
+            }
+            impl Entity {
+                #[allow(unused_unsafe, clippy::all)]
                 pub fn get(&self, component: EcsEntityT) -> Component {
                     unsafe {
                         #[cfg(target_arch = "wasm32")]
@@ -2002,23 +2045,29 @@ pub mod toxoid_component {
                 #[allow(unused_unsafe, clippy::all)]
                 pub fn add_relationship(
                     &self,
-                    relationship: EcsEntityT,
+                    relationship: Relationship,
                     target: EcsEntityT,
                 ) {
                     unsafe {
+                        let (result0_0, result0_1) = match relationship {
+                            Relationship::IsA => (0i32, 0i64),
+                            Relationship::ChildOf => (1i32, 0i64),
+                            Relationship::Custom(e) => (2i32, _rt::as_i64(e)),
+                        };
                         #[cfg(target_arch = "wasm32")]
                         #[link(wasm_import_module = "toxoid-component:component/ecs")]
                         extern "C" {
                             #[link_name = "[method]entity.add-relationship"]
-                            fn wit_import(_: i32, _: i64, _: i64);
+                            fn wit_import(_: i32, _: i32, _: i64, _: i64);
                         }
                         #[cfg(not(target_arch = "wasm32"))]
-                        fn wit_import(_: i32, _: i64, _: i64) {
+                        fn wit_import(_: i32, _: i32, _: i64, _: i64) {
                             unreachable!()
                         }
                         wit_import(
                             (self).handle() as i32,
-                            _rt::as_i64(relationship),
+                            result0_0,
+                            result0_1,
                             _rt::as_i64(target),
                         );
                     }
@@ -2028,25 +2077,164 @@ pub mod toxoid_component {
                 #[allow(unused_unsafe, clippy::all)]
                 pub fn remove_relationship(
                     &self,
-                    relationship: EcsEntityT,
+                    relationship: Relationship,
                     target: EcsEntityT,
                 ) {
                     unsafe {
+                        let (result0_0, result0_1) = match relationship {
+                            Relationship::IsA => (0i32, 0i64),
+                            Relationship::ChildOf => (1i32, 0i64),
+                            Relationship::Custom(e) => (2i32, _rt::as_i64(e)),
+                        };
                         #[cfg(target_arch = "wasm32")]
                         #[link(wasm_import_module = "toxoid-component:component/ecs")]
                         extern "C" {
                             #[link_name = "[method]entity.remove-relationship"]
-                            fn wit_import(_: i32, _: i64, _: i64);
+                            fn wit_import(_: i32, _: i32, _: i64, _: i64);
                         }
                         #[cfg(not(target_arch = "wasm32"))]
-                        fn wit_import(_: i32, _: i64, _: i64) {
+                        fn wit_import(_: i32, _: i32, _: i64, _: i64) {
                             unreachable!()
                         }
                         wit_import(
                             (self).handle() as i32,
-                            _rt::as_i64(relationship),
+                            result0_0,
+                            result0_1,
                             _rt::as_i64(target),
                         );
+                    }
+                }
+            }
+            impl Entity {
+                #[allow(unused_unsafe, clippy::all)]
+                pub fn parent_of(&self, target: EcsEntityT) {
+                    unsafe {
+                        #[cfg(target_arch = "wasm32")]
+                        #[link(wasm_import_module = "toxoid-component:component/ecs")]
+                        extern "C" {
+                            #[link_name = "[method]entity.parent-of"]
+                            fn wit_import(_: i32, _: i64);
+                        }
+                        #[cfg(not(target_arch = "wasm32"))]
+                        fn wit_import(_: i32, _: i64) {
+                            unreachable!()
+                        }
+                        wit_import((self).handle() as i32, _rt::as_i64(target));
+                    }
+                }
+            }
+            impl Entity {
+                #[allow(unused_unsafe, clippy::all)]
+                pub fn child_of(&self, target: EcsEntityT) {
+                    unsafe {
+                        #[cfg(target_arch = "wasm32")]
+                        #[link(wasm_import_module = "toxoid-component:component/ecs")]
+                        extern "C" {
+                            #[link_name = "[method]entity.child-of"]
+                            fn wit_import(_: i32, _: i64);
+                        }
+                        #[cfg(not(target_arch = "wasm32"))]
+                        fn wit_import(_: i32, _: i64) {
+                            unreachable!()
+                        }
+                        wit_import((self).handle() as i32, _rt::as_i64(target));
+                    }
+                }
+            }
+            impl Entity {
+                #[allow(unused_unsafe, clippy::all)]
+                pub fn parent(&self) -> Entity {
+                    unsafe {
+                        #[cfg(target_arch = "wasm32")]
+                        #[link(wasm_import_module = "toxoid-component:component/ecs")]
+                        extern "C" {
+                            #[link_name = "[method]entity.parent"]
+                            fn wit_import(_: i32) -> i32;
+                        }
+                        #[cfg(not(target_arch = "wasm32"))]
+                        fn wit_import(_: i32) -> i32 {
+                            unreachable!()
+                        }
+                        let ret = wit_import((self).handle() as i32);
+                        Entity::from_handle(ret as u32)
+                    }
+                }
+            }
+            impl Entity {
+                #[allow(unused_unsafe, clippy::all)]
+                pub fn children(&self) -> _rt::Vec<Entity> {
+                    unsafe {
+                        #[repr(align(4))]
+                        struct RetArea([::core::mem::MaybeUninit<u8>; 8]);
+                        let mut ret_area = RetArea(
+                            [::core::mem::MaybeUninit::uninit(); 8],
+                        );
+                        let ptr0 = ret_area.0.as_mut_ptr().cast::<u8>();
+                        #[cfg(target_arch = "wasm32")]
+                        #[link(wasm_import_module = "toxoid-component:component/ecs")]
+                        extern "C" {
+                            #[link_name = "[method]entity.children"]
+                            fn wit_import(_: i32, _: *mut u8);
+                        }
+                        #[cfg(not(target_arch = "wasm32"))]
+                        fn wit_import(_: i32, _: *mut u8) {
+                            unreachable!()
+                        }
+                        wit_import((self).handle() as i32, ptr0);
+                        let l1 = *ptr0.add(0).cast::<*mut u8>();
+                        let l2 = *ptr0.add(4).cast::<usize>();
+                        let base4 = l1;
+                        let len4 = l2;
+                        let mut result4 = _rt::Vec::with_capacity(len4);
+                        for i in 0..len4 {
+                            let base = base4.add(i * 4);
+                            let e4 = {
+                                let l3 = *base.add(0).cast::<i32>();
+                                Entity::from_handle(l3 as u32)
+                            };
+                            result4.push(e4);
+                        }
+                        _rt::cabi_dealloc(base4, len4 * 4, 4);
+                        result4
+                    }
+                }
+            }
+            impl Entity {
+                #[allow(unused_unsafe, clippy::all)]
+                pub fn relationships(&self) -> _rt::Vec<Entity> {
+                    unsafe {
+                        #[repr(align(4))]
+                        struct RetArea([::core::mem::MaybeUninit<u8>; 8]);
+                        let mut ret_area = RetArea(
+                            [::core::mem::MaybeUninit::uninit(); 8],
+                        );
+                        let ptr0 = ret_area.0.as_mut_ptr().cast::<u8>();
+                        #[cfg(target_arch = "wasm32")]
+                        #[link(wasm_import_module = "toxoid-component:component/ecs")]
+                        extern "C" {
+                            #[link_name = "[method]entity.relationships"]
+                            fn wit_import(_: i32, _: *mut u8);
+                        }
+                        #[cfg(not(target_arch = "wasm32"))]
+                        fn wit_import(_: i32, _: *mut u8) {
+                            unreachable!()
+                        }
+                        wit_import((self).handle() as i32, ptr0);
+                        let l1 = *ptr0.add(0).cast::<*mut u8>();
+                        let l2 = *ptr0.add(4).cast::<usize>();
+                        let base4 = l1;
+                        let len4 = l2;
+                        let mut result4 = _rt::Vec::with_capacity(len4);
+                        for i in 0..len4 {
+                            let base = base4.add(i * 4);
+                            let e4 = {
+                                let l3 = *base.add(0).cast::<i32>();
+                                Entity::from_handle(l3 as u32)
+                            };
+                            result4.push(e4);
+                        }
+                        _rt::cabi_dealloc(base4, len4 * 4, 4);
+                        result4
                     }
                 }
             }
@@ -2247,7 +2435,7 @@ pub mod toxoid_component {
             impl Callback {
                 #[allow(unused_unsafe, clippy::all)]
                 /// This is prefixed because resources already have a `handle` method.
-                pub fn cb_handle(&self) -> u64 {
+                pub fn cb_handle(&self) -> PointerT {
                     unsafe {
                         #[cfg(target_arch = "wasm32")]
                         #[link(wasm_import_module = "toxoid-component:component/ecs")]
@@ -2672,7 +2860,6 @@ pub mod toxoid_component {
                 }
             }
             #[allow(unused_unsafe, clippy::all)]
-            /// get-entity: func(entity: ecs-entity-t) -> entity;
             pub fn remove_entity(entity: EcsEntityT) {
                 unsafe {
                     #[cfg(target_arch = "wasm32")]
@@ -2689,6 +2876,7 @@ pub mod toxoid_component {
                 }
             }
             #[allow(unused_unsafe, clippy::all)]
+            /// get-entity: func(entity: ecs-entity-t) -> entity;
             /// get-entity-named: func(name: string) -> entity;
             pub fn has_entity_named(name: &str) -> bool {
                 unsafe {
@@ -2761,7 +2949,6 @@ pub mod exports {
                 }
                 #[doc(hidden)]
                 #[macro_export]
-#[macro_export]
 macro_rules! __export_toxoid_component_component_callbacks_cabi {
                     ($ty:ident with_types_in $($path_to_types:tt)*) => {
                         const _ : () = { #[export_name =
@@ -3037,112 +3224,119 @@ pub use __export_toxoid_component_world_impl as export;
 #[cfg(target_arch = "wasm32")]
 #[link_section = "component-type:wit-bindgen:0.35.0:toxoid-component:component:toxoid-component-world:encoded world"]
 #[doc(hidden)]
-pub static __WIT_BINDGEN_COMPONENT_TYPE: [u8; 5430] = *b"\
-\0asm\x0d\0\x01\0\0\x19\x16wit-component-encoding\x04\0\x07\xa9)\x01A\x02\x01A\x07\
-\x01B\xda\x01\x01w\x04\0\x0cecs-entity-t\x03\0\0\x01m\x18\x04u8-t\x05u16-t\x05u3\
-2-t\x05u64-t\x04i8-t\x05i16-t\x05i32-t\x05i64-t\x05f32-t\x05f64-t\x06bool-t\x08s\
-tring-t\x06list-t\x08u8list-t\x09u16list-t\x09u32list-t\x09u64list-t\x08i8list-t\
-\x09i16list-t\x09i32list-t\x09i64list-t\x09f32list-t\x09f64list-t\x09pointer-t\x04\
-\0\x0bmember-type\x03\0\x02\x01m\x09\x06on-set\x06on-add\x09on-remove\x09on-dele\
-te\x10on-delete-target\x0fon-table-create\x0fon-table-delete\x0eon-table-empty\x0d\
-on-table-fill\x04\0\x05event\x03\0\x04\x01ps\x01p}\x01r\x03\x04names\x0cmember-n\
-ames\x06\x0cmember-types\x07\x04\0\x0ecomponent-desc\x03\0\x08\x01ks\x01r\x01\x04\
-name\x0a\x04\0\x0bentity-desc\x03\0\x0b\x01r\x01\x04exprs\x04\0\x0aquery-desc\x03\
-\0\x0d\x04\0\x0ecomponent-type\x03\x01\x04\0\x09component\x03\x01\x04\0\x06entit\
-y\x03\x01\x04\0\x05query\x03\x01\x04\0\x08callback\x03\x01\x01kz\x01i\x13\x01r\x05\
-\x04name\x0a\x09tick-rate\x14\x08callback\x15\x0aquery-desc\x0e\x08is-guest\x7f\x04\
-\0\x0bsystem-desc\x03\0\x16\x04\0\x06system\x03\x01\x01p\x05\x01r\x05\x04name\x0a\
-\x0aquery-desc\x0e\x06events\x19\x08callback\x15\x08is-guest\x7f\x04\0\x0dobserv\
-er-desc\x03\0\x1a\x04\0\x08observer\x03\x01\x04\0\x04iter\x03\x01\x01i\x0f\x01@\x01\
-\x04init\x09\0\x1e\x04\0\x1b[constructor]component-type\x01\x1f\x01h\x0f\x01@\x01\
-\x04self\x20\0\x01\x04\0\x1d[method]component-type.get-id\x01!\x01i\x10\x01@\x03\
-\x03ptrw\x06entity\x01\x0ecomponent-type\x01\0\"\x04\0\x16[constructor]component\
-\x01#\x01h\x10\x01@\x03\x04self$\x06offsety\x05value}\x01\0\x04\0\x1f[method]com\
-ponent.set-member-u8\x01%\x01@\x02\x04self$\x06offsety\0}\x04\0\x1f[method]compo\
-nent.get-member-u8\x01&\x01@\x03\x04self$\x06offsety\x05value{\x01\0\x04\0\x20[m\
-ethod]component.set-member-u16\x01'\x01@\x02\x04self$\x06offsety\0{\x04\0\x20[me\
-thod]component.get-member-u16\x01(\x01@\x03\x04self$\x06offsety\x05valuey\x01\0\x04\
-\0\x20[method]component.set-member-u32\x01)\x01@\x02\x04self$\x06offsety\0y\x04\0\
-\x20[method]component.get-member-u32\x01*\x01@\x03\x04self$\x06offsety\x05valuew\
-\x01\0\x04\0\x20[method]component.set-member-u64\x01+\x01@\x02\x04self$\x06offse\
-ty\0w\x04\0\x20[method]component.get-member-u64\x01,\x01@\x03\x04self$\x06offset\
-y\x05value~\x01\0\x04\0\x1f[method]component.set-member-i8\x01-\x01@\x02\x04self\
-$\x06offsety\0~\x04\0\x1f[method]component.get-member-i8\x01.\x01@\x03\x04self$\x06\
-offsety\x05value|\x01\0\x04\0\x20[method]component.set-member-i16\x01/\x01@\x02\x04\
-self$\x06offsety\0|\x04\0\x20[method]component.get-member-i16\x010\x01@\x03\x04s\
-elf$\x06offsety\x05valuez\x01\0\x04\0\x20[method]component.set-member-i32\x011\x01\
-@\x02\x04self$\x06offsety\0z\x04\0\x20[method]component.get-member-i32\x012\x01@\
-\x03\x04self$\x06offsety\x05valuex\x01\0\x04\0\x20[method]component.set-member-i\
-64\x013\x01@\x02\x04self$\x06offsety\0x\x04\0\x20[method]component.get-member-i6\
-4\x014\x01@\x03\x04self$\x06offsety\x05valuev\x01\0\x04\0\x20[method]component.s\
-et-member-f32\x015\x01@\x02\x04self$\x06offsety\0v\x04\0\x20[method]component.ge\
-t-member-f32\x016\x01@\x03\x04self$\x06offsety\x05valueu\x01\0\x04\0\x20[method]\
-component.set-member-f64\x017\x01@\x02\x04self$\x06offsety\0u\x04\0\x20[method]c\
-omponent.get-member-f64\x018\x01@\x03\x04self$\x06offsety\x05value\x7f\x01\0\x04\
-\0![method]component.set-member-bool\x019\x01@\x02\x04self$\x06offsety\0\x7f\x04\
-\0![method]component.get-member-bool\x01:\x01@\x03\x04self$\x06offsety\x05values\
-\x01\0\x04\0#[method]component.set-member-string\x01;\x01@\x02\x04self$\x06offse\
-ty\0s\x04\0#[method]component.get-member-string\x01<\x01@\x03\x04self$\x06offset\
-y\x05value\x07\x01\0\x04\0#[method]component.set-member-u8list\x01=\x01@\x02\x04\
-self$\x06offsety\0\x07\x04\0#[method]component.get-member-u8list\x01>\x01p{\x01@\
-\x03\x04self$\x06offsety\x05value?\x01\0\x04\0$[method]component.set-member-u16l\
-ist\x01@\x01@\x02\x04self$\x06offsety\0?\x04\0$[method]component.get-member-u16l\
-ist\x01A\x01py\x01@\x03\x04self$\x06offsety\x05value\xc2\0\x01\0\x04\0$[method]c\
-omponent.set-member-u32list\x01C\x01@\x02\x04self$\x06offsety\0\xc2\0\x04\0$[met\
-hod]component.get-member-u32list\x01D\x01pw\x01@\x03\x04self$\x06offsety\x05valu\
-e\xc5\0\x01\0\x04\0$[method]component.set-member-u64list\x01F\x01@\x02\x04self$\x06\
-offsety\0\xc5\0\x04\0$[method]component.get-member-u64list\x01G\x01p~\x01@\x03\x04\
-self$\x06offsety\x05value\xc8\0\x01\0\x04\0#[method]component.set-member-i8list\x01\
-I\x01@\x02\x04self$\x06offsety\0\xc8\0\x04\0#[method]component.get-member-i8list\
-\x01J\x01p|\x01@\x03\x04self$\x06offsety\x05value\xcb\0\x01\0\x04\0$[method]comp\
-onent.set-member-i16list\x01L\x01@\x02\x04self$\x06offsety\0\xcb\0\x04\0$[method\
-]component.get-member-i16list\x01M\x01pz\x01@\x03\x04self$\x06offsety\x05value\xce\
-\0\x01\0\x04\0$[method]component.set-member-i32list\x01O\x01@\x02\x04self$\x06of\
-fsety\0\xce\0\x04\0$[method]component.get-member-i32list\x01P\x01px\x01@\x03\x04\
-self$\x06offsety\x05value\xd1\0\x01\0\x04\0$[method]component.set-member-i64list\
-\x01R\x01@\x02\x04self$\x06offsety\0\xd1\0\x04\0$[method]component.get-member-i6\
-4list\x01S\x01pv\x01@\x03\x04self$\x06offsety\x05value\xd4\0\x01\0\x04\0$[method\
-]component.set-member-f32list\x01U\x01@\x02\x04self$\x06offsety\0\xd4\0\x04\0$[m\
-ethod]component.get-member-f32list\x01V\x01pu\x01@\x03\x04self$\x06offsety\x05va\
-lue\xd7\0\x01\0\x04\0$[method]component.set-member-f64list\x01X\x01@\x02\x04self\
-$\x06offsety\0\xd7\0\x04\0$[method]component.get-member-f64list\x01Y\x04\0$[meth\
-od]component.set-member-pointer\x01+\x04\0$[method]component.get-member-pointer\x01\
-,\x01i\x11\x01@\x01\x04init\x0c\0\xda\0\x04\0\x13[constructor]entity\x01[\x01@\x01\
-\x02idw\0\xda\0\x04\0\x16[static]entity.from-id\x01\\\x01h\x11\x01@\x01\x04self\xdd\
-\0\0\x01\x04\0\x15[method]entity.get-id\x01^\x01@\x01\x04self\xdd\0\0s\x04\0\x17\
-[method]entity.get-name\x01_\x01@\x02\x04self\xdd\0\x09component\x01\0\"\x04\0\x12\
-[method]entity.get\x01`\x01@\x02\x04self\xdd\0\x09component\x01\x01\0\x04\0\x12[\
-method]entity.add\x01a\x04\0\x15[method]entity.remove\x01a\x01@\x03\x04self\xdd\0\
-\x0crelationship\x01\x06target\x01\x01\0\x04\0\x1f[method]entity.add-relationshi\
-p\x01b\x04\0\"[method]entity.remove-relationship\x01b\x01i\x12\x01@\x01\x04desc\x0e\
-\0\xe3\0\x04\0\x12[constructor]query\x01d\x01h\x12\x01@\x02\x04self\xe5\0\x04exp\
-rs\x01\0\x04\0\x12[method]query.expr\x01f\x01@\x01\x04self\xe5\0\x01\0\x04\0\x13\
-[method]query.build\x01g\x04\0\x12[method]query.iter\x01g\x01@\x01\x04self\xe5\0\
-\0\x7f\x04\0\x12[method]query.next\x01h\x01@\x01\x04self\xe5\0\0z\x04\0\x13[meth\
-od]query.count\x01i\x01p\xda\0\x01@\x01\x04self\xe5\0\0\xea\0\x04\0\x16[method]q\
-uery.entities\x01k\x01@\x01\x06handlew\0\x15\x04\0\x15[constructor]callback\x01l\
-\x01h\x13\x01i\x1d\x01@\x02\x04self\xed\0\x04iter\xee\0\x01\0\x04\0\x14[method]c\
-allback.run\x01o\x01@\x01\x04self\xed\0\0w\x04\0\x1a[method]callback.cb-handle\x01\
-p\x01i\x18\x01@\x01\x04desc\x17\0\xf1\0\x04\0\x13[constructor]system\x01r\x01h\x18\
-\x01@\x01\x04self\xf3\0\x01\0\x04\0\x14[method]system.build\x01t\x01@\x01\x04sel\
-f\xf3\0\0\x15\x04\0\x17[method]system.callback\x01u\x01i\x1c\x01@\x01\x04desc\x1b\
-\0\xf6\0\x04\0\x15[constructor]observer\x01w\x01h\x1c\x01@\x01\x04self\xf8\0\x01\
-\0\x04\0\x16[method]observer.build\x01y\x01@\x01\x04self\xf8\0\0\x15\x04\0\x19[m\
-ethod]observer.callback\x01z\x01@\x01\x03ptrw\0\xee\0\x04\0\x11[constructor]iter\
-\x01{\x01h\x1d\x01@\x01\x04self\xfc\0\0\x7f\x04\0\x11[method]iter.next\x01}\x01@\
-\x01\x04self\xfc\0\0z\x04\0\x12[method]iter.count\x01~\x01@\x01\x04self\xfc\0\0\xea\
-\0\x04\0\x15[method]iter.entities\x01\x7f\x01@\x01\x09component\x01\x01\0\x04\0\x0d\
-add-singleton\x01\x80\x01\x01@\x01\x09component\x01\0\"\x04\0\x0dget-singleton\x01\
-\x81\x01\x04\0\x10remove-singleton\x01\x80\x01\x01@\x01\x06entity\x01\x01\0\x04\0\
-\x0aadd-entity\x01\x82\x01\x04\0\x0dremove-entity\x01\x82\x01\x01@\x01\x04names\0\
-\x7f\x04\0\x10has-entity-named\x01\x83\x01\x01@\x01\x0ecomponent-names\0\x01\x04\
-\0\x10get-component-id\x01\x84\x01\x03\0\x1etoxoid-component:component/ecs\x05\0\
-\x01@\0\x01\0\x04\0\x04init\x01\x01\x02\x03\0\0\x04iter\x01B\x05\x02\x03\x02\x01\
-\x02\x04\0\x04iter\x03\0\0\x01i\x01\x01@\x02\x04iter\x02\x06handlew\x01\0\x04\0\x03\
-run\x01\x03\x04\0$toxoid-component:component/callbacks\x05\x03\x04\01toxoid-comp\
-onent:component/toxoid-component-world\x04\0\x0b\x1c\x01\0\x16toxoid-component-w\
-orld\x03\0\0\0G\x09producers\x01\x0cprocessed-by\x02\x0dwit-component\x070.220.0\
-\x10wit-bindgen-rust\x060.35.0";
+pub static __WIT_BINDGEN_COMPONENT_TYPE: [u8; 5740] = *b"\
+\0asm\x0d\0\x01\0\0\x19\x16wit-component-encoding\x04\0\x07\xdf+\x01A\x02\x01A\x07\
+\x01B\xe8\x01\x01w\x04\0\x0cecs-entity-t\x03\0\0\x01w\x04\0\x09pointer-t\x03\0\x02\
+\x01q\x03\x04is-a\0\0\x08child-of\0\0\x06custom\x01\x01\0\x04\0\x0crelationship\x03\
+\0\x04\x01m\x18\x04u8-t\x05u16-t\x05u32-t\x05u64-t\x04i8-t\x05i16-t\x05i32-t\x05\
+i64-t\x05f32-t\x05f64-t\x06bool-t\x08string-t\x06list-t\x08u8list-t\x09u16list-t\
+\x09u32list-t\x09u64list-t\x08i8list-t\x09i16list-t\x09i32list-t\x09i64list-t\x09\
+f32list-t\x09f64list-t\x09pointer-t\x04\0\x0bmember-type\x03\0\x06\x01m\x09\x06o\
+n-set\x06on-add\x09on-remove\x09on-delete\x10on-delete-target\x0fon-table-create\
+\x0fon-table-delete\x0eon-table-empty\x0don-table-fill\x04\0\x05event\x03\0\x08\x01\
+ps\x01p}\x01r\x03\x04names\x0cmember-names\x0a\x0cmember-types\x0b\x04\0\x0ecomp\
+onent-desc\x03\0\x0c\x01ks\x01r\x01\x04name\x0e\x04\0\x0bentity-desc\x03\0\x0f\x01\
+r\x01\x04exprs\x04\0\x0aquery-desc\x03\0\x11\x04\0\x0ecomponent-type\x03\x01\x04\
+\0\x09component\x03\x01\x04\0\x06entity\x03\x01\x04\0\x05query\x03\x01\x04\0\x08\
+callback\x03\x01\x01kz\x01i\x17\x01r\x05\x04name\x0e\x09tick-rate\x18\x08callbac\
+k\x19\x0aquery-desc\x12\x08is-guest\x7f\x04\0\x0bsystem-desc\x03\0\x1a\x04\0\x06\
+system\x03\x01\x01p\x09\x01r\x05\x04name\x0e\x0aquery-desc\x12\x06events\x1d\x08\
+callback\x19\x08is-guest\x7f\x04\0\x0dobserver-desc\x03\0\x1e\x04\0\x08observer\x03\
+\x01\x04\0\x04iter\x03\x01\x01i\x13\x01@\x01\x04init\x0d\0\"\x04\0\x1b[construct\
+or]component-type\x01#\x01h\x13\x01@\x01\x04self$\0\x01\x04\0\x1d[method]compone\
+nt-type.get-id\x01%\x01i\x14\x01@\x03\x03ptr\x03\x06entity\x01\x0ecomponent-type\
+\x01\0&\x04\0\x16[constructor]component\x01'\x01h\x14\x01@\x03\x04self(\x06offse\
+ty\x05value}\x01\0\x04\0\x1f[method]component.set-member-u8\x01)\x01@\x02\x04sel\
+f(\x06offsety\0}\x04\0\x1f[method]component.get-member-u8\x01*\x01@\x03\x04self(\
+\x06offsety\x05value{\x01\0\x04\0\x20[method]component.set-member-u16\x01+\x01@\x02\
+\x04self(\x06offsety\0{\x04\0\x20[method]component.get-member-u16\x01,\x01@\x03\x04\
+self(\x06offsety\x05valuey\x01\0\x04\0\x20[method]component.set-member-u32\x01-\x01\
+@\x02\x04self(\x06offsety\0y\x04\0\x20[method]component.get-member-u32\x01.\x01@\
+\x03\x04self(\x06offsety\x05valuew\x01\0\x04\0\x20[method]component.set-member-u\
+64\x01/\x01@\x02\x04self(\x06offsety\0w\x04\0\x20[method]component.get-member-u6\
+4\x010\x01@\x03\x04self(\x06offsety\x05value~\x01\0\x04\0\x1f[method]component.s\
+et-member-i8\x011\x01@\x02\x04self(\x06offsety\0~\x04\0\x1f[method]component.get\
+-member-i8\x012\x01@\x03\x04self(\x06offsety\x05value|\x01\0\x04\0\x20[method]co\
+mponent.set-member-i16\x013\x01@\x02\x04self(\x06offsety\0|\x04\0\x20[method]com\
+ponent.get-member-i16\x014\x01@\x03\x04self(\x06offsety\x05valuez\x01\0\x04\0\x20\
+[method]component.set-member-i32\x015\x01@\x02\x04self(\x06offsety\0z\x04\0\x20[\
+method]component.get-member-i32\x016\x01@\x03\x04self(\x06offsety\x05valuex\x01\0\
+\x04\0\x20[method]component.set-member-i64\x017\x01@\x02\x04self(\x06offsety\0x\x04\
+\0\x20[method]component.get-member-i64\x018\x01@\x03\x04self(\x06offsety\x05valu\
+ev\x01\0\x04\0\x20[method]component.set-member-f32\x019\x01@\x02\x04self(\x06off\
+sety\0v\x04\0\x20[method]component.get-member-f32\x01:\x01@\x03\x04self(\x06offs\
+ety\x05valueu\x01\0\x04\0\x20[method]component.set-member-f64\x01;\x01@\x02\x04s\
+elf(\x06offsety\0u\x04\0\x20[method]component.get-member-f64\x01<\x01@\x03\x04se\
+lf(\x06offsety\x05value\x7f\x01\0\x04\0![method]component.set-member-bool\x01=\x01\
+@\x02\x04self(\x06offsety\0\x7f\x04\0![method]component.get-member-bool\x01>\x01\
+@\x03\x04self(\x06offsety\x05values\x01\0\x04\0#[method]component.set-member-str\
+ing\x01?\x01@\x02\x04self(\x06offsety\0s\x04\0#[method]component.get-member-stri\
+ng\x01@\x01@\x03\x04self(\x06offsety\x05value\x0b\x01\0\x04\0#[method]component.\
+set-member-u8list\x01A\x01@\x02\x04self(\x06offsety\0\x0b\x04\0#[method]componen\
+t.get-member-u8list\x01B\x01p{\x01@\x03\x04self(\x06offsety\x05value\xc3\0\x01\0\
+\x04\0$[method]component.set-member-u16list\x01D\x01@\x02\x04self(\x06offsety\0\xc3\
+\0\x04\0$[method]component.get-member-u16list\x01E\x01py\x01@\x03\x04self(\x06of\
+fsety\x05value\xc6\0\x01\0\x04\0$[method]component.set-member-u32list\x01G\x01@\x02\
+\x04self(\x06offsety\0\xc6\0\x04\0$[method]component.get-member-u32list\x01H\x01\
+pw\x01@\x03\x04self(\x06offsety\x05value\xc9\0\x01\0\x04\0$[method]component.set\
+-member-u64list\x01J\x01@\x02\x04self(\x06offsety\0\xc9\0\x04\0$[method]componen\
+t.get-member-u64list\x01K\x01p~\x01@\x03\x04self(\x06offsety\x05value\xcc\0\x01\0\
+\x04\0#[method]component.set-member-i8list\x01M\x01@\x02\x04self(\x06offsety\0\xcc\
+\0\x04\0#[method]component.get-member-i8list\x01N\x01p|\x01@\x03\x04self(\x06off\
+sety\x05value\xcf\0\x01\0\x04\0$[method]component.set-member-i16list\x01P\x01@\x02\
+\x04self(\x06offsety\0\xcf\0\x04\0$[method]component.get-member-i16list\x01Q\x01\
+pz\x01@\x03\x04self(\x06offsety\x05value\xd2\0\x01\0\x04\0$[method]component.set\
+-member-i32list\x01S\x01@\x02\x04self(\x06offsety\0\xd2\0\x04\0$[method]componen\
+t.get-member-i32list\x01T\x01px\x01@\x03\x04self(\x06offsety\x05value\xd5\0\x01\0\
+\x04\0$[method]component.set-member-i64list\x01V\x01@\x02\x04self(\x06offsety\0\xd5\
+\0\x04\0$[method]component.get-member-i64list\x01W\x01pv\x01@\x03\x04self(\x06of\
+fsety\x05value\xd8\0\x01\0\x04\0$[method]component.set-member-f32list\x01Y\x01@\x02\
+\x04self(\x06offsety\0\xd8\0\x04\0$[method]component.get-member-f32list\x01Z\x01\
+pu\x01@\x03\x04self(\x06offsety\x05value\xdb\0\x01\0\x04\0$[method]component.set\
+-member-f64list\x01\\\x01@\x02\x04self(\x06offsety\0\xdb\0\x04\0$[method]compone\
+nt.get-member-f64list\x01]\x04\0$[method]component.set-member-pointer\x01/\x04\0\
+$[method]component.get-member-pointer\x010\x01i\x15\x01@\x01\x04init\x10\0\xde\0\
+\x04\0\x13[constructor]entity\x01_\x01@\x01\x02idw\0\xde\0\x04\0\x16[static]enti\
+ty.from-id\x01`\x01h\x15\x01@\x01\x04self\xe1\0\0\x01\x04\0\x15[method]entity.ge\
+t-id\x01b\x01@\x01\x04self\xe1\0\0s\x04\0\x17[method]entity.get-name\x01c\x01@\x02\
+\x04self\xe1\0\x04names\x01\0\x04\0\x17[method]entity.set-name\x01d\x01@\x02\x04\
+self\xe1\0\x09component\x01\0&\x04\0\x12[method]entity.get\x01e\x01@\x02\x04self\
+\xe1\0\x09component\x01\x01\0\x04\0\x12[method]entity.add\x01f\x04\0\x15[method]\
+entity.remove\x01f\x01@\x03\x04self\xe1\0\x0crelationship\x05\x06target\x01\x01\0\
+\x04\0\x1f[method]entity.add-relationship\x01g\x04\0\"[method]entity.remove-rela\
+tionship\x01g\x01@\x02\x04self\xe1\0\x06target\x01\x01\0\x04\0\x18[method]entity\
+.parent-of\x01h\x04\0\x17[method]entity.child-of\x01h\x01@\x01\x04self\xe1\0\0\xde\
+\0\x04\0\x15[method]entity.parent\x01i\x01p\xde\0\x01@\x01\x04self\xe1\0\0\xea\0\
+\x04\0\x17[method]entity.children\x01k\x04\0\x1c[method]entity.relationships\x01\
+k\x01i\x16\x01@\x01\x04desc\x12\0\xec\0\x04\0\x12[constructor]query\x01m\x01h\x16\
+\x01@\x02\x04self\xee\0\x04exprs\x01\0\x04\0\x12[method]query.expr\x01o\x01@\x01\
+\x04self\xee\0\x01\0\x04\0\x13[method]query.build\x01p\x04\0\x12[method]query.it\
+er\x01p\x01@\x01\x04self\xee\0\0\x7f\x04\0\x12[method]query.next\x01q\x01@\x01\x04\
+self\xee\0\0z\x04\0\x13[method]query.count\x01r\x01@\x01\x04self\xee\0\0\xea\0\x04\
+\0\x16[method]query.entities\x01s\x01@\x01\x06handlew\0\x19\x04\0\x15[constructo\
+r]callback\x01t\x01h\x17\x01i!\x01@\x02\x04self\xf5\0\x04iter\xf6\0\x01\0\x04\0\x14\
+[method]callback.run\x01w\x01@\x01\x04self\xf5\0\0\x03\x04\0\x1a[method]callback\
+.cb-handle\x01x\x01i\x1c\x01@\x01\x04desc\x1b\0\xf9\0\x04\0\x13[constructor]syst\
+em\x01z\x01h\x1c\x01@\x01\x04self\xfb\0\x01\0\x04\0\x14[method]system.build\x01|\
+\x01@\x01\x04self\xfb\0\0\x19\x04\0\x17[method]system.callback\x01}\x01i\x20\x01\
+@\x01\x04desc\x1f\0\xfe\0\x04\0\x15[constructor]observer\x01\x7f\x01h\x20\x01@\x01\
+\x04self\x80\x01\x01\0\x04\0\x16[method]observer.build\x01\x81\x01\x01@\x01\x04s\
+elf\x80\x01\0\x19\x04\0\x19[method]observer.callback\x01\x82\x01\x01@\x01\x03ptr\
+w\0\xf6\0\x04\0\x11[constructor]iter\x01\x83\x01\x01h!\x01@\x01\x04self\x84\x01\0\
+\x7f\x04\0\x11[method]iter.next\x01\x85\x01\x01@\x01\x04self\x84\x01\0z\x04\0\x12\
+[method]iter.count\x01\x86\x01\x01@\x01\x04self\x84\x01\0\xea\0\x04\0\x15[method\
+]iter.entities\x01\x87\x01\x01@\x01\x09component\x01\x01\0\x04\0\x0dadd-singleto\
+n\x01\x88\x01\x01@\x01\x09component\x01\0&\x04\0\x0dget-singleton\x01\x89\x01\x04\
+\0\x10remove-singleton\x01\x88\x01\x01@\x01\x06entity\x01\x01\0\x04\0\x0aadd-ent\
+ity\x01\x8a\x01\x04\0\x0dremove-entity\x01\x8a\x01\x01@\x01\x04names\0\x7f\x04\0\
+\x10has-entity-named\x01\x8b\x01\x01@\x01\x0ecomponent-names\0\x01\x04\0\x10get-\
+component-id\x01\x8c\x01\x03\0\x1etoxoid-component:component/ecs\x05\0\x01@\0\x01\
+\0\x04\0\x04init\x01\x01\x02\x03\0\0\x04iter\x01B\x05\x02\x03\x02\x01\x02\x04\0\x04\
+iter\x03\0\0\x01i\x01\x01@\x02\x04iter\x02\x06handlew\x01\0\x04\0\x03run\x01\x03\
+\x04\0$toxoid-component:component/callbacks\x05\x03\x04\01toxoid-component:compo\
+nent/toxoid-component-world\x04\0\x0b\x1c\x01\0\x16toxoid-component-world\x03\0\0\
+\0G\x09producers\x01\x0cprocessed-by\x02\x0dwit-component\x070.220.0\x10wit-bind\
+gen-rust\x060.35.0";
 #[inline(never)]
 #[doc(hidden)]
 pub fn __link_custom_section_describing_imports() {
