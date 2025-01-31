@@ -5,6 +5,7 @@ use rand::{Rng, thread_rng};
 // TODO: Move this config ECS singleton
 pub const SCREEN_WIDTH: u32 = 800;
 pub const SCREEN_HEIGHT: u32 = 600;
+const DEFAULT_TAIL_LENGTH: u32 = 2;
 
 pub fn get_random(max: u32) -> u32 {
     let mut rng = thread_rng();
@@ -18,9 +19,9 @@ pub fn aabb(a: &Position, a2: &Size, b: &Position, b2: &Size) -> bool {
     a.get_y() < b.get_y() + b2.get_height()
 }
 
-pub fn create_snake() {
-    let exists = World::has_entity_named("SnakeNamedEntity".to_string());
-    let mut head_entity = Entity::named("SnakeNamedEntity");
+pub fn create_snake_head() -> Entity {
+    let exists = World::has_entity_named("SnakeEntityHead".to_string());
+    let mut head_entity = Entity::new(None);
     head_entity.add::<Head>();
     head_entity.add::<Position>();
     head_entity.add::<Size>();
@@ -44,65 +45,39 @@ pub fn create_snake() {
     color.set_b(0.0);
     color.set_a(1.0);
 
-    let mut tails = World::get_singleton::<Tails>();
-    tails.set_entities(vec![head_entity.get_id()]);
+    head_entity
 }
 
-pub fn create_new_head() -> Entity {
-    let mut new_head_entity = Entity::new(None);
-    new_head_entity.add::<Head>();
-    new_head_entity.add::<Position>();
-    new_head_entity.add::<Size>();
-    new_head_entity.add::<Color>();
-    new_head_entity.add::<Renderable>();
-    new_head_entity.add::<Rect>();
-    
-    let mut size = new_head_entity.get::<Size>();
+pub fn create_snake_tail(tail_num: u32) -> Entity {
+    let exists = World::has_entity_named(format!("SnakeEntityTail {tail_num}"));
+    let mut tail_entity = Entity::new(None);
+    tail_entity.add::<Tail>();
+    tail_entity.add::<Position>();
+    tail_entity.add::<Size>();
+    tail_entity.add::<Color>();
+    tail_entity.add::<Renderable>();
+    tail_entity.add::<Rect>();
+
+    if !exists {
+        let mut pos = tail_entity.get::<Position>();
+        pos.set_x((SCREEN_WIDTH - 100) / 2);
+        pos.set_y(((SCREEN_HEIGHT - 100) / 2) - (tail_num * 50));
+    }
+
+    let mut size = tail_entity.get::<Size>();
     size.set_width(50);
     size.set_height(50);
 
-    let mut pos = new_head_entity.get::<Position>();
-    pos.set_x(0);
-    pos.set_y(0);
-
-    let mut color = new_head_entity.get::<Color>();
+    let mut color = tail_entity.get::<Color>();
     color.set_r(0.0);
     color.set_g(1.0);
     color.set_b(0.0);
     color.set_a(1.0);
-
-    new_head_entity
+    
+    tail_entity
 }
 
-// pub fn create_food() {
-//     let mut food = Entity::named("FoodNamedEntity");
-//     food.add::<Food>();
-//     food.add::<Position>();
-//     food.add::<Size>();
-//     food.add::<Color>();
-//     food.add::<Renderable>();
-//     food.add::<Rect>();
-
-//     let mut pos = food.get::<Position>();
-//     let grid_size = 50;
-//     pos.set_x(get_random((SCREEN_WIDTH - 100) / grid_size) * grid_size);
-//     pos.set_y(get_random((SCREEN_HEIGHT - 100) / grid_size) * grid_size);
-
-//     let mut size = food.get::<Size>();
-//     size.set_width(50);
-//     size.set_height(50);
-
-//     let mut color = food.get::<Color>();
-//     color.set_r(1.);
-//     color.set_g(0.);
-//     color.set_b(0.);
-//     color.set_a(1.);
-
-//     let mut food_entity = World::get_singleton::<FoodEntity>();
-//     food_entity.set_entity(food.get_id());
-// }
-
-pub fn create_food_init() {
+pub fn create_food() {
     // Check if the entity exists for hot reloading conditionals
     let exists = World::has_entity_named("FoodNamedEntity".to_string());
 
@@ -139,11 +114,24 @@ pub fn create_food_init() {
 pub fn init() {
     // Initialize Tails singleton
     let mut tails = World::get_singleton::<Tails>();
-    tails.set_max_length(3);
-    tails.set_entities(vec![]);
+    tails.set_max_length(DEFAULT_TAIL_LENGTH);
     if !World::has_entity_named("CreateSnakeOnce".to_string()) {
-        create_snake();
+        let mut snake_head_entity = create_snake_head();
+        snake_head_entity.set_name("SnakeEntityHead".to_string());
+        // TODO: Do this linked list style until we implement query sorting
+        (0..DEFAULT_TAIL_LENGTH)
+            .fold(None, |prev_entity, index| {
+                let mut tail_entity = create_snake_tail(index + 1);
+                tail_entity.set_name(format!("SnakeEntityTail {}", tails.get_max_length()));
+                if let Some(prev) = prev_entity {
+                    tail_entity.child_of(prev);
+                } else {
+                    // Make first tail segment a child of the snake head
+                    tail_entity.child_of_id(snake_head_entity.get_id());
+                }
+                Some(tail_entity)
+        });
         Entity::named("CreateSnakeOnce");
     }
-    create_food_init();
+    create_food();
 }

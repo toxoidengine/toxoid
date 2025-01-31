@@ -14,14 +14,15 @@ enum DirectionEnum {
 pub fn init() {    
     // Movement System
     System::dsl("Head, Position", Some(10), |iter| {
-        iter.entities().iter_mut().for_each(|entity| {
+        iter.entities().iter_mut().for_each(|snake_entity| {
+            // println!("Snake entity id: {:?}", snake_entity.get_id());
+            // println!("Snake entity children: {:?}", snake_entity.children().len());
             // Keeping track of all tail entities
             let mut tails = World::get_singleton::<Tails>();
-            let mut tails_entities = tails.get_entities();
 
             // Get current position of head
-            let pos = entity.get::<Position>();
-            let size = entity.get::<Size>();
+            let mut pos = snake_entity.get::<Position>();
+            let size = snake_entity.get::<Size>();
             let current_x = pos.get_x();
             let current_y = pos.get_y();
 
@@ -44,21 +45,27 @@ pub fn init() {
                 tails.set_max_length(tails.get_max_length() + 1);
             }
 
-            // Create new head entity on every movement tick
-            let mut new_head_entity = entities::create_new_head();
-            let mut pos = new_head_entity.get::<Position>();
-            new_head_entity.add::<Head>();
-            new_head_entity.remove::<Tail>();
-            pos.set_x(current_x);
-            pos.set_y(current_y);
+            // // Create new head entity on every movement tick
+            // let mut new_snake_head_entity = entities::create_snake_head();
+            // let mut pos = new_snake_head_entity.get::<Position>();
+            // new_snake_head_entity.add::<Head>();
+            // new_snake_head_entity.remove::<Tail>();
+            // pos.set_x(current_x);
+            // pos.set_y(current_y);
+            // new_snake_head_entity.set_name("SnakeEntityHead".to_string());
+            
+            // // Remove head tag from old head entity
+            // snake_entity.add::<Tail>();
+            // snake_entity.remove::<Head>();
+            // snake_entity.child_of(new_snake_head_entity);
+            // println!("Snake entity children: {:?}", snake_entity.children().len());
+            // snake_entity.set_name(format!("SnakeEntityTail {}", tails.get_max_length()));
 
-            // Add new head entity to the front of the list
-            tails_entities.push(new_head_entity.get_id());
-            tails.set_entities(tails_entities.clone());
-
+            // Movement logic
             let direction = World::get_singleton::<Direction>();
             let screen_y_bounds = SCREEN_HEIGHT - 100;
             let screen_x_bounds = SCREEN_WIDTH - 100;
+            
             match direction.get_direction() {
                 d if d == DirectionEnum::Up as u8 => if current_y >= 50 { pos.set_y(current_y - 50) },
                 d if d == DirectionEnum::Down as u8 => if current_y <= screen_y_bounds { pos.set_y(current_y + 50) },
@@ -66,20 +73,58 @@ pub fn init() {
                 d if d == DirectionEnum::Right as u8 => if current_x <= screen_x_bounds { pos.set_x(current_x + 50) },
                 _ => {}
             }
-            entity.remove::<Head>(); 
-            entity.add::<Tail>();
+
+            // Store previous head position before updating
+            let prev_x = current_x;
+            let prev_y = current_y;
+            
+            // TODO: Do this linked list style until we implement query sorting
+            // snake_entity
+            //     .children()
+            //     .sort_by(|a, b| a.get::<Order>().get_index().cmp(&b.get::<Order>().get_index()));
+            //     .iter_mut()
+            //     .fold((prev_x, prev_y), |(prev_x, prev_y), child| {
+            //         println!("Child id: {:?}", child.get_id());
+            //         let mut child_pos = child.get::<Position>();
+            //         let old_x = child_pos.get_x();
+            //         let old_y = child_pos.get_y();
+            //         child_pos.set_x(prev_x);
+            //         child_pos.set_y(prev_y);
+            //         (old_x, old_y)
+            //     });
+            
+            // Recursively update children positions
+            fn update_child_positions(entity: &mut Entity, prev_x: u32, prev_y: u32) -> (u32, u32) {
+                let mut child_pos = entity.get::<Position>();
+                let old_x = child_pos.get_x();
+                let old_y = child_pos.get_y();
+                child_pos.set_x(prev_x);
+                child_pos.set_y(prev_y);
+
+                // Update each child recursively
+                for child in entity.children().iter_mut() {
+                    update_child_positions(child, old_x, old_y);
+                }
+                
+                (old_x, old_y)
+            }
+
+            // Update all immediate children with the head's previous position
+            for child in snake_entity.children().iter_mut() {
+                update_child_positions(child, prev_x, prev_y);
+            }
 
             // println!("Tails entities: {:?}", tails_entities.clone());
             // Remove the last tail entity
             // println!("Tails entities max length: {:?}", tails.get_max_length());
-            if tails_entities.len() > tails.get_max_length() as usize {
-                // println!("Removing last tail entity");
-                let last_tail_entity_id = tails_entities.remove(0);
-                let mut last_tail_entity = World::get_entity(last_tail_entity_id);
-                last_tail_entity.remove::<Tail>();
-                tails.set_entities(tails_entities.clone());
-                World::remove_entity(last_tail_entity_id);
-            }
+            // if tails_entities.len() > tails.get_max_length() as usize {
+            //     // println!("Removing last tail entity");
+            //     let last_tail_entity_id = tails_entities.remove(0);
+            //     let mut last_tail_entity = World::get_entity(last_tail_entity_id);
+            //     last_tail_entity.remove::<Tail>();
+            //     tails.set_entities(tails_entities.clone());
+            //     World::remove_entity(last_tail_entity_id);
+            // }
         });
     })
         .build();

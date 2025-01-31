@@ -2,10 +2,10 @@
 #![allow(warnings)]
 
 pub mod bindings;
-use bindings::exports::toxoid::engine::ecs::{EcsEntityT, GuestIter, GuestObserver, ObserverDesc, Relationship};
+use bindings::exports::toxoid::engine::ecs::{EcsEntityT, GuestIter, GuestObserver, ObserverDesc, PointerT, Relationship};
 use bindings::exports::toxoid::engine::ecs::{self, ComponentDesc, EntityDesc, Guest, GuestCallback, GuestComponent, GuestComponentType, GuestEntity, GuestQuery, GuestSystem, QueryDesc, SystemDesc, Event};
 pub use toxoid_flecs::bindings::{ecs_add_id, ecs_entity_desc_t, ecs_entity_init, ecs_fini, ecs_get_mut_id, ecs_init, ecs_iter_t, ecs_lookup, ecs_make_pair, ecs_member_t, ecs_progress, ecs_query_desc_t, ecs_query_init, ecs_query_iter, ecs_query_next, ecs_query_t, ecs_struct_desc_t, ecs_struct_init, ecs_system_desc_t, ecs_system_init, ecs_system_t, ecs_world_t, EcsDependsOn, EcsOnUpdate, ecs_set_rate, ecs_get_id, ecs_remove_id};
-use toxoid_flecs::{ecs_children, ecs_delete, ecs_ensure_id, ecs_get_name, ecs_get_parent, ecs_modified_id, ecs_observer_desc_t, ecs_observer_init, ecs_observer_t, EcsChildOf, EcsIsA};
+use toxoid_flecs::{ecs_children, ecs_children_next, ecs_delete, ecs_ensure_id, ecs_get_name, ecs_get_parent, ecs_modified_id, ecs_observer_desc_t, ecs_observer_init, ecs_observer_t, ecs_set_name, EcsChildOf, EcsIsA};
 use std::ffi::CStr;
 use std::{borrow::BorrowMut, mem::MaybeUninit};
 use core::ffi::c_void;
@@ -783,6 +783,10 @@ impl GuestEntity for Entity {
         }
     }
 
+    fn set_name(&self, name: String) {
+        unsafe { ecs_set_name(WORLD.0, self.id, c_string(&name)) };
+    }
+
     fn add(&self, component: ecs_entity_t) {
         unsafe {
             // println!("Adding component {:?} to entity {:?}", component, self.id);
@@ -797,14 +801,14 @@ impl GuestEntity for Entity {
         }
     }
 
-    fn from_id(id: u64) -> u64 {
-        Box::into_raw(Box::new(Entity { id })) as u64
+    fn from_id(id: u64) -> PointerT {
+        Box::into_raw(Box::new(Entity { id })) as PointerT
     }
 
-    fn get(&self, component: ecs_entity_t) -> u64 {
+    fn get(&self, component: ecs_entity_t) -> PointerT {
         unsafe {
             // println!("Getting component {:?} from entity {:?}", component, self.id);
-            ecs_ensure_id(WORLD.0, self.id, component) as u64
+            ecs_ensure_id(WORLD.0, self.id, component) as PointerT
         }
     }
 
@@ -815,23 +819,31 @@ impl GuestEntity for Entity {
     fn parent_of(&self, target: ecs_entity_t) {
         unsafe {
             let pair = ecs_make_pair(EcsChildOf, self.id);
-            ecs_add_id(WORLD.0, self.id, pair); 
+            ecs_add_id(WORLD.0, target, pair); 
         }
     }
 
-    fn parent(&self) -> u64 {
+    fn parent(&self) -> EcsEntityT {
         let id = unsafe { ecs_get_parent(WORLD.0, self.id) };
-        Box::into_raw(Box::new(Entity { id })) as u64
+        id
     }
 
-    fn children(&self) -> Vec<u64> {
-        let iter = unsafe { ecs_children(WORLD.0, self.id) };
-        let entities = iter.entities;
-        let entities_slice = unsafe { std::slice::from_raw_parts(entities, iter.count as usize) };
-        entities_slice.iter().map(|entity| Box::into_raw(Box::new(Entity { id: *entity })) as u64).collect()
+    fn children(&self) -> Vec<EcsEntityT> {
+        unsafe {
+            let mut iter = ecs_children(WORLD.0, self.id);
+            let mut children = Vec::new();
+            while ecs_children_next(&mut iter) {
+                if !iter.entities.is_null() && iter.count > 0 {
+                    let entities_slice = std::slice::from_raw_parts(iter.entities, iter.count as usize);
+                    // Simply return the raw entity IDs
+                    children.extend_from_slice(entities_slice);
+                }
+            }
+            children
+        }
     }
 
-    fn relationships(&self) -> Vec<u64> {
+    fn relationships(&self) -> Vec<EcsEntityT> {
         // TODO: Needs Flecs filter
         unimplemented!()
     }
@@ -843,7 +855,7 @@ impl GuestEntity for Entity {
                 Relationship::ChildOf => EcsChildOf,
                 Relationship::Custom(entity) => entity
             };
-            let pair = ecs_make_pair(relationship_entity, target);
+            let pair = ecs_make_pair(EcsChildOf, target);
             ecs_add_id(WORLD.0, self.id, pair); 
         };
     }

@@ -126,6 +126,7 @@ interface ecs {
         from-id: static func(id: u64) -> entity;
         get-id: func() -> ecs-entity-t;
         get-name: func() -> string;
+        set-name: func(name: string);
         get: func(component: ecs-entity-t) -> component;
         add: func(component: ecs-entity-t);
         remove: func(component: ecs-entity-t);
@@ -194,8 +195,8 @@ interface ecs {
     get-singleton: func(component: ecs-entity-t) -> component;
     remove-singleton: func(component: ecs-entity-t);
     add-entity: func(entity: ecs-entity-t);
-    // get-entity: func(entity: ecs-entity-t) -> entity;
     remove-entity: func(entity: ecs-entity-t);
+    // get-entity: func(entity: ecs-entity-t) -> entity;
     // get-entity-named: func(name: string) -> entity;
     has-entity-named: func(name: string) -> bool;
     get-component-id: func(component-name: string) -> ecs-entity-t;
