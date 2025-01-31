@@ -33,6 +33,7 @@ pub use toxoid_host::bindings::exports::toxoid::engine::ecs::{
     SystemDesc,
     ObserverDesc,
     MemberType,
+    Relationship,
     Event,
     Guest as WorldGuest,
 };
@@ -54,6 +55,7 @@ pub use toxoid_guest::bindings::{
         SystemDesc,
         ObserverDesc,
         MemberType,
+        Relationship,
         Event,
         self as ToxoidApi
     },
@@ -112,18 +114,28 @@ impl Entity {
         self.entity.get_id()
     }
 
-    #[cfg(all(target_arch = "wasm32", not(target_os = "emscripten")))]
-    pub fn from_id(id: u64) -> Self {
-        Self { entity: ToxoidEntity::from_id(id) }
-    }
-
     #[cfg(any(not(target_arch = "wasm32"), target_os = "emscripten"))]
     pub fn from_id(id: u64) -> Self {
         Self { entity: unsafe { *Box::from_raw(ToxoidEntity::from_id(id) as usize as *mut ToxoidEntity) } }
     }
 
+    #[cfg(all(target_arch = "wasm32", not(target_os = "emscripten")))]
+    pub fn from_id(id: u64) -> Self {
+        Self { entity: ToxoidEntity::from_id(id) }
+    }
+
     pub fn get_name(&self) -> String {
         self.entity.get_name()
+    }
+
+    #[cfg(any(not(target_arch = "wasm32"), target_os = "emscripten"))]
+    pub fn set_name(&mut self, name: String) {
+        self.entity.set_name(name);
+    }
+
+    #[cfg(all(target_arch = "wasm32", not(target_os = "emscripten")))]
+    pub fn set_name(&mut self, name: String) {
+        self.entity.set_name(name.as_str());
     }
 
     pub fn get<T: Component + ComponentType + Default + 'static>(&mut self) -> T {
@@ -148,16 +160,72 @@ impl Entity {
         self
     }
 
-    pub fn add_relationship(&mut self, relationship: Entity, target: Entity) {
-        self.entity.add_relationship(relationship.get_id(), target.get_id());
+    pub fn add_relationship(&mut self, relationship: Relationship, target: Entity) {
+        self.entity.add_relationship(relationship, target.get_id());
     }
 
-    pub fn remove_relationship(&mut self, relationship: Entity, target: Entity) {
-        self.entity.remove_relationship(relationship.get_id(), target.get_id());
+    pub fn remove_relationship(&mut self, relationship: Relationship, target: Entity) {
+        self.entity.remove_relationship(relationship, target.get_id());
     }
 
     pub fn remove<T: Component + ComponentType + 'static>(&mut self) {  
         self.entity.remove(T::get_id());
+    }
+
+    pub fn parent_of(&mut self, target: Entity) {
+        self.entity.parent_of(target.get_id());
+    }
+
+    pub fn child_of(&mut self, target: Entity) {
+        self.entity.child_of(target.get_id());
+    }
+
+    pub fn parent_of_id(&mut self, target: ecs_entity_t) {
+        self.entity.parent_of(target);
+    }
+
+    pub fn child_of_id(&mut self, target: ecs_entity_t) {
+        self.entity.child_of(target);
+    }
+
+    #[cfg(any(not(target_arch = "wasm32"), target_os = "emscripten"))]
+    pub fn parent(&self) -> Entity {        
+        Self { entity: unsafe { *Box::from_raw(ToxoidEntity::from_id(self.entity.parent()) as usize as *mut ToxoidEntity) } }
+    }
+
+    #[cfg(all(target_arch = "wasm32", not(target_os = "emscripten")))]
+    pub fn parent(&self) -> Entity {
+        Self { entity: ToxoidEntity::from_id(self.entity.parent().get_id()) }
+    }
+
+    #[cfg(any(not(target_arch = "wasm32"), target_os = "emscripten"))]
+    pub fn children(&self) -> Vec<Entity> {
+        self.entity.children().iter().map(|child| Entity { entity: ToxoidEntity { id: *child } }).collect()
+    }
+
+    #[cfg(all(target_arch = "wasm32", not(target_os = "emscripten")))]
+    pub fn children(&self) -> Vec<Entity> {
+        return self
+            .entity
+            .children()
+            .iter()
+            .map(|child| Entity { entity: ToxoidEntity::from_id(child.get_id()) })
+            .collect();
+    }
+
+    #[cfg(any(not(target_arch = "wasm32"), target_os = "emscripten"))]
+    pub fn relationships(&self) -> Vec<Entity> {
+        self
+            .entity
+            .relationships()
+            .iter()
+            .map(|relationship| Entity { entity: ToxoidEntity { id: *relationship } })
+            .collect()
+    }
+
+    #[cfg(all(target_arch = "wasm32", not(target_os = "emscripten")))]
+    pub fn relationships(&self) -> Vec<Entity> {
+        return self.entity.relationships().iter().map(|relationship| Entity { entity: ToxoidEntity::from_id(relationship.get_id()) }).collect();
     }
 }
 
