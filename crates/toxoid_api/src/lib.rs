@@ -128,6 +128,16 @@ impl Entity {
         self.entity.get_name()
     }
 
+    #[cfg(any(not(target_arch = "wasm32"), target_os = "emscripten"))]
+    pub fn set_name(&mut self, name: String) {
+        self.entity.set_name(name);
+    }
+
+    #[cfg(all(target_arch = "wasm32", not(target_os = "emscripten")))]
+    pub fn set_name(&mut self, name: String) {
+        self.entity.set_name(name.as_str());
+    }
+
     pub fn get<T: Component + ComponentType + Default + 'static>(&mut self) -> T {
         let mut component = T::default();
         let component_ptr = self.entity.get(T::get_id());
@@ -170,6 +180,14 @@ impl Entity {
         self.entity.child_of(target.get_id());
     }
 
+    pub fn parent_of_id(&mut self, target: ecs_entity_t) {
+        self.entity.parent_of(target);
+    }
+
+    pub fn child_of_id(&mut self, target: ecs_entity_t) {
+        self.entity.child_of(target);
+    }
+
     #[cfg(any(not(target_arch = "wasm32"), target_os = "emscripten"))]
     pub fn parent(&self) -> Entity {        
         Self { entity: unsafe { *Box::from_raw(ToxoidEntity::from_id(self.entity.parent()) as usize as *mut ToxoidEntity) } }
@@ -191,7 +209,7 @@ impl Entity {
             .entity
             .children()
             .iter()
-            .map(|child| Entity { entity: *child })
+            .map(|child| Entity { entity: ToxoidEntity::from_id(child.get_id()) })
             .collect();
     }
 
@@ -207,7 +225,7 @@ impl Entity {
 
     #[cfg(all(target_arch = "wasm32", not(target_os = "emscripten")))]
     pub fn relationships(&self) -> Vec<Entity> {
-        return self.entity.relationships().iter().map(|relationship| Entity { entity: *relationship }).collect();
+        return self.entity.relationships().iter().map(|relationship| Entity { entity: ToxoidEntity::from_id(relationship.get_id()) }).collect();
     }
 }
 

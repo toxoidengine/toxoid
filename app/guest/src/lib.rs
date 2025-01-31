@@ -9,5 +9,4 @@ pub fn init() {
     components::init();
     entities::init();
     systems::init();
-    toxoid_api::fetch("sprite.png")
 }

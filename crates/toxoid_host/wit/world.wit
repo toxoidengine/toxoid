@@ -130,6 +130,7 @@ interface ecs {
         constructor(desc: entity-desc);
         get-id: func() -> ecs-entity-t;
         get-name: func() -> string;
+        set-name: func(name: string);
         from-id: static func(id: u64) -> pointer-t;
         get: func(component: ecs-entity-t) -> pointer-t;
         add: func(component: ecs-entity-t);
@@ -151,8 +152,11 @@ interface ecs {
         next: func() -> bool;
         count: func() -> s32;
         entities: func() -> list<ecs-entity-t>;
-        // ptrs: func(component-query-index: u32) -> *mut *mut c_void;
     }
+
+    // resource filter {
+    //     constructor(query: query-desc);
+    // }
 
     resource callback {
         constructor(handle: u64);
@@ -200,8 +204,8 @@ interface ecs {
     get-singleton: func(component-id: ecs-entity-t) -> u64;
     remove-singleton: func(component-id: ecs-entity-t);
     add-entity: func(entity-id: ecs-entity-t);
-    // get-entity: func(entity-id: ecs-entity-t) -> u64;
     remove-entity: func(entity-id: ecs-entity-t);
+    // get-entity: func(entity-id: ecs-entity-t) -> u64;
     // get-entity-named: func(name: string) -> u64;
     has-entity-named: func(name: string) -> bool;
     get-component-id: func(component-name: string) -> ecs-entity-t;

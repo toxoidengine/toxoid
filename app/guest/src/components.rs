@@ -11,8 +11,7 @@ component! {
         tail_length: u32
     },
     Tails {
-        max_length: u32,
-        entities: Vec::<u64>
+        max_length: u32
     },
     // Tags
     Head {},

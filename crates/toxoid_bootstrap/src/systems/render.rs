@@ -14,13 +14,13 @@ pub fn init() {
     })
         .build();
 
-    System::dsl("Sprite, Size", None, |iter| {
-        iter.entities().iter_mut().for_each(|entity| {
-            let sprite = entity.get::<Sprite>();
-            let sprite_box = unsafe { Box::from_raw(sprite.get_sprite() as *mut SokolSprite) };
-            let sprite_trait_object: &Box<dyn toxoid_render::Sprite> = Box::leak(Box::new(sprite_box as Box<dyn toxoid_render::Sprite>));
-            SokolRenderer2D::draw_sprite(sprite_trait_object, 0., 0.);
-        });
-    })
-    .build();
+    // System::dsl("Sprite, Size", None, |iter| {
+    //     iter.entities().iter_mut().for_each(|entity| {
+    //         let sprite = entity.get::<Sprite>();
+    //         let sprite_box = unsafe { Box::from_raw(sprite.get_sprite() as *mut SokolSprite) };
+    //         let sprite_trait_object: &Box<dyn toxoid_render::Sprite> = Box::leak(Box::new(sprite_box as Box<dyn toxoid_render::Sprite>));
+    //         SokolRenderer2D::draw_sprite(sprite_trait_object, 0., 0.);
+    //     });
+    // })
+    // .build();
 }
