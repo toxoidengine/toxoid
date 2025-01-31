@@ -92,7 +92,7 @@ pub fn init() {
             //         child_pos.set_y(prev_y);
             //         (old_x, old_y)
             //     });
-            
+
             // Recursively update children positions
             fn update_child_positions(entity: &mut Entity, prev_x: u32, prev_y: u32) -> (u32, u32) {
                 let mut child_pos = entity.get::<Position>();
@@ -113,18 +113,6 @@ pub fn init() {
             for child in snake_entity.children().iter_mut() {
                 update_child_positions(child, prev_x, prev_y);
             }
-
-            // println!("Tails entities: {:?}", tails_entities.clone());
-            // Remove the last tail entity
-            // println!("Tails entities max length: {:?}", tails.get_max_length());
-            // if tails_entities.len() > tails.get_max_length() as usize {
-            //     // println!("Removing last tail entity");
-            //     let last_tail_entity_id = tails_entities.remove(0);
-            //     let mut last_tail_entity = World::get_entity(last_tail_entity_id);
-            //     last_tail_entity.remove::<Tail>();
-            //     tails.set_entities(tails_entities.clone());
-            //     World::remove_entity(last_tail_entity_id);
-            // }
         });
     })
         .build();
