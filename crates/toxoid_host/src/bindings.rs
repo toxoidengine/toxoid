@@ -762,8 +762,134 @@ pub mod exports {
                         }
                     }
                 }
+                #[derive(Debug)]
+                #[repr(transparent)]
+                pub struct Iter {
+                    handle: _rt::Resource<Iter>,
+                }
+                type _IterRep<T> = Option<T>;
+                impl Iter {
+                    /// Creates a new resource from the specified representation.
+                    ///
+                    /// This function will create a new resource handle by moving `val` onto
+                    /// the heap and then passing that heap pointer to the component model to
+                    /// create a handle. The owned handle is then returned as `Iter`.
+                    pub fn new<T: GuestIter>(val: T) -> Self {
+                        Self::type_guard::<T>();
+                        let val: _IterRep<T> = Some(val);
+                        let ptr: *mut _IterRep<T> = _rt::Box::into_raw(
+                            _rt::Box::new(val),
+                        );
+                        unsafe { Self::from_handle(T::_resource_new(ptr.cast())) }
+                    }
+                    /// Gets access to the underlying `T` which represents this resource.
+                    pub fn get<T: GuestIter>(&self) -> &T {
+                        let ptr = unsafe { &*self.as_ptr::<T>() };
+                        ptr.as_ref().unwrap()
+                    }
+                    /// Gets mutable access to the underlying `T` which represents this
+                    /// resource.
+                    pub fn get_mut<T: GuestIter>(&mut self) -> &mut T {
+                        let ptr = unsafe { &mut *self.as_ptr::<T>() };
+                        ptr.as_mut().unwrap()
+                    }
+                    /// Consumes this resource and returns the underlying `T`.
+                    pub fn into_inner<T: GuestIter>(self) -> T {
+                        let ptr = unsafe { &mut *self.as_ptr::<T>() };
+                        ptr.take().unwrap()
+                    }
+                    #[doc(hidden)]
+                    pub unsafe fn from_handle(handle: u32) -> Self {
+                        Self {
+                            handle: _rt::Resource::from_handle(handle),
+                        }
+                    }
+                    #[doc(hidden)]
+                    pub fn take_handle(&self) -> u32 {
+                        _rt::Resource::take_handle(&self.handle)
+                    }
+                    #[doc(hidden)]
+                    pub fn handle(&self) -> u32 {
+                        _rt::Resource::handle(&self.handle)
+                    }
+                    #[doc(hidden)]
+                    fn type_guard<T: 'static>() {
+                        use core::any::TypeId;
+                        static mut LAST_TYPE: Option<TypeId> = None;
+                        unsafe {
+                            assert!(! cfg!(target_feature = "atomics"));
+                            let id = TypeId::of::<T>();
+                            match LAST_TYPE {
+                                Some(ty) => {
+                                    assert!(
+                                        ty == id, "cannot use two types with this resource type"
+                                    )
+                                }
+                                None => LAST_TYPE = Some(id),
+                            }
+                        }
+                    }
+                    #[doc(hidden)]
+                    pub unsafe fn dtor<T: 'static>(handle: *mut u8) {
+                        Self::type_guard::<T>();
+                        let _ = _rt::Box::from_raw(handle as *mut _IterRep<T>);
+                    }
+                    fn as_ptr<T: GuestIter>(&self) -> *mut _IterRep<T> {
+                        Iter::type_guard::<T>();
+                        T::_resource_rep(self.handle()).cast()
+                    }
+                }
+                /// A borrowed version of [`Iter`] which represents a borrowed value
+                /// with the lifetime `'a`.
+                #[derive(Debug)]
+                #[repr(transparent)]
+                pub struct IterBorrow<'a> {
+                    rep: *mut u8,
+                    _marker: core::marker::PhantomData<&'a Iter>,
+                }
+                impl<'a> IterBorrow<'a> {
+                    #[doc(hidden)]
+                    pub unsafe fn lift(rep: usize) -> Self {
+                        Self {
+                            rep: rep as *mut u8,
+                            _marker: core::marker::PhantomData,
+                        }
+                    }
+                    /// Gets access to the underlying `T` in this resource.
+                    pub fn get<T: GuestIter>(&self) -> &T {
+                        let ptr = unsafe { &mut *self.as_ptr::<T>() };
+                        ptr.as_ref().unwrap()
+                    }
+                    fn as_ptr<T: 'static>(&self) -> *mut _IterRep<T> {
+                        Iter::type_guard::<T>();
+                        self.rep.cast()
+                    }
+                }
+                unsafe impl _rt::WasmResource for Iter {
+                    #[inline]
+                    unsafe fn drop(_handle: u32) {
+                        #[cfg(not(target_arch = "wasm32"))]
+                        unreachable!();
+                        #[cfg(target_arch = "wasm32")]
+                        {
+                            #[link(wasm_import_module = "[export]toxoid:engine/ecs")]
+                            extern "C" {
+                                #[link_name = "[resource-drop]iter"]
+                                fn drop(_: u32);
+                            }
+                            drop(_handle);
+                        }
+                    }
+                }
                 /// resource filter {
                 /// constructor(query: query-desc);
+                /// dsl: func(expr: string);
+                /// build: func();
+                /// iter: func();
+                /// next: func() -> bool;
+                /// count: func() -> s32;
+                /// entities: func() -> list<ecs-entity-t>;
+                /// field: func(index: u32) -> pointer-t;
                 /// }
                 #[derive(Debug)]
                 #[repr(transparent)]
@@ -1160,125 +1286,6 @@ pub mod exports {
                             #[link(wasm_import_module = "[export]toxoid:engine/ecs")]
                             extern "C" {
                                 #[link_name = "[resource-drop]observer"]
-                                fn drop(_: u32);
-                            }
-                            drop(_handle);
-                        }
-                    }
-                }
-                #[derive(Debug)]
-                #[repr(transparent)]
-                pub struct Iter {
-                    handle: _rt::Resource<Iter>,
-                }
-                type _IterRep<T> = Option<T>;
-                impl Iter {
-                    /// Creates a new resource from the specified representation.
-                    ///
-                    /// This function will create a new resource handle by moving `val` onto
-                    /// the heap and then passing that heap pointer to the component model to
-                    /// create a handle. The owned handle is then returned as `Iter`.
-                    pub fn new<T: GuestIter>(val: T) -> Self {
-                        Self::type_guard::<T>();
-                        let val: _IterRep<T> = Some(val);
-                        let ptr: *mut _IterRep<T> = _rt::Box::into_raw(
-                            _rt::Box::new(val),
-                        );
-                        unsafe { Self::from_handle(T::_resource_new(ptr.cast())) }
-                    }
-                    /// Gets access to the underlying `T` which represents this resource.
-                    pub fn get<T: GuestIter>(&self) -> &T {
-                        let ptr = unsafe { &*self.as_ptr::<T>() };
-                        ptr.as_ref().unwrap()
-                    }
-                    /// Gets mutable access to the underlying `T` which represents this
-                    /// resource.
-                    pub fn get_mut<T: GuestIter>(&mut self) -> &mut T {
-                        let ptr = unsafe { &mut *self.as_ptr::<T>() };
-                        ptr.as_mut().unwrap()
-                    }
-                    /// Consumes this resource and returns the underlying `T`.
-                    pub fn into_inner<T: GuestIter>(self) -> T {
-                        let ptr = unsafe { &mut *self.as_ptr::<T>() };
-                        ptr.take().unwrap()
-                    }
-                    #[doc(hidden)]
-                    pub unsafe fn from_handle(handle: u32) -> Self {
-                        Self {
-                            handle: _rt::Resource::from_handle(handle),
-                        }
-                    }
-                    #[doc(hidden)]
-                    pub fn take_handle(&self) -> u32 {
-                        _rt::Resource::take_handle(&self.handle)
-                    }
-                    #[doc(hidden)]
-                    pub fn handle(&self) -> u32 {
-                        _rt::Resource::handle(&self.handle)
-                    }
-                    #[doc(hidden)]
-                    fn type_guard<T: 'static>() {
-                        use core::any::TypeId;
-                        static mut LAST_TYPE: Option<TypeId> = None;
-                        unsafe {
-                            assert!(! cfg!(target_feature = "atomics"));
-                            let id = TypeId::of::<T>();
-                            match LAST_TYPE {
-                                Some(ty) => {
-                                    assert!(
-                                        ty == id, "cannot use two types with this resource type"
-                                    )
-                                }
-                                None => LAST_TYPE = Some(id),
-                            }
-                        }
-                    }
-                    #[doc(hidden)]
-                    pub unsafe fn dtor<T: 'static>(handle: *mut u8) {
-                        Self::type_guard::<T>();
-                        let _ = _rt::Box::from_raw(handle as *mut _IterRep<T>);
-                    }
-                    fn as_ptr<T: GuestIter>(&self) -> *mut _IterRep<T> {
-                        Iter::type_guard::<T>();
-                        T::_resource_rep(self.handle()).cast()
-                    }
-                }
-                /// A borrowed version of [`Iter`] which represents a borrowed value
-                /// with the lifetime `'a`.
-                #[derive(Debug)]
-                #[repr(transparent)]
-                pub struct IterBorrow<'a> {
-                    rep: *mut u8,
-                    _marker: core::marker::PhantomData<&'a Iter>,
-                }
-                impl<'a> IterBorrow<'a> {
-                    #[doc(hidden)]
-                    pub unsafe fn lift(rep: usize) -> Self {
-                        Self {
-                            rep: rep as *mut u8,
-                            _marker: core::marker::PhantomData,
-                        }
-                    }
-                    /// Gets access to the underlying `T` in this resource.
-                    pub fn get<T: GuestIter>(&self) -> &T {
-                        let ptr = unsafe { &mut *self.as_ptr::<T>() };
-                        ptr.as_ref().unwrap()
-                    }
-                    fn as_ptr<T: 'static>(&self) -> *mut _IterRep<T> {
-                        Iter::type_guard::<T>();
-                        self.rep.cast()
-                    }
-                }
-                unsafe impl _rt::WasmResource for Iter {
-                    #[inline]
-                    unsafe fn drop(_handle: u32) {
-                        #[cfg(not(target_arch = "wasm32"))]
-                        unreachable!();
-                        #[cfg(target_arch = "wasm32")]
-                        {
-                            #[link(wasm_import_module = "[export]toxoid:engine/ecs")]
-                            extern "C" {
-                                #[link_name = "[resource-drop]iter"]
                                 fn drop(_: u32);
                             }
                             drop(_handle);
@@ -2395,21 +2402,6 @@ pub mod exports {
                 }
                 #[doc(hidden)]
                 #[allow(non_snake_case)]
-                pub unsafe fn _export_method_query_expr_cabi<T: GuestQuery>(
-                    arg0: *mut u8,
-                    arg1: *mut u8,
-                    arg2: usize,
-                ) {
-                    #[cfg(target_arch = "wasm32")] _rt::run_ctors_once();
-                    let len0 = arg2;
-                    let bytes0 = _rt::Vec::from_raw_parts(arg1.cast(), len0, len0);
-                    T::expr(
-                        QueryBorrow::lift(arg0 as u32 as usize).get(),
-                        _rt::string_lift(bytes0),
-                    );
-                }
-                #[doc(hidden)]
-                #[allow(non_snake_case)]
                 pub unsafe fn _export_method_query_build_cabi<T: GuestQuery>(
                     arg0: *mut u8,
                 ) {
@@ -2420,9 +2412,10 @@ pub mod exports {
                 #[allow(non_snake_case)]
                 pub unsafe fn _export_method_query_iter_cabi<T: GuestQuery>(
                     arg0: *mut u8,
-                ) {
+                ) -> i64 {
                     #[cfg(target_arch = "wasm32")] _rt::run_ctors_once();
-                    T::iter(QueryBorrow::lift(arg0 as u32 as usize).get());
+                    let result0 = T::iter(QueryBorrow::lift(arg0 as u32 as usize).get());
+                    _rt::as_i64(result0)
                 }
                 #[doc(hidden)]
                 #[allow(non_snake_case)]
@@ -2468,6 +2461,127 @@ pub mod exports {
                 #[doc(hidden)]
                 #[allow(non_snake_case)]
                 pub unsafe fn __post_return_method_query_entities<T: GuestQuery>(
+                    arg0: *mut u8,
+                ) {
+                    let l0 = *arg0.add(0).cast::<*mut u8>();
+                    let l1 = *arg0.add(4).cast::<usize>();
+                    let base2 = l0;
+                    let len2 = l1;
+                    _rt::cabi_dealloc(base2, len2 * 8, 8);
+                }
+                #[doc(hidden)]
+                #[allow(non_snake_case)]
+                pub unsafe fn _export_method_query_field_cabi<T: GuestQuery>(
+                    arg0: *mut u8,
+                    arg1: i32,
+                ) -> *mut u8 {
+                    #[cfg(target_arch = "wasm32")] _rt::run_ctors_once();
+                    let result0 = T::field(
+                        QueryBorrow::lift(arg0 as u32 as usize).get(),
+                        arg1 as i8,
+                    );
+                    let ptr1 = _RET_AREA.0.as_mut_ptr().cast::<u8>();
+                    let vec2 = (result0).into_boxed_slice();
+                    let ptr2 = vec2.as_ptr().cast::<u8>();
+                    let len2 = vec2.len();
+                    ::core::mem::forget(vec2);
+                    *ptr1.add(4).cast::<usize>() = len2;
+                    *ptr1.add(0).cast::<*mut u8>() = ptr2.cast_mut();
+                    ptr1
+                }
+                #[doc(hidden)]
+                #[allow(non_snake_case)]
+                pub unsafe fn __post_return_method_query_field<T: GuestQuery>(
+                    arg0: *mut u8,
+                ) {
+                    let l0 = *arg0.add(0).cast::<*mut u8>();
+                    let l1 = *arg0.add(4).cast::<usize>();
+                    let base2 = l0;
+                    let len2 = l1;
+                    _rt::cabi_dealloc(base2, len2 * 8, 8);
+                }
+                #[doc(hidden)]
+                #[allow(non_snake_case)]
+                pub unsafe fn _export_constructor_iter_cabi<T: GuestIter>(
+                    arg0: i64,
+                ) -> i32 {
+                    #[cfg(target_arch = "wasm32")] _rt::run_ctors_once();
+                    let result0 = Iter::new(T::new(arg0 as u64));
+                    (result0).take_handle() as i32
+                }
+                #[doc(hidden)]
+                #[allow(non_snake_case)]
+                pub unsafe fn _export_method_iter_next_cabi<T: GuestIter>(
+                    arg0: *mut u8,
+                ) -> i32 {
+                    #[cfg(target_arch = "wasm32")] _rt::run_ctors_once();
+                    let result0 = T::next(IterBorrow::lift(arg0 as u32 as usize).get());
+                    match result0 {
+                        true => 1,
+                        false => 0,
+                    }
+                }
+                #[doc(hidden)]
+                #[allow(non_snake_case)]
+                pub unsafe fn _export_method_iter_count_cabi<T: GuestIter>(
+                    arg0: *mut u8,
+                ) -> i32 {
+                    #[cfg(target_arch = "wasm32")] _rt::run_ctors_once();
+                    let result0 = T::count(IterBorrow::lift(arg0 as u32 as usize).get());
+                    _rt::as_i32(result0)
+                }
+                #[doc(hidden)]
+                #[allow(non_snake_case)]
+                pub unsafe fn _export_method_iter_entities_cabi<T: GuestIter>(
+                    arg0: *mut u8,
+                ) -> *mut u8 {
+                    #[cfg(target_arch = "wasm32")] _rt::run_ctors_once();
+                    let result0 = T::entities(
+                        IterBorrow::lift(arg0 as u32 as usize).get(),
+                    );
+                    let ptr1 = _RET_AREA.0.as_mut_ptr().cast::<u8>();
+                    let vec2 = (result0).into_boxed_slice();
+                    let ptr2 = vec2.as_ptr().cast::<u8>();
+                    let len2 = vec2.len();
+                    ::core::mem::forget(vec2);
+                    *ptr1.add(4).cast::<usize>() = len2;
+                    *ptr1.add(0).cast::<*mut u8>() = ptr2.cast_mut();
+                    ptr1
+                }
+                #[doc(hidden)]
+                #[allow(non_snake_case)]
+                pub unsafe fn __post_return_method_iter_entities<T: GuestIter>(
+                    arg0: *mut u8,
+                ) {
+                    let l0 = *arg0.add(0).cast::<*mut u8>();
+                    let l1 = *arg0.add(4).cast::<usize>();
+                    let base2 = l0;
+                    let len2 = l1;
+                    _rt::cabi_dealloc(base2, len2 * 8, 8);
+                }
+                #[doc(hidden)]
+                #[allow(non_snake_case)]
+                pub unsafe fn _export_method_iter_field_cabi<T: GuestIter>(
+                    arg0: *mut u8,
+                    arg1: i32,
+                ) -> *mut u8 {
+                    #[cfg(target_arch = "wasm32")] _rt::run_ctors_once();
+                    let result0 = T::field(
+                        IterBorrow::lift(arg0 as u32 as usize).get(),
+                        arg1 as i8,
+                    );
+                    let ptr1 = _RET_AREA.0.as_mut_ptr().cast::<u8>();
+                    let vec2 = (result0).into_boxed_slice();
+                    let ptr2 = vec2.as_ptr().cast::<u8>();
+                    let len2 = vec2.len();
+                    ::core::mem::forget(vec2);
+                    *ptr1.add(4).cast::<usize>() = len2;
+                    *ptr1.add(0).cast::<*mut u8>() = ptr2.cast_mut();
+                    ptr1
+                }
+                #[doc(hidden)]
+                #[allow(non_snake_case)]
+                pub unsafe fn __post_return_method_iter_field<T: GuestIter>(
                     arg0: *mut u8,
                 ) {
                     let l0 = *arg0.add(0).cast::<*mut u8>();
@@ -2655,65 +2769,6 @@ pub mod exports {
                 }
                 #[doc(hidden)]
                 #[allow(non_snake_case)]
-                pub unsafe fn _export_constructor_iter_cabi<T: GuestIter>(
-                    arg0: i64,
-                ) -> i32 {
-                    #[cfg(target_arch = "wasm32")] _rt::run_ctors_once();
-                    let result0 = Iter::new(T::new(arg0 as u64));
-                    (result0).take_handle() as i32
-                }
-                #[doc(hidden)]
-                #[allow(non_snake_case)]
-                pub unsafe fn _export_method_iter_next_cabi<T: GuestIter>(
-                    arg0: *mut u8,
-                ) -> i32 {
-                    #[cfg(target_arch = "wasm32")] _rt::run_ctors_once();
-                    let result0 = T::next(IterBorrow::lift(arg0 as u32 as usize).get());
-                    match result0 {
-                        true => 1,
-                        false => 0,
-                    }
-                }
-                #[doc(hidden)]
-                #[allow(non_snake_case)]
-                pub unsafe fn _export_method_iter_count_cabi<T: GuestIter>(
-                    arg0: *mut u8,
-                ) -> i32 {
-                    #[cfg(target_arch = "wasm32")] _rt::run_ctors_once();
-                    let result0 = T::count(IterBorrow::lift(arg0 as u32 as usize).get());
-                    _rt::as_i32(result0)
-                }
-                #[doc(hidden)]
-                #[allow(non_snake_case)]
-                pub unsafe fn _export_method_iter_entities_cabi<T: GuestIter>(
-                    arg0: *mut u8,
-                ) -> *mut u8 {
-                    #[cfg(target_arch = "wasm32")] _rt::run_ctors_once();
-                    let result0 = T::entities(
-                        IterBorrow::lift(arg0 as u32 as usize).get(),
-                    );
-                    let ptr1 = _RET_AREA.0.as_mut_ptr().cast::<u8>();
-                    let vec2 = (result0).into_boxed_slice();
-                    let ptr2 = vec2.as_ptr().cast::<u8>();
-                    let len2 = vec2.len();
-                    ::core::mem::forget(vec2);
-                    *ptr1.add(4).cast::<usize>() = len2;
-                    *ptr1.add(0).cast::<*mut u8>() = ptr2.cast_mut();
-                    ptr1
-                }
-                #[doc(hidden)]
-                #[allow(non_snake_case)]
-                pub unsafe fn __post_return_method_iter_entities<T: GuestIter>(
-                    arg0: *mut u8,
-                ) {
-                    let l0 = *arg0.add(0).cast::<*mut u8>();
-                    let l1 = *arg0.add(4).cast::<usize>();
-                    let base2 = l0;
-                    let len2 = l1;
-                    _rt::cabi_dealloc(base2, len2 * 8, 8);
-                }
-                #[doc(hidden)]
-                #[allow(non_snake_case)]
                 pub unsafe fn _export_add_singleton_cabi<T: Guest>(arg0: i64) {
                     #[cfg(target_arch = "wasm32")] _rt::run_ctors_once();
                     T::add_singleton(arg0 as u64);
@@ -2775,10 +2830,10 @@ pub mod exports {
                     type Component: GuestComponent;
                     type Entity: GuestEntity;
                     type Query: GuestQuery;
+                    type Iter: GuestIter;
                     type Callback: GuestCallback;
                     type System: GuestSystem;
                     type Observer: GuestObserver;
-                    type Iter: GuestIter;
                     fn add_singleton(component_id: EcsEntityT);
                     fn get_singleton(component_id: EcsEntityT) -> u64;
                     fn remove_singleton(component_id: EcsEntityT);
@@ -3035,12 +3090,59 @@ pub mod exports {
                         }
                     }
                     fn new(desc: QueryDesc) -> Self;
-                    fn expr(&self, expr: _rt::String);
                     fn build(&self);
-                    fn iter(&self);
+                    fn iter(&self) -> PointerT;
                     fn next(&self) -> bool;
                     fn count(&self) -> i32;
                     fn entities(&self) -> _rt::Vec<EcsEntityT>;
+                    fn field(&self, index: i8) -> _rt::Vec<PointerT>;
+                }
+                pub trait GuestIter: 'static {
+                    #[doc(hidden)]
+                    unsafe fn _resource_new(val: *mut u8) -> u32
+                    where
+                        Self: Sized,
+                    {
+                        #[cfg(not(target_arch = "wasm32"))]
+                        {
+                            let _ = val;
+                            unreachable!();
+                        }
+                        #[cfg(target_arch = "wasm32")]
+                        {
+                            #[link(wasm_import_module = "[export]toxoid:engine/ecs")]
+                            extern "C" {
+                                #[link_name = "[resource-new]iter"]
+                                fn new(_: *mut u8) -> u32;
+                            }
+                            new(val)
+                        }
+                    }
+                    #[doc(hidden)]
+                    fn _resource_rep(handle: u32) -> *mut u8
+                    where
+                        Self: Sized,
+                    {
+                        #[cfg(not(target_arch = "wasm32"))]
+                        {
+                            let _ = handle;
+                            unreachable!();
+                        }
+                        #[cfg(target_arch = "wasm32")]
+                        {
+                            #[link(wasm_import_module = "[export]toxoid:engine/ecs")]
+                            extern "C" {
+                                #[link_name = "[resource-rep]iter"]
+                                fn rep(_: u32) -> *mut u8;
+                            }
+                            unsafe { rep(handle) }
+                        }
+                    }
+                    fn new(ptr: u64) -> Self;
+                    fn next(&self) -> bool;
+                    fn count(&self) -> i32;
+                    fn entities(&self) -> _rt::Vec<EcsEntityT>;
+                    fn field(&self, index: i8) -> _rt::Vec<PointerT>;
                 }
                 pub trait GuestCallback: 'static {
                     #[doc(hidden)]
@@ -3177,52 +3279,6 @@ pub mod exports {
                     fn new(desc: ObserverDesc) -> Self;
                     fn build(&self);
                     fn callback(&self) -> PointerT;
-                }
-                pub trait GuestIter: 'static {
-                    #[doc(hidden)]
-                    unsafe fn _resource_new(val: *mut u8) -> u32
-                    where
-                        Self: Sized,
-                    {
-                        #[cfg(not(target_arch = "wasm32"))]
-                        {
-                            let _ = val;
-                            unreachable!();
-                        }
-                        #[cfg(target_arch = "wasm32")]
-                        {
-                            #[link(wasm_import_module = "[export]toxoid:engine/ecs")]
-                            extern "C" {
-                                #[link_name = "[resource-new]iter"]
-                                fn new(_: *mut u8) -> u32;
-                            }
-                            new(val)
-                        }
-                    }
-                    #[doc(hidden)]
-                    fn _resource_rep(handle: u32) -> *mut u8
-                    where
-                        Self: Sized,
-                    {
-                        #[cfg(not(target_arch = "wasm32"))]
-                        {
-                            let _ = handle;
-                            unreachable!();
-                        }
-                        #[cfg(target_arch = "wasm32")]
-                        {
-                            #[link(wasm_import_module = "[export]toxoid:engine/ecs")]
-                            extern "C" {
-                                #[link_name = "[resource-rep]iter"]
-                                fn rep(_: u32) -> *mut u8;
-                            }
-                            unsafe { rep(handle) }
-                        }
-                    }
-                    fn new(ptr: u64) -> Self;
-                    fn next(&self) -> bool;
-                    fn count(&self) -> i32;
-                    fn entities(&self) -> _rt::Vec<EcsEntityT>;
                 }
                 #[doc(hidden)]
                 macro_rules! __export_toxoid_engine_ecs_cabi {
@@ -3691,19 +3747,14 @@ pub mod exports {
                         export_constructor_query(arg0 : * mut u8, arg1 : usize,) -> i32 {
                         $($path_to_types)*:: _export_constructor_query_cabi::<<$ty as
                         $($path_to_types)*:: Guest >::Query > (arg0, arg1) }
-                        #[export_name = "toxoid:engine/ecs#[method]query.expr"] unsafe
-                        extern "C" fn export_method_query_expr(arg0 : * mut u8, arg1 : *
-                        mut u8, arg2 : usize,) { $($path_to_types)*::
-                        _export_method_query_expr_cabi::<<$ty as $($path_to_types)*::
-                        Guest >::Query > (arg0, arg1, arg2) } #[export_name =
-                        "toxoid:engine/ecs#[method]query.build"] unsafe extern "C" fn
-                        export_method_query_build(arg0 : * mut u8,) {
+                        #[export_name = "toxoid:engine/ecs#[method]query.build"] unsafe
+                        extern "C" fn export_method_query_build(arg0 : * mut u8,) {
                         $($path_to_types)*:: _export_method_query_build_cabi::<<$ty as
                         $($path_to_types)*:: Guest >::Query > (arg0) } #[export_name =
                         "toxoid:engine/ecs#[method]query.iter"] unsafe extern "C" fn
-                        export_method_query_iter(arg0 : * mut u8,) { $($path_to_types)*::
-                        _export_method_query_iter_cabi::<<$ty as $($path_to_types)*::
-                        Guest >::Query > (arg0) } #[export_name =
+                        export_method_query_iter(arg0 : * mut u8,) -> i64 {
+                        $($path_to_types)*:: _export_method_query_iter_cabi::<<$ty as
+                        $($path_to_types)*:: Guest >::Query > (arg0) } #[export_name =
                         "toxoid:engine/ecs#[method]query.next"] unsafe extern "C" fn
                         export_method_query_next(arg0 : * mut u8,) -> i32 {
                         $($path_to_types)*:: _export_method_query_next_cabi::<<$ty as
@@ -3721,6 +3772,44 @@ pub mod exports {
                         u8,) { $($path_to_types)*::
                         __post_return_method_query_entities::<<$ty as
                         $($path_to_types)*:: Guest >::Query > (arg0) } #[export_name =
+                        "toxoid:engine/ecs#[method]query.field"] unsafe extern "C" fn
+                        export_method_query_field(arg0 : * mut u8, arg1 : i32,) -> * mut
+                        u8 { $($path_to_types)*:: _export_method_query_field_cabi::<<$ty
+                        as $($path_to_types)*:: Guest >::Query > (arg0, arg1) }
+                        #[export_name =
+                        "cabi_post_toxoid:engine/ecs#[method]query.field"] unsafe extern
+                        "C" fn _post_return_method_query_field(arg0 : * mut u8,) {
+                        $($path_to_types)*:: __post_return_method_query_field::<<$ty as
+                        $($path_to_types)*:: Guest >::Query > (arg0) } #[export_name =
+                        "toxoid:engine/ecs#[constructor]iter"] unsafe extern "C" fn
+                        export_constructor_iter(arg0 : i64,) -> i32 {
+                        $($path_to_types)*:: _export_constructor_iter_cabi::<<$ty as
+                        $($path_to_types)*:: Guest >::Iter > (arg0) } #[export_name =
+                        "toxoid:engine/ecs#[method]iter.next"] unsafe extern "C" fn
+                        export_method_iter_next(arg0 : * mut u8,) -> i32 {
+                        $($path_to_types)*:: _export_method_iter_next_cabi::<<$ty as
+                        $($path_to_types)*:: Guest >::Iter > (arg0) } #[export_name =
+                        "toxoid:engine/ecs#[method]iter.count"] unsafe extern "C" fn
+                        export_method_iter_count(arg0 : * mut u8,) -> i32 {
+                        $($path_to_types)*:: _export_method_iter_count_cabi::<<$ty as
+                        $($path_to_types)*:: Guest >::Iter > (arg0) } #[export_name =
+                        "toxoid:engine/ecs#[method]iter.entities"] unsafe extern "C" fn
+                        export_method_iter_entities(arg0 : * mut u8,) -> * mut u8 {
+                        $($path_to_types)*:: _export_method_iter_entities_cabi::<<$ty as
+                        $($path_to_types)*:: Guest >::Iter > (arg0) } #[export_name =
+                        "cabi_post_toxoid:engine/ecs#[method]iter.entities"] unsafe
+                        extern "C" fn _post_return_method_iter_entities(arg0 : * mut u8,)
+                        { $($path_to_types)*:: __post_return_method_iter_entities::<<$ty
+                        as $($path_to_types)*:: Guest >::Iter > (arg0) } #[export_name =
+                        "toxoid:engine/ecs#[method]iter.field"] unsafe extern "C" fn
+                        export_method_iter_field(arg0 : * mut u8, arg1 : i32,) -> * mut
+                        u8 { $($path_to_types)*:: _export_method_iter_field_cabi::<<$ty
+                        as $($path_to_types)*:: Guest >::Iter > (arg0, arg1) }
+                        #[export_name = "cabi_post_toxoid:engine/ecs#[method]iter.field"]
+                        unsafe extern "C" fn _post_return_method_iter_field(arg0 : * mut
+                        u8,) { $($path_to_types)*::
+                        __post_return_method_iter_field::<<$ty as $($path_to_types)*::
+                        Guest >::Iter > (arg0) } #[export_name =
                         "toxoid:engine/ecs#[constructor]callback"] unsafe extern "C" fn
                         export_constructor_callback(arg0 : i64,) -> i32 {
                         $($path_to_types)*:: _export_constructor_callback_cabi::<<$ty as
@@ -3764,28 +3853,8 @@ pub mod exports {
                         fn export_method_observer_callback(arg0 : * mut u8,) -> i64 {
                         $($path_to_types)*:: _export_method_observer_callback_cabi::<<$ty
                         as $($path_to_types)*:: Guest >::Observer > (arg0) }
-                        #[export_name = "toxoid:engine/ecs#[constructor]iter"] unsafe
-                        extern "C" fn export_constructor_iter(arg0 : i64,) -> i32 {
-                        $($path_to_types)*:: _export_constructor_iter_cabi::<<$ty as
-                        $($path_to_types)*:: Guest >::Iter > (arg0) } #[export_name =
-                        "toxoid:engine/ecs#[method]iter.next"] unsafe extern "C" fn
-                        export_method_iter_next(arg0 : * mut u8,) -> i32 {
-                        $($path_to_types)*:: _export_method_iter_next_cabi::<<$ty as
-                        $($path_to_types)*:: Guest >::Iter > (arg0) } #[export_name =
-                        "toxoid:engine/ecs#[method]iter.count"] unsafe extern "C" fn
-                        export_method_iter_count(arg0 : * mut u8,) -> i32 {
-                        $($path_to_types)*:: _export_method_iter_count_cabi::<<$ty as
-                        $($path_to_types)*:: Guest >::Iter > (arg0) } #[export_name =
-                        "toxoid:engine/ecs#[method]iter.entities"] unsafe extern "C" fn
-                        export_method_iter_entities(arg0 : * mut u8,) -> * mut u8 {
-                        $($path_to_types)*:: _export_method_iter_entities_cabi::<<$ty as
-                        $($path_to_types)*:: Guest >::Iter > (arg0) } #[export_name =
-                        "cabi_post_toxoid:engine/ecs#[method]iter.entities"] unsafe
-                        extern "C" fn _post_return_method_iter_entities(arg0 : * mut u8,)
-                        { $($path_to_types)*:: __post_return_method_iter_entities::<<$ty
-                        as $($path_to_types)*:: Guest >::Iter > (arg0) } #[export_name =
-                        "toxoid:engine/ecs#add-singleton"] unsafe extern "C" fn
-                        export_add_singleton(arg0 : i64,) { $($path_to_types)*::
+                        #[export_name = "toxoid:engine/ecs#add-singleton"] unsafe extern
+                        "C" fn export_add_singleton(arg0 : i64,) { $($path_to_types)*::
                         _export_add_singleton_cabi::<$ty > (arg0) } #[export_name =
                         "toxoid:engine/ecs#get-singleton"] unsafe extern "C" fn
                         export_get_singleton(arg0 : i64,) -> i64 { $($path_to_types)*::
@@ -3824,6 +3893,10 @@ pub mod exports {
                         #[allow(non_snake_case)] unsafe extern "C" fn dtor(rep : * mut
                         u8) { $($path_to_types)*:: Query::dtor::< <$ty as
                         $($path_to_types)*:: Guest >::Query > (rep) } }; const _ : () = {
+                        #[doc(hidden)] #[export_name = "toxoid:engine/ecs#[dtor]iter"]
+                        #[allow(non_snake_case)] unsafe extern "C" fn dtor(rep : * mut
+                        u8) { $($path_to_types)*:: Iter::dtor::< <$ty as
+                        $($path_to_types)*:: Guest >::Iter > (rep) } }; const _ : () = {
                         #[doc(hidden)] #[export_name =
                         "toxoid:engine/ecs#[dtor]callback"] #[allow(non_snake_case)]
                         unsafe extern "C" fn dtor(rep : * mut u8) { $($path_to_types)*::
@@ -3836,11 +3909,7 @@ pub mod exports {
                         "toxoid:engine/ecs#[dtor]observer"] #[allow(non_snake_case)]
                         unsafe extern "C" fn dtor(rep : * mut u8) { $($path_to_types)*::
                         Observer::dtor::< <$ty as $($path_to_types)*:: Guest >::Observer
-                        > (rep) } }; const _ : () = { #[doc(hidden)] #[export_name =
-                        "toxoid:engine/ecs#[dtor]iter"] #[allow(non_snake_case)] unsafe
-                        extern "C" fn dtor(rep : * mut u8) { $($path_to_types)*::
-                        Iter::dtor::< <$ty as $($path_to_types)*:: Guest >::Iter > (rep)
-                        } }; };
+                        > (rep) } }; };
                     };
                 }
                 #[doc(hidden)]
@@ -3935,6 +4004,37 @@ mod _rt {
     #[cfg(target_arch = "wasm32")]
     pub fn run_ctors_once() {
         #[cfg(not(target_os = "emscripten"))]
+#[cfg(not(target_os = "emscripten"))]
+#[cfg(not(target_os = "emscripten"))]
+#[cfg(not(target_os = "emscripten"))]
+#[cfg(not(target_os = "emscripten"))]
+#[cfg(not(target_os = "emscripten"))]
+#[cfg(not(target_os = "emscripten"))]
+#[cfg(not(target_os = "emscripten"))]
+#[cfg(not(target_os = "emscripten"))]
+#[cfg(not(target_os = "emscripten"))]
+#[cfg(not(target_os = "emscripten"))]
+#[cfg(not(target_os = "emscripten"))]
+#[cfg(not(target_os = "emscripten"))]
+#[cfg(not(target_os = "emscripten"))]
+#[cfg(not(target_os = "emscripten"))]
+#[cfg(not(target_os = "emscripten"))]
+#[cfg(not(target_os = "emscripten"))]
+#[cfg(not(target_os = "emscripten"))]
+#[cfg(not(target_os = "emscripten"))]
+#[cfg(not(target_os = "emscripten"))]
+#[cfg(not(target_os = "emscripten"))]
+#[cfg(not(target_os = "emscripten"))]
+#[cfg(not(target_os = "emscripten"))]
+#[cfg(not(target_os = "emscripten"))]
+#[cfg(not(target_os = "emscripten"))]
+#[cfg(not(target_os = "emscripten"))]
+#[cfg(not(target_os = "emscripten"))]
+#[cfg(not(target_os = "emscripten"))]
+#[cfg(not(target_os = "emscripten"))]
+#[cfg(not(target_os = "emscripten"))]
+#[cfg(not(target_os = "emscripten"))]
+#[cfg(not(target_os = "emscripten"))]
 wit_bindgen_rt::run_ctors_once();
     }
     pub unsafe fn string_lift(bytes: Vec<u8>) -> String {
@@ -4121,9 +4221,9 @@ pub(crate) use __export_toxoid_engine_world_impl as export;
 #[cfg(target_arch = "wasm32")]
 #[link_section = "component-type:wit-bindgen:0.35.0:toxoid:engine:toxoid-engine-world:encoded world"]
 #[doc(hidden)]
-pub static __WIT_BINDGEN_COMPONENT_TYPE: [u8; 5591] = *b"\
-\0asm\x0d\0\x01\0\0\x19\x16wit-component-encoding\x04\0\x07\xcd*\x01A\x02\x01A\x02\
-\x01B\xe7\x01\x01w\x04\0\x0cecs-entity-t\x03\0\0\x01w\x04\0\x09pointer-t\x03\0\x02\
+pub static __WIT_BINDGEN_COMPONENT_TYPE: [u8; 5652] = *b"\
+\0asm\x0d\0\x01\0\0\x19\x16wit-component-encoding\x04\0\x07\x8a+\x01A\x02\x01A\x02\
+\x01B\xeb\x01\x01w\x04\0\x0cecs-entity-t\x03\0\0\x01w\x04\0\x09pointer-t\x03\0\x02\
 \x01q\x03\x04is-a\0\0\x08child-of\0\0\x06custom\x01\x01\0\x04\0\x0crelationship\x03\
 \0\x04\x01m\x18\x04u8-t\x05u16-t\x05u32-t\x05u64-t\x04i8-t\x05i16-t\x05i32-t\x05\
 i64-t\x05f32-t\x05f64-t\x06bool-t\x08string-t\x06list-t\x08u8list-t\x09u16list-t\
@@ -4134,15 +4234,15 @@ n-set\x06on-add\x09on-remove\x09on-delete\x10on-delete-target\x0fon-table-create
 ps\x01p}\x01r\x03\x04names\x0cmember-names\x0a\x0cmember-types\x0b\x04\0\x0ecomp\
 onent-desc\x03\0\x0c\x01ks\x01r\x01\x04name\x0e\x04\0\x0bentity-desc\x03\0\x0f\x01\
 r\x01\x04exprs\x04\0\x0aquery-desc\x03\0\x11\x04\0\x0ecomponent-type\x03\x01\x04\
-\0\x09component\x03\x01\x04\0\x06entity\x03\x01\x04\0\x05query\x03\x01\x04\0\x08\
-callback\x03\x01\x01kz\x01r\x05\x04name\x0e\x09tick-rate\x18\x08callbackw\x0aque\
-ry-desc\x12\x08is-guest\x7f\x04\0\x0bsystem-desc\x03\0\x19\x04\0\x06system\x03\x01\
-\x01p\x09\x01r\x05\x04name\x0e\x0aquery-desc\x12\x06events\x1c\x08callback\x03\x08\
-is-guest\x7f\x04\0\x0dobserver-desc\x03\0\x1d\x04\0\x08observer\x03\x01\x04\0\x04\
-iter\x03\x01\x01i\x13\x01@\x01\x04desc\x0d\0!\x04\0\x1b[constructor]component-ty\
-pe\x01\"\x01h\x13\x01@\x01\x04self#\0\x01\x04\0\x1d[method]component-type.get-id\
-\x01$\x01i\x14\x01@\x03\x03ptr\x03\x06entity\x01\x0ecomponent-type\x01\0%\x04\0\x16\
-[constructor]component\x01&\x01h\x14\x01@\x03\x04self'\x06offsety\x05value}\x01\0\
+\0\x09component\x03\x01\x04\0\x06entity\x03\x01\x04\0\x05query\x03\x01\x04\0\x04\
+iter\x03\x01\x04\0\x08callback\x03\x01\x01kz\x01r\x05\x04name\x0e\x09tick-rate\x19\
+\x08callbackw\x0aquery-desc\x12\x08is-guest\x7f\x04\0\x0bsystem-desc\x03\0\x1a\x04\
+\0\x06system\x03\x01\x01p\x09\x01r\x05\x04name\x0e\x0aquery-desc\x12\x06events\x1d\
+\x08callback\x03\x08is-guest\x7f\x04\0\x0dobserver-desc\x03\0\x1e\x04\0\x08obser\
+ver\x03\x01\x01i\x13\x01@\x01\x04desc\x0d\0!\x04\0\x1b[constructor]component-typ\
+e\x01\"\x01h\x13\x01@\x01\x04self#\0\x01\x04\0\x1d[method]component-type.get-id\x01\
+$\x01i\x14\x01@\x03\x03ptr\x03\x06entity\x01\x0ecomponent-type\x01\0%\x04\0\x16[\
+constructor]component\x01&\x01h\x14\x01@\x03\x04self'\x06offsety\x05value}\x01\0\
 \x04\0\x1f[method]component.set-member-u8\x01(\x01@\x02\x04self'\x06offsety\0}\x04\
 \0\x1f[method]component.get-member-u8\x01)\x01@\x03\x04self'\x06offsety\x05value\
 {\x01\0\x04\0\x20[method]component.set-member-u16\x01*\x01@\x02\x04self'\x06offs\
@@ -4205,34 +4305,67 @@ ip\x01f\x01@\x02\x04self\xdf\0\x06target\x01\x01\0\x04\0\x18[method]entity.paren
 t-of\x01g\x04\0\x17[method]entity.child-of\x01g\x04\0\x15[method]entity.parent\x01\
 `\x01p\x01\x01@\x01\x04self\xdf\0\0\xe8\0\x04\0\x17[method]entity.children\x01i\x04\
 \0\x1c[method]entity.relationships\x01i\x01i\x16\x01@\x01\x04desc\x12\0\xea\0\x04\
-\0\x12[constructor]query\x01k\x01h\x16\x01@\x02\x04self\xec\0\x04exprs\x01\0\x04\
-\0\x12[method]query.expr\x01m\x01@\x01\x04self\xec\0\x01\0\x04\0\x13[method]quer\
-y.build\x01n\x04\0\x12[method]query.iter\x01n\x01@\x01\x04self\xec\0\0\x7f\x04\0\
-\x12[method]query.next\x01o\x01@\x01\x04self\xec\0\0z\x04\0\x13[method]query.cou\
-nt\x01p\x01@\x01\x04self\xec\0\0\xe8\0\x04\0\x16[method]query.entities\x01q\x01i\
-\x17\x01@\x01\x06handlew\0\xf2\0\x04\0\x15[constructor]callback\x01s\x01h\x17\x01\
-i\x20\x01@\x02\x04self\xf4\0\x04iter\xf5\0\x01\0\x04\0\x14[method]callback.run\x01\
-v\x01@\x01\x04self\xf4\0\0\x03\x04\0\x1a[method]callback.cb-handle\x01w\x01i\x1b\
-\x01@\x01\x04desc\x1a\0\xf8\0\x04\0\x13[constructor]system\x01y\x01h\x1b\x01@\x01\
-\x04self\xfa\0\x01\0\x04\0\x14[method]system.build\x01{\x01@\x01\x04self\xfa\0\0\
-w\x04\0\x17[method]system.callback\x01|\x01i\x1f\x01@\x01\x04desc\x1e\0\xfd\0\x04\
-\0\x15[constructor]observer\x01~\x01h\x1f\x01@\x01\x04self\xff\0\x01\0\x04\0\x16\
-[method]observer.build\x01\x80\x01\x01@\x01\x04self\xff\0\0\x03\x04\0\x19[method\
-]observer.callback\x01\x81\x01\x01@\x01\x03ptrw\0\xf5\0\x04\0\x11[constructor]it\
-er\x01\x82\x01\x01h\x20\x01@\x01\x04self\x83\x01\0\x7f\x04\0\x11[method]iter.nex\
-t\x01\x84\x01\x01@\x01\x04self\x83\x01\0z\x04\0\x12[method]iter.count\x01\x85\x01\
-\x01@\x01\x04self\x83\x01\0\xe8\0\x04\0\x15[method]iter.entities\x01\x86\x01\x01\
-@\x01\x0ccomponent-id\x01\x01\0\x04\0\x0dadd-singleton\x01\x87\x01\x01@\x01\x0cc\
-omponent-id\x01\0w\x04\0\x0dget-singleton\x01\x88\x01\x04\0\x10remove-singleton\x01\
-\x87\x01\x01@\x01\x09entity-id\x01\x01\0\x04\0\x0aadd-entity\x01\x89\x01\x04\0\x0d\
-remove-entity\x01\x89\x01\x01@\x01\x04names\0\x7f\x04\0\x10has-entity-named\x01\x8a\
-\x01\x01@\x01\x0ecomponent-names\0\x01\x04\0\x10get-component-id\x01\x8b\x01\x04\
-\0\x11toxoid:engine/ecs\x05\0\x04\0!toxoid:engine/toxoid-engine-world\x04\0\x0b\x19\
-\x01\0\x13toxoid-engine-world\x03\0\0\0G\x09producers\x01\x0cprocessed-by\x02\x0d\
-wit-component\x070.220.0\x10wit-bindgen-rust\x060.35.0";
+\0\x12[constructor]query\x01k\x01h\x16\x01@\x01\x04self\xec\0\x01\0\x04\0\x13[me\
+thod]query.build\x01m\x01@\x01\x04self\xec\0\0\x03\x04\0\x12[method]query.iter\x01\
+n\x01@\x01\x04self\xec\0\0\x7f\x04\0\x12[method]query.next\x01o\x01@\x01\x04self\
+\xec\0\0z\x04\0\x13[method]query.count\x01p\x01@\x01\x04self\xec\0\0\xe8\0\x04\0\
+\x16[method]query.entities\x01q\x01p\x03\x01@\x02\x04self\xec\0\x05index~\0\xf2\0\
+\x04\0\x13[method]query.field\x01s\x01i\x17\x01@\x01\x03ptrw\0\xf4\0\x04\0\x11[c\
+onstructor]iter\x01u\x01h\x17\x01@\x01\x04self\xf6\0\0\x7f\x04\0\x11[method]iter\
+.next\x01w\x01@\x01\x04self\xf6\0\0z\x04\0\x12[method]iter.count\x01x\x01@\x01\x04\
+self\xf6\0\0\xe8\0\x04\0\x15[method]iter.entities\x01y\x01@\x02\x04self\xf6\0\x05\
+index~\0\xf2\0\x04\0\x12[method]iter.field\x01z\x01i\x18\x01@\x01\x06handlew\0\xfb\
+\0\x04\0\x15[constructor]callback\x01|\x01h\x18\x01@\x02\x04self\xfd\0\x04iter\xf4\
+\0\x01\0\x04\0\x14[method]callback.run\x01~\x01@\x01\x04self\xfd\0\0\x03\x04\0\x1a\
+[method]callback.cb-handle\x01\x7f\x01i\x1c\x01@\x01\x04desc\x1b\0\x80\x01\x04\0\
+\x13[constructor]system\x01\x81\x01\x01h\x1c\x01@\x01\x04self\x82\x01\x01\0\x04\0\
+\x14[method]system.build\x01\x83\x01\x01@\x01\x04self\x82\x01\0w\x04\0\x17[metho\
+d]system.callback\x01\x84\x01\x01i\x20\x01@\x01\x04desc\x1f\0\x85\x01\x04\0\x15[\
+constructor]observer\x01\x86\x01\x01h\x20\x01@\x01\x04self\x87\x01\x01\0\x04\0\x16\
+[method]observer.build\x01\x88\x01\x01@\x01\x04self\x87\x01\0\x03\x04\0\x19[meth\
+od]observer.callback\x01\x89\x01\x01@\x01\x0ccomponent-id\x01\x01\0\x04\0\x0dadd\
+-singleton\x01\x8a\x01\x01@\x01\x0ccomponent-id\x01\0w\x04\0\x0dget-singleton\x01\
+\x8b\x01\x04\0\x10remove-singleton\x01\x8a\x01\x01@\x01\x09entity-id\x01\x01\0\x04\
+\0\x0aadd-entity\x01\x8c\x01\x04\0\x0dremove-entity\x01\x8c\x01\x01@\x01\x04name\
+s\0\x7f\x04\0\x10has-entity-named\x01\x8d\x01\x01@\x01\x0ecomponent-names\0\x01\x04\
+\0\x10get-component-id\x01\x8e\x01\x04\0\x11toxoid:engine/ecs\x05\0\x04\0!toxoid\
+:engine/toxoid-engine-world\x04\0\x0b\x19\x01\0\x13toxoid-engine-world\x03\0\0\0\
+G\x09producers\x01\x0cprocessed-by\x02\x0dwit-component\x070.220.0\x10wit-bindge\
+n-rust\x060.35.0";
 #[inline(never)]
 #[doc(hidden)]
 pub fn __link_custom_section_describing_imports() {
     #[cfg(not(target_os = "emscripten"))]
+#[cfg(not(target_os = "emscripten"))]
+#[cfg(not(target_os = "emscripten"))]
+#[cfg(not(target_os = "emscripten"))]
+#[cfg(not(target_os = "emscripten"))]
+#[cfg(not(target_os = "emscripten"))]
+#[cfg(not(target_os = "emscripten"))]
+#[cfg(not(target_os = "emscripten"))]
+#[cfg(not(target_os = "emscripten"))]
+#[cfg(not(target_os = "emscripten"))]
+#[cfg(not(target_os = "emscripten"))]
+#[cfg(not(target_os = "emscripten"))]
+#[cfg(not(target_os = "emscripten"))]
+#[cfg(not(target_os = "emscripten"))]
+#[cfg(not(target_os = "emscripten"))]
+#[cfg(not(target_os = "emscripten"))]
+#[cfg(not(target_os = "emscripten"))]
+#[cfg(not(target_os = "emscripten"))]
+#[cfg(not(target_os = "emscripten"))]
+#[cfg(not(target_os = "emscripten"))]
+#[cfg(not(target_os = "emscripten"))]
+#[cfg(not(target_os = "emscripten"))]
+#[cfg(not(target_os = "emscripten"))]
+#[cfg(not(target_os = "emscripten"))]
+#[cfg(not(target_os = "emscripten"))]
+#[cfg(not(target_os = "emscripten"))]
+#[cfg(not(target_os = "emscripten"))]
+#[cfg(not(target_os = "emscripten"))]
+#[cfg(not(target_os = "emscripten"))]
+#[cfg(not(target_os = "emscripten"))]
+#[cfg(not(target_os = "emscripten"))]
+#[cfg(not(target_os = "emscripten"))]
 wit_bindgen_rt::maybe_link_cabi_realloc();
 }

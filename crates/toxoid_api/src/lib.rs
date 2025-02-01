@@ -252,12 +252,16 @@ impl Query {
         self.query.build();
     }
 
-    pub fn iter(&mut self) {
-        self.query.iter();
+    pub fn iter(&mut self) -> Iter {
+        #[cfg(any(not(target_arch = "wasm32"), target_os = "emscripten"))]
+        let iter = ToxoidIter::new(self.query.iter());
+        #[cfg(all(target_arch = "wasm32", not(target_os = "emscripten")))]
+        let iter = self.query.iter();
+        Iter { iter }
     }
 
-    pub fn next(&mut self) {
-        self.query.next();
+    pub fn next(&mut self) -> bool {
+        self.query.next()
     }
 
     pub fn count(&self) -> i32 {
@@ -279,6 +283,10 @@ impl Query {
                 entity: ToxoidEntity::from_id(entity.get_id()) 
             })
             .collect()
+    }
+
+    pub fn field(&self, index: i8) -> Vec<u64> {
+        self.query.field(index)
     }
 }
 
@@ -483,10 +491,10 @@ impl Iter {
         Self { iter }
     }
 
-    pub fn next(&mut self) {
+    pub fn next(&mut self) -> bool {
         self
             .iter
-            .next();
+            .next()
     }
 
     pub fn count(&self) -> i32 {
@@ -512,6 +520,10 @@ impl Iter {
                 };
             })
             .collect()
+    }
+
+    pub fn field(&self, index: i8) -> Vec<u64> {
+        self.iter.field(index)
     }
 }
 

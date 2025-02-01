@@ -5,7 +5,7 @@ pub mod bindings;
 use bindings::exports::toxoid::engine::ecs::{EcsEntityT, GuestIter, GuestObserver, ObserverDesc, PointerT, Relationship};
 use bindings::exports::toxoid::engine::ecs::{self, ComponentDesc, EntityDesc, Guest, GuestCallback, GuestComponent, GuestComponentType, GuestEntity, GuestQuery, GuestSystem, QueryDesc, SystemDesc, Event};
 pub use toxoid_flecs::bindings::{ecs_add_id, ecs_entity_desc_t, ecs_entity_init, ecs_fini, ecs_get_mut_id, ecs_init, ecs_iter_t, ecs_lookup, ecs_make_pair, ecs_member_t, ecs_progress, ecs_query_desc_t, ecs_query_init, ecs_query_iter, ecs_query_next, ecs_query_t, ecs_struct_desc_t, ecs_struct_init, ecs_system_desc_t, ecs_system_init, ecs_system_t, ecs_world_t, EcsDependsOn, EcsOnUpdate, ecs_set_rate, ecs_get_id, ecs_remove_id};
-use toxoid_flecs::{ecs_children, ecs_children_next, ecs_delete, ecs_ensure_id, ecs_get_name, ecs_get_parent, ecs_modified_id, ecs_observer_desc_t, ecs_observer_init, ecs_observer_t, ecs_set_name, EcsChildOf, EcsIsA};
+use toxoid_flecs::{ecs_children, ecs_children_next, ecs_delete, ecs_ensure_id, ecs_field_size, ecs_field_w_size, ecs_get_name, ecs_get_parent, ecs_modified_id, ecs_observer_desc_t, ecs_observer_init, ecs_observer_t, ecs_set_name, EcsChildOf, EcsIsA};
 use std::ffi::CStr;
 use std::{borrow::BorrowMut, mem::MaybeUninit};
 use core::ffi::c_void;
@@ -877,25 +877,77 @@ impl GuestQuery for Query {
     fn new(query_desc: QueryDesc) -> Query {
         let mut desc: ecs_query_desc_t = unsafe { MaybeUninit::zeroed().assume_init() };
         desc.expr = c_string(&query_desc.expr);
-        Query { desc: RefCell::new(desc), query: unsafe { MaybeUninit::zeroed().assume_init() }, iter: unsafe { MaybeUninit::zeroed().assume_init() } }
-    }
-
-    fn expr(&self, expr: String) {
-        self.desc.borrow_mut().expr = expr.as_ptr() as *const i8;
+        Query { 
+            desc: RefCell::new(desc), 
+            query: RefCell::new(unsafe { MaybeUninit::zeroed().assume_init() }), 
+            iter: RefCell::new(unsafe { MaybeUninit::zeroed().assume_init() }) 
+        }
     }
 
     fn build(&self) { 
-        *self.query.borrow_mut() = unsafe { 
-            *ecs_query_init(WORLD.0, self.desc.as_ptr()) 
-        };
+        let query = unsafe { ecs_query_init(WORLD.0, self.desc.as_ptr()) };
+        *self.query.borrow_mut() = unsafe { *query };
     }
 
-    fn iter(&self) {
-        *self.iter.borrow_mut() = unsafe { ecs_query_iter(WORLD.0, self.query.as_ptr()) };
+    fn iter(&self) -> PointerT {
+        if self.query.as_ptr() == std::ptr::null_mut() {
+            return 0;
+        }
+             /*
+            println!("Query pointer: {:?}", self.
+            query.
+                as_ptr());
+            let query_ptr = self.query.as_ptr();
+            unsafe {
+                println!("Term id: {:?}", 
+                (*query_ptr).
+                terms[0].id);
+            }
+            *self.iter.borrow_mut() = unsafe { 
+            ecs_query_iter(WORLD.0, self.query.
+            as_ptr
+            ()) };
+            Box::into_raw(Box::new(Iter { ptr: 
+            self.
+            iter.as_ptr() as *mut c_void })) as 
+            PointerT
+         */
+
+        //  let query_ptr = self.query.as_ptr();
+        //  unsafe {
+        //      println!("Term id: {:?}", 
+        // (*query_ptr).
+        // //      terms[0].id);
+        // //  }
+        
+        // // Create new iterator and store it
+        // let query_ptr = self.query.as_ptr();
+        // unsafe {
+        //     println!("Term id: {:?}", (*query_ptr).
+        //     terms[0].id);
+        // }
+        
+        // Create new iterator
+        let iter = unsafe { ecs_query_iter(WORLD.0, self.query.as_ptr()) };
+        
+        // Store it in our RefCell
+        *self.iter.borrow_mut() = iter;
+        
+        // Create a new Iter that points to our stored iterator
+        // let iter_ptr = self.iter.as_ptr();
+        // println!("Created iterator ptr: {:?}", iter_ptr);
+        
+        // Return a boxed Iter
+        // Box::into_raw(Box::new(Iter { ptr: iter_ptr as *mut c_void })) as PointerT
+        0
     }
 
     fn next(&self) -> bool {
-        unsafe { ecs_query_next(self.iter.as_ptr()) }
+        let iter_ptr = self.iter.as_ptr();
+        if iter_ptr.is_null() {
+            return false;
+        }
+        unsafe { ecs_query_next(iter_ptr) }
     }
 
     fn count(&self) -> i32 {
@@ -908,25 +960,70 @@ impl GuestQuery for Query {
         entities_slice.to_vec()
     }
 
-    // fn field(&self, index: u32) -> *const c_void {
-    //     let iter
+    fn field(&self, index: i8) -> Vec<PointerT> {
+        // Get iter as raw pointer
+        let iter = self.iter.as_ptr();
+        // Get count of components
+        let count = unsafe { (*iter).count };
+        if count != 0 {
+            // Get size of field (list of components of type T mapped by index)
+            let size = unsafe { ecs_field_size(iter, index) };
+            // Get field at index (list of components of type T mapped by index)
+            let field = unsafe { ecs_field_w_size(iter, size, index) };
+            // Create a slice of the field data and convert directly to Vec
+            unsafe {
+                std::slice::from_raw_parts(field as *const PointerT, count as usize)
+                    .to_vec()
+            }
+        } else {
+            vec![]
+        }
+    }
+}
 
-    //     let size = ecs_field_size(iter, term_index);
-    //     let field = ecs_field_w_size(iter, size, term_index);
+impl GuestIter for Iter {
+    fn new(ptr: u64) -> Iter {
+        Iter { ptr: ptr as *mut c_void }
+    }
 
-    //     let ptrs_slice = std::slice::from_raw_parts(field, count as usize * size);
-    //     let mut component_ptrs: Vec<*const c_void> = Vec::new();
+    fn next(&self) -> bool {
+        if self.ptr.is_null() {
+            return false;
+        }
+        unsafe { ecs_query_next(self.ptr as *mut ecs_iter_t) }
+    }
 
-    //     for i in 0..count {
-    //         let ptr = &ptrs_slice[i as usize * size];
-    //         component_ptrs.push(ptr as *const c_void);
-    //     }
+    fn count(&self) -> i32 {
+        let iter = unsafe { *(self.ptr as *mut ecs_iter_t) };
+        iter.count
+    }
 
-    //     let boxed_slice = component_ptrs.into_boxed_slice();
-    //     let raw_ptr = Box::into_raw(boxed_slice);
+    fn entities(&self) -> Vec<EcsEntityT> {
+        let iter = unsafe { *(self.ptr as *mut ecs_iter_t) };
+        let entities = iter.entities;
+        let entities_slice = unsafe { std::slice::from_raw_parts(entities, self.count() as usize) };
+        entities_slice.to_vec()
+    }
 
-    //     raw_ptr
-    // }
+    fn field(&self, index: i8) -> Vec<PointerT> {
+        // Get iter as raw pointer
+        let iter = self.ptr as *mut ecs_iter_t;
+        // Get count of components
+        let count = unsafe { (*iter).count };
+        if count != 0 {
+            // Get size of field (list of components of type T mapped by index)
+            let size = unsafe { ecs_field_size(iter, index) };
+            // Get field at index (list of components of type T mapped by index)
+            let field = unsafe { ecs_field_w_size(iter, size, index) };
+            // Create a slice of the field data and convert directly to Vec
+            unsafe {
+                std::slice::from_raw_parts(field as *const PointerT, count as usize)
+                    .to_vec()
+            }
+        } else {
+            vec![]
+        }
+    }
 }
 
 pub static mut QUERY_TRAMPOLINE: Option<unsafe extern "C" fn(*mut ecs_iter_t)> = None;
@@ -1042,37 +1139,15 @@ impl GuestCallback for Callback {
     }
 }
 
-impl GuestIter for Iter {
-    fn new(ptr: u64) -> Iter {
-        Iter { ptr: ptr as *mut c_void }
-    }
-
-    fn next(&self) -> bool {
-        unsafe { ecs_query_next(self.ptr as *mut ecs_iter_t) }
-    }
-
-    fn count(&self) -> i32 {
-        let iter = unsafe { *(self.ptr as *mut ecs_iter_t) };
-        iter.count
-    }
-
-    fn entities(&self) -> Vec<EcsEntityT> {
-        let iter = unsafe { *(self.ptr as *mut ecs_iter_t) };
-        let entities = iter.entities;
-        let entities_slice = unsafe { std::slice::from_raw_parts(entities, self.count() as usize) };
-        entities_slice.to_vec()
-    }
-}
-
 impl Guest for ToxoidApi {
     type ComponentType = ComponentType;
     type Component = Component;
     type Entity = Entity;
     type Query = Query;
+    type Iter = Iter;
     type System = System;
     type Observer = Observer;
     type Callback = Callback;
-    type Iter = Iter;
     
     fn add_singleton(component: ecs_entity_t) {
         unsafe { ecs_add_id(WORLD.0, component, component) };   
