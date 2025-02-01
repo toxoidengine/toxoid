@@ -898,7 +898,6 @@ impl GuestQuery for Query {
 
         // Create a new Iter that points to our stored iterator
         let iter_ptr = self.iter.as_ptr();
-        println!("Created iterator ptr: {:?}", iter_ptr);
         
         // Return a boxed Iter
         Box::into_raw(Box::new(Iter { ptr: iter_ptr as *mut c_void })) as PointerT
@@ -934,8 +933,14 @@ impl GuestQuery for Query {
             let field = unsafe { ecs_field_w_size(iter, size, index) };
             // Create a slice of the field data and convert directly to Vec
             unsafe {
-                std::slice::from_raw_parts(field as *const PointerT, count as usize)
-                    .to_vec()
+                // Create a vector to store component pointers
+                let mut components = Vec::with_capacity(count as usize);
+                for i in 0..count {
+                    // Calculate pointer to each component using size
+                    let component_ptr = (field as *const u8).add(i as usize * size as usize);
+                    components.push(component_ptr as PointerT);
+                }
+                components
             }
         } else {
             vec![]
