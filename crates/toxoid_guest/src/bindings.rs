@@ -424,6 +424,43 @@ pub mod toxoid_component {
             }
             #[derive(Debug)]
             #[repr(transparent)]
+            pub struct Iter {
+                handle: _rt::Resource<Iter>,
+            }
+            impl Iter {
+                #[doc(hidden)]
+                pub unsafe fn from_handle(handle: u32) -> Self {
+                    Self {
+                        handle: _rt::Resource::from_handle(handle),
+                    }
+                }
+                #[doc(hidden)]
+                pub fn take_handle(&self) -> u32 {
+                    _rt::Resource::take_handle(&self.handle)
+                }
+                #[doc(hidden)]
+                pub fn handle(&self) -> u32 {
+                    _rt::Resource::handle(&self.handle)
+                }
+            }
+            unsafe impl _rt::WasmResource for Iter {
+                #[inline]
+                unsafe fn drop(_handle: u32) {
+                    #[cfg(not(target_arch = "wasm32"))]
+                    unreachable!();
+                    #[cfg(target_arch = "wasm32")]
+                    {
+                        #[link(wasm_import_module = "toxoid-component:component/ecs")]
+                        extern "C" {
+                            #[link_name = "[resource-drop]iter"]
+                            fn drop(_: u32);
+                        }
+                        drop(_handle);
+                    }
+                }
+            }
+            #[derive(Debug)]
+            #[repr(transparent)]
             pub struct Callback {
                 handle: _rt::Resource<Callback>,
             }
@@ -569,43 +606,6 @@ pub mod toxoid_component {
                         #[link(wasm_import_module = "toxoid-component:component/ecs")]
                         extern "C" {
                             #[link_name = "[resource-drop]observer"]
-                            fn drop(_: u32);
-                        }
-                        drop(_handle);
-                    }
-                }
-            }
-            #[derive(Debug)]
-            #[repr(transparent)]
-            pub struct Iter {
-                handle: _rt::Resource<Iter>,
-            }
-            impl Iter {
-                #[doc(hidden)]
-                pub unsafe fn from_handle(handle: u32) -> Self {
-                    Self {
-                        handle: _rt::Resource::from_handle(handle),
-                    }
-                }
-                #[doc(hidden)]
-                pub fn take_handle(&self) -> u32 {
-                    _rt::Resource::take_handle(&self.handle)
-                }
-                #[doc(hidden)]
-                pub fn handle(&self) -> u32 {
-                    _rt::Resource::handle(&self.handle)
-                }
-            }
-            unsafe impl _rt::WasmResource for Iter {
-                #[inline]
-                unsafe fn drop(_handle: u32) {
-                    #[cfg(not(target_arch = "wasm32"))]
-                    unreachable!();
-                    #[cfg(target_arch = "wasm32")]
-                    {
-                        #[link(wasm_import_module = "toxoid-component:component/ecs")]
-                        extern "C" {
-                            #[link_name = "[resource-drop]iter"]
                             fn drop(_: u32);
                         }
                         drop(_handle);
@@ -2263,27 +2263,6 @@ pub mod toxoid_component {
             }
             impl Query {
                 #[allow(unused_unsafe, clippy::all)]
-                pub fn expr(&self, expr: &str) {
-                    unsafe {
-                        let vec0 = expr;
-                        let ptr0 = vec0.as_ptr().cast::<u8>();
-                        let len0 = vec0.len();
-                        #[cfg(target_arch = "wasm32")]
-                        #[link(wasm_import_module = "toxoid-component:component/ecs")]
-                        extern "C" {
-                            #[link_name = "[method]query.expr"]
-                            fn wit_import(_: i32, _: *mut u8, _: usize);
-                        }
-                        #[cfg(not(target_arch = "wasm32"))]
-                        fn wit_import(_: i32, _: *mut u8, _: usize) {
-                            unreachable!()
-                        }
-                        wit_import((self).handle() as i32, ptr0.cast_mut(), len0);
-                    }
-                }
-            }
-            impl Query {
-                #[allow(unused_unsafe, clippy::all)]
                 pub fn build(&self) {
                     unsafe {
                         #[cfg(target_arch = "wasm32")]
@@ -2302,19 +2281,20 @@ pub mod toxoid_component {
             }
             impl Query {
                 #[allow(unused_unsafe, clippy::all)]
-                pub fn iter(&self) {
+                pub fn iter(&self) -> Iter {
                     unsafe {
                         #[cfg(target_arch = "wasm32")]
                         #[link(wasm_import_module = "toxoid-component:component/ecs")]
                         extern "C" {
                             #[link_name = "[method]query.iter"]
-                            fn wit_import(_: i32);
+                            fn wit_import(_: i32) -> i32;
                         }
                         #[cfg(not(target_arch = "wasm32"))]
-                        fn wit_import(_: i32) {
+                        fn wit_import(_: i32) -> i32 {
                             unreachable!()
                         }
-                        wit_import((self).handle() as i32);
+                        let ret = wit_import((self).handle() as i32);
+                        Iter::from_handle(ret as u32)
                     }
                 }
             }
@@ -2392,6 +2372,158 @@ pub mod toxoid_component {
                         }
                         _rt::cabi_dealloc(base4, len4 * 4, 4);
                         result4
+                    }
+                }
+            }
+            impl Query {
+                #[allow(unused_unsafe, clippy::all)]
+                pub fn components(&self, index: i8) -> _rt::Vec<PointerT> {
+                    unsafe {
+                        #[repr(align(4))]
+                        struct RetArea([::core::mem::MaybeUninit<u8>; 8]);
+                        let mut ret_area = RetArea(
+                            [::core::mem::MaybeUninit::uninit(); 8],
+                        );
+                        let ptr0 = ret_area.0.as_mut_ptr().cast::<u8>();
+                        #[cfg(target_arch = "wasm32")]
+                        #[link(wasm_import_module = "toxoid-component:component/ecs")]
+                        extern "C" {
+                            #[link_name = "[method]query.components"]
+                            fn wit_import(_: i32, _: i32, _: *mut u8);
+                        }
+                        #[cfg(not(target_arch = "wasm32"))]
+                        fn wit_import(_: i32, _: i32, _: *mut u8) {
+                            unreachable!()
+                        }
+                        wit_import((self).handle() as i32, _rt::as_i32(&index), ptr0);
+                        let l1 = *ptr0.add(0).cast::<*mut u8>();
+                        let l2 = *ptr0.add(4).cast::<usize>();
+                        let len3 = l2;
+                        _rt::Vec::from_raw_parts(l1.cast(), len3, len3)
+                    }
+                }
+            }
+            impl Iter {
+                #[allow(unused_unsafe, clippy::all)]
+                pub fn new(ptr: u64) -> Self {
+                    unsafe {
+                        #[cfg(target_arch = "wasm32")]
+                        #[link(wasm_import_module = "toxoid-component:component/ecs")]
+                        extern "C" {
+                            #[link_name = "[constructor]iter"]
+                            fn wit_import(_: i64) -> i32;
+                        }
+                        #[cfg(not(target_arch = "wasm32"))]
+                        fn wit_import(_: i64) -> i32 {
+                            unreachable!()
+                        }
+                        let ret = wit_import(_rt::as_i64(&ptr));
+                        Iter::from_handle(ret as u32)
+                    }
+                }
+            }
+            impl Iter {
+                #[allow(unused_unsafe, clippy::all)]
+                pub fn next(&self) -> bool {
+                    unsafe {
+                        #[cfg(target_arch = "wasm32")]
+                        #[link(wasm_import_module = "toxoid-component:component/ecs")]
+                        extern "C" {
+                            #[link_name = "[method]iter.next"]
+                            fn wit_import(_: i32) -> i32;
+                        }
+                        #[cfg(not(target_arch = "wasm32"))]
+                        fn wit_import(_: i32) -> i32 {
+                            unreachable!()
+                        }
+                        let ret = wit_import((self).handle() as i32);
+                        _rt::bool_lift(ret as u8)
+                    }
+                }
+            }
+            impl Iter {
+                #[allow(unused_unsafe, clippy::all)]
+                pub fn count(&self) -> i32 {
+                    unsafe {
+                        #[cfg(target_arch = "wasm32")]
+                        #[link(wasm_import_module = "toxoid-component:component/ecs")]
+                        extern "C" {
+                            #[link_name = "[method]iter.count"]
+                            fn wit_import(_: i32) -> i32;
+                        }
+                        #[cfg(not(target_arch = "wasm32"))]
+                        fn wit_import(_: i32) -> i32 {
+                            unreachable!()
+                        }
+                        let ret = wit_import((self).handle() as i32);
+                        ret
+                    }
+                }
+            }
+            impl Iter {
+                #[allow(unused_unsafe, clippy::all)]
+                pub fn entities(&self) -> _rt::Vec<Entity> {
+                    unsafe {
+                        #[repr(align(4))]
+                        struct RetArea([::core::mem::MaybeUninit<u8>; 8]);
+                        let mut ret_area = RetArea(
+                            [::core::mem::MaybeUninit::uninit(); 8],
+                        );
+                        let ptr0 = ret_area.0.as_mut_ptr().cast::<u8>();
+                        #[cfg(target_arch = "wasm32")]
+                        #[link(wasm_import_module = "toxoid-component:component/ecs")]
+                        extern "C" {
+                            #[link_name = "[method]iter.entities"]
+                            fn wit_import(_: i32, _: *mut u8);
+                        }
+                        #[cfg(not(target_arch = "wasm32"))]
+                        fn wit_import(_: i32, _: *mut u8) {
+                            unreachable!()
+                        }
+                        wit_import((self).handle() as i32, ptr0);
+                        let l1 = *ptr0.add(0).cast::<*mut u8>();
+                        let l2 = *ptr0.add(4).cast::<usize>();
+                        let base4 = l1;
+                        let len4 = l2;
+                        let mut result4 = _rt::Vec::with_capacity(len4);
+                        for i in 0..len4 {
+                            let base = base4.add(i * 4);
+                            let e4 = {
+                                let l3 = *base.add(0).cast::<i32>();
+                                Entity::from_handle(l3 as u32)
+                            };
+                            result4.push(e4);
+                        }
+                        _rt::cabi_dealloc(base4, len4 * 4, 4);
+                        result4
+                    }
+                }
+            }
+            impl Iter {
+                #[allow(unused_unsafe, clippy::all)]
+                pub fn components(&self, index: i8) -> _rt::Vec<PointerT> {
+                    unsafe {
+                        #[repr(align(4))]
+                        struct RetArea([::core::mem::MaybeUninit<u8>; 8]);
+                        let mut ret_area = RetArea(
+                            [::core::mem::MaybeUninit::uninit(); 8],
+                        );
+                        let ptr0 = ret_area.0.as_mut_ptr().cast::<u8>();
+                        #[cfg(target_arch = "wasm32")]
+                        #[link(wasm_import_module = "toxoid-component:component/ecs")]
+                        extern "C" {
+                            #[link_name = "[method]iter.components"]
+                            fn wit_import(_: i32, _: i32, _: *mut u8);
+                        }
+                        #[cfg(not(target_arch = "wasm32"))]
+                        fn wit_import(_: i32, _: i32, _: *mut u8) {
+                            unreachable!()
+                        }
+                        wit_import((self).handle() as i32, _rt::as_i32(&index), ptr0);
+                        let l1 = *ptr0.add(0).cast::<*mut u8>();
+                        let l2 = *ptr0.add(4).cast::<usize>();
+                        let len3 = l2;
+                        _rt::Vec::from_raw_parts(l1.cast(), len3, len3)
                     }
                 }
             }
@@ -2695,102 +2827,6 @@ pub mod toxoid_component {
                         }
                         let ret = wit_import((self).handle() as i32);
                         Callback::from_handle(ret as u32)
-                    }
-                }
-            }
-            impl Iter {
-                #[allow(unused_unsafe, clippy::all)]
-                pub fn new(ptr: u64) -> Self {
-                    unsafe {
-                        #[cfg(target_arch = "wasm32")]
-                        #[link(wasm_import_module = "toxoid-component:component/ecs")]
-                        extern "C" {
-                            #[link_name = "[constructor]iter"]
-                            fn wit_import(_: i64) -> i32;
-                        }
-                        #[cfg(not(target_arch = "wasm32"))]
-                        fn wit_import(_: i64) -> i32 {
-                            unreachable!()
-                        }
-                        let ret = wit_import(_rt::as_i64(&ptr));
-                        Iter::from_handle(ret as u32)
-                    }
-                }
-            }
-            impl Iter {
-                #[allow(unused_unsafe, clippy::all)]
-                pub fn next(&self) -> bool {
-                    unsafe {
-                        #[cfg(target_arch = "wasm32")]
-                        #[link(wasm_import_module = "toxoid-component:component/ecs")]
-                        extern "C" {
-                            #[link_name = "[method]iter.next"]
-                            fn wit_import(_: i32) -> i32;
-                        }
-                        #[cfg(not(target_arch = "wasm32"))]
-                        fn wit_import(_: i32) -> i32 {
-                            unreachable!()
-                        }
-                        let ret = wit_import((self).handle() as i32);
-                        _rt::bool_lift(ret as u8)
-                    }
-                }
-            }
-            impl Iter {
-                #[allow(unused_unsafe, clippy::all)]
-                pub fn count(&self) -> i32 {
-                    unsafe {
-                        #[cfg(target_arch = "wasm32")]
-                        #[link(wasm_import_module = "toxoid-component:component/ecs")]
-                        extern "C" {
-                            #[link_name = "[method]iter.count"]
-                            fn wit_import(_: i32) -> i32;
-                        }
-                        #[cfg(not(target_arch = "wasm32"))]
-                        fn wit_import(_: i32) -> i32 {
-                            unreachable!()
-                        }
-                        let ret = wit_import((self).handle() as i32);
-                        ret
-                    }
-                }
-            }
-            impl Iter {
-                #[allow(unused_unsafe, clippy::all)]
-                pub fn entities(&self) -> _rt::Vec<Entity> {
-                    unsafe {
-                        #[repr(align(4))]
-                        struct RetArea([::core::mem::MaybeUninit<u8>; 8]);
-                        let mut ret_area = RetArea(
-                            [::core::mem::MaybeUninit::uninit(); 8],
-                        );
-                        let ptr0 = ret_area.0.as_mut_ptr().cast::<u8>();
-                        #[cfg(target_arch = "wasm32")]
-                        #[link(wasm_import_module = "toxoid-component:component/ecs")]
-                        extern "C" {
-                            #[link_name = "[method]iter.entities"]
-                            fn wit_import(_: i32, _: *mut u8);
-                        }
-                        #[cfg(not(target_arch = "wasm32"))]
-                        fn wit_import(_: i32, _: *mut u8) {
-                            unreachable!()
-                        }
-                        wit_import((self).handle() as i32, ptr0);
-                        let l1 = *ptr0.add(0).cast::<*mut u8>();
-                        let l2 = *ptr0.add(4).cast::<usize>();
-                        let base4 = l1;
-                        let len4 = l2;
-                        let mut result4 = _rt::Vec::with_capacity(len4);
-                        for i in 0..len4 {
-                            let base = base4.add(i * 4);
-                            let e4 = {
-                                let l3 = *base.add(0).cast::<i32>();
-                                Entity::from_handle(l3 as u32)
-                            };
-                            result4.push(e4);
-                        }
-                        _rt::cabi_dealloc(base4, len4 * 4, 4);
-                        result4
                     }
                 }
             }
@@ -3224,9 +3260,9 @@ pub use __export_toxoid_component_world_impl as export;
 #[cfg(target_arch = "wasm32")]
 #[link_section = "component-type:wit-bindgen:0.35.0:toxoid-component:component:toxoid-component-world:encoded world"]
 #[doc(hidden)]
-pub static __WIT_BINDGEN_COMPONENT_TYPE: [u8; 5740] = *b"\
-\0asm\x0d\0\x01\0\0\x19\x16wit-component-encoding\x04\0\x07\xdf+\x01A\x02\x01A\x07\
-\x01B\xe8\x01\x01w\x04\0\x0cecs-entity-t\x03\0\0\x01w\x04\0\x09pointer-t\x03\0\x02\
+pub static __WIT_BINDGEN_COMPONENT_TYPE: [u8; 5813] = *b"\
+\0asm\x0d\0\x01\0\0\x19\x16wit-component-encoding\x04\0\x07\xa8,\x01A\x02\x01A\x07\
+\x01B\xec\x01\x01w\x04\0\x0cecs-entity-t\x03\0\0\x01w\x04\0\x09pointer-t\x03\0\x02\
 \x01q\x03\x04is-a\0\0\x08child-of\0\0\x06custom\x01\x01\0\x04\0\x0crelationship\x03\
 \0\x04\x01m\x18\x04u8-t\x05u16-t\x05u32-t\x05u64-t\x04i8-t\x05i16-t\x05i32-t\x05\
 i64-t\x05f32-t\x05f64-t\x06bool-t\x08string-t\x06list-t\x08u8list-t\x09u16list-t\
@@ -3237,12 +3273,12 @@ n-set\x06on-add\x09on-remove\x09on-delete\x10on-delete-target\x0fon-table-create
 ps\x01p}\x01r\x03\x04names\x0cmember-names\x0a\x0cmember-types\x0b\x04\0\x0ecomp\
 onent-desc\x03\0\x0c\x01ks\x01r\x01\x04name\x0e\x04\0\x0bentity-desc\x03\0\x0f\x01\
 r\x01\x04exprs\x04\0\x0aquery-desc\x03\0\x11\x04\0\x0ecomponent-type\x03\x01\x04\
-\0\x09component\x03\x01\x04\0\x06entity\x03\x01\x04\0\x05query\x03\x01\x04\0\x08\
-callback\x03\x01\x01kz\x01i\x17\x01r\x05\x04name\x0e\x09tick-rate\x18\x08callbac\
-k\x19\x0aquery-desc\x12\x08is-guest\x7f\x04\0\x0bsystem-desc\x03\0\x1a\x04\0\x06\
-system\x03\x01\x01p\x09\x01r\x05\x04name\x0e\x0aquery-desc\x12\x06events\x1d\x08\
-callback\x19\x08is-guest\x7f\x04\0\x0dobserver-desc\x03\0\x1e\x04\0\x08observer\x03\
-\x01\x04\0\x04iter\x03\x01\x01i\x13\x01@\x01\x04init\x0d\0\"\x04\0\x1b[construct\
+\0\x09component\x03\x01\x04\0\x06entity\x03\x01\x04\0\x05query\x03\x01\x04\0\x04\
+iter\x03\x01\x04\0\x08callback\x03\x01\x01kz\x01i\x18\x01r\x05\x04name\x0e\x09ti\
+ck-rate\x19\x08callback\x1a\x0aquery-desc\x12\x08is-guest\x7f\x04\0\x0bsystem-de\
+sc\x03\0\x1b\x04\0\x06system\x03\x01\x01p\x09\x01r\x05\x04name\x0e\x0aquery-desc\
+\x12\x06events\x1e\x08callback\x1a\x08is-guest\x7f\x04\0\x0dobserver-desc\x03\0\x1f\
+\x04\0\x08observer\x03\x01\x01i\x13\x01@\x01\x04init\x0d\0\"\x04\0\x1b[construct\
 or]component-type\x01#\x01h\x13\x01@\x01\x04self$\0\x01\x04\0\x1d[method]compone\
 nt-type.get-id\x01%\x01i\x14\x01@\x03\x03ptr\x03\x06entity\x01\x0ecomponent-type\
 \x01\0&\x04\0\x16[constructor]component\x01'\x01h\x14\x01@\x03\x04self(\x06offse\
@@ -3309,34 +3345,36 @@ tionship\x01g\x01@\x02\x04self\xe1\0\x06target\x01\x01\0\x04\0\x18[method]entity
 \0\x04\0\x15[method]entity.parent\x01i\x01p\xde\0\x01@\x01\x04self\xe1\0\0\xea\0\
 \x04\0\x17[method]entity.children\x01k\x04\0\x1c[method]entity.relationships\x01\
 k\x01i\x16\x01@\x01\x04desc\x12\0\xec\0\x04\0\x12[constructor]query\x01m\x01h\x16\
-\x01@\x02\x04self\xee\0\x04exprs\x01\0\x04\0\x12[method]query.expr\x01o\x01@\x01\
-\x04self\xee\0\x01\0\x04\0\x13[method]query.build\x01p\x04\0\x12[method]query.it\
-er\x01p\x01@\x01\x04self\xee\0\0\x7f\x04\0\x12[method]query.next\x01q\x01@\x01\x04\
-self\xee\0\0z\x04\0\x13[method]query.count\x01r\x01@\x01\x04self\xee\0\0\xea\0\x04\
-\0\x16[method]query.entities\x01s\x01@\x01\x06handlew\0\x19\x04\0\x15[constructo\
-r]callback\x01t\x01h\x17\x01i!\x01@\x02\x04self\xf5\0\x04iter\xf6\0\x01\0\x04\0\x14\
-[method]callback.run\x01w\x01@\x01\x04self\xf5\0\0\x03\x04\0\x1a[method]callback\
-.cb-handle\x01x\x01i\x1c\x01@\x01\x04desc\x1b\0\xf9\0\x04\0\x13[constructor]syst\
-em\x01z\x01h\x1c\x01@\x01\x04self\xfb\0\x01\0\x04\0\x14[method]system.build\x01|\
-\x01@\x01\x04self\xfb\0\0\x19\x04\0\x17[method]system.callback\x01}\x01i\x20\x01\
-@\x01\x04desc\x1f\0\xfe\0\x04\0\x15[constructor]observer\x01\x7f\x01h\x20\x01@\x01\
-\x04self\x80\x01\x01\0\x04\0\x16[method]observer.build\x01\x81\x01\x01@\x01\x04s\
-elf\x80\x01\0\x19\x04\0\x19[method]observer.callback\x01\x82\x01\x01@\x01\x03ptr\
-w\0\xf6\0\x04\0\x11[constructor]iter\x01\x83\x01\x01h!\x01@\x01\x04self\x84\x01\0\
-\x7f\x04\0\x11[method]iter.next\x01\x85\x01\x01@\x01\x04self\x84\x01\0z\x04\0\x12\
-[method]iter.count\x01\x86\x01\x01@\x01\x04self\x84\x01\0\xea\0\x04\0\x15[method\
-]iter.entities\x01\x87\x01\x01@\x01\x09component\x01\x01\0\x04\0\x0dadd-singleto\
-n\x01\x88\x01\x01@\x01\x09component\x01\0&\x04\0\x0dget-singleton\x01\x89\x01\x04\
-\0\x10remove-singleton\x01\x88\x01\x01@\x01\x06entity\x01\x01\0\x04\0\x0aadd-ent\
-ity\x01\x8a\x01\x04\0\x0dremove-entity\x01\x8a\x01\x01@\x01\x04names\0\x7f\x04\0\
-\x10has-entity-named\x01\x8b\x01\x01@\x01\x0ecomponent-names\0\x01\x04\0\x10get-\
-component-id\x01\x8c\x01\x03\0\x1etoxoid-component:component/ecs\x05\0\x01@\0\x01\
-\0\x04\0\x04init\x01\x01\x02\x03\0\0\x04iter\x01B\x05\x02\x03\x02\x01\x02\x04\0\x04\
-iter\x03\0\0\x01i\x01\x01@\x02\x04iter\x02\x06handlew\x01\0\x04\0\x03run\x01\x03\
-\x04\0$toxoid-component:component/callbacks\x05\x03\x04\01toxoid-component:compo\
-nent/toxoid-component-world\x04\0\x0b\x1c\x01\0\x16toxoid-component-world\x03\0\0\
-\0G\x09producers\x01\x0cprocessed-by\x02\x0dwit-component\x070.220.0\x10wit-bind\
-gen-rust\x060.35.0";
+\x01@\x01\x04self\xee\0\x01\0\x04\0\x13[method]query.build\x01o\x01i\x17\x01@\x01\
+\x04self\xee\0\0\xf0\0\x04\0\x12[method]query.iter\x01q\x01@\x01\x04self\xee\0\0\
+\x7f\x04\0\x12[method]query.next\x01r\x01@\x01\x04self\xee\0\0z\x04\0\x13[method\
+]query.count\x01s\x01@\x01\x04self\xee\0\0\xea\0\x04\0\x16[method]query.entities\
+\x01t\x01p\x03\x01@\x02\x04self\xee\0\x05index~\0\xf5\0\x04\0\x18[method]query.c\
+omponents\x01v\x01@\x01\x03ptrw\0\xf0\0\x04\0\x11[constructor]iter\x01w\x01h\x17\
+\x01@\x01\x04self\xf8\0\0\x7f\x04\0\x11[method]iter.next\x01y\x01@\x01\x04self\xf8\
+\0\0z\x04\0\x12[method]iter.count\x01z\x01@\x01\x04self\xf8\0\0\xea\0\x04\0\x15[\
+method]iter.entities\x01{\x01@\x02\x04self\xf8\0\x05index~\0\xf5\0\x04\0\x17[met\
+hod]iter.components\x01|\x01@\x01\x06handlew\0\x1a\x04\0\x15[constructor]callbac\
+k\x01}\x01h\x18\x01@\x02\x04self\xfe\0\x04iter\xf0\0\x01\0\x04\0\x14[method]call\
+back.run\x01\x7f\x01@\x01\x04self\xfe\0\0\x03\x04\0\x1a[method]callback.cb-handl\
+e\x01\x80\x01\x01i\x1d\x01@\x01\x04desc\x1c\0\x81\x01\x04\0\x13[constructor]syst\
+em\x01\x82\x01\x01h\x1d\x01@\x01\x04self\x83\x01\x01\0\x04\0\x14[method]system.b\
+uild\x01\x84\x01\x01@\x01\x04self\x83\x01\0\x1a\x04\0\x17[method]system.callback\
+\x01\x85\x01\x01i!\x01@\x01\x04desc\x20\0\x86\x01\x04\0\x15[constructor]observer\
+\x01\x87\x01\x01h!\x01@\x01\x04self\x88\x01\x01\0\x04\0\x16[method]observer.buil\
+d\x01\x89\x01\x01@\x01\x04self\x88\x01\0\x1a\x04\0\x19[method]observer.callback\x01\
+\x8a\x01\x01@\x01\x09component\x01\x01\0\x04\0\x0dadd-singleton\x01\x8b\x01\x01@\
+\x01\x09component\x01\0&\x04\0\x0dget-singleton\x01\x8c\x01\x04\0\x10remove-sing\
+leton\x01\x8b\x01\x01@\x01\x06entity\x01\x01\0\x04\0\x0aadd-entity\x01\x8d\x01\x04\
+\0\x0dremove-entity\x01\x8d\x01\x01@\x01\x04names\0\x7f\x04\0\x10has-entity-name\
+d\x01\x8e\x01\x01@\x01\x0ecomponent-names\0\x01\x04\0\x10get-component-id\x01\x8f\
+\x01\x03\0\x1etoxoid-component:component/ecs\x05\0\x01@\0\x01\0\x04\0\x04init\x01\
+\x01\x02\x03\0\0\x04iter\x01B\x05\x02\x03\x02\x01\x02\x04\0\x04iter\x03\0\0\x01i\
+\x01\x01@\x02\x04iter\x02\x06handlew\x01\0\x04\0\x03run\x01\x03\x04\0$toxoid-com\
+ponent:component/callbacks\x05\x03\x04\01toxoid-component:component/toxoid-compo\
+nent-world\x04\0\x0b\x1c\x01\0\x16toxoid-component-world\x03\0\0\0G\x09producers\
+\x01\x0cprocessed-by\x02\x0dwit-component\x070.220.0\x10wit-bindgen-rust\x060.35\
+.0";
 #[inline(never)]
 #[doc(hidden)]
 pub fn __link_custom_section_describing_imports() {

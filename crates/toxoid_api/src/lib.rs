@@ -248,16 +248,31 @@ impl Query {
         Self::new(Some(desc))
     }
 
+    pub fn dsl_each<F>(dsl: &str, f: F) -> Self 
+    where 
+        F: FnOnce(&mut Query)
+    {
+        let mut query = Self::new(Some(QueryDesc { expr: dsl.to_string() }));
+        query.build();
+        let mut iter = query.iter();
+        f(&mut query);
+        query
+    }
+
     pub fn build(&mut self) {
         self.query.build();
     }
 
-    pub fn iter(&mut self) {
-        self.query.iter();
+    pub fn iter(&mut self) -> Iter {
+        #[cfg(any(not(target_arch = "wasm32"), target_os = "emscripten"))]
+        let iter = ToxoidIter::new(self.query.iter());
+        #[cfg(all(target_arch = "wasm32", not(target_os = "emscripten")))]
+        let iter = self.query.iter();
+        Iter { iter }
     }
 
-    pub fn next(&mut self) {
-        self.query.next();
+    pub fn next(&mut self) -> bool {
+        self.query.next()
     }
 
     pub fn count(&self) -> i32 {
@@ -279,6 +294,29 @@ impl Query {
                 entity: ToxoidEntity::from_id(entity.get_id()) 
             })
             .collect()
+    }
+
+    // pub fn field(&self, index: i8) -> Vec<u64> {
+    //     self.query.field(index)
+    // }
+
+    pub fn components<T: Component + ComponentType + Default + 'static>(&self, index: i8) -> Vec<T> {
+        let field_raw_ptrs = self.query.components(index);
+        let components = field_raw_ptrs
+            .iter()
+            .map(|component_ptr| {
+                let mut component = T::default();
+                #[cfg(any(not(target_arch = "wasm32"), target_os = "emscripten"))]
+                let toxoid_component = ToxoidComponent::new(*component_ptr, 0, T::get_id());
+                #[cfg(all(target_arch = "wasm32", not(target_os = "emscripten")))]
+                let toxoid_component = component_ptr;
+                #[cfg(any(not(target_arch = "wasm32"), target_os = "emscripten"))]
+                component.set_component(toxoid_component);
+                component.set_component_type(T::get_id());
+                component
+            })
+            .collect();
+        components
     }
 }
 
@@ -483,10 +521,10 @@ impl Iter {
         Self { iter }
     }
 
-    pub fn next(&mut self) {
+    pub fn next(&mut self) -> bool {
         self
             .iter
-            .next();
+            .next()
     }
 
     pub fn count(&self) -> i32 {
@@ -512,6 +550,25 @@ impl Iter {
                 };
             })
             .collect()
+    }
+
+    pub fn components<T: Component + ComponentType + Default + 'static>(&self, index: i8) -> Vec<T> {
+        let field_raw_ptrs = self.iter.components(index);
+        let components = field_raw_ptrs
+            .iter()
+            .map(|component_ptr| {
+                let mut component = T::default();
+                #[cfg(any(not(target_arch = "wasm32"), target_os = "emscripten"))]
+                let toxoid_component = ToxoidComponent::new(*component_ptr, 0, T::get_id());
+                #[cfg(all(target_arch = "wasm32", not(target_os = "emscripten")))]
+                let toxoid_component = component_ptr;
+                #[cfg(any(not(target_arch = "wasm32"), target_os = "emscripten"))]
+                component.set_component(toxoid_component);
+                component.set_component_type(T::get_id());
+                component
+            })
+            .collect();
+        components
     }
 }
 

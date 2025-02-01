@@ -17,6 +17,7 @@ bindgen!({
 
 use std::collections::HashMap;
 use toxoid_api::GuestObserver;
+use toxoid_component::component::ecs::PointerT;
 use toxoid_host::bindings::exports::toxoid::engine::ecs::{Guest, GuestCallback, GuestComponent, GuestComponentType, GuestEntity, GuestIter, GuestQuery, GuestSystem};
 use toxoid_host::ToxoidApi;
 use wasmtime::component::{bindgen, Component, Linker, Resource, ResourceTable};
@@ -176,6 +177,14 @@ impl toxoid_component::component::ecs::HostIter for StoreState {
         }).collect();
         Box::into_raw(iter);
         ids
+    }
+
+    fn components(&mut self, iter: Resource<IterProxy>, index: i8) -> Vec<PointerT> {
+        let iter_proxy = self.table.get(&iter).unwrap() as &IterProxy;
+        let iter = unsafe { Box::from_raw(iter_proxy.ptr) };
+        let result = iter.components(index);
+        Box::into_raw(iter);
+        result
     }
 
     fn drop(&mut self, _iter: Resource<IterProxy>) -> Result<(), wasmtime::Error> {
@@ -882,13 +891,6 @@ impl toxoid_component::component::ecs::HostQuery for StoreState {
         query_resource
     }
 
-    fn expr(&mut self, query: Resource<toxoid_component::component::ecs::Query>, expr: String) -> () {
-        let query_proxy = self.table.get(&query).unwrap() as &QueryProxy;
-        let query = unsafe { Box::from_raw(query_proxy.ptr) };
-        query.expr(expr);
-        Box::into_raw(query);
-    }
-
     fn build(&mut self, query: Resource<toxoid_component::component::ecs::Query>) -> () {
         let query_proxy = self.table.get(&query).unwrap() as &QueryProxy;
         let query = unsafe { Box::from_raw(query_proxy.ptr) };
@@ -896,11 +898,12 @@ impl toxoid_component::component::ecs::HostQuery for StoreState {
         Box::into_raw(query);
     }
 
-    fn iter(&mut self, query: Resource<toxoid_component::component::ecs::Query>) -> () {
+    fn iter(&mut self, query: Resource<toxoid_component::component::ecs::Query>) -> Resource<IterProxy> {
         let query_proxy = self.table.get(&query).unwrap() as &QueryProxy;
         let query = unsafe { Box::from_raw(query_proxy.ptr) };
-        query.iter();
+        let iter = query.iter();
         Box::into_raw(query);
+        self.table.push::<IterProxy>(IterProxy { ptr: iter as *mut toxoid_host::Iter }).unwrap()
     }
 
     fn next(&mut self, query: Resource<toxoid_component::component::ecs::Query>) -> bool {
@@ -936,6 +939,12 @@ impl toxoid_component::component::ecs::HostQuery for StoreState {
         }).collect();
         Box::into_raw(query);
         ids
+    }
+
+    fn components(&mut self, query: Resource<toxoid_component::component::ecs::Query>, index: i8) -> Vec<PointerT> {
+        let query_proxy = self.table.get(&query).unwrap() as &QueryProxy;
+        let query = unsafe { Box::from_raw(query_proxy.ptr) };
+        query.components(index)
     }
 
     fn drop(&mut self, _query: Resource<toxoid_component::component::ecs::Query>) -> Result<(), wasmtime::Error> {
