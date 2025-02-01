@@ -146,7 +146,7 @@ interface ecs {
         next: func() -> bool;
         count: func() -> s32;
         entities: func() -> list<entity>;
-        field: func(index: s8) -> list<pointer-t>;
+        components: func(index: s8) -> list<pointer-t>;
     }
 
     resource iter {
@@ -154,7 +154,7 @@ interface ecs {
         next: func() -> bool;
         count: func() -> s32;
         entities: func() -> list<entity>;
-        field: func(index: s8) -> list<pointer-t>;
+        components: func(index: s8) -> list<pointer-t>;
     }
 
     resource callback {

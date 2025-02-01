@@ -301,7 +301,7 @@ impl Query {
     // }
 
     pub fn components<T: Component + ComponentType + Default + 'static>(&self, index: i8) -> Vec<T> {
-        let field_raw_ptrs = self.query.field(index);
+        let field_raw_ptrs = self.query.components(index);
         let components = field_raw_ptrs
             .iter()
             .map(|component_ptr| {
@@ -553,7 +553,7 @@ impl Iter {
     }
 
     pub fn field(&self, index: i8) -> Vec<u64> {
-        self.iter.field(index)
+        self.iter.components(index)
     }
 }
 

@@ -179,10 +179,10 @@ impl toxoid_component::component::ecs::HostIter for StoreState {
         ids
     }
 
-    fn field(&mut self, iter: Resource<IterProxy>, index: i8) -> Vec<PointerT> {
+    fn components(&mut self, iter: Resource<IterProxy>, index: i8) -> Vec<PointerT> {
         let iter_proxy = self.table.get(&iter).unwrap() as &IterProxy;
         let iter = unsafe { Box::from_raw(iter_proxy.ptr) };
-        let result = iter.field(index);
+        let result = iter.components(index);
         Box::into_raw(iter);
         result
     }
@@ -941,10 +941,10 @@ impl toxoid_component::component::ecs::HostQuery for StoreState {
         ids
     }
 
-    fn field(&mut self, query: Resource<toxoid_component::component::ecs::Query>, index: i8) -> Vec<PointerT> {
+    fn components(&mut self, query: Resource<toxoid_component::component::ecs::Query>, index: i8) -> Vec<PointerT> {
         let query_proxy = self.table.get(&query).unwrap() as &QueryProxy;
         let query = unsafe { Box::from_raw(query_proxy.ptr) };
-        query.field(index)
+        query.components(index)
     }
 
     fn drop(&mut self, _query: Resource<toxoid_component::component::ecs::Query>) -> Result<(), wasmtime::Error> {

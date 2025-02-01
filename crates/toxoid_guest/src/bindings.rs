@@ -9,7 +9,6 @@ pub trait Guest {
 }
 #[doc(hidden)]
 #[macro_export]
-#[macro_export]
 macro_rules! __export_world_toxoid_component_world_cabi {
     ($ty:ident with_types_in $($path_to_types:tt)*) => {
         const _ : () = { #[export_name = "init"] unsafe extern "C" fn export_init() {
@@ -2378,7 +2377,7 @@ pub mod toxoid_component {
             }
             impl Query {
                 #[allow(unused_unsafe, clippy::all)]
-                pub fn field(&self, index: i8) -> _rt::Vec<PointerT> {
+                pub fn components(&self, index: i8) -> _rt::Vec<PointerT> {
                     unsafe {
                         #[repr(align(4))]
                         struct RetArea([::core::mem::MaybeUninit<u8>; 8]);
@@ -2389,7 +2388,7 @@ pub mod toxoid_component {
                         #[cfg(target_arch = "wasm32")]
                         #[link(wasm_import_module = "toxoid-component:component/ecs")]
                         extern "C" {
-                            #[link_name = "[method]query.field"]
+                            #[link_name = "[method]query.components"]
                             fn wit_import(_: i32, _: i32, _: *mut u8);
                         }
                         #[cfg(not(target_arch = "wasm32"))]
@@ -2502,7 +2501,7 @@ pub mod toxoid_component {
             }
             impl Iter {
                 #[allow(unused_unsafe, clippy::all)]
-                pub fn field(&self, index: i8) -> _rt::Vec<PointerT> {
+                pub fn components(&self, index: i8) -> _rt::Vec<PointerT> {
                     unsafe {
                         #[repr(align(4))]
                         struct RetArea([::core::mem::MaybeUninit<u8>; 8]);
@@ -2513,7 +2512,7 @@ pub mod toxoid_component {
                         #[cfg(target_arch = "wasm32")]
                         #[link(wasm_import_module = "toxoid-component:component/ecs")]
                         extern "C" {
-                            #[link_name = "[method]iter.field"]
+                            #[link_name = "[method]iter.components"]
                             fn wit_import(_: i32, _: i32, _: *mut u8);
                         }
                         #[cfg(not(target_arch = "wasm32"))]
@@ -2986,7 +2985,6 @@ pub mod exports {
                 }
                 #[doc(hidden)]
                 #[macro_export]
-#[macro_export]
 macro_rules! __export_toxoid_component_component_callbacks_cabi {
                     ($ty:ident with_types_in $($path_to_types:tt)*) => {
                         const _ : () = { #[export_name =
@@ -3262,8 +3260,8 @@ pub use __export_toxoid_component_world_impl as export;
 #[cfg(target_arch = "wasm32")]
 #[link_section = "component-type:wit-bindgen:0.35.0:toxoid-component:component:toxoid-component-world:encoded world"]
 #[doc(hidden)]
-pub static __WIT_BINDGEN_COMPONENT_TYPE: [u8; 5803] = *b"\
-\0asm\x0d\0\x01\0\0\x19\x16wit-component-encoding\x04\0\x07\x9e,\x01A\x02\x01A\x07\
+pub static __WIT_BINDGEN_COMPONENT_TYPE: [u8; 5813] = *b"\
+\0asm\x0d\0\x01\0\0\x19\x16wit-component-encoding\x04\0\x07\xa8,\x01A\x02\x01A\x07\
 \x01B\xec\x01\x01w\x04\0\x0cecs-entity-t\x03\0\0\x01w\x04\0\x09pointer-t\x03\0\x02\
 \x01q\x03\x04is-a\0\0\x08child-of\0\0\x06custom\x01\x01\0\x04\0\x0crelationship\x03\
 \0\x04\x01m\x18\x04u8-t\x05u16-t\x05u32-t\x05u64-t\x04i8-t\x05i16-t\x05i32-t\x05\
@@ -3351,31 +3349,32 @@ k\x01i\x16\x01@\x01\x04desc\x12\0\xec\0\x04\0\x12[constructor]query\x01m\x01h\x1
 \x04self\xee\0\0\xf0\0\x04\0\x12[method]query.iter\x01q\x01@\x01\x04self\xee\0\0\
 \x7f\x04\0\x12[method]query.next\x01r\x01@\x01\x04self\xee\0\0z\x04\0\x13[method\
 ]query.count\x01s\x01@\x01\x04self\xee\0\0\xea\0\x04\0\x16[method]query.entities\
-\x01t\x01p\x03\x01@\x02\x04self\xee\0\x05index~\0\xf5\0\x04\0\x13[method]query.f\
-ield\x01v\x01@\x01\x03ptrw\0\xf0\0\x04\0\x11[constructor]iter\x01w\x01h\x17\x01@\
-\x01\x04self\xf8\0\0\x7f\x04\0\x11[method]iter.next\x01y\x01@\x01\x04self\xf8\0\0\
-z\x04\0\x12[method]iter.count\x01z\x01@\x01\x04self\xf8\0\0\xea\0\x04\0\x15[meth\
-od]iter.entities\x01{\x01@\x02\x04self\xf8\0\x05index~\0\xf5\0\x04\0\x12[method]\
-iter.field\x01|\x01@\x01\x06handlew\0\x1a\x04\0\x15[constructor]callback\x01}\x01\
-h\x18\x01@\x02\x04self\xfe\0\x04iter\xf0\0\x01\0\x04\0\x14[method]callback.run\x01\
-\x7f\x01@\x01\x04self\xfe\0\0\x03\x04\0\x1a[method]callback.cb-handle\x01\x80\x01\
-\x01i\x1d\x01@\x01\x04desc\x1c\0\x81\x01\x04\0\x13[constructor]system\x01\x82\x01\
-\x01h\x1d\x01@\x01\x04self\x83\x01\x01\0\x04\0\x14[method]system.build\x01\x84\x01\
-\x01@\x01\x04self\x83\x01\0\x1a\x04\0\x17[method]system.callback\x01\x85\x01\x01\
-i!\x01@\x01\x04desc\x20\0\x86\x01\x04\0\x15[constructor]observer\x01\x87\x01\x01\
-h!\x01@\x01\x04self\x88\x01\x01\0\x04\0\x16[method]observer.build\x01\x89\x01\x01\
-@\x01\x04self\x88\x01\0\x1a\x04\0\x19[method]observer.callback\x01\x8a\x01\x01@\x01\
-\x09component\x01\x01\0\x04\0\x0dadd-singleton\x01\x8b\x01\x01@\x01\x09component\
-\x01\0&\x04\0\x0dget-singleton\x01\x8c\x01\x04\0\x10remove-singleton\x01\x8b\x01\
-\x01@\x01\x06entity\x01\x01\0\x04\0\x0aadd-entity\x01\x8d\x01\x04\0\x0dremove-en\
-tity\x01\x8d\x01\x01@\x01\x04names\0\x7f\x04\0\x10has-entity-named\x01\x8e\x01\x01\
-@\x01\x0ecomponent-names\0\x01\x04\0\x10get-component-id\x01\x8f\x01\x03\0\x1eto\
-xoid-component:component/ecs\x05\0\x01@\0\x01\0\x04\0\x04init\x01\x01\x02\x03\0\0\
-\x04iter\x01B\x05\x02\x03\x02\x01\x02\x04\0\x04iter\x03\0\0\x01i\x01\x01@\x02\x04\
-iter\x02\x06handlew\x01\0\x04\0\x03run\x01\x03\x04\0$toxoid-component:component/\
-callbacks\x05\x03\x04\01toxoid-component:component/toxoid-component-world\x04\0\x0b\
-\x1c\x01\0\x16toxoid-component-world\x03\0\0\0G\x09producers\x01\x0cprocessed-by\
-\x02\x0dwit-component\x070.220.0\x10wit-bindgen-rust\x060.35.0";
+\x01t\x01p\x03\x01@\x02\x04self\xee\0\x05index~\0\xf5\0\x04\0\x18[method]query.c\
+omponents\x01v\x01@\x01\x03ptrw\0\xf0\0\x04\0\x11[constructor]iter\x01w\x01h\x17\
+\x01@\x01\x04self\xf8\0\0\x7f\x04\0\x11[method]iter.next\x01y\x01@\x01\x04self\xf8\
+\0\0z\x04\0\x12[method]iter.count\x01z\x01@\x01\x04self\xf8\0\0\xea\0\x04\0\x15[\
+method]iter.entities\x01{\x01@\x02\x04self\xf8\0\x05index~\0\xf5\0\x04\0\x17[met\
+hod]iter.components\x01|\x01@\x01\x06handlew\0\x1a\x04\0\x15[constructor]callbac\
+k\x01}\x01h\x18\x01@\x02\x04self\xfe\0\x04iter\xf0\0\x01\0\x04\0\x14[method]call\
+back.run\x01\x7f\x01@\x01\x04self\xfe\0\0\x03\x04\0\x1a[method]callback.cb-handl\
+e\x01\x80\x01\x01i\x1d\x01@\x01\x04desc\x1c\0\x81\x01\x04\0\x13[constructor]syst\
+em\x01\x82\x01\x01h\x1d\x01@\x01\x04self\x83\x01\x01\0\x04\0\x14[method]system.b\
+uild\x01\x84\x01\x01@\x01\x04self\x83\x01\0\x1a\x04\0\x17[method]system.callback\
+\x01\x85\x01\x01i!\x01@\x01\x04desc\x20\0\x86\x01\x04\0\x15[constructor]observer\
+\x01\x87\x01\x01h!\x01@\x01\x04self\x88\x01\x01\0\x04\0\x16[method]observer.buil\
+d\x01\x89\x01\x01@\x01\x04self\x88\x01\0\x1a\x04\0\x19[method]observer.callback\x01\
+\x8a\x01\x01@\x01\x09component\x01\x01\0\x04\0\x0dadd-singleton\x01\x8b\x01\x01@\
+\x01\x09component\x01\0&\x04\0\x0dget-singleton\x01\x8c\x01\x04\0\x10remove-sing\
+leton\x01\x8b\x01\x01@\x01\x06entity\x01\x01\0\x04\0\x0aadd-entity\x01\x8d\x01\x04\
+\0\x0dremove-entity\x01\x8d\x01\x01@\x01\x04names\0\x7f\x04\0\x10has-entity-name\
+d\x01\x8e\x01\x01@\x01\x0ecomponent-names\0\x01\x04\0\x10get-component-id\x01\x8f\
+\x01\x03\0\x1etoxoid-component:component/ecs\x05\0\x01@\0\x01\0\x04\0\x04init\x01\
+\x01\x02\x03\0\0\x04iter\x01B\x05\x02\x03\x02\x01\x02\x04\0\x04iter\x03\0\0\x01i\
+\x01\x01@\x02\x04iter\x02\x06handlew\x01\0\x04\0\x03run\x01\x03\x04\0$toxoid-com\
+ponent:component/callbacks\x05\x03\x04\01toxoid-component:component/toxoid-compo\
+nent-world\x04\0\x0b\x1c\x01\0\x16toxoid-component-world\x03\0\0\0G\x09producers\
+\x01\x0cprocessed-by\x02\x0dwit-component\x070.220.0\x10wit-bindgen-rust\x060.35\
+.0";
 #[inline(never)]
 #[doc(hidden)]
 pub fn __link_custom_section_describing_imports() {
