@@ -296,8 +296,27 @@ impl Query {
             .collect()
     }
 
-    pub fn field(&self, index: i8) -> Vec<u64> {
-        self.query.field(index)
+    // pub fn field(&self, index: i8) -> Vec<u64> {
+    //     self.query.field(index)
+    // }
+
+    pub fn components<T: Component + ComponentType + Default + 'static>(&self, index: i8) -> Vec<T> {
+        let field_raw_ptrs = self.query.field(index);
+        let components = field_raw_ptrs
+            .iter()
+            .map(|component_ptr| {
+                let mut component = T::default();
+                #[cfg(any(not(target_arch = "wasm32"), target_os = "emscripten"))]
+                let toxoid_component = ToxoidComponent::new(*component_ptr, 0, T::get_id());
+                #[cfg(all(target_arch = "wasm32", not(target_os = "emscripten")))]
+                let toxoid_component = component_ptr;
+                #[cfg(any(not(target_arch = "wasm32"), target_os = "emscripten"))]
+                component.set_component(toxoid_component);
+                component.set_component_type(T::get_id());
+                component
+            })
+            .collect();
+        components
     }
 }
 

@@ -9,6 +9,7 @@ pub trait Guest {
 }
 #[doc(hidden)]
 #[macro_export]
+#[macro_export]
 macro_rules! __export_world_toxoid_component_world_cabi {
     ($ty:ident with_types_in $($path_to_types:tt)*) => {
         const _ : () = { #[export_name = "init"] unsafe extern "C" fn export_init() {
@@ -2985,6 +2986,7 @@ pub mod exports {
                 }
                 #[doc(hidden)]
                 #[macro_export]
+#[macro_export]
 macro_rules! __export_toxoid_component_component_callbacks_cabi {
                     ($ty:ident with_types_in $($path_to_types:tt)*) => {
                         const _ : () = { #[export_name =
