@@ -155,7 +155,7 @@ interface ecs {
     }
 
     resource iter {
-        constructor(ptr: u64, iter-type: iter-type);
+        constructor(ptr: u64);
         next: func() -> bool;
         count: func() -> s32;
         entities: func() -> list<ecs-entity-t>;

@@ -246,6 +246,16 @@ impl Query {
     pub fn dsl(dsl: &str) -> Self {
         let desc = QueryDesc { expr: dsl.to_string() };
         Self::new(Some(desc))
+
+    }
+
+    pub fn dsl_each(dsl: &str, iter_fn: fn(&mut Iter)) -> Self {
+        let desc = QueryDesc { expr: dsl.to_string() };
+        let mut query = Self::new(Some(desc));
+        query.build();
+        let mut iter = query.iter();
+        iter_fn(&mut iter);
+        query
     }
 
     pub fn build(&mut self) {

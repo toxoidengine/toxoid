@@ -890,56 +890,18 @@ impl GuestQuery for Query {
     }
 
     fn iter(&self) -> PointerT {
-        if self.query.as_ptr() == std::ptr::null_mut() {
-            return 0;
-        }
-             /*
-            println!("Query pointer: {:?}", self.
-            query.
-                as_ptr());
-            let query_ptr = self.query.as_ptr();
-            unsafe {
-                println!("Term id: {:?}", 
-                (*query_ptr).
-                terms[0].id);
-            }
-            *self.iter.borrow_mut() = unsafe { 
-            ecs_query_iter(WORLD.0, self.query.
-            as_ptr
-            ()) };
-            Box::into_raw(Box::new(Iter { ptr: 
-            self.
-            iter.as_ptr() as *mut c_void })) as 
-            PointerT
-         */
-
-        //  let query_ptr = self.query.as_ptr();
-        //  unsafe {
-        //      println!("Term id: {:?}", 
-        // (*query_ptr).
-        // //      terms[0].id);
-        // //  }
-        
-        // // Create new iterator and store it
-        // let query_ptr = self.query.as_ptr();
-        // unsafe {
-        //     println!("Term id: {:?}", (*query_ptr).
-        //     terms[0].id);
-        // }
-        
         // Create new iterator
         let iter = unsafe { ecs_query_iter(WORLD.0, self.query.as_ptr()) };
         
         // Store it in our RefCell
         *self.iter.borrow_mut() = iter;
-        
+
         // Create a new Iter that points to our stored iterator
-        // let iter_ptr = self.iter.as_ptr();
-        // println!("Created iterator ptr: {:?}", iter_ptr);
+        let iter_ptr = self.iter.as_ptr();
+        println!("Created iterator ptr: {:?}", iter_ptr);
         
         // Return a boxed Iter
-        // Box::into_raw(Box::new(Iter { ptr: iter_ptr as *mut c_void })) as PointerT
-        0
+        Box::into_raw(Box::new(Iter { ptr: iter_ptr as *mut c_void })) as PointerT
     }
 
     fn next(&self) -> bool {
