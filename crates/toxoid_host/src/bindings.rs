@@ -881,16 +881,6 @@ pub mod exports {
                         }
                     }
                 }
-                /// resource filter {
-                /// constructor(query: query-desc);
-                /// dsl: func(expr: string);
-                /// build: func();
-                /// iter: func();
-                /// next: func() -> bool;
-                /// count: func() -> s32;
-                /// entities: func() -> list<ecs-entity-t>;
-                /// field: func(index: u32) -> pointer-t;
-                /// }
                 #[derive(Debug)]
                 #[repr(transparent)]
                 pub struct Callback {
@@ -4006,35 +3996,6 @@ mod _rt {
         #[cfg(not(target_os = "emscripten"))]
 #[cfg(not(target_os = "emscripten"))]
 #[cfg(not(target_os = "emscripten"))]
-#[cfg(not(target_os = "emscripten"))]
-#[cfg(not(target_os = "emscripten"))]
-#[cfg(not(target_os = "emscripten"))]
-#[cfg(not(target_os = "emscripten"))]
-#[cfg(not(target_os = "emscripten"))]
-#[cfg(not(target_os = "emscripten"))]
-#[cfg(not(target_os = "emscripten"))]
-#[cfg(not(target_os = "emscripten"))]
-#[cfg(not(target_os = "emscripten"))]
-#[cfg(not(target_os = "emscripten"))]
-#[cfg(not(target_os = "emscripten"))]
-#[cfg(not(target_os = "emscripten"))]
-#[cfg(not(target_os = "emscripten"))]
-#[cfg(not(target_os = "emscripten"))]
-#[cfg(not(target_os = "emscripten"))]
-#[cfg(not(target_os = "emscripten"))]
-#[cfg(not(target_os = "emscripten"))]
-#[cfg(not(target_os = "emscripten"))]
-#[cfg(not(target_os = "emscripten"))]
-#[cfg(not(target_os = "emscripten"))]
-#[cfg(not(target_os = "emscripten"))]
-#[cfg(not(target_os = "emscripten"))]
-#[cfg(not(target_os = "emscripten"))]
-#[cfg(not(target_os = "emscripten"))]
-#[cfg(not(target_os = "emscripten"))]
-#[cfg(not(target_os = "emscripten"))]
-#[cfg(not(target_os = "emscripten"))]
-#[cfg(not(target_os = "emscripten"))]
-#[cfg(not(target_os = "emscripten"))]
 wit_bindgen_rt::run_ctors_once();
     }
     pub unsafe fn string_lift(bytes: Vec<u8>) -> String {
@@ -4336,35 +4297,6 @@ n-rust\x060.35.0";
 #[doc(hidden)]
 pub fn __link_custom_section_describing_imports() {
     #[cfg(not(target_os = "emscripten"))]
-#[cfg(not(target_os = "emscripten"))]
-#[cfg(not(target_os = "emscripten"))]
-#[cfg(not(target_os = "emscripten"))]
-#[cfg(not(target_os = "emscripten"))]
-#[cfg(not(target_os = "emscripten"))]
-#[cfg(not(target_os = "emscripten"))]
-#[cfg(not(target_os = "emscripten"))]
-#[cfg(not(target_os = "emscripten"))]
-#[cfg(not(target_os = "emscripten"))]
-#[cfg(not(target_os = "emscripten"))]
-#[cfg(not(target_os = "emscripten"))]
-#[cfg(not(target_os = "emscripten"))]
-#[cfg(not(target_os = "emscripten"))]
-#[cfg(not(target_os = "emscripten"))]
-#[cfg(not(target_os = "emscripten"))]
-#[cfg(not(target_os = "emscripten"))]
-#[cfg(not(target_os = "emscripten"))]
-#[cfg(not(target_os = "emscripten"))]
-#[cfg(not(target_os = "emscripten"))]
-#[cfg(not(target_os = "emscripten"))]
-#[cfg(not(target_os = "emscripten"))]
-#[cfg(not(target_os = "emscripten"))]
-#[cfg(not(target_os = "emscripten"))]
-#[cfg(not(target_os = "emscripten"))]
-#[cfg(not(target_os = "emscripten"))]
-#[cfg(not(target_os = "emscripten"))]
-#[cfg(not(target_os = "emscripten"))]
-#[cfg(not(target_os = "emscripten"))]
-#[cfg(not(target_os = "emscripten"))]
 #[cfg(not(target_os = "emscripten"))]
 #[cfg(not(target_os = "emscripten"))]
 wit_bindgen_rt::maybe_link_cabi_realloc();
