@@ -1,5 +1,4 @@
 use toxoid_api::*;
-use crate::entities;
 use crate::entities::*;
 use crate::components::*;
 
@@ -38,7 +37,6 @@ pub fn init() {
                 // Set (respawning) random position for food   
                 let grid_size = 50;
                 let mut food_pos = food_entity.get::<Position>();
-                let food_size = food_entity.get::<Size>();
                 food_pos.set_x(get_random((SCREEN_WIDTH - 100) / grid_size) * grid_size);
                 food_pos.set_y(get_random((SCREEN_HEIGHT - 100) / grid_size) * grid_size);
                 // Increase the tail length
@@ -150,4 +148,16 @@ pub fn init() {
     //     });
     // })
     //     .build();
+
+    System::dsl("", None, |_iter| {
+        Query::dsl_each("Position", |query| {
+            while query.next() {
+                let positions = query.components::<Position>(0);
+                positions.iter().for_each(|position| {
+                    println!("Position X: {:?}, Y: {:?}", position.get_x(), position.get_y());
+                });
+            }
+        });
+    })
+        .build();
 }

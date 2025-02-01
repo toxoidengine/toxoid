@@ -46,10 +46,23 @@ pub unsafe extern "C" fn query_trampoline(iter: *mut toxoid_host::ecs_iter_t) {
         callback(&iter);
     }
 }
+
 pub fn init() {    
     unsafe {
         toxoid_host::QUERY_TRAMPOLINE = Some(query_trampoline);
     }
     render::init();
     fetch::init();
+
+    // System::dsl("", None, |_iter| {
+    //     Query::dsl_each("Position", |query| {
+    //         while query.next() {
+    //             let positions = query.components::<Position>(0);
+    //             positions.iter().for_each(|position| {
+    //                 println!("Position X: {:?}, Y: {:?}", position.get_x(), position.get_y());
+    //             });
+    //         }
+    //     });
+    // })
+    //     .build();
 }

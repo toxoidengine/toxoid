@@ -146,17 +146,21 @@ interface ecs {
 
     resource query {
         constructor(desc: query-desc);
-        expr: func(expr: string);
         build: func();
-        iter: func();
+        iter: func() -> pointer-t;
         next: func() -> bool;
         count: func() -> s32;
         entities: func() -> list<ecs-entity-t>;
+        components: func(index: s8) -> list<pointer-t>;
     }
 
-    // resource filter {
-    //     constructor(query: query-desc);
-    // }
+    resource iter {
+        constructor(ptr: u64);
+        next: func() -> bool;
+        count: func() -> s32;
+        entities: func() -> list<ecs-entity-t>;
+        components: func(index: s8) -> list<pointer-t>;
+    }
 
     resource callback {
         constructor(handle: u64);
@@ -191,13 +195,6 @@ interface ecs {
         constructor(desc: observer-desc);
         build: func();
         callback: func() -> pointer-t;
-    }
-
-    resource iter {
-        constructor(ptr: u64);
-        next: func() -> bool;
-        count: func() -> s32;
-        entities: func() -> list<ecs-entity-t>;
     }
 
     add-singleton: func(component-id: ecs-entity-t);
