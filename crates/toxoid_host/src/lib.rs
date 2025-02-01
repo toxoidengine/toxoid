@@ -984,8 +984,14 @@ impl GuestIter for Iter {
             let field = unsafe { ecs_field_w_size(iter, size, index) };
             // Create a slice of the field data and convert directly to Vec
             unsafe {
-                std::slice::from_raw_parts(field as *const PointerT, count as usize)
-                    .to_vec()
+                // Create a vector to store component pointers
+                let mut components = Vec::with_capacity(count as usize);
+                for i in 0..count {
+                    // Calculate pointer to each component using size
+                    let component_ptr = (field as *const u8).add(i as usize * size as usize);
+                    components.push(component_ptr as PointerT);
+                }
+                components
             }
         } else {
             vec![]
