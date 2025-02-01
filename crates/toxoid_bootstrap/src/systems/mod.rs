@@ -46,10 +46,22 @@ pub unsafe extern "C" fn query_trampoline(iter: *mut toxoid_host::ecs_iter_t) {
         callback(&iter);
     }
 }
+
 pub fn init() {    
     unsafe {
         toxoid_host::QUERY_TRAMPOLINE = Some(query_trampoline);
     }
     render::init();
     fetch::init();
+
+    System::dsl("", None, |_iter| {
+        let mut query = Query::dsl("Position");
+        query.build();
+        let iter = query.iter();
+        while query.next() {
+            let field = query.field(0);
+            println!("Field: {:?}", field);
+        }
+    })
+        .build();
 }
