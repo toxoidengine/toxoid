@@ -2461,12 +2461,12 @@ pub mod exports {
                 }
                 #[doc(hidden)]
                 #[allow(non_snake_case)]
-                pub unsafe fn _export_method_query_field_cabi<T: GuestQuery>(
+                pub unsafe fn _export_method_query_components_cabi<T: GuestQuery>(
                     arg0: *mut u8,
                     arg1: i32,
                 ) -> *mut u8 {
                     #[cfg(target_arch = "wasm32")] _rt::run_ctors_once();
-                    let result0 = T::field(
+                    let result0 = T::components(
                         QueryBorrow::lift(arg0 as u32 as usize).get(),
                         arg1 as i8,
                     );
@@ -2481,7 +2481,7 @@ pub mod exports {
                 }
                 #[doc(hidden)]
                 #[allow(non_snake_case)]
-                pub unsafe fn __post_return_method_query_field<T: GuestQuery>(
+                pub unsafe fn __post_return_method_query_components<T: GuestQuery>(
                     arg0: *mut u8,
                 ) {
                     let l0 = *arg0.add(0).cast::<*mut u8>();
@@ -2551,12 +2551,12 @@ pub mod exports {
                 }
                 #[doc(hidden)]
                 #[allow(non_snake_case)]
-                pub unsafe fn _export_method_iter_field_cabi<T: GuestIter>(
+                pub unsafe fn _export_method_iter_components_cabi<T: GuestIter>(
                     arg0: *mut u8,
                     arg1: i32,
                 ) -> *mut u8 {
                     #[cfg(target_arch = "wasm32")] _rt::run_ctors_once();
-                    let result0 = T::field(
+                    let result0 = T::components(
                         IterBorrow::lift(arg0 as u32 as usize).get(),
                         arg1 as i8,
                     );
@@ -2571,7 +2571,7 @@ pub mod exports {
                 }
                 #[doc(hidden)]
                 #[allow(non_snake_case)]
-                pub unsafe fn __post_return_method_iter_field<T: GuestIter>(
+                pub unsafe fn __post_return_method_iter_components<T: GuestIter>(
                     arg0: *mut u8,
                 ) {
                     let l0 = *arg0.add(0).cast::<*mut u8>();
@@ -3085,7 +3085,7 @@ pub mod exports {
                     fn next(&self) -> bool;
                     fn count(&self) -> i32;
                     fn entities(&self) -> _rt::Vec<EcsEntityT>;
-                    fn field(&self, index: i8) -> _rt::Vec<PointerT>;
+                    fn components(&self, index: i8) -> _rt::Vec<PointerT>;
                 }
                 pub trait GuestIter: 'static {
                     #[doc(hidden)]
@@ -3132,7 +3132,7 @@ pub mod exports {
                     fn next(&self) -> bool;
                     fn count(&self) -> i32;
                     fn entities(&self) -> _rt::Vec<EcsEntityT>;
-                    fn field(&self, index: i8) -> _rt::Vec<PointerT>;
+                    fn components(&self, index: i8) -> _rt::Vec<PointerT>;
                 }
                 pub trait GuestCallback: 'static {
                     #[doc(hidden)]
@@ -3762,14 +3762,16 @@ pub mod exports {
                         u8,) { $($path_to_types)*::
                         __post_return_method_query_entities::<<$ty as
                         $($path_to_types)*:: Guest >::Query > (arg0) } #[export_name =
-                        "toxoid:engine/ecs#[method]query.field"] unsafe extern "C" fn
-                        export_method_query_field(arg0 : * mut u8, arg1 : i32,) -> * mut
-                        u8 { $($path_to_types)*:: _export_method_query_field_cabi::<<$ty
-                        as $($path_to_types)*:: Guest >::Query > (arg0, arg1) }
+                        "toxoid:engine/ecs#[method]query.components"] unsafe extern "C"
+                        fn export_method_query_components(arg0 : * mut u8, arg1 : i32,)
+                        -> * mut u8 { $($path_to_types)*::
+                        _export_method_query_components_cabi::<<$ty as
+                        $($path_to_types)*:: Guest >::Query > (arg0, arg1) }
                         #[export_name =
-                        "cabi_post_toxoid:engine/ecs#[method]query.field"] unsafe extern
-                        "C" fn _post_return_method_query_field(arg0 : * mut u8,) {
-                        $($path_to_types)*:: __post_return_method_query_field::<<$ty as
+                        "cabi_post_toxoid:engine/ecs#[method]query.components"] unsafe
+                        extern "C" fn _post_return_method_query_components(arg0 : * mut
+                        u8,) { $($path_to_types)*::
+                        __post_return_method_query_components::<<$ty as
                         $($path_to_types)*:: Guest >::Query > (arg0) } #[export_name =
                         "toxoid:engine/ecs#[constructor]iter"] unsafe extern "C" fn
                         export_constructor_iter(arg0 : i64,) -> i32 {
@@ -3791,15 +3793,16 @@ pub mod exports {
                         extern "C" fn _post_return_method_iter_entities(arg0 : * mut u8,)
                         { $($path_to_types)*:: __post_return_method_iter_entities::<<$ty
                         as $($path_to_types)*:: Guest >::Iter > (arg0) } #[export_name =
-                        "toxoid:engine/ecs#[method]iter.field"] unsafe extern "C" fn
-                        export_method_iter_field(arg0 : * mut u8, arg1 : i32,) -> * mut
-                        u8 { $($path_to_types)*:: _export_method_iter_field_cabi::<<$ty
-                        as $($path_to_types)*:: Guest >::Iter > (arg0, arg1) }
-                        #[export_name = "cabi_post_toxoid:engine/ecs#[method]iter.field"]
-                        unsafe extern "C" fn _post_return_method_iter_field(arg0 : * mut
+                        "toxoid:engine/ecs#[method]iter.components"] unsafe extern "C" fn
+                        export_method_iter_components(arg0 : * mut u8, arg1 : i32,) -> *
+                        mut u8 { $($path_to_types)*::
+                        _export_method_iter_components_cabi::<<$ty as
+                        $($path_to_types)*:: Guest >::Iter > (arg0, arg1) } #[export_name
+                        = "cabi_post_toxoid:engine/ecs#[method]iter.components"] unsafe
+                        extern "C" fn _post_return_method_iter_components(arg0 : * mut
                         u8,) { $($path_to_types)*::
-                        __post_return_method_iter_field::<<$ty as $($path_to_types)*::
-                        Guest >::Iter > (arg0) } #[export_name =
+                        __post_return_method_iter_components::<<$ty as
+                        $($path_to_types)*:: Guest >::Iter > (arg0) } #[export_name =
                         "toxoid:engine/ecs#[constructor]callback"] unsafe extern "C" fn
                         export_constructor_callback(arg0 : i64,) -> i32 {
                         $($path_to_types)*:: _export_constructor_callback_cabi::<<$ty as
@@ -3994,8 +3997,6 @@ mod _rt {
     #[cfg(target_arch = "wasm32")]
     pub fn run_ctors_once() {
         #[cfg(not(target_os = "emscripten"))]
-#[cfg(not(target_os = "emscripten"))]
-#[cfg(not(target_os = "emscripten"))]
 wit_bindgen_rt::run_ctors_once();
     }
     pub unsafe fn string_lift(bytes: Vec<u8>) -> String {
@@ -4182,8 +4183,8 @@ pub(crate) use __export_toxoid_engine_world_impl as export;
 #[cfg(target_arch = "wasm32")]
 #[link_section = "component-type:wit-bindgen:0.35.0:toxoid:engine:toxoid-engine-world:encoded world"]
 #[doc(hidden)]
-pub static __WIT_BINDGEN_COMPONENT_TYPE: [u8; 5652] = *b"\
-\0asm\x0d\0\x01\0\0\x19\x16wit-component-encoding\x04\0\x07\x8a+\x01A\x02\x01A\x02\
+pub static __WIT_BINDGEN_COMPONENT_TYPE: [u8; 5662] = *b"\
+\0asm\x0d\0\x01\0\0\x19\x16wit-component-encoding\x04\0\x07\x94+\x01A\x02\x01A\x02\
 \x01B\xeb\x01\x01w\x04\0\x0cecs-entity-t\x03\0\0\x01w\x04\0\x09pointer-t\x03\0\x02\
 \x01q\x03\x04is-a\0\0\x08child-of\0\0\x06custom\x01\x01\0\x04\0\x0crelationship\x03\
 \0\x04\x01m\x18\x04u8-t\x05u16-t\x05u32-t\x05u64-t\x04i8-t\x05i16-t\x05i32-t\x05\
@@ -4271,33 +4272,31 @@ thod]query.build\x01m\x01@\x01\x04self\xec\0\0\x03\x04\0\x12[method]query.iter\x
 n\x01@\x01\x04self\xec\0\0\x7f\x04\0\x12[method]query.next\x01o\x01@\x01\x04self\
 \xec\0\0z\x04\0\x13[method]query.count\x01p\x01@\x01\x04self\xec\0\0\xe8\0\x04\0\
 \x16[method]query.entities\x01q\x01p\x03\x01@\x02\x04self\xec\0\x05index~\0\xf2\0\
-\x04\0\x13[method]query.field\x01s\x01i\x17\x01@\x01\x03ptrw\0\xf4\0\x04\0\x11[c\
-onstructor]iter\x01u\x01h\x17\x01@\x01\x04self\xf6\0\0\x7f\x04\0\x11[method]iter\
-.next\x01w\x01@\x01\x04self\xf6\0\0z\x04\0\x12[method]iter.count\x01x\x01@\x01\x04\
-self\xf6\0\0\xe8\0\x04\0\x15[method]iter.entities\x01y\x01@\x02\x04self\xf6\0\x05\
-index~\0\xf2\0\x04\0\x12[method]iter.field\x01z\x01i\x18\x01@\x01\x06handlew\0\xfb\
-\0\x04\0\x15[constructor]callback\x01|\x01h\x18\x01@\x02\x04self\xfd\0\x04iter\xf4\
-\0\x01\0\x04\0\x14[method]callback.run\x01~\x01@\x01\x04self\xfd\0\0\x03\x04\0\x1a\
-[method]callback.cb-handle\x01\x7f\x01i\x1c\x01@\x01\x04desc\x1b\0\x80\x01\x04\0\
-\x13[constructor]system\x01\x81\x01\x01h\x1c\x01@\x01\x04self\x82\x01\x01\0\x04\0\
-\x14[method]system.build\x01\x83\x01\x01@\x01\x04self\x82\x01\0w\x04\0\x17[metho\
-d]system.callback\x01\x84\x01\x01i\x20\x01@\x01\x04desc\x1f\0\x85\x01\x04\0\x15[\
-constructor]observer\x01\x86\x01\x01h\x20\x01@\x01\x04self\x87\x01\x01\0\x04\0\x16\
-[method]observer.build\x01\x88\x01\x01@\x01\x04self\x87\x01\0\x03\x04\0\x19[meth\
-od]observer.callback\x01\x89\x01\x01@\x01\x0ccomponent-id\x01\x01\0\x04\0\x0dadd\
--singleton\x01\x8a\x01\x01@\x01\x0ccomponent-id\x01\0w\x04\0\x0dget-singleton\x01\
-\x8b\x01\x04\0\x10remove-singleton\x01\x8a\x01\x01@\x01\x09entity-id\x01\x01\0\x04\
-\0\x0aadd-entity\x01\x8c\x01\x04\0\x0dremove-entity\x01\x8c\x01\x01@\x01\x04name\
-s\0\x7f\x04\0\x10has-entity-named\x01\x8d\x01\x01@\x01\x0ecomponent-names\0\x01\x04\
-\0\x10get-component-id\x01\x8e\x01\x04\0\x11toxoid:engine/ecs\x05\0\x04\0!toxoid\
-:engine/toxoid-engine-world\x04\0\x0b\x19\x01\0\x13toxoid-engine-world\x03\0\0\0\
-G\x09producers\x01\x0cprocessed-by\x02\x0dwit-component\x070.220.0\x10wit-bindge\
-n-rust\x060.35.0";
+\x04\0\x18[method]query.components\x01s\x01i\x17\x01@\x01\x03ptrw\0\xf4\0\x04\0\x11\
+[constructor]iter\x01u\x01h\x17\x01@\x01\x04self\xf6\0\0\x7f\x04\0\x11[method]it\
+er.next\x01w\x01@\x01\x04self\xf6\0\0z\x04\0\x12[method]iter.count\x01x\x01@\x01\
+\x04self\xf6\0\0\xe8\0\x04\0\x15[method]iter.entities\x01y\x01@\x02\x04self\xf6\0\
+\x05index~\0\xf2\0\x04\0\x17[method]iter.components\x01z\x01i\x18\x01@\x01\x06ha\
+ndlew\0\xfb\0\x04\0\x15[constructor]callback\x01|\x01h\x18\x01@\x02\x04self\xfd\0\
+\x04iter\xf4\0\x01\0\x04\0\x14[method]callback.run\x01~\x01@\x01\x04self\xfd\0\0\
+\x03\x04\0\x1a[method]callback.cb-handle\x01\x7f\x01i\x1c\x01@\x01\x04desc\x1b\0\
+\x80\x01\x04\0\x13[constructor]system\x01\x81\x01\x01h\x1c\x01@\x01\x04self\x82\x01\
+\x01\0\x04\0\x14[method]system.build\x01\x83\x01\x01@\x01\x04self\x82\x01\0w\x04\
+\0\x17[method]system.callback\x01\x84\x01\x01i\x20\x01@\x01\x04desc\x1f\0\x85\x01\
+\x04\0\x15[constructor]observer\x01\x86\x01\x01h\x20\x01@\x01\x04self\x87\x01\x01\
+\0\x04\0\x16[method]observer.build\x01\x88\x01\x01@\x01\x04self\x87\x01\0\x03\x04\
+\0\x19[method]observer.callback\x01\x89\x01\x01@\x01\x0ccomponent-id\x01\x01\0\x04\
+\0\x0dadd-singleton\x01\x8a\x01\x01@\x01\x0ccomponent-id\x01\0w\x04\0\x0dget-sin\
+gleton\x01\x8b\x01\x04\0\x10remove-singleton\x01\x8a\x01\x01@\x01\x09entity-id\x01\
+\x01\0\x04\0\x0aadd-entity\x01\x8c\x01\x04\0\x0dremove-entity\x01\x8c\x01\x01@\x01\
+\x04names\0\x7f\x04\0\x10has-entity-named\x01\x8d\x01\x01@\x01\x0ecomponent-name\
+s\0\x01\x04\0\x10get-component-id\x01\x8e\x01\x04\0\x11toxoid:engine/ecs\x05\0\x04\
+\0!toxoid:engine/toxoid-engine-world\x04\0\x0b\x19\x01\0\x13toxoid-engine-world\x03\
+\0\0\0G\x09producers\x01\x0cprocessed-by\x02\x0dwit-component\x070.220.0\x10wit-\
+bindgen-rust\x060.35.0";
 #[inline(never)]
 #[doc(hidden)]
 pub fn __link_custom_section_describing_imports() {
     #[cfg(not(target_os = "emscripten"))]
-#[cfg(not(target_os = "emscripten"))]
-#[cfg(not(target_os = "emscripten"))]
 wit_bindgen_rt::maybe_link_cabi_realloc();
 }

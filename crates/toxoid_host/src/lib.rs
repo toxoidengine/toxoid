@@ -921,7 +921,7 @@ impl GuestQuery for Query {
         entities_slice.to_vec()
     }
 
-    fn field(&self, index: i8) -> Vec<PointerT> {
+    fn components(&self, index: i8) -> Vec<PointerT> {
         // Get iter as raw pointer
         let iter = self.iter.as_ptr();
         // Get count of components
@@ -972,7 +972,7 @@ impl GuestIter for Iter {
         entities_slice.to_vec()
     }
 
-    fn field(&self, index: i8) -> Vec<PointerT> {
+    fn components(&self, index: i8) -> Vec<PointerT> {
         // Get iter as raw pointer
         let iter = self.ptr as *mut ecs_iter_t;
         // Get count of components
