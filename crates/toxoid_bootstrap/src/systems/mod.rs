@@ -55,21 +55,12 @@ pub fn init() {
     fetch::init();
 
     System::dsl("", None, |_iter| {
-        // Query::dsl_each("Position", |iter| {
-        //     println!("Hello???");
-        //     while iter.next() {
-        //         let field = iter.field(0);
-        //         println!("Field: {:?}", field);
-        //     }
-        // });
-        // println!("Hello world?");
-        let mut query = Query::dsl("Position");
-        query.build();
-        query.iter();
-        while query.next() {
-            let field = query.field(0);
-            println!("Field: {:?}", field);
-        }
+        Query::dsl_each("Position", |query| {
+            while query.next() {
+                let field = query.field(0);
+                println!("Field: {:?}", field);
+            }
+        });
     })
         .build();
 }
