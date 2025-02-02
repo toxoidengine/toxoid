@@ -1072,6 +1072,10 @@ impl GuestSystem for System {
             )
         }
     }
+    
+    fn get_id(&self) -> ecs_entity_t {
+        *self.entity.borrow()
+    }
 
     fn callback(&self) -> u64 {
        self.callback.borrow().handle

@@ -3033,6 +3033,17 @@ pub mod exports {
                 }
                 #[doc(hidden)]
                 #[allow(non_snake_case)]
+                pub unsafe fn _export_method_system_get_id_cabi<T: GuestSystem>(
+                    arg0: *mut u8,
+                ) -> i64 {
+                    #[cfg(target_arch = "wasm32")] _rt::run_ctors_once();
+                    let result0 = T::get_id(
+                        SystemBorrow::lift(arg0 as u32 as usize).get(),
+                    );
+                    _rt::as_i64(result0)
+                }
+                #[doc(hidden)]
+                #[allow(non_snake_case)]
                 pub unsafe fn _export_method_system_build_cabi<T: GuestSystem>(
                     arg0: *mut u8,
                 ) {
@@ -3734,6 +3745,7 @@ pub mod exports {
                         }
                     }
                     fn new(desc: SystemDesc) -> Self;
+                    fn get_id(&self) -> EcsEntityT;
                     fn build(&self);
                     fn callback(&self) -> u64;
                     fn disable(&self);
@@ -4444,6 +4456,10 @@ pub mod exports {
                         _export_constructor_system_cabi::<<$ty as $($path_to_types)*::
                         Guest >::System > (arg0, arg1, arg2, arg3, arg4, arg5, arg6,
                         arg7, arg8) } #[export_name =
+                        "toxoid:engine/ecs#[method]system.get-id"] unsafe extern "C" fn
+                        export_method_system_get_id(arg0 : * mut u8,) -> i64 {
+                        $($path_to_types)*:: _export_method_system_get_id_cabi::<<$ty as
+                        $($path_to_types)*:: Guest >::System > (arg0) } #[export_name =
                         "toxoid:engine/ecs#[method]system.build"] unsafe extern "C" fn
                         export_method_system_build(arg0 : * mut u8,) {
                         $($path_to_types)*:: _export_method_system_build_cabi::<<$ty as
@@ -4676,7 +4692,6 @@ mod _rt {
     #[cfg(target_arch = "wasm32")]
     pub fn run_ctors_once() {
         #[cfg(not(target_os = "emscripten"))]
-#[cfg(not(target_os = "emscripten"))]
 wit_bindgen_rt::run_ctors_once();
     }
     pub unsafe fn string_lift(bytes: Vec<u8>) -> String {
@@ -4863,9 +4878,9 @@ pub(crate) use __export_toxoid_engine_world_impl as export;
 #[cfg(target_arch = "wasm32")]
 #[link_section = "component-type:wit-bindgen:0.35.0:toxoid:engine:toxoid-engine-world:encoded world"]
 #[doc(hidden)]
-pub static __WIT_BINDGEN_COMPONENT_TYPE: [u8; 6432] = *b"\
-\0asm\x0d\0\x01\0\0\x19\x16wit-component-encoding\x04\0\x07\x961\x01A\x02\x01A\x02\
-\x01B\x8e\x02\x01w\x04\0\x0cecs-entity-t\x03\0\0\x01w\x04\0\x09pointer-t\x03\0\x02\
+pub static __WIT_BINDGEN_COMPONENT_TYPE: [u8; 6471] = *b"\
+\0asm\x0d\0\x01\0\0\x19\x16wit-component-encoding\x04\0\x07\xbd1\x01A\x02\x01A\x02\
+\x01B\x90\x02\x01w\x04\0\x0cecs-entity-t\x03\0\0\x01w\x04\0\x09pointer-t\x03\0\x02\
 \x01q\x03\x04is-a\0\0\x08child-of\0\0\x06custom\x01\x01\0\x04\0\x0crelationship\x03\
 \0\x04\x01q\x0a\x08on-start\0\0\x07on-load\0\0\x09post-load\0\0\x0apre-update\0\0\
 \x09on-update\0\0\x0bon-validate\0\0\x0bpost-update\0\0\x09pre-store\0\0\x08on-s\
@@ -4968,26 +4983,27 @@ ents\x01\x84\x01\x01i\x1c\x01@\x01\x06handlew\0\x85\x01\x04\0\x15[constructor]ca
 llback\x01\x86\x01\x01h\x1c\x01@\x02\x04self\x87\x01\x04iter\xfe\0\x01\0\x04\0\x14\
 [method]callback.run\x01\x88\x01\x01@\x01\x04self\x87\x01\0\x03\x04\0\x1a[method\
 ]callback.cb-handle\x01\x89\x01\x01i\x20\x01@\x01\x04desc\x1f\0\x8a\x01\x04\0\x13\
-[constructor]system\x01\x8b\x01\x01h\x20\x01@\x01\x04self\x8c\x01\x01\0\x04\0\x14\
-[method]system.build\x01\x8d\x01\x01@\x01\x04self\x8c\x01\0w\x04\0\x17[method]sy\
-stem.callback\x01\x8e\x01\x04\0\x16[method]system.disable\x01\x8d\x01\x04\0\x15[\
-method]system.enable\x01\x8d\x01\x01i!\x01@\x01\x04names\0\x8f\x01\x04\0\x12[con\
-structor]phase\x01\x90\x01\x01h!\x01@\x02\x04self\x91\x01\x05phase\x07\x01\0\x04\
-\0\x18[method]phase.depends-on\x01\x92\x01\x01@\x01\x04self\x91\x01\0\x01\x04\0\x14\
-[method]phase.get-id\x01\x93\x01\x01i$\x01@\x01\x04desc#\0\x94\x01\x04\0\x15[con\
-structor]pipeline\x01\x95\x01\x01h$\x01@\x01\x04self\x96\x01\x01\0\x04\0\x16[met\
-hod]pipeline.build\x01\x97\x01\x01@\x02\x04self\x96\x01\x05phase\x01\x01\0\x04\0\
-\x1a[method]pipeline.add-phase\x01\x98\x01\x01@\x01\x04self\x96\x01\0\x01\x04\0\x17\
-[method]pipeline.get-id\x01\x99\x01\x04\0\x18[method]pipeline.disable\x01\x97\x01\
-\x04\0\x17[method]pipeline.enable\x01\x97\x01\x01i(\x01@\x01\x04desc'\0\x9a\x01\x04\
-\0\x15[constructor]observer\x01\x9b\x01\x01h(\x01@\x01\x04self\x9c\x01\x01\0\x04\
-\0\x16[method]observer.build\x01\x9d\x01\x01@\x01\x04self\x9c\x01\0\x03\x04\0\x19\
-[method]observer.callback\x01\x9e\x01\x01@\x01\x0ccomponent-id\x01\x01\0\x04\0\x0d\
-add-singleton\x01\x9f\x01\x01@\x01\x0ccomponent-id\x01\0w\x04\0\x0dget-singleton\
-\x01\xa0\x01\x04\0\x10remove-singleton\x01\x9f\x01\x01@\x01\x09entity-id\x01\x01\
-\0\x04\0\x0aadd-entity\x01\xa1\x01\x04\0\x0dremove-entity\x01\xa1\x01\x01@\x01\x04\
-names\0\x7f\x04\0\x10has-entity-named\x01\xa2\x01\x01@\x01\x0ecomponent-names\0\x01\
-\x04\0\x10get-component-id\x01\xa3\x01\x04\0\x11toxoid:engine/ecs\x05\0\x04\0!to\
+[constructor]system\x01\x8b\x01\x01h\x20\x01@\x01\x04self\x8c\x01\0\x01\x04\0\x15\
+[method]system.get-id\x01\x8d\x01\x01@\x01\x04self\x8c\x01\x01\0\x04\0\x14[metho\
+d]system.build\x01\x8e\x01\x01@\x01\x04self\x8c\x01\0w\x04\0\x17[method]system.c\
+allback\x01\x8f\x01\x04\0\x16[method]system.disable\x01\x8e\x01\x04\0\x15[method\
+]system.enable\x01\x8e\x01\x01i!\x01@\x01\x04names\0\x90\x01\x04\0\x12[construct\
+or]phase\x01\x91\x01\x01h!\x01@\x02\x04self\x92\x01\x05phase\x07\x01\0\x04\0\x18\
+[method]phase.depends-on\x01\x93\x01\x01@\x01\x04self\x92\x01\0\x01\x04\0\x14[me\
+thod]phase.get-id\x01\x94\x01\x01i$\x01@\x01\x04desc#\0\x95\x01\x04\0\x15[constr\
+uctor]pipeline\x01\x96\x01\x01h$\x01@\x01\x04self\x97\x01\x01\0\x04\0\x16[method\
+]pipeline.build\x01\x98\x01\x01@\x02\x04self\x97\x01\x05phase\x01\x01\0\x04\0\x1a\
+[method]pipeline.add-phase\x01\x99\x01\x01@\x01\x04self\x97\x01\0\x01\x04\0\x17[\
+method]pipeline.get-id\x01\x9a\x01\x04\0\x18[method]pipeline.disable\x01\x98\x01\
+\x04\0\x17[method]pipeline.enable\x01\x98\x01\x01i(\x01@\x01\x04desc'\0\x9b\x01\x04\
+\0\x15[constructor]observer\x01\x9c\x01\x01h(\x01@\x01\x04self\x9d\x01\x01\0\x04\
+\0\x16[method]observer.build\x01\x9e\x01\x01@\x01\x04self\x9d\x01\0\x03\x04\0\x19\
+[method]observer.callback\x01\x9f\x01\x01@\x01\x0ccomponent-id\x01\x01\0\x04\0\x0d\
+add-singleton\x01\xa0\x01\x01@\x01\x0ccomponent-id\x01\0w\x04\0\x0dget-singleton\
+\x01\xa1\x01\x04\0\x10remove-singleton\x01\xa0\x01\x01@\x01\x09entity-id\x01\x01\
+\0\x04\0\x0aadd-entity\x01\xa2\x01\x04\0\x0dremove-entity\x01\xa2\x01\x01@\x01\x04\
+names\0\x7f\x04\0\x10has-entity-named\x01\xa3\x01\x01@\x01\x0ecomponent-names\0\x01\
+\x04\0\x10get-component-id\x01\xa4\x01\x04\0\x11toxoid:engine/ecs\x05\0\x04\0!to\
 xoid:engine/toxoid-engine-world\x04\0\x0b\x19\x01\0\x13toxoid-engine-world\x03\0\
 \0\0G\x09producers\x01\x0cprocessed-by\x02\x0dwit-component\x070.220.0\x10wit-bi\
 ndgen-rust\x060.35.0";
@@ -4995,6 +5011,5 @@ ndgen-rust\x060.35.0";
 #[doc(hidden)]
 pub fn __link_custom_section_describing_imports() {
     #[cfg(not(target_os = "emscripten"))]
-#[cfg(not(target_os = "emscripten"))]
 wit_bindgen_rt::maybe_link_cabi_realloc();
 }

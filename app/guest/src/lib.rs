@@ -1,3 +1,5 @@
+use toxoid_api::fetch;
+
 mod components;
 mod entities;
 mod systems;
@@ -9,4 +11,5 @@ pub fn init() {
     components::init();
     entities::init();
     systems::init();
+    fetch("sprite.png");
 }
