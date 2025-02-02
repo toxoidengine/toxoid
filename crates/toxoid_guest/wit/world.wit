@@ -10,6 +10,19 @@ interface ecs {
         custom(ecs-entity-t)
     }
 
+    variant phases {
+        on-start,
+        on-load,
+        post-load,
+        pre-update,
+        on-update,
+        on-validate,
+        post-update,
+        pre-store,
+        on-store,
+        custom(ecs-entity-t)
+    }
+
     enum member-type {
         u8-t,
         u16-t,
@@ -140,6 +153,8 @@ interface ecs {
         parent: func() -> entity;
         children: func() -> list<entity>;
         relationships: func() -> list<entity>;
+        disable: func();
+        enable: func();
     }
 
     resource query {
@@ -179,6 +194,29 @@ interface ecs {
         constructor(desc: system-desc);
         build: func();
         callback: func() -> callback;
+        disable: func();
+        enable: func();
+    }
+    
+    resource phase {
+        constructor(name: string);
+        depends-on: func(phase: phases);
+        get-id: func() -> ecs-entity-t;
+    }
+
+    record pipeline-desc {
+        name: string,
+        query-desc: query-desc,
+        phases: list<ecs-entity-t>
+    }
+
+    resource pipeline {
+        constructor(desc: pipeline-desc);
+        build: func();
+        add-phase: func(phase: ecs-entity-t);
+        get-id: func() -> ecs-entity-t;
+        disable: func();
+        enable: func();
     }
 
     record observer-desc {

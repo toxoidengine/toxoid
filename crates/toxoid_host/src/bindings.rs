@@ -36,6 +36,52 @@ pub mod exports {
                         }
                     }
                 }
+                #[derive(Clone, Copy)]
+                pub enum Phases {
+                    OnStart,
+                    OnLoad,
+                    PostLoad,
+                    PreUpdate,
+                    OnUpdate,
+                    OnValidate,
+                    PostUpdate,
+                    PreStore,
+                    OnStore,
+                    Custom(EcsEntityT),
+                }
+                impl ::core::fmt::Debug for Phases {
+                    fn fmt(
+                        &self,
+                        f: &mut ::core::fmt::Formatter<'_>,
+                    ) -> ::core::fmt::Result {
+                        match self {
+                            Phases::OnStart => f.debug_tuple("Phases::OnStart").finish(),
+                            Phases::OnLoad => f.debug_tuple("Phases::OnLoad").finish(),
+                            Phases::PostLoad => {
+                                f.debug_tuple("Phases::PostLoad").finish()
+                            }
+                            Phases::PreUpdate => {
+                                f.debug_tuple("Phases::PreUpdate").finish()
+                            }
+                            Phases::OnUpdate => {
+                                f.debug_tuple("Phases::OnUpdate").finish()
+                            }
+                            Phases::OnValidate => {
+                                f.debug_tuple("Phases::OnValidate").finish()
+                            }
+                            Phases::PostUpdate => {
+                                f.debug_tuple("Phases::PostUpdate").finish()
+                            }
+                            Phases::PreStore => {
+                                f.debug_tuple("Phases::PreStore").finish()
+                            }
+                            Phases::OnStore => f.debug_tuple("Phases::OnStore").finish(),
+                            Phases::Custom(e) => {
+                                f.debug_tuple("Phases::Custom").field(e).finish()
+                            }
+                        }
+                    }
+                }
                 #[repr(u8)]
                 #[derive(Clone, Copy, Eq, Ord, PartialEq, PartialOrd)]
                 pub enum MemberType {
@@ -1141,6 +1187,262 @@ pub mod exports {
                             #[link(wasm_import_module = "[export]toxoid:engine/ecs")]
                             extern "C" {
                                 #[link_name = "[resource-drop]system"]
+                                fn drop(_: u32);
+                            }
+                            drop(_handle);
+                        }
+                    }
+                }
+                #[derive(Debug)]
+                #[repr(transparent)]
+                pub struct Phase {
+                    handle: _rt::Resource<Phase>,
+                }
+                type _PhaseRep<T> = Option<T>;
+                impl Phase {
+                    /// Creates a new resource from the specified representation.
+                    ///
+                    /// This function will create a new resource handle by moving `val` onto
+                    /// the heap and then passing that heap pointer to the component model to
+                    /// create a handle. The owned handle is then returned as `Phase`.
+                    pub fn new<T: GuestPhase>(val: T) -> Self {
+                        Self::type_guard::<T>();
+                        let val: _PhaseRep<T> = Some(val);
+                        let ptr: *mut _PhaseRep<T> = _rt::Box::into_raw(
+                            _rt::Box::new(val),
+                        );
+                        unsafe { Self::from_handle(T::_resource_new(ptr.cast())) }
+                    }
+                    /// Gets access to the underlying `T` which represents this resource.
+                    pub fn get<T: GuestPhase>(&self) -> &T {
+                        let ptr = unsafe { &*self.as_ptr::<T>() };
+                        ptr.as_ref().unwrap()
+                    }
+                    /// Gets mutable access to the underlying `T` which represents this
+                    /// resource.
+                    pub fn get_mut<T: GuestPhase>(&mut self) -> &mut T {
+                        let ptr = unsafe { &mut *self.as_ptr::<T>() };
+                        ptr.as_mut().unwrap()
+                    }
+                    /// Consumes this resource and returns the underlying `T`.
+                    pub fn into_inner<T: GuestPhase>(self) -> T {
+                        let ptr = unsafe { &mut *self.as_ptr::<T>() };
+                        ptr.take().unwrap()
+                    }
+                    #[doc(hidden)]
+                    pub unsafe fn from_handle(handle: u32) -> Self {
+                        Self {
+                            handle: _rt::Resource::from_handle(handle),
+                        }
+                    }
+                    #[doc(hidden)]
+                    pub fn take_handle(&self) -> u32 {
+                        _rt::Resource::take_handle(&self.handle)
+                    }
+                    #[doc(hidden)]
+                    pub fn handle(&self) -> u32 {
+                        _rt::Resource::handle(&self.handle)
+                    }
+                    #[doc(hidden)]
+                    fn type_guard<T: 'static>() {
+                        use core::any::TypeId;
+                        static mut LAST_TYPE: Option<TypeId> = None;
+                        unsafe {
+                            assert!(! cfg!(target_feature = "atomics"));
+                            let id = TypeId::of::<T>();
+                            match LAST_TYPE {
+                                Some(ty) => {
+                                    assert!(
+                                        ty == id, "cannot use two types with this resource type"
+                                    )
+                                }
+                                None => LAST_TYPE = Some(id),
+                            }
+                        }
+                    }
+                    #[doc(hidden)]
+                    pub unsafe fn dtor<T: 'static>(handle: *mut u8) {
+                        Self::type_guard::<T>();
+                        let _ = _rt::Box::from_raw(handle as *mut _PhaseRep<T>);
+                    }
+                    fn as_ptr<T: GuestPhase>(&self) -> *mut _PhaseRep<T> {
+                        Phase::type_guard::<T>();
+                        T::_resource_rep(self.handle()).cast()
+                    }
+                }
+                /// A borrowed version of [`Phase`] which represents a borrowed value
+                /// with the lifetime `'a`.
+                #[derive(Debug)]
+                #[repr(transparent)]
+                pub struct PhaseBorrow<'a> {
+                    rep: *mut u8,
+                    _marker: core::marker::PhantomData<&'a Phase>,
+                }
+                impl<'a> PhaseBorrow<'a> {
+                    #[doc(hidden)]
+                    pub unsafe fn lift(rep: usize) -> Self {
+                        Self {
+                            rep: rep as *mut u8,
+                            _marker: core::marker::PhantomData,
+                        }
+                    }
+                    /// Gets access to the underlying `T` in this resource.
+                    pub fn get<T: GuestPhase>(&self) -> &T {
+                        let ptr = unsafe { &mut *self.as_ptr::<T>() };
+                        ptr.as_ref().unwrap()
+                    }
+                    fn as_ptr<T: 'static>(&self) -> *mut _PhaseRep<T> {
+                        Phase::type_guard::<T>();
+                        self.rep.cast()
+                    }
+                }
+                unsafe impl _rt::WasmResource for Phase {
+                    #[inline]
+                    unsafe fn drop(_handle: u32) {
+                        #[cfg(not(target_arch = "wasm32"))]
+                        unreachable!();
+                        #[cfg(target_arch = "wasm32")]
+                        {
+                            #[link(wasm_import_module = "[export]toxoid:engine/ecs")]
+                            extern "C" {
+                                #[link_name = "[resource-drop]phase"]
+                                fn drop(_: u32);
+                            }
+                            drop(_handle);
+                        }
+                    }
+                }
+                #[derive(Clone)]
+                pub struct PipelineDesc {
+                    pub name: _rt::String,
+                    pub query_desc: QueryDesc,
+                    pub phases: _rt::Vec<EcsEntityT>,
+                }
+                impl ::core::fmt::Debug for PipelineDesc {
+                    fn fmt(
+                        &self,
+                        f: &mut ::core::fmt::Formatter<'_>,
+                    ) -> ::core::fmt::Result {
+                        f.debug_struct("PipelineDesc")
+                            .field("name", &self.name)
+                            .field("query-desc", &self.query_desc)
+                            .field("phases", &self.phases)
+                            .finish()
+                    }
+                }
+                #[derive(Debug)]
+                #[repr(transparent)]
+                pub struct Pipeline {
+                    handle: _rt::Resource<Pipeline>,
+                }
+                type _PipelineRep<T> = Option<T>;
+                impl Pipeline {
+                    /// Creates a new resource from the specified representation.
+                    ///
+                    /// This function will create a new resource handle by moving `val` onto
+                    /// the heap and then passing that heap pointer to the component model to
+                    /// create a handle. The owned handle is then returned as `Pipeline`.
+                    pub fn new<T: GuestPipeline>(val: T) -> Self {
+                        Self::type_guard::<T>();
+                        let val: _PipelineRep<T> = Some(val);
+                        let ptr: *mut _PipelineRep<T> = _rt::Box::into_raw(
+                            _rt::Box::new(val),
+                        );
+                        unsafe { Self::from_handle(T::_resource_new(ptr.cast())) }
+                    }
+                    /// Gets access to the underlying `T` which represents this resource.
+                    pub fn get<T: GuestPipeline>(&self) -> &T {
+                        let ptr = unsafe { &*self.as_ptr::<T>() };
+                        ptr.as_ref().unwrap()
+                    }
+                    /// Gets mutable access to the underlying `T` which represents this
+                    /// resource.
+                    pub fn get_mut<T: GuestPipeline>(&mut self) -> &mut T {
+                        let ptr = unsafe { &mut *self.as_ptr::<T>() };
+                        ptr.as_mut().unwrap()
+                    }
+                    /// Consumes this resource and returns the underlying `T`.
+                    pub fn into_inner<T: GuestPipeline>(self) -> T {
+                        let ptr = unsafe { &mut *self.as_ptr::<T>() };
+                        ptr.take().unwrap()
+                    }
+                    #[doc(hidden)]
+                    pub unsafe fn from_handle(handle: u32) -> Self {
+                        Self {
+                            handle: _rt::Resource::from_handle(handle),
+                        }
+                    }
+                    #[doc(hidden)]
+                    pub fn take_handle(&self) -> u32 {
+                        _rt::Resource::take_handle(&self.handle)
+                    }
+                    #[doc(hidden)]
+                    pub fn handle(&self) -> u32 {
+                        _rt::Resource::handle(&self.handle)
+                    }
+                    #[doc(hidden)]
+                    fn type_guard<T: 'static>() {
+                        use core::any::TypeId;
+                        static mut LAST_TYPE: Option<TypeId> = None;
+                        unsafe {
+                            assert!(! cfg!(target_feature = "atomics"));
+                            let id = TypeId::of::<T>();
+                            match LAST_TYPE {
+                                Some(ty) => {
+                                    assert!(
+                                        ty == id, "cannot use two types with this resource type"
+                                    )
+                                }
+                                None => LAST_TYPE = Some(id),
+                            }
+                        }
+                    }
+                    #[doc(hidden)]
+                    pub unsafe fn dtor<T: 'static>(handle: *mut u8) {
+                        Self::type_guard::<T>();
+                        let _ = _rt::Box::from_raw(handle as *mut _PipelineRep<T>);
+                    }
+                    fn as_ptr<T: GuestPipeline>(&self) -> *mut _PipelineRep<T> {
+                        Pipeline::type_guard::<T>();
+                        T::_resource_rep(self.handle()).cast()
+                    }
+                }
+                /// A borrowed version of [`Pipeline`] which represents a borrowed value
+                /// with the lifetime `'a`.
+                #[derive(Debug)]
+                #[repr(transparent)]
+                pub struct PipelineBorrow<'a> {
+                    rep: *mut u8,
+                    _marker: core::marker::PhantomData<&'a Pipeline>,
+                }
+                impl<'a> PipelineBorrow<'a> {
+                    #[doc(hidden)]
+                    pub unsafe fn lift(rep: usize) -> Self {
+                        Self {
+                            rep: rep as *mut u8,
+                            _marker: core::marker::PhantomData,
+                        }
+                    }
+                    /// Gets access to the underlying `T` in this resource.
+                    pub fn get<T: GuestPipeline>(&self) -> &T {
+                        let ptr = unsafe { &mut *self.as_ptr::<T>() };
+                        ptr.as_ref().unwrap()
+                    }
+                    fn as_ptr<T: 'static>(&self) -> *mut _PipelineRep<T> {
+                        Pipeline::type_guard::<T>();
+                        self.rep.cast()
+                    }
+                }
+                unsafe impl _rt::WasmResource for Pipeline {
+                    #[inline]
+                    unsafe fn drop(_handle: u32) {
+                        #[cfg(not(target_arch = "wasm32"))]
+                        unreachable!();
+                        #[cfg(target_arch = "wasm32")]
+                        {
+                            #[link(wasm_import_module = "[export]toxoid:engine/ecs")]
+                            extern "C" {
+                                #[link_name = "[resource-drop]pipeline"]
                                 fn drop(_: u32);
                             }
                             drop(_handle);
@@ -2426,6 +2728,22 @@ pub mod exports {
                 }
                 #[doc(hidden)]
                 #[allow(non_snake_case)]
+                pub unsafe fn _export_method_entity_disable_cabi<T: GuestEntity>(
+                    arg0: *mut u8,
+                ) {
+                    #[cfg(target_arch = "wasm32")] _rt::run_ctors_once();
+                    T::disable(EntityBorrow::lift(arg0 as u32 as usize).get());
+                }
+                #[doc(hidden)]
+                #[allow(non_snake_case)]
+                pub unsafe fn _export_method_entity_enable_cabi<T: GuestEntity>(
+                    arg0: *mut u8,
+                ) {
+                    #[cfg(target_arch = "wasm32")] _rt::run_ctors_once();
+                    T::enable(EntityBorrow::lift(arg0 as u32 as usize).get());
+                }
+                #[doc(hidden)]
+                #[allow(non_snake_case)]
                 pub unsafe fn _export_constructor_query_cabi<T: GuestQuery>(
                     arg0: *mut u8,
                     arg1: usize,
@@ -2734,6 +3052,145 @@ pub mod exports {
                 }
                 #[doc(hidden)]
                 #[allow(non_snake_case)]
+                pub unsafe fn _export_method_system_disable_cabi<T: GuestSystem>(
+                    arg0: *mut u8,
+                ) {
+                    #[cfg(target_arch = "wasm32")] _rt::run_ctors_once();
+                    T::disable(SystemBorrow::lift(arg0 as u32 as usize).get());
+                }
+                #[doc(hidden)]
+                #[allow(non_snake_case)]
+                pub unsafe fn _export_method_system_enable_cabi<T: GuestSystem>(
+                    arg0: *mut u8,
+                ) {
+                    #[cfg(target_arch = "wasm32")] _rt::run_ctors_once();
+                    T::enable(SystemBorrow::lift(arg0 as u32 as usize).get());
+                }
+                #[doc(hidden)]
+                #[allow(non_snake_case)]
+                pub unsafe fn _export_constructor_phase_cabi<T: GuestPhase>(
+                    arg0: *mut u8,
+                    arg1: usize,
+                ) -> i32 {
+                    #[cfg(target_arch = "wasm32")] _rt::run_ctors_once();
+                    let len0 = arg1;
+                    let bytes0 = _rt::Vec::from_raw_parts(arg0.cast(), len0, len0);
+                    let result1 = Phase::new(T::new(_rt::string_lift(bytes0)));
+                    (result1).take_handle() as i32
+                }
+                #[doc(hidden)]
+                #[allow(non_snake_case)]
+                pub unsafe fn _export_method_phase_depends_on_cabi<T: GuestPhase>(
+                    arg0: *mut u8,
+                    arg1: i32,
+                    arg2: i64,
+                ) {
+                    #[cfg(target_arch = "wasm32")] _rt::run_ctors_once();
+                    let v0 = match arg1 {
+                        0 => Phases::OnStart,
+                        1 => Phases::OnLoad,
+                        2 => Phases::PostLoad,
+                        3 => Phases::PreUpdate,
+                        4 => Phases::OnUpdate,
+                        5 => Phases::OnValidate,
+                        6 => Phases::PostUpdate,
+                        7 => Phases::PreStore,
+                        8 => Phases::OnStore,
+                        n => {
+                            debug_assert_eq!(n, 9, "invalid enum discriminant");
+                            let e0 = arg2 as u64;
+                            Phases::Custom(e0)
+                        }
+                    };
+                    T::depends_on(PhaseBorrow::lift(arg0 as u32 as usize).get(), v0);
+                }
+                #[doc(hidden)]
+                #[allow(non_snake_case)]
+                pub unsafe fn _export_method_phase_get_id_cabi<T: GuestPhase>(
+                    arg0: *mut u8,
+                ) -> i64 {
+                    #[cfg(target_arch = "wasm32")] _rt::run_ctors_once();
+                    let result0 = T::get_id(
+                        PhaseBorrow::lift(arg0 as u32 as usize).get(),
+                    );
+                    _rt::as_i64(result0)
+                }
+                #[doc(hidden)]
+                #[allow(non_snake_case)]
+                pub unsafe fn _export_constructor_pipeline_cabi<T: GuestPipeline>(
+                    arg0: *mut u8,
+                    arg1: usize,
+                    arg2: *mut u8,
+                    arg3: usize,
+                    arg4: *mut u8,
+                    arg5: usize,
+                ) -> i32 {
+                    #[cfg(target_arch = "wasm32")] _rt::run_ctors_once();
+                    let len0 = arg1;
+                    let bytes0 = _rt::Vec::from_raw_parts(arg0.cast(), len0, len0);
+                    let len1 = arg3;
+                    let bytes1 = _rt::Vec::from_raw_parts(arg2.cast(), len1, len1);
+                    let len2 = arg5;
+                    let result3 = Pipeline::new(
+                        T::new(PipelineDesc {
+                            name: _rt::string_lift(bytes0),
+                            query_desc: QueryDesc {
+                                expr: _rt::string_lift(bytes1),
+                            },
+                            phases: _rt::Vec::from_raw_parts(arg4.cast(), len2, len2),
+                        }),
+                    );
+                    (result3).take_handle() as i32
+                }
+                #[doc(hidden)]
+                #[allow(non_snake_case)]
+                pub unsafe fn _export_method_pipeline_build_cabi<T: GuestPipeline>(
+                    arg0: *mut u8,
+                ) {
+                    #[cfg(target_arch = "wasm32")] _rt::run_ctors_once();
+                    T::build(PipelineBorrow::lift(arg0 as u32 as usize).get());
+                }
+                #[doc(hidden)]
+                #[allow(non_snake_case)]
+                pub unsafe fn _export_method_pipeline_add_phase_cabi<T: GuestPipeline>(
+                    arg0: *mut u8,
+                    arg1: i64,
+                ) {
+                    #[cfg(target_arch = "wasm32")] _rt::run_ctors_once();
+                    T::add_phase(
+                        PipelineBorrow::lift(arg0 as u32 as usize).get(),
+                        arg1 as u64,
+                    );
+                }
+                #[doc(hidden)]
+                #[allow(non_snake_case)]
+                pub unsafe fn _export_method_pipeline_get_id_cabi<T: GuestPipeline>(
+                    arg0: *mut u8,
+                ) -> i64 {
+                    #[cfg(target_arch = "wasm32")] _rt::run_ctors_once();
+                    let result0 = T::get_id(
+                        PipelineBorrow::lift(arg0 as u32 as usize).get(),
+                    );
+                    _rt::as_i64(result0)
+                }
+                #[doc(hidden)]
+                #[allow(non_snake_case)]
+                pub unsafe fn _export_method_pipeline_disable_cabi<T: GuestPipeline>(
+                    arg0: *mut u8,
+                ) {
+                    #[cfg(target_arch = "wasm32")] _rt::run_ctors_once();
+                    T::disable(PipelineBorrow::lift(arg0 as u32 as usize).get());
+                }
+                #[doc(hidden)]
+                #[allow(non_snake_case)]
+                pub unsafe fn _export_method_pipeline_enable_cabi<T: GuestPipeline>(
+                    arg0: *mut u8,
+                ) {
+                    #[cfg(target_arch = "wasm32")] _rt::run_ctors_once();
+                    T::enable(PipelineBorrow::lift(arg0 as u32 as usize).get());
+                }
+                #[doc(hidden)]
+                #[allow(non_snake_case)]
                 pub unsafe fn _export_constructor_observer_cabi<T: GuestObserver>(
                     arg0: i32,
                     arg1: *mut u8,
@@ -2873,6 +3330,8 @@ pub mod exports {
                     type Iter: GuestIter;
                     type Callback: GuestCallback;
                     type System: GuestSystem;
+                    type Phase: GuestPhase;
+                    type Pipeline: GuestPipeline;
                     type Observer: GuestObserver;
                     fn add_singleton(component_id: EcsEntityT);
                     fn get_singleton(component_id: EcsEntityT) -> u64;
@@ -3088,6 +3547,8 @@ pub mod exports {
                     fn parent(&self) -> EcsEntityT;
                     fn children(&self) -> _rt::Vec<EcsEntityT>;
                     fn relationships(&self) -> _rt::Vec<EcsEntityT>;
+                    fn disable(&self);
+                    fn enable(&self);
                 }
                 pub trait GuestQuery: 'static {
                     #[doc(hidden)]
@@ -3275,6 +3736,101 @@ pub mod exports {
                     fn new(desc: SystemDesc) -> Self;
                     fn build(&self);
                     fn callback(&self) -> u64;
+                    fn disable(&self);
+                    fn enable(&self);
+                }
+                pub trait GuestPhase: 'static {
+                    #[doc(hidden)]
+                    unsafe fn _resource_new(val: *mut u8) -> u32
+                    where
+                        Self: Sized,
+                    {
+                        #[cfg(not(target_arch = "wasm32"))]
+                        {
+                            let _ = val;
+                            unreachable!();
+                        }
+                        #[cfg(target_arch = "wasm32")]
+                        {
+                            #[link(wasm_import_module = "[export]toxoid:engine/ecs")]
+                            extern "C" {
+                                #[link_name = "[resource-new]phase"]
+                                fn new(_: *mut u8) -> u32;
+                            }
+                            new(val)
+                        }
+                    }
+                    #[doc(hidden)]
+                    fn _resource_rep(handle: u32) -> *mut u8
+                    where
+                        Self: Sized,
+                    {
+                        #[cfg(not(target_arch = "wasm32"))]
+                        {
+                            let _ = handle;
+                            unreachable!();
+                        }
+                        #[cfg(target_arch = "wasm32")]
+                        {
+                            #[link(wasm_import_module = "[export]toxoid:engine/ecs")]
+                            extern "C" {
+                                #[link_name = "[resource-rep]phase"]
+                                fn rep(_: u32) -> *mut u8;
+                            }
+                            unsafe { rep(handle) }
+                        }
+                    }
+                    fn new(name: _rt::String) -> Self;
+                    fn depends_on(&self, phase: Phases);
+                    fn get_id(&self) -> EcsEntityT;
+                }
+                pub trait GuestPipeline: 'static {
+                    #[doc(hidden)]
+                    unsafe fn _resource_new(val: *mut u8) -> u32
+                    where
+                        Self: Sized,
+                    {
+                        #[cfg(not(target_arch = "wasm32"))]
+                        {
+                            let _ = val;
+                            unreachable!();
+                        }
+                        #[cfg(target_arch = "wasm32")]
+                        {
+                            #[link(wasm_import_module = "[export]toxoid:engine/ecs")]
+                            extern "C" {
+                                #[link_name = "[resource-new]pipeline"]
+                                fn new(_: *mut u8) -> u32;
+                            }
+                            new(val)
+                        }
+                    }
+                    #[doc(hidden)]
+                    fn _resource_rep(handle: u32) -> *mut u8
+                    where
+                        Self: Sized,
+                    {
+                        #[cfg(not(target_arch = "wasm32"))]
+                        {
+                            let _ = handle;
+                            unreachable!();
+                        }
+                        #[cfg(target_arch = "wasm32")]
+                        {
+                            #[link(wasm_import_module = "[export]toxoid:engine/ecs")]
+                            extern "C" {
+                                #[link_name = "[resource-rep]pipeline"]
+                                fn rep(_: u32) -> *mut u8;
+                            }
+                            unsafe { rep(handle) }
+                        }
+                    }
+                    fn new(desc: PipelineDesc) -> Self;
+                    fn build(&self);
+                    fn add_phase(&self, phase: EcsEntityT);
+                    fn get_id(&self) -> EcsEntityT;
+                    fn disable(&self);
+                    fn enable(&self);
                 }
                 pub trait GuestObserver: 'static {
                     #[doc(hidden)]
@@ -3790,6 +4346,14 @@ pub mod exports {
                         $($path_to_types)*::
                         __post_return_method_entity_relationships::<<$ty as
                         $($path_to_types)*:: Guest >::Entity > (arg0) } #[export_name =
+                        "toxoid:engine/ecs#[method]entity.disable"] unsafe extern "C" fn
+                        export_method_entity_disable(arg0 : * mut u8,) {
+                        $($path_to_types)*:: _export_method_entity_disable_cabi::<<$ty as
+                        $($path_to_types)*:: Guest >::Entity > (arg0) } #[export_name =
+                        "toxoid:engine/ecs#[method]entity.enable"] unsafe extern "C" fn
+                        export_method_entity_enable(arg0 : * mut u8,) {
+                        $($path_to_types)*:: _export_method_entity_enable_cabi::<<$ty as
+                        $($path_to_types)*:: Guest >::Entity > (arg0) } #[export_name =
                         "toxoid:engine/ecs#[constructor]query"] unsafe extern "C" fn
                         export_constructor_query(arg0 : * mut u8, arg1 : usize,) -> i32 {
                         $($path_to_types)*:: _export_constructor_query_cabi::<<$ty as
@@ -3888,7 +4452,57 @@ pub mod exports {
                         export_method_system_callback(arg0 : * mut u8,) -> i64 {
                         $($path_to_types)*:: _export_method_system_callback_cabi::<<$ty
                         as $($path_to_types)*:: Guest >::System > (arg0) } #[export_name
-                        = "toxoid:engine/ecs#[constructor]observer"] unsafe extern "C" fn
+                        = "toxoid:engine/ecs#[method]system.disable"] unsafe extern "C"
+                        fn export_method_system_disable(arg0 : * mut u8,) {
+                        $($path_to_types)*:: _export_method_system_disable_cabi::<<$ty as
+                        $($path_to_types)*:: Guest >::System > (arg0) } #[export_name =
+                        "toxoid:engine/ecs#[method]system.enable"] unsafe extern "C" fn
+                        export_method_system_enable(arg0 : * mut u8,) {
+                        $($path_to_types)*:: _export_method_system_enable_cabi::<<$ty as
+                        $($path_to_types)*:: Guest >::System > (arg0) } #[export_name =
+                        "toxoid:engine/ecs#[constructor]phase"] unsafe extern "C" fn
+                        export_constructor_phase(arg0 : * mut u8, arg1 : usize,) -> i32 {
+                        $($path_to_types)*:: _export_constructor_phase_cabi::<<$ty as
+                        $($path_to_types)*:: Guest >::Phase > (arg0, arg1) }
+                        #[export_name = "toxoid:engine/ecs#[method]phase.depends-on"]
+                        unsafe extern "C" fn export_method_phase_depends_on(arg0 : * mut
+                        u8, arg1 : i32, arg2 : i64,) { $($path_to_types)*::
+                        _export_method_phase_depends_on_cabi::<<$ty as
+                        $($path_to_types)*:: Guest >::Phase > (arg0, arg1, arg2) }
+                        #[export_name = "toxoid:engine/ecs#[method]phase.get-id"] unsafe
+                        extern "C" fn export_method_phase_get_id(arg0 : * mut u8,) -> i64
+                        { $($path_to_types)*:: _export_method_phase_get_id_cabi::<<$ty as
+                        $($path_to_types)*:: Guest >::Phase > (arg0) } #[export_name =
+                        "toxoid:engine/ecs#[constructor]pipeline"] unsafe extern "C" fn
+                        export_constructor_pipeline(arg0 : * mut u8, arg1 : usize, arg2 :
+                        * mut u8, arg3 : usize, arg4 : * mut u8, arg5 : usize,) -> i32 {
+                        $($path_to_types)*:: _export_constructor_pipeline_cabi::<<$ty as
+                        $($path_to_types)*:: Guest >::Pipeline > (arg0, arg1, arg2, arg3,
+                        arg4, arg5) } #[export_name =
+                        "toxoid:engine/ecs#[method]pipeline.build"] unsafe extern "C" fn
+                        export_method_pipeline_build(arg0 : * mut u8,) {
+                        $($path_to_types)*:: _export_method_pipeline_build_cabi::<<$ty as
+                        $($path_to_types)*:: Guest >::Pipeline > (arg0) } #[export_name =
+                        "toxoid:engine/ecs#[method]pipeline.add-phase"] unsafe extern "C"
+                        fn export_method_pipeline_add_phase(arg0 : * mut u8, arg1 : i64,)
+                        { $($path_to_types)*::
+                        _export_method_pipeline_add_phase_cabi::<<$ty as
+                        $($path_to_types)*:: Guest >::Pipeline > (arg0, arg1) }
+                        #[export_name = "toxoid:engine/ecs#[method]pipeline.get-id"]
+                        unsafe extern "C" fn export_method_pipeline_get_id(arg0 : * mut
+                        u8,) -> i64 { $($path_to_types)*::
+                        _export_method_pipeline_get_id_cabi::<<$ty as
+                        $($path_to_types)*:: Guest >::Pipeline > (arg0) } #[export_name =
+                        "toxoid:engine/ecs#[method]pipeline.disable"] unsafe extern "C"
+                        fn export_method_pipeline_disable(arg0 : * mut u8,) {
+                        $($path_to_types)*:: _export_method_pipeline_disable_cabi::<<$ty
+                        as $($path_to_types)*:: Guest >::Pipeline > (arg0) }
+                        #[export_name = "toxoid:engine/ecs#[method]pipeline.enable"]
+                        unsafe extern "C" fn export_method_pipeline_enable(arg0 : * mut
+                        u8,) { $($path_to_types)*::
+                        _export_method_pipeline_enable_cabi::<<$ty as
+                        $($path_to_types)*:: Guest >::Pipeline > (arg0) } #[export_name =
+                        "toxoid:engine/ecs#[constructor]observer"] unsafe extern "C" fn
                         export_constructor_observer(arg0 : i32, arg1 : * mut u8, arg2 :
                         usize, arg3 : * mut u8, arg4 : usize, arg5 : * mut u8, arg6 :
                         usize, arg7 : i64, arg8 : i32,) -> i32 { $($path_to_types)*::
@@ -3956,6 +4570,14 @@ pub mod exports {
                         extern "C" fn dtor(rep : * mut u8) { $($path_to_types)*::
                         System::dtor::< <$ty as $($path_to_types)*:: Guest >::System >
                         (rep) } }; const _ : () = { #[doc(hidden)] #[export_name =
+                        "toxoid:engine/ecs#[dtor]phase"] #[allow(non_snake_case)] unsafe
+                        extern "C" fn dtor(rep : * mut u8) { $($path_to_types)*::
+                        Phase::dtor::< <$ty as $($path_to_types)*:: Guest >::Phase >
+                        (rep) } }; const _ : () = { #[doc(hidden)] #[export_name =
+                        "toxoid:engine/ecs#[dtor]pipeline"] #[allow(non_snake_case)]
+                        unsafe extern "C" fn dtor(rep : * mut u8) { $($path_to_types)*::
+                        Pipeline::dtor::< <$ty as $($path_to_types)*:: Guest >::Pipeline
+                        > (rep) } }; const _ : () = { #[doc(hidden)] #[export_name =
                         "toxoid:engine/ecs#[dtor]observer"] #[allow(non_snake_case)]
                         unsafe extern "C" fn dtor(rep : * mut u8) { $($path_to_types)*::
                         Observer::dtor::< <$ty as $($path_to_types)*:: Guest >::Observer
@@ -4054,6 +4676,7 @@ mod _rt {
     #[cfg(target_arch = "wasm32")]
     pub fn run_ctors_once() {
         #[cfg(not(target_os = "emscripten"))]
+#[cfg(not(target_os = "emscripten"))]
 wit_bindgen_rt::run_ctors_once();
     }
     pub unsafe fn string_lift(bytes: Vec<u8>) -> String {
@@ -4240,122 +4863,138 @@ pub(crate) use __export_toxoid_engine_world_impl as export;
 #[cfg(target_arch = "wasm32")]
 #[link_section = "component-type:wit-bindgen:0.35.0:toxoid:engine:toxoid-engine-world:encoded world"]
 #[doc(hidden)]
-pub static __WIT_BINDGEN_COMPONENT_TYPE: [u8; 5737] = *b"\
-\0asm\x0d\0\x01\0\0\x19\x16wit-component-encoding\x04\0\x07\xdf+\x01A\x02\x01A\x02\
-\x01B\xef\x01\x01w\x04\0\x0cecs-entity-t\x03\0\0\x01w\x04\0\x09pointer-t\x03\0\x02\
+pub static __WIT_BINDGEN_COMPONENT_TYPE: [u8; 6432] = *b"\
+\0asm\x0d\0\x01\0\0\x19\x16wit-component-encoding\x04\0\x07\x961\x01A\x02\x01A\x02\
+\x01B\x8e\x02\x01w\x04\0\x0cecs-entity-t\x03\0\0\x01w\x04\0\x09pointer-t\x03\0\x02\
 \x01q\x03\x04is-a\0\0\x08child-of\0\0\x06custom\x01\x01\0\x04\0\x0crelationship\x03\
-\0\x04\x01m\x18\x04u8-t\x05u16-t\x05u32-t\x05u64-t\x04i8-t\x05i16-t\x05i32-t\x05\
-i64-t\x05f32-t\x05f64-t\x06bool-t\x08string-t\x06list-t\x08u8list-t\x09u16list-t\
-\x09u32list-t\x09u64list-t\x08i8list-t\x09i16list-t\x09i32list-t\x09i64list-t\x09\
-f32list-t\x09f64list-t\x09pointer-t\x04\0\x0bmember-type\x03\0\x06\x01m\x09\x06o\
-n-set\x06on-add\x09on-remove\x09on-delete\x10on-delete-target\x0fon-table-create\
-\x0fon-table-delete\x0eon-table-empty\x0don-table-fill\x04\0\x05event\x03\0\x08\x01\
-ps\x01p}\x01r\x03\x04names\x0cmember-names\x0a\x0cmember-types\x0b\x04\0\x0ecomp\
-onent-desc\x03\0\x0c\x01ks\x01p\x01\x01k\x0f\x01r\x03\x04name\x0e\x03add\x10\x06\
-prefab\x7f\x04\0\x0bentity-desc\x03\0\x11\x01r\x01\x04exprs\x04\0\x0aquery-desc\x03\
-\0\x13\x04\0\x0ecomponent-type\x03\x01\x04\0\x09component\x03\x01\x04\0\x06entit\
-y\x03\x01\x04\0\x05query\x03\x01\x04\0\x04iter\x03\x01\x04\0\x08callback\x03\x01\
-\x01kz\x01r\x05\x04name\x0e\x09tick-rate\x1b\x08callbackw\x0aquery-desc\x14\x08i\
-s-guest\x7f\x04\0\x0bsystem-desc\x03\0\x1c\x04\0\x06system\x03\x01\x01p\x09\x01r\
-\x05\x04name\x0e\x0aquery-desc\x14\x06events\x1f\x08callback\x03\x08is-guest\x7f\
-\x04\0\x0dobserver-desc\x03\0\x20\x04\0\x08observer\x03\x01\x01i\x15\x01@\x01\x04\
-desc\x0d\0#\x04\0\x1b[constructor]component-type\x01$\x01h\x15\x01@\x01\x04self%\
-\0\x01\x04\0\x1d[method]component-type.get-id\x01&\x01i\x16\x01@\x03\x03ptr\x03\x06\
-entity\x01\x0ecomponent-type\x01\0'\x04\0\x16[constructor]component\x01(\x01h\x16\
-\x01@\x03\x04self)\x06offsety\x05value}\x01\0\x04\0\x1f[method]component.set-mem\
-ber-u8\x01*\x01@\x02\x04self)\x06offsety\0}\x04\0\x1f[method]component.get-membe\
-r-u8\x01+\x01@\x03\x04self)\x06offsety\x05value{\x01\0\x04\0\x20[method]componen\
-t.set-member-u16\x01,\x01@\x02\x04self)\x06offsety\0{\x04\0\x20[method]component\
-.get-member-u16\x01-\x01@\x03\x04self)\x06offsety\x05valuey\x01\0\x04\0\x20[meth\
-od]component.set-member-u32\x01.\x01@\x02\x04self)\x06offsety\0y\x04\0\x20[metho\
-d]component.get-member-u32\x01/\x01@\x03\x04self)\x06offsety\x05valuew\x01\0\x04\
-\0\x20[method]component.set-member-u64\x010\x01@\x02\x04self)\x06offsety\0w\x04\0\
-\x20[method]component.get-member-u64\x011\x01@\x03\x04self)\x06offsety\x05value~\
-\x01\0\x04\0\x1f[method]component.set-member-i8\x012\x01@\x02\x04self)\x06offset\
-y\0~\x04\0\x1f[method]component.get-member-i8\x013\x01@\x03\x04self)\x06offsety\x05\
-value|\x01\0\x04\0\x20[method]component.set-member-i16\x014\x01@\x02\x04self)\x06\
-offsety\0|\x04\0\x20[method]component.get-member-i16\x015\x01@\x03\x04self)\x06o\
-ffsety\x05valuez\x01\0\x04\0\x20[method]component.set-member-i32\x016\x01@\x02\x04\
-self)\x06offsety\0z\x04\0\x20[method]component.get-member-i32\x017\x01@\x03\x04s\
-elf)\x06offsety\x05valuex\x01\0\x04\0\x20[method]component.set-member-i64\x018\x01\
-@\x02\x04self)\x06offsety\0x\x04\0\x20[method]component.get-member-i64\x019\x01@\
-\x03\x04self)\x06offsety\x05valuev\x01\0\x04\0\x20[method]component.set-member-f\
-32\x01:\x01@\x02\x04self)\x06offsety\0v\x04\0\x20[method]component.get-member-f3\
-2\x01;\x01@\x03\x04self)\x06offsety\x05valueu\x01\0\x04\0\x20[method]component.s\
-et-member-f64\x01<\x01@\x02\x04self)\x06offsety\0u\x04\0\x20[method]component.ge\
-t-member-f64\x01=\x01@\x03\x04self)\x06offsety\x05value\x7f\x01\0\x04\0![method]\
-component.set-member-bool\x01>\x01@\x02\x04self)\x06offsety\0\x7f\x04\0![method]\
-component.get-member-bool\x01?\x01@\x03\x04self)\x06offsety\x05values\x01\0\x04\0\
-#[method]component.set-member-string\x01@\x01@\x02\x04self)\x06offsety\0s\x04\0#\
-[method]component.get-member-string\x01A\x01@\x03\x04self)\x06offsety\x05value\x0b\
-\x01\0\x04\0#[method]component.set-member-u8list\x01B\x01@\x02\x04self)\x06offse\
-ty\0\x0b\x04\0#[method]component.get-member-u8list\x01C\x01p{\x01@\x03\x04self)\x06\
-offsety\x05value\xc4\0\x01\0\x04\0$[method]component.set-member-u16list\x01E\x01\
-@\x02\x04self)\x06offsety\0\xc4\0\x04\0$[method]component.get-member-u16list\x01\
-F\x01py\x01@\x03\x04self)\x06offsety\x05value\xc7\0\x01\0\x04\0$[method]componen\
-t.set-member-u32list\x01H\x01@\x02\x04self)\x06offsety\0\xc7\0\x04\0$[method]com\
-ponent.get-member-u32list\x01I\x01pw\x01@\x03\x04self)\x06offsety\x05value\xca\0\
-\x01\0\x04\0$[method]component.set-member-u64list\x01K\x01@\x02\x04self)\x06offs\
-ety\0\xca\0\x04\0$[method]component.get-member-u64list\x01L\x01p~\x01@\x03\x04se\
-lf)\x06offsety\x05value\xcd\0\x01\0\x04\0#[method]component.set-member-i8list\x01\
-N\x01@\x02\x04self)\x06offsety\0\xcd\0\x04\0#[method]component.get-member-i8list\
-\x01O\x01p|\x01@\x03\x04self)\x06offsety\x05value\xd0\0\x01\0\x04\0$[method]comp\
-onent.set-member-i16list\x01Q\x01@\x02\x04self)\x06offsety\0\xd0\0\x04\0$[method\
-]component.get-member-i16list\x01R\x01pz\x01@\x03\x04self)\x06offsety\x05value\xd3\
-\0\x01\0\x04\0$[method]component.set-member-i32list\x01T\x01@\x02\x04self)\x06of\
-fsety\0\xd3\0\x04\0$[method]component.get-member-i32list\x01U\x01px\x01@\x03\x04\
-self)\x06offsety\x05value\xd6\0\x01\0\x04\0$[method]component.set-member-i64list\
-\x01W\x01@\x02\x04self)\x06offsety\0\xd6\0\x04\0$[method]component.get-member-i6\
-4list\x01X\x01pv\x01@\x03\x04self)\x06offsety\x05value\xd9\0\x01\0\x04\0$[method\
-]component.set-member-f32list\x01Z\x01@\x02\x04self)\x06offsety\0\xd9\0\x04\0$[m\
-ethod]component.get-member-f32list\x01[\x01pu\x01@\x03\x04self)\x06offsety\x05va\
-lue\xdc\0\x01\0\x04\0$[method]component.set-member-f64list\x01]\x01@\x02\x04self\
-)\x06offsety\0\xdc\0\x04\0$[method]component.get-member-f64list\x01^\x04\0$[meth\
-od]component.set-member-pointer\x010\x04\0$[method]component.get-member-pointer\x01\
-1\x01k\x01\x01i\x17\x01@\x02\x04desc\x12\x08inherits\xdf\0\0\xe0\0\x04\0\x13[con\
-structor]entity\x01a\x01h\x17\x01@\x01\x04self\xe2\0\0\x01\x04\0\x15[method]enti\
-ty.get-id\x01c\x01@\x01\x04self\xe2\0\0s\x04\0\x17[method]entity.get-name\x01d\x01\
-@\x02\x04self\xe2\0\x04names\x01\0\x04\0\x17[method]entity.set-name\x01e\x01@\x01\
-\x02idw\0\x03\x04\0\x16[static]entity.from-id\x01f\x01@\x02\x04self\xe2\0\x09com\
-ponent\x01\0\x03\x04\0\x12[method]entity.get\x01g\x01@\x02\x04self\xe2\0\x09comp\
-onent\x01\x01\0\x04\0\x12[method]entity.add\x01h\x01@\x02\x04self\xe2\0\x09compo\
-nent\x01\0\x7f\x04\0\x12[method]entity.has\x01i\x04\0\x15[method]entity.remove\x01\
-h\x01@\x03\x04self\xe2\0\x0crelationship\x05\x06target\x01\x01\0\x04\0\x1f[metho\
-d]entity.add-relationship\x01j\x04\0\"[method]entity.remove-relationship\x01j\x01\
-@\x02\x04self\xe2\0\x06target\x01\x01\0\x04\0\x18[method]entity.parent-of\x01k\x04\
-\0\x17[method]entity.child-of\x01k\x04\0\x15[method]entity.parent\x01c\x01@\x01\x04\
-self\xe2\0\0\x0f\x04\0\x17[method]entity.children\x01l\x04\0\x1c[method]entity.r\
-elationships\x01l\x01i\x18\x01@\x01\x04desc\x14\0\xed\0\x04\0\x12[constructor]qu\
-ery\x01n\x01h\x18\x01@\x01\x04self\xef\0\x01\0\x04\0\x13[method]query.build\x01p\
-\x01@\x01\x04self\xef\0\0\x03\x04\0\x12[method]query.iter\x01q\x01@\x01\x04self\xef\
-\0\0\x7f\x04\0\x12[method]query.next\x01r\x01@\x01\x04self\xef\0\0z\x04\0\x13[me\
-thod]query.count\x01s\x01@\x01\x04self\xef\0\0\x0f\x04\0\x16[method]query.entiti\
-es\x01t\x01p\x03\x01@\x02\x04self\xef\0\x05index~\0\xf5\0\x04\0\x18[method]query\
-.components\x01v\x01i\x19\x01@\x01\x03ptrw\0\xf7\0\x04\0\x11[constructor]iter\x01\
-x\x01h\x19\x01@\x01\x04self\xf9\0\0\x7f\x04\0\x11[method]iter.next\x01z\x01@\x01\
-\x04self\xf9\0\0z\x04\0\x12[method]iter.count\x01{\x01@\x01\x04self\xf9\0\0\x0f\x04\
-\0\x15[method]iter.entities\x01|\x01@\x02\x04self\xf9\0\x05index~\0\xf5\0\x04\0\x17\
-[method]iter.components\x01}\x01i\x1a\x01@\x01\x06handlew\0\xfe\0\x04\0\x15[cons\
-tructor]callback\x01\x7f\x01h\x1a\x01@\x02\x04self\x80\x01\x04iter\xf7\0\x01\0\x04\
-\0\x14[method]callback.run\x01\x81\x01\x01@\x01\x04self\x80\x01\0\x03\x04\0\x1a[\
-method]callback.cb-handle\x01\x82\x01\x01i\x1e\x01@\x01\x04desc\x1d\0\x83\x01\x04\
-\0\x13[constructor]system\x01\x84\x01\x01h\x1e\x01@\x01\x04self\x85\x01\x01\0\x04\
-\0\x14[method]system.build\x01\x86\x01\x01@\x01\x04self\x85\x01\0w\x04\0\x17[met\
-hod]system.callback\x01\x87\x01\x01i\"\x01@\x01\x04desc!\0\x88\x01\x04\0\x15[con\
-structor]observer\x01\x89\x01\x01h\"\x01@\x01\x04self\x8a\x01\x01\0\x04\0\x16[me\
-thod]observer.build\x01\x8b\x01\x01@\x01\x04self\x8a\x01\0\x03\x04\0\x19[method]\
-observer.callback\x01\x8c\x01\x01@\x01\x0ccomponent-id\x01\x01\0\x04\0\x0dadd-si\
-ngleton\x01\x8d\x01\x01@\x01\x0ccomponent-id\x01\0w\x04\0\x0dget-singleton\x01\x8e\
-\x01\x04\0\x10remove-singleton\x01\x8d\x01\x01@\x01\x09entity-id\x01\x01\0\x04\0\
-\x0aadd-entity\x01\x8f\x01\x04\0\x0dremove-entity\x01\x8f\x01\x01@\x01\x04names\0\
-\x7f\x04\0\x10has-entity-named\x01\x90\x01\x01@\x01\x0ecomponent-names\0\x01\x04\
-\0\x10get-component-id\x01\x91\x01\x04\0\x11toxoid:engine/ecs\x05\0\x04\0!toxoid\
-:engine/toxoid-engine-world\x04\0\x0b\x19\x01\0\x13toxoid-engine-world\x03\0\0\0\
-G\x09producers\x01\x0cprocessed-by\x02\x0dwit-component\x070.220.0\x10wit-bindge\
-n-rust\x060.35.0";
+\0\x04\x01q\x0a\x08on-start\0\0\x07on-load\0\0\x09post-load\0\0\x0apre-update\0\0\
+\x09on-update\0\0\x0bon-validate\0\0\x0bpost-update\0\0\x09pre-store\0\0\x08on-s\
+tore\0\0\x06custom\x01\x01\0\x04\0\x06phases\x03\0\x06\x01m\x18\x04u8-t\x05u16-t\
+\x05u32-t\x05u64-t\x04i8-t\x05i16-t\x05i32-t\x05i64-t\x05f32-t\x05f64-t\x06bool-\
+t\x08string-t\x06list-t\x08u8list-t\x09u16list-t\x09u32list-t\x09u64list-t\x08i8\
+list-t\x09i16list-t\x09i32list-t\x09i64list-t\x09f32list-t\x09f64list-t\x09point\
+er-t\x04\0\x0bmember-type\x03\0\x08\x01m\x09\x06on-set\x06on-add\x09on-remove\x09\
+on-delete\x10on-delete-target\x0fon-table-create\x0fon-table-delete\x0eon-table-\
+empty\x0don-table-fill\x04\0\x05event\x03\0\x0a\x01ps\x01p}\x01r\x03\x04names\x0c\
+member-names\x0c\x0cmember-types\x0d\x04\0\x0ecomponent-desc\x03\0\x0e\x01ks\x01\
+p\x01\x01k\x11\x01r\x03\x04name\x10\x03add\x12\x06prefab\x7f\x04\0\x0bentity-des\
+c\x03\0\x13\x01r\x01\x04exprs\x04\0\x0aquery-desc\x03\0\x15\x04\0\x0ecomponent-t\
+ype\x03\x01\x04\0\x09component\x03\x01\x04\0\x06entity\x03\x01\x04\0\x05query\x03\
+\x01\x04\0\x04iter\x03\x01\x04\0\x08callback\x03\x01\x01kz\x01r\x05\x04name\x10\x09\
+tick-rate\x1d\x08callbackw\x0aquery-desc\x16\x08is-guest\x7f\x04\0\x0bsystem-des\
+c\x03\0\x1e\x04\0\x06system\x03\x01\x04\0\x05phase\x03\x01\x01r\x03\x04names\x0a\
+query-desc\x16\x06phases\x11\x04\0\x0dpipeline-desc\x03\0\"\x04\0\x08pipeline\x03\
+\x01\x01p\x0b\x01r\x05\x04name\x10\x0aquery-desc\x16\x06events%\x08callback\x03\x08\
+is-guest\x7f\x04\0\x0dobserver-desc\x03\0&\x04\0\x08observer\x03\x01\x01i\x17\x01\
+@\x01\x04desc\x0f\0)\x04\0\x1b[constructor]component-type\x01*\x01h\x17\x01@\x01\
+\x04self+\0\x01\x04\0\x1d[method]component-type.get-id\x01,\x01i\x18\x01@\x03\x03\
+ptr\x03\x06entity\x01\x0ecomponent-type\x01\0-\x04\0\x16[constructor]component\x01\
+.\x01h\x18\x01@\x03\x04self/\x06offsety\x05value}\x01\0\x04\0\x1f[method]compone\
+nt.set-member-u8\x010\x01@\x02\x04self/\x06offsety\0}\x04\0\x1f[method]component\
+.get-member-u8\x011\x01@\x03\x04self/\x06offsety\x05value{\x01\0\x04\0\x20[metho\
+d]component.set-member-u16\x012\x01@\x02\x04self/\x06offsety\0{\x04\0\x20[method\
+]component.get-member-u16\x013\x01@\x03\x04self/\x06offsety\x05valuey\x01\0\x04\0\
+\x20[method]component.set-member-u32\x014\x01@\x02\x04self/\x06offsety\0y\x04\0\x20\
+[method]component.get-member-u32\x015\x01@\x03\x04self/\x06offsety\x05valuew\x01\
+\0\x04\0\x20[method]component.set-member-u64\x016\x01@\x02\x04self/\x06offsety\0\
+w\x04\0\x20[method]component.get-member-u64\x017\x01@\x03\x04self/\x06offsety\x05\
+value~\x01\0\x04\0\x1f[method]component.set-member-i8\x018\x01@\x02\x04self/\x06\
+offsety\0~\x04\0\x1f[method]component.get-member-i8\x019\x01@\x03\x04self/\x06of\
+fsety\x05value|\x01\0\x04\0\x20[method]component.set-member-i16\x01:\x01@\x02\x04\
+self/\x06offsety\0|\x04\0\x20[method]component.get-member-i16\x01;\x01@\x03\x04s\
+elf/\x06offsety\x05valuez\x01\0\x04\0\x20[method]component.set-member-i32\x01<\x01\
+@\x02\x04self/\x06offsety\0z\x04\0\x20[method]component.get-member-i32\x01=\x01@\
+\x03\x04self/\x06offsety\x05valuex\x01\0\x04\0\x20[method]component.set-member-i\
+64\x01>\x01@\x02\x04self/\x06offsety\0x\x04\0\x20[method]component.get-member-i6\
+4\x01?\x01@\x03\x04self/\x06offsety\x05valuev\x01\0\x04\0\x20[method]component.s\
+et-member-f32\x01@\x01@\x02\x04self/\x06offsety\0v\x04\0\x20[method]component.ge\
+t-member-f32\x01A\x01@\x03\x04self/\x06offsety\x05valueu\x01\0\x04\0\x20[method]\
+component.set-member-f64\x01B\x01@\x02\x04self/\x06offsety\0u\x04\0\x20[method]c\
+omponent.get-member-f64\x01C\x01@\x03\x04self/\x06offsety\x05value\x7f\x01\0\x04\
+\0![method]component.set-member-bool\x01D\x01@\x02\x04self/\x06offsety\0\x7f\x04\
+\0![method]component.get-member-bool\x01E\x01@\x03\x04self/\x06offsety\x05values\
+\x01\0\x04\0#[method]component.set-member-string\x01F\x01@\x02\x04self/\x06offse\
+ty\0s\x04\0#[method]component.get-member-string\x01G\x01@\x03\x04self/\x06offset\
+y\x05value\x0d\x01\0\x04\0#[method]component.set-member-u8list\x01H\x01@\x02\x04\
+self/\x06offsety\0\x0d\x04\0#[method]component.get-member-u8list\x01I\x01p{\x01@\
+\x03\x04self/\x06offsety\x05value\xca\0\x01\0\x04\0$[method]component.set-member\
+-u16list\x01K\x01@\x02\x04self/\x06offsety\0\xca\0\x04\0$[method]component.get-m\
+ember-u16list\x01L\x01py\x01@\x03\x04self/\x06offsety\x05value\xcd\0\x01\0\x04\0\
+$[method]component.set-member-u32list\x01N\x01@\x02\x04self/\x06offsety\0\xcd\0\x04\
+\0$[method]component.get-member-u32list\x01O\x01pw\x01@\x03\x04self/\x06offsety\x05\
+value\xd0\0\x01\0\x04\0$[method]component.set-member-u64list\x01Q\x01@\x02\x04se\
+lf/\x06offsety\0\xd0\0\x04\0$[method]component.get-member-u64list\x01R\x01p~\x01\
+@\x03\x04self/\x06offsety\x05value\xd3\0\x01\0\x04\0#[method]component.set-membe\
+r-i8list\x01T\x01@\x02\x04self/\x06offsety\0\xd3\0\x04\0#[method]component.get-m\
+ember-i8list\x01U\x01p|\x01@\x03\x04self/\x06offsety\x05value\xd6\0\x01\0\x04\0$\
+[method]component.set-member-i16list\x01W\x01@\x02\x04self/\x06offsety\0\xd6\0\x04\
+\0$[method]component.get-member-i16list\x01X\x01pz\x01@\x03\x04self/\x06offsety\x05\
+value\xd9\0\x01\0\x04\0$[method]component.set-member-i32list\x01Z\x01@\x02\x04se\
+lf/\x06offsety\0\xd9\0\x04\0$[method]component.get-member-i32list\x01[\x01px\x01\
+@\x03\x04self/\x06offsety\x05value\xdc\0\x01\0\x04\0$[method]component.set-membe\
+r-i64list\x01]\x01@\x02\x04self/\x06offsety\0\xdc\0\x04\0$[method]component.get-\
+member-i64list\x01^\x01pv\x01@\x03\x04self/\x06offsety\x05value\xdf\0\x01\0\x04\0\
+$[method]component.set-member-f32list\x01`\x01@\x02\x04self/\x06offsety\0\xdf\0\x04\
+\0$[method]component.get-member-f32list\x01a\x01pu\x01@\x03\x04self/\x06offsety\x05\
+value\xe2\0\x01\0\x04\0$[method]component.set-member-f64list\x01c\x01@\x02\x04se\
+lf/\x06offsety\0\xe2\0\x04\0$[method]component.get-member-f64list\x01d\x04\0$[me\
+thod]component.set-member-pointer\x016\x04\0$[method]component.get-member-pointe\
+r\x017\x01k\x01\x01i\x19\x01@\x02\x04desc\x14\x08inherits\xe5\0\0\xe6\0\x04\0\x13\
+[constructor]entity\x01g\x01h\x19\x01@\x01\x04self\xe8\0\0\x01\x04\0\x15[method]\
+entity.get-id\x01i\x01@\x01\x04self\xe8\0\0s\x04\0\x17[method]entity.get-name\x01\
+j\x01@\x02\x04self\xe8\0\x04names\x01\0\x04\0\x17[method]entity.set-name\x01k\x01\
+@\x01\x02idw\0\x03\x04\0\x16[static]entity.from-id\x01l\x01@\x02\x04self\xe8\0\x09\
+component\x01\0\x03\x04\0\x12[method]entity.get\x01m\x01@\x02\x04self\xe8\0\x09c\
+omponent\x01\x01\0\x04\0\x12[method]entity.add\x01n\x01@\x02\x04self\xe8\0\x09co\
+mponent\x01\0\x7f\x04\0\x12[method]entity.has\x01o\x04\0\x15[method]entity.remov\
+e\x01n\x01@\x03\x04self\xe8\0\x0crelationship\x05\x06target\x01\x01\0\x04\0\x1f[\
+method]entity.add-relationship\x01p\x04\0\"[method]entity.remove-relationship\x01\
+p\x01@\x02\x04self\xe8\0\x06target\x01\x01\0\x04\0\x18[method]entity.parent-of\x01\
+q\x04\0\x17[method]entity.child-of\x01q\x04\0\x15[method]entity.parent\x01i\x01@\
+\x01\x04self\xe8\0\0\x11\x04\0\x17[method]entity.children\x01r\x04\0\x1c[method]\
+entity.relationships\x01r\x01@\x01\x04self\xe8\0\x01\0\x04\0\x16[method]entity.d\
+isable\x01s\x04\0\x15[method]entity.enable\x01s\x01i\x1a\x01@\x01\x04desc\x16\0\xf4\
+\0\x04\0\x12[constructor]query\x01u\x01h\x1a\x01@\x01\x04self\xf6\0\x01\0\x04\0\x13\
+[method]query.build\x01w\x01@\x01\x04self\xf6\0\0\x03\x04\0\x12[method]query.ite\
+r\x01x\x01@\x01\x04self\xf6\0\0\x7f\x04\0\x12[method]query.next\x01y\x01@\x01\x04\
+self\xf6\0\0z\x04\0\x13[method]query.count\x01z\x01@\x01\x04self\xf6\0\0\x11\x04\
+\0\x16[method]query.entities\x01{\x01p\x03\x01@\x02\x04self\xf6\0\x05index~\0\xfc\
+\0\x04\0\x18[method]query.components\x01}\x01i\x1b\x01@\x01\x03ptrw\0\xfe\0\x04\0\
+\x11[constructor]iter\x01\x7f\x01h\x1b\x01@\x01\x04self\x80\x01\0\x7f\x04\0\x11[\
+method]iter.next\x01\x81\x01\x01@\x01\x04self\x80\x01\0z\x04\0\x12[method]iter.c\
+ount\x01\x82\x01\x01@\x01\x04self\x80\x01\0\x11\x04\0\x15[method]iter.entities\x01\
+\x83\x01\x01@\x02\x04self\x80\x01\x05index~\0\xfc\0\x04\0\x17[method]iter.compon\
+ents\x01\x84\x01\x01i\x1c\x01@\x01\x06handlew\0\x85\x01\x04\0\x15[constructor]ca\
+llback\x01\x86\x01\x01h\x1c\x01@\x02\x04self\x87\x01\x04iter\xfe\0\x01\0\x04\0\x14\
+[method]callback.run\x01\x88\x01\x01@\x01\x04self\x87\x01\0\x03\x04\0\x1a[method\
+]callback.cb-handle\x01\x89\x01\x01i\x20\x01@\x01\x04desc\x1f\0\x8a\x01\x04\0\x13\
+[constructor]system\x01\x8b\x01\x01h\x20\x01@\x01\x04self\x8c\x01\x01\0\x04\0\x14\
+[method]system.build\x01\x8d\x01\x01@\x01\x04self\x8c\x01\0w\x04\0\x17[method]sy\
+stem.callback\x01\x8e\x01\x04\0\x16[method]system.disable\x01\x8d\x01\x04\0\x15[\
+method]system.enable\x01\x8d\x01\x01i!\x01@\x01\x04names\0\x8f\x01\x04\0\x12[con\
+structor]phase\x01\x90\x01\x01h!\x01@\x02\x04self\x91\x01\x05phase\x07\x01\0\x04\
+\0\x18[method]phase.depends-on\x01\x92\x01\x01@\x01\x04self\x91\x01\0\x01\x04\0\x14\
+[method]phase.get-id\x01\x93\x01\x01i$\x01@\x01\x04desc#\0\x94\x01\x04\0\x15[con\
+structor]pipeline\x01\x95\x01\x01h$\x01@\x01\x04self\x96\x01\x01\0\x04\0\x16[met\
+hod]pipeline.build\x01\x97\x01\x01@\x02\x04self\x96\x01\x05phase\x01\x01\0\x04\0\
+\x1a[method]pipeline.add-phase\x01\x98\x01\x01@\x01\x04self\x96\x01\0\x01\x04\0\x17\
+[method]pipeline.get-id\x01\x99\x01\x04\0\x18[method]pipeline.disable\x01\x97\x01\
+\x04\0\x17[method]pipeline.enable\x01\x97\x01\x01i(\x01@\x01\x04desc'\0\x9a\x01\x04\
+\0\x15[constructor]observer\x01\x9b\x01\x01h(\x01@\x01\x04self\x9c\x01\x01\0\x04\
+\0\x16[method]observer.build\x01\x9d\x01\x01@\x01\x04self\x9c\x01\0\x03\x04\0\x19\
+[method]observer.callback\x01\x9e\x01\x01@\x01\x0ccomponent-id\x01\x01\0\x04\0\x0d\
+add-singleton\x01\x9f\x01\x01@\x01\x0ccomponent-id\x01\0w\x04\0\x0dget-singleton\
+\x01\xa0\x01\x04\0\x10remove-singleton\x01\x9f\x01\x01@\x01\x09entity-id\x01\x01\
+\0\x04\0\x0aadd-entity\x01\xa1\x01\x04\0\x0dremove-entity\x01\xa1\x01\x01@\x01\x04\
+names\0\x7f\x04\0\x10has-entity-named\x01\xa2\x01\x01@\x01\x0ecomponent-names\0\x01\
+\x04\0\x10get-component-id\x01\xa3\x01\x04\0\x11toxoid:engine/ecs\x05\0\x04\0!to\
+xoid:engine/toxoid-engine-world\x04\0\x0b\x19\x01\0\x13toxoid-engine-world\x03\0\
+\0\0G\x09producers\x01\x0cprocessed-by\x02\x0dwit-component\x070.220.0\x10wit-bi\
+ndgen-rust\x060.35.0";
 #[inline(never)]
 #[doc(hidden)]
 pub fn __link_custom_section_describing_imports() {
     #[cfg(not(target_os = "emscripten"))]
+#[cfg(not(target_os = "emscripten"))]
 wit_bindgen_rt::maybe_link_cabi_realloc();
 }
