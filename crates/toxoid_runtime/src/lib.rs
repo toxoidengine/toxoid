@@ -326,10 +326,12 @@ impl toxoid_component::component::ecs::HostObserver for StoreState {
 }
 
 impl toxoid_component::component::ecs::HostEntity for StoreState {
-    fn new(&mut self, desc: toxoid_component::component::ecs::EntityDesc) -> Resource<EntityProxy> {
+    fn new(&mut self, desc: toxoid_component::component::ecs::EntityDesc, inherits: Option<toxoid_component::component::ecs::EcsEntityT>) -> Resource<EntityProxy> {
         let entity = toxoid_host::Entity::new(toxoid_host::bindings::exports::toxoid::engine::ecs::EntityDesc {
             name: desc.name,
-        });
+            add: desc.add,
+            prefab: desc.prefab
+        }, inherits);
         // Create boxed component
         let boxed_entity = Box::new(entity);
         let box_ptr = Box::into_raw(boxed_entity);
@@ -405,6 +407,14 @@ impl toxoid_component::component::ecs::HostEntity for StoreState {
         let entity = unsafe { Box::from_raw(entity_proxy.ptr) };
         entity.add(component);
         Box::into_raw(entity);
+    }
+
+    fn has(&mut self, entity: Resource<toxoid_component::component::ecs::Entity>, component: toxoid_component::component::ecs::EcsEntityT) -> bool {
+        let entity_proxy = self.table.get(&entity).unwrap() as &EntityProxy;
+        let entity = unsafe { Box::from_raw(entity_proxy.ptr) };
+        let has = entity.has(component);
+        Box::into_raw(entity);
+        has
     }
 
     fn remove(&mut self, entity: Resource<toxoid_component::component::ecs::Entity>, component: toxoid_component::component::ecs::EcsEntityT) -> () {

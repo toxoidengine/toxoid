@@ -149,15 +149,15 @@ pub fn init() {
     // })
     //     .build();
 
-    System::dsl("", None, |_iter| {
-        Query::dsl_each("Position", |query| {
-            while query.next() {
-                let positions = query.components::<Position>(0);
-                positions.iter().for_each(|position| {
-                    println!("Position X: {:?}, Y: {:?}", position.get_x(), position.get_y());
-                });
-            }
-        });
-    })
-        .build();
+    // System::dsl("", None, |_iter| {
+    //     Query::dsl_each("Position", |query| {
+    //         while query.next() {
+    //             let positions = query.components::<Position>(0);
+    //             positions.iter().for_each(|position| {
+    //                 println!("Position X: {:?}, Y: {:?}", position.get_x(), position.get_y());
+    //             });
+    //         }
+    //     });
+    // })
+    //     .build();
 }
