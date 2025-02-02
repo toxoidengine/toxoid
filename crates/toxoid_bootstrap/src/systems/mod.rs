@@ -61,10 +61,8 @@ pub fn init() {
     }
     render::init();
     fetch::init();
-
     System::dsl("Color, Size, Position", None, test_system).build();
-
-
+    
     // System::dsl("", None, |_iter| {
     //     Query::dsl_each("Position", |query| {
     //         while query.next() {

@@ -1,3 +1,5 @@
+#![recursion_limit = "256"]
+
 extern crate proc_macro;
 use proc_macro::TokenStream;
 use quote::{quote, format_ident};
@@ -743,7 +745,30 @@ pub fn components(args: TokenStream, input: TokenStream) -> TokenStream {
         7 => quote! { |(((((((a, b), c), d), e), f), g))| (a, b, c, d, e, f, g) },
         8 => quote! { |((((((((a, b), c), d), e), f), g), h))| (a, b, c, d, e, f, g, h) },
         9 => quote! { |(((((((((a, b), c), d), e), f), g), h), i))| (a, b, c, d, e, f, g, h, i) },
-        _ => panic!("Unsupported number of components"),
+        10 => quote! { |((((((((((a, b), c), d), e), f), g), h), i), j))| (a, b, c, d, e, f, g, h, i, j) },
+        11 => quote! { |(((((((((((a, b), c), d), e), f), g), h), i), j), k))| (a, b, c, d, e, f, g, h, i, j, k) },
+        12 => quote! { |((((((((((((a, b), c), d), e), f), g), h), i), j), k), l))| (a, b, c, d, e, f, g, h, i, j, k, l) },
+        13 => quote! { |(((((((((((((a, b), c), d), e), f), g), h), i), j), k), l), m))| (a, b, c, d, e, f, g, h, i, j, k, l, m) },
+        14 => quote! { |((((((((((((((a, b), c), d), e), f), g), h), i), j), k), l), m), n))| (a, b, c, d, e, f, g, h, i, j, k, l, m, n) },
+        15 => quote! { |(((((((((((((((a, b), c), d), e), f), g), h), i), j), k), l), m), n), o))| (a, b, c, d, e, f, g, h, i, j, k, l, m, n, o) },
+        16 => quote! { |((((((((((((((((a, b), c), d), e), f), g), h), i), j), k), l), m), n), o), p))| (a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p) },
+        17 => quote! { |(((((((((((((((((a, b), c), d), e), f), g), h), i), j), k), l), m), n), o), p), q))| (a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q) },
+        18 => quote! { |((((((((((((((((((a, b), c), d), e), f), g), h), i), j), k), l), m), n), o), p), q), r))| (a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r) },
+        19 => quote! { |(((((((((((((((((((a, b), c), d), e), f), g), h), i), j), k), l), m), n), o), p), q), r), s))| (a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s) },
+        20 => quote! { |((((((((((((((((((((a, b), c), d), e), f), g), h), i), j), k), l), m), n), o), p), q), r), s), t))| (a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t) },
+        21 => quote! { |(((((((((((((((((((((a, b), c), d), e), f), g), h), i), j), k), l), m), n), o), p), q), r), s), t), u))| (a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t, u) },
+        22 => quote! { |((((((((((((((((((((((a, b), c), d), e), f), g), h), i), j), k), l), m), n), o), p), q), r), s), t), u), v))| (a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t, u, v) },
+        23 => quote! { |(((((((((((((((((((((((a, b), c), d), e), f), g), h), i), j), k), l), m), n), o), p), q), r), s), t), u), v), w))| (a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t, u, v, w) },
+        24 => quote! { |((((((((((((((((((((((((a, b), c), d), e), f), g), h), i), j), k), l), m), n), o), p), q), r), s), t), u), v), w), x))| (a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t, u, v, w, x) },
+        25 => quote! { |(((((((((((((((((((((((((a, b), c), d), e), f), g), h), i), j), k), l), m), n), o), p), q), r), s), t), u), v), w), x), y))| (a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t, u, v, w, x, y) },
+        26 => quote! { |((((((((((((((((((((((((((a, b), c), d), e), f), g), h), i), j), k), l), m), n), o), p), q), r), s), t), u), v), w), x), y), z))| (a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t, u, v, w, x, y, z) },
+        27 => quote! { |(((((((((((((((((((((((((((a, b), c), d), e), f), g), h), i), j), k), l), m), n), o), p), q), r), s), t), u), v), w), x), y), z), aa))| (a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t, u, v, w, x, y, z, aa) },
+        28 => quote! { |((((((((((((((((((((((((((((a, b), c), d), e), f), g), h), i), j), k), l), m), n), o), p), q), r), s), t), u), v), w), x), y), z), aa), ab))| (a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t, u, v, w, x, y, z, aa, ab) },
+        29 => quote! { |(((((((((((((((((((((((((((((a, b), c), d), e), f), g), h), i), j), k), l), m), n), o), p), q), r), s), t), u), v), w), x), y), z), aa), ab), ac))| (a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t, u, v, w, x, y, z, aa, ab, ac) },
+        30 => quote! { |((((((((((((((((((((((((((((((a, b), c), d), e), f), g), h), i), j), k), l), m), n), o), p), q), r), s), t), u), v), w), x), y), z), aa), ab), ac), ad))| (a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t, u, v, w, x, y, z, aa, ab, ac, ad) },
+        31 => quote! { |(((((((((((((((((((((((((((((((a, b), c), d), e), f), g), h), i), j), k), l), m), n), o), p), q), r), s), t), u), v), w), x), y), z), aa), ab), ac), ad), ae))| (a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t, u, v, w, x, y, z, aa, ab, ac, ad, ae) },
+        32 => quote! { |((((((((((((((((((((((((((((((((a, b), c), d), e), f), g), h), i), j), k), l), m), n), o), p), q), r), s), t), u), v), w), x), y), z), aa), ab), ac), ad), ae), af))| (a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t, u, v, w, x, y, z, aa, ab, ac, ad, ae, af) },
+        _ => panic!("Unsupported number of components (maximum is 32)"),
     };
 
     let iter_statement = syn::parse_quote! {
