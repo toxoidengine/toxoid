@@ -36,6 +36,7 @@ pub use toxoid_host::bindings::exports::toxoid::engine::ecs::{
     Relationship,
     Event,
     Guest as WorldGuest,
+    EcsEntityT
 };
 // WASM
 #[cfg(all(target_arch = "wasm32", not(target_os = "emscripten")))]
@@ -57,6 +58,7 @@ pub use toxoid_guest::bindings::{
         MemberType,
         Relationship,
         Event,
+        EcsEntityT,
         self as ToxoidApi
     },
     self,
@@ -93,20 +95,56 @@ pub struct Entity {
 
 impl Entity {
     pub fn new(desc: Option<EntityDesc>) -> Self {
-        let desc = desc.unwrap_or(EntityDesc { name: None });
+        let desc = desc.unwrap_or(EntityDesc { name: None, add: None, prefab: false });
         #[cfg(any(not(target_arch = "wasm32"), target_os = "emscripten"))]
-        let entity = ToxoidEntity::new(desc);
+        let entity = ToxoidEntity::new(desc, None);
         #[cfg(all(target_arch = "wasm32", not(target_os = "emscripten")))]
-        let entity = ToxoidEntity::new(&desc);
+        let entity = ToxoidEntity::new(&desc, None);
         Self { entity }
     }
 
     pub fn named(name: &str) -> Self {
-        let desc = EntityDesc { name: Some(name.to_string()) };
+        let desc = EntityDesc { name: Some(name.to_string()), add: None, prefab: false };
         #[cfg(any(not(target_arch = "wasm32"), target_os = "emscripten"))]
-        let entity = ToxoidEntity::new(desc);
+        let entity = ToxoidEntity::new(desc, None);
         #[cfg(all(target_arch = "wasm32", not(target_os = "emscripten")))]
-        let entity = ToxoidEntity::new(&desc);
+        let entity = ToxoidEntity::new(&desc, None);
+        Self { entity }
+    }
+
+    pub fn from_prefab(desc: Option<EntityDesc>, prefab: Entity) -> Self {
+        let desc = desc.unwrap_or(EntityDesc { name: None, add: None, prefab: false });
+        #[cfg(any(not(target_arch = "wasm32"), target_os = "emscripten"))]
+        let entity = ToxoidEntity::new(desc, Some(prefab.get_id()));
+        #[cfg(all(target_arch = "wasm32", not(target_os = "emscripten")))]
+        let entity = ToxoidEntity::new(&desc, Some(prefab.get_id()));
+        Self { entity }
+    }
+
+    pub fn from_prefab_id(desc: Option<EntityDesc>, prefab: EcsEntityT) -> Self {
+        let desc = desc.unwrap_or(EntityDesc { name: None, add: None, prefab: false });
+        #[cfg(any(not(target_arch = "wasm32"), target_os = "emscripten"))]
+        let entity = ToxoidEntity::new(desc, Some(prefab));
+        #[cfg(all(target_arch = "wasm32", not(target_os = "emscripten")))]
+        let entity = ToxoidEntity::new(&desc, Some(prefab));
+        Self { entity }
+    }
+
+    pub fn prefab() -> Self {
+        let desc = EntityDesc { name: None, add: Some(vec![]), prefab: true };
+        #[cfg(any(not(target_arch = "wasm32"), target_os = "emscripten"))]
+        let entity = ToxoidEntity::new(desc, None);
+        #[cfg(all(target_arch = "wasm32", not(target_os = "emscripten")))]
+        let entity = ToxoidEntity::new(&desc, None);
+        Self { entity }
+    }
+
+    pub fn prefab_named(name: &str) -> Self {
+        let desc = EntityDesc { name: Some(name.to_string()), add: Some(vec![]), prefab: true };
+        #[cfg(any(not(target_arch = "wasm32"), target_os = "emscripten"))]
+        let entity = ToxoidEntity::new(desc, None);
+        #[cfg(all(target_arch = "wasm32", not(target_os = "emscripten")))]
+        let entity = ToxoidEntity::new(&desc, None);
         Self { entity }
     }
 
@@ -160,6 +198,14 @@ impl Entity {
         self
     }
 
+    pub fn has<T: Component + ComponentType + 'static>(&self) -> bool {
+        self.entity.has(T::get_id())
+    }
+
+    pub fn remove<T: Component + ComponentType + 'static>(&mut self) {  
+        self.entity.remove(T::get_id());
+    }
+
     pub fn add_relationship(&mut self, relationship: Relationship, target: Entity) {
         self.entity.add_relationship(relationship, target.get_id());
     }
@@ -167,9 +213,13 @@ impl Entity {
     pub fn remove_relationship(&mut self, relationship: Relationship, target: Entity) {
         self.entity.remove_relationship(relationship, target.get_id());
     }
+    
+    pub fn is_a(&self, target: Entity) {
+        self.entity.add_relationship(Relationship::IsA, target.get_id());
+    }
 
-    pub fn remove<T: Component + ComponentType + 'static>(&mut self) {  
-        self.entity.remove(T::get_id());
+    pub fn is_a_id(&mut self, target: ecs_entity_t) {
+        self.entity.add_relationship(Relationship::IsA, target);
     }
 
     pub fn parent_of(&mut self, target: Entity) {

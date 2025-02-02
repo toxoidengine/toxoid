@@ -5,7 +5,7 @@ pub mod bindings;
 use bindings::exports::toxoid::engine::ecs::{EcsEntityT, GuestIter, GuestObserver, ObserverDesc, PointerT, Relationship};
 use bindings::exports::toxoid::engine::ecs::{self, ComponentDesc, EntityDesc, Guest, GuestCallback, GuestComponent, GuestComponentType, GuestEntity, GuestQuery, GuestSystem, QueryDesc, SystemDesc, Event};
 pub use toxoid_flecs::bindings::{ecs_add_id, ecs_entity_desc_t, ecs_entity_init, ecs_fini, ecs_get_mut_id, ecs_init, ecs_iter_t, ecs_lookup, ecs_make_pair, ecs_member_t, ecs_progress, ecs_query_desc_t, ecs_query_init, ecs_query_iter, ecs_query_next, ecs_query_t, ecs_struct_desc_t, ecs_struct_init, ecs_system_desc_t, ecs_system_init, ecs_system_t, ecs_world_t, EcsDependsOn, EcsOnUpdate, ecs_set_rate, ecs_get_id, ecs_remove_id};
-use toxoid_flecs::{ecs_children, ecs_children_next, ecs_delete, ecs_ensure_id, ecs_field_size, ecs_field_w_size, ecs_get_name, ecs_get_parent, ecs_modified_id, ecs_observer_desc_t, ecs_observer_init, ecs_observer_t, ecs_set_name, EcsChildOf, EcsIsA};
+use toxoid_flecs::{ecs_children, ecs_children_next, ecs_delete, ecs_ensure_id, ecs_field_size, ecs_field_w_size, ecs_get_name, ecs_get_parent, ecs_has_id, ecs_modified_id, ecs_new_w_id, ecs_observer_desc_t, ecs_observer_init, ecs_observer_t, ecs_set_name, EcsChildOf, EcsInherit, EcsIsA, EcsOnInstantiate, EcsPrefab};
 use std::ffi::CStr;
 use std::{borrow::BorrowMut, mem::MaybeUninit};
 use core::ffi::c_void;
@@ -760,13 +760,27 @@ impl GuestComponent for Component {
 }
 
 impl GuestEntity for Entity {
-    fn new(desc: EntityDesc) -> Entity {
+    fn new(desc: EntityDesc, inherits: Option<ecs_entity_t>) -> Entity {
+        println!("Creating entity with desc: {:?}", desc);
         unsafe {
             let mut ent_desc: ecs_entity_desc_t = MaybeUninit::zeroed().assume_init();
             if let Some(name) = desc.name {
                 ent_desc.name = c_string(&name);
             }
-            let entity = ecs_entity_init(WORLD.0, &ent_desc);
+            if let Some(mut add) = desc.add {
+                if desc.prefab {
+                    add.push(EcsPrefab);
+                }
+                let add_array = add.iter().map(|&x| x).collect::<Vec<_>>();
+                ent_desc.add = add_array.as_ptr();
+                std::mem::forget(add_array); // Prevent deallocation
+            }
+            let entity = if let Some(inherits) = inherits {
+                let pair = ecs_make_pair(EcsIsA, inherits);
+                ecs_new_w_id(WORLD.0, pair)
+            } else {
+                ecs_entity_init(WORLD.0, &ent_desc)
+            };
             Entity { id: entity }
         }
     }
@@ -792,6 +806,12 @@ impl GuestEntity for Entity {
             // println!("Adding component {:?} to entity {:?}", component, self.id);
             // ecs_emplace_id(WORLD.0, self.id, component, &mut true as *mut bool);
             ecs_add_id(WORLD.0, self.id, component);
+        }
+    }
+
+    fn has(&self, component: ecs_entity_t) -> bool {
+        unsafe {
+            ecs_has_id(WORLD.0, self.id, component)
         }
     }
 
