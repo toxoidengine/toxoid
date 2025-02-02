@@ -71,7 +71,7 @@ pub use toxoid_guest::bindings::{
 #[cfg(all(target_arch = "wasm32", not(target_os = "emscripten")))]
 pub use toxoid_guest;
 // Both (Native + WASM)
-pub use toxoid_api_macro::component;
+pub use toxoid_api_macro::{component, components};
 
 pub type ecs_entity_t = u64;
 
