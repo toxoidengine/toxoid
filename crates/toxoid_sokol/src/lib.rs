@@ -97,17 +97,17 @@ pub extern "C" fn sokol_init() {
             simgui_setup(&mut sgui_desc);
         }
         
-        // // Initialize Spine
-        // let mut sspine_desc_obj: sspine_desc = core::mem::MaybeUninit::zeroed().assume_init();
-        // sspine_desc_obj.max_vertices = 1024;      // default: (1<<16) = 65536
-        // sspine_desc_obj.max_commands = 128;       // default: (1<<14) = 16384
-        // sspine_desc_obj.context_pool_size = 64;    // default: 4
-        // sspine_desc_obj.atlas_pool_size = 64;      // default: 64
-        // sspine_desc_obj.skeleton_pool_size = 64;   // default: 64
-        // sspine_desc_obj.skinset_pool_size = 64;    // default: 64
-        // sspine_desc_obj.instance_pool_size = 16;  // default: 1024
-        // sspine_desc_obj.logger.func = Some(sokol::log::slog_func);
-        // sspine_setup(&sspine_desc_obj);
+        // Initialize Spine
+        let mut sspine_desc_obj: sspine_desc = core::mem::MaybeUninit::zeroed().assume_init();
+        sspine_desc_obj.max_vertices = 1024;      // default: (1<<16) = 65536
+        sspine_desc_obj.max_commands = 128;       // default: (1<<14) = 16384
+        sspine_desc_obj.context_pool_size = 64;    // default: 4
+        sspine_desc_obj.atlas_pool_size = 64;      // default: 64
+        sspine_desc_obj.skeleton_pool_size = 64;   // default: 64
+        sspine_desc_obj.skinset_pool_size = 64;    // default: 64
+        sspine_desc_obj.instance_pool_size = 16;  // default: 1024
+        sspine_desc_obj.logger.func = Some(sokol::log::slog_func);
+        sspine_setup(&sspine_desc_obj);
 
         // Initialize SFetch
         let mut sfetch_desc: sfetch_desc_t = core::mem::MaybeUninit::zeroed().assume_init();
