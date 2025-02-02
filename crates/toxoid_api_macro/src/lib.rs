@@ -1,8 +1,8 @@
 extern crate proc_macro;
 use proc_macro::TokenStream;
-use quote::quote;
+use quote::{quote, format_ident};
 use syn::{
-    parse::{Parse, ParseStream, Parser}, parse_macro_input, punctuated::Punctuated, spanned::Spanned, token::Comma, FieldsNamed, Ident, ItemFn, Type
+    parse::{Parse, ParseStream, Parser}, parse_macro_input, punctuated::Punctuated, spanned::Spanned, token::Comma, FieldsNamed, Ident, ItemFn, Type, Stmt, Token
 };
 
 #[repr(u8)]
@@ -683,4 +683,105 @@ fn get_type_alignment(ty: &Type) -> u32 {
             panic!("Unsupported field type")
         }
     }
+}
+
+struct ComponentTuple(Vec<Option<Type>>);
+
+impl Parse for ComponentTuple {
+    fn parse(input: ParseStream) -> syn::Result<Self> {
+        let mut types = Vec::new();
+        
+        while !input.is_empty() {
+            if input.peek(Token![_]) {
+                input.parse::<Token![_]>()?;
+                types.push(None);
+            } else {
+                types.push(Some(input.parse::<Type>()?));
+            }
+            
+            if input.peek(Token![,]) {
+                input.parse::<Token![,]>()?;
+            }
+        }
+        
+        Ok(ComponentTuple(types))
+    }
+}
+
+#[proc_macro_attribute]
+pub fn components(args: TokenStream, input: TokenStream) -> TokenStream {
+    let ComponentTuple(types) = parse_macro_input!(args as ComponentTuple);
+    let mut func = parse_macro_input!(input as ItemFn);
+
+    let component_vars: Vec<_> = types.iter().enumerate().filter_map(|(index, typ)| {
+        typ.as_ref().map(|t| {
+            let ident = make_variable_name(t);
+            // Using 0-based indexing as per your current implementation
+            let term_index = index as i8;
+            let stmt: Stmt = syn::parse_quote! {
+                let #ident = iter.components::<#t>(#term_index);
+            };
+            (stmt, ident)
+        })
+    }).collect();
+
+    let iter_name = format_ident!("components");
+    let zip_expr = component_vars.iter()
+        .map(|(_, ident)| quote! { #ident.iter() })
+        .reduce(|acc, next| quote! { #acc.zip(#next) })
+        .unwrap_or_else(|| quote! { std::iter::empty() });
+
+    let tuple_idents: Vec<_> = component_vars.iter().map(|(_, ident)| ident).collect();
+
+    let map_expr = match tuple_idents.len() {
+        1 => quote! { |#(#tuple_idents),*| (#(#tuple_idents),*) },
+        2 => quote! { |((a, b))| (a, b) },
+        3 => quote! { |(((a, b), c))| (a, b, c) },
+        4 => quote! { |((((a, b), c), d))| (a, b, c, d) },
+        5 => quote! { |(((((a, b), c), d), e))| (a, b, c, d, e) },
+        6 => quote! { |((((((a, b), c), d), e), f))| (a, b, c, d, e, f) },
+        7 => quote! { |(((((((a, b), c), d), e), f), g))| (a, b, c, d, e, f, g) },
+        8 => quote! { |((((((((a, b), c), d), e), f), g), h))| (a, b, c, d, e, f, g, h) },
+        9 => quote! { |(((((((((a, b), c), d), e), f), g), h), i))| (a, b, c, d, e, f, g, h, i) },
+        _ => panic!("Unsupported number of components"),
+    };
+
+    let iter_statement = syn::parse_quote! {
+        let #iter_name = #zip_expr.map(#map_expr);
+    };
+
+    // Inject component retrieval and iterator creation at the start of the function's block
+    let mut stmts = std::mem::take(&mut func.block.stmts);
+    for (stmt, _) in component_vars.clone().into_iter().rev() {
+        stmts.insert(0, stmt);
+    }
+    stmts.insert(component_vars.len(), iter_statement);
+    func.block.stmts = stmts;
+
+    let output = quote! {
+        #func
+    };
+
+    TokenStream::from(output)
+}
+
+fn make_variable_name(t: &Type) -> Ident {
+    let type_str = match t {
+        Type::Path(type_path) if type_path.qself.is_none() => {
+            // Extract the last segment as the type name
+            type_path.path.segments.last().unwrap().ident.to_string()
+        },
+        _ => panic!("Unsupported type in `components` macro")
+    };
+
+    // Convert CamelCase to snake_case
+    let mut snake_case = String::new();
+    for (i, ch) in type_str.chars().enumerate() {
+        if ch.is_uppercase() && i != 0 {
+            snake_case.push('_');
+        }
+        snake_case.push(ch.to_lowercase().next().unwrap());
+    }
+
+    format_ident!("{}", snake_case)
 }
