@@ -12,6 +12,8 @@ pub use toxoid_host::{
     System as ToxoidSystem,
     Callback as ToxoidCallback,
     Observer as ToxoidObserver,
+    Phase as ToxoidPhase,
+    Pipeline as ToxoidPipeline,
     Iter as ToxoidIter,
     bindings::exports::toxoid::engine::ecs::{
         GuestComponent,
@@ -22,21 +24,20 @@ pub use toxoid_host::{
         GuestObserver,
         GuestCallback,
         GuestIter,
+        GuestPhase,
+        GuestPipeline,
+        EntityDesc,
+        ComponentDesc,
+        QueryDesc,
+        SystemDesc,
+        ObserverDesc,
+        MemberType,
+        Relationship,
+        Event,
+        Guest as WorldGuest,
+        EcsEntityT
     },
     ToxoidApi
-};
-#[cfg(any(not(target_arch = "wasm32"), target_os = "emscripten"))]
-pub use toxoid_host::bindings::exports::toxoid::engine::ecs::{
-    EntityDesc,
-    ComponentDesc,
-    QueryDesc,
-    SystemDesc,
-    ObserverDesc,
-    MemberType,
-    Relationship,
-    Event,
-    Guest as WorldGuest,
-    EcsEntityT
 };
 // WASM
 #[cfg(all(target_arch = "wasm32", not(target_os = "emscripten")))]
@@ -50,6 +51,8 @@ pub use toxoid_guest::bindings::{
         Observer as ToxoidObserver,
         Callback as ToxoidCallback,
         Iter as ToxoidIter,
+        Phase as ToxoidPhase,
+        Pipeline as ToxoidPipeline,
         EntityDesc,
         ComponentDesc,
         QueryDesc,
@@ -92,6 +95,38 @@ pub trait Component {
 pub struct Entity {
     entity: ToxoidEntity
 }
+
+pub struct Query {
+    query: ToxoidQuery
+}
+
+pub struct System {
+    system: ToxoidSystem
+}
+
+pub struct Observer {
+    observer: ToxoidObserver
+}
+
+pub struct Callback {
+    callback: ToxoidCallback,
+}
+
+pub struct Iter {
+    pub iter: ToxoidIter
+}
+
+pub struct Phase {
+    phase: ToxoidPhase
+}
+
+pub struct Pipeline {
+    pipeline: ToxoidPipeline
+}
+
+pub struct World;
+
+pub static mut CALLBACKS: once_cell::sync::Lazy<Vec<Box<dyn Fn(&Iter)>>> = once_cell::sync::Lazy::new(|| Vec::new());
 
 impl Entity {
     pub fn new(desc: Option<EntityDesc>) -> Self {
@@ -277,10 +312,14 @@ impl Entity {
     pub fn relationships(&self) -> Vec<Entity> {
         return self.entity.relationships().iter().map(|relationship| Entity { entity: ToxoidEntity::from_id(relationship.get_id()) }).collect();
     }
-}
 
-pub struct Query {
-    query: ToxoidQuery
+    pub fn disable(&mut self) {
+        self.entity.disable();
+    }
+
+    pub fn enable(&mut self) {
+        self.entity.enable();
+    }
 }
 
 impl Query {
@@ -370,9 +409,7 @@ impl Query {
     }
 }
 
-pub struct System {
-    system: ToxoidSystem
-}
+
 
 impl System {
     // #[cfg(any(not(target_arch = "wasm32"), target_os = "emscripten"))]
@@ -414,6 +451,10 @@ impl System {
         Self { system: ToxoidSystem::new(desc) }
     }
 
+    pub fn get_id(&self) -> ecs_entity_t {
+        self.system.get_id()
+    }
+
     #[cfg(all(target_arch = "wasm32", not(target_os = "emscripten")))]
     pub fn dsl(dsl: &str, tick_rate: Option<i32>, callback_fn: fn(&Iter)) -> Self {
         // Register the callback in the guest environment
@@ -451,11 +492,17 @@ impl System {
     pub fn build(&mut self) {
         self.system.build();
     }
+
+    pub fn disable(&mut self) {
+        self.system.disable();
+    }
+
+    pub fn enable(&mut self) {
+        self.system.enable();
+    }
 }
 
-pub struct Observer {
-    observer: ToxoidObserver
-}
+
 
 impl Observer {
     // Not wasm
@@ -540,12 +587,6 @@ impl Observer {
     }
 }
 
-pub struct Callback {
-    callback: ToxoidCallback,
-}
-
-pub static mut CALLBACKS: once_cell::sync::Lazy<Vec<Box<dyn Fn(&Iter)>>> = once_cell::sync::Lazy::new(|| Vec::new());
-
 impl Callback {
     pub fn new(callback_fn: fn(&Iter)) -> Self {
         let handle = unsafe { CALLBACKS.push(Box::new(callback_fn)); CALLBACKS.len() - 1 };
@@ -560,10 +601,6 @@ impl Callback {
     pub fn cb_handle(&self) -> u64 {
         self.callback.cb_handle()
     }
-}
-
-pub struct Iter {
-    pub iter: ToxoidIter
 }
 
 impl Iter {
@@ -621,8 +658,6 @@ impl Iter {
         components
     }
 }
-
-pub struct World;
 
 impl World {
     pub fn add_singleton<T: Component + ComponentType + 'static>() {

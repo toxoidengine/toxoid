@@ -2,10 +2,10 @@
 #![allow(warnings)]
 
 pub mod bindings;
-use bindings::exports::toxoid::engine::ecs::{EcsEntityT, GuestIter, GuestObserver, ObserverDesc, PointerT, Relationship};
-use bindings::exports::toxoid::engine::ecs::{self, ComponentDesc, EntityDesc, Guest, GuestCallback, GuestComponent, GuestComponentType, GuestEntity, GuestQuery, GuestSystem, QueryDesc, SystemDesc, Event};
+use bindings::exports::toxoid::engine::ecs::{EcsEntityT, GuestIter, GuestObserver, ObserverDesc, Phases, PointerT, Relationship};
+use bindings::exports::toxoid::engine::ecs::{self, ComponentDesc, EntityDesc, Guest, GuestCallback, GuestComponent, GuestComponentType, GuestEntity, GuestQuery, GuestSystem, GuestPhase, GuestPipeline, QueryDesc, SystemDesc, PipelineDesc, Event};
 pub use toxoid_flecs::bindings::{ecs_add_id, ecs_entity_desc_t, ecs_entity_init, ecs_fini, ecs_get_mut_id, ecs_init, ecs_iter_t, ecs_lookup, ecs_make_pair, ecs_member_t, ecs_progress, ecs_query_desc_t, ecs_query_init, ecs_query_iter, ecs_query_next, ecs_query_t, ecs_struct_desc_t, ecs_struct_init, ecs_system_desc_t, ecs_system_init, ecs_system_t, ecs_world_t, EcsDependsOn, EcsOnUpdate, ecs_set_rate, ecs_get_id, ecs_remove_id};
-use toxoid_flecs::{ecs_children, ecs_children_next, ecs_delete, ecs_ensure_id, ecs_field_size, ecs_field_w_size, ecs_get_name, ecs_get_parent, ecs_has_id, ecs_modified_id, ecs_new_w_id, ecs_observer_desc_t, ecs_observer_init, ecs_observer_t, ecs_set_name, EcsChildOf, EcsInherit, EcsIsA, EcsOnInstantiate, EcsPrefab};
+use toxoid_flecs::{ecs_children, ecs_children_next, ecs_delete, ecs_enable, ecs_ensure_id, ecs_field_size, ecs_field_w_size, ecs_get_name, ecs_get_parent, ecs_has_id, ecs_modified_id, ecs_new_w_id, ecs_observer_desc_t, ecs_observer_init, ecs_observer_t, ecs_pipeline_desc_t, ecs_pipeline_init, ecs_set_name, EcsChildOf, EcsInherit, EcsIsA, EcsOnInstantiate, EcsOnLoad, EcsOnStart, EcsOnStore, EcsOnValidate, EcsPhase, EcsPostLoad, EcsPostUpdate, EcsPreStore, EcsPreUpdate, EcsPrefab};
 use std::ffi::CStr;
 use std::{borrow::BorrowMut, mem::MaybeUninit};
 use core::ffi::c_void;
@@ -59,6 +59,16 @@ pub struct Callback {
 
 pub struct Iter {
     pub ptr: *mut c_void
+}
+
+pub struct Phase {
+    pub name: String,
+    pub entity: RefCell<ecs_entity_t>
+}
+
+pub struct Pipeline {
+    pub desc: RefCell<ecs_pipeline_desc_t>,
+    pub entity: RefCell<ecs_entity_t>
 }
 
 pub struct EcsWorldPtr(pub *mut ecs_world_t);
@@ -761,7 +771,6 @@ impl GuestComponent for Component {
 
 impl GuestEntity for Entity {
     fn new(desc: EntityDesc, inherits: Option<ecs_entity_t>) -> Entity {
-        println!("Creating entity with desc: {:?}", desc);
         unsafe {
             let mut ent_desc: ecs_entity_desc_t = MaybeUninit::zeroed().assume_init();
             if let Some(name) = desc.name {
@@ -890,6 +899,14 @@ impl GuestEntity for Entity {
             let pair = ecs_make_pair(relationship_entity, target);
             ecs_remove_id(WORLD.0, self.id, pair);
         }
+    }
+
+    fn disable(&self) {
+        unsafe { ecs_enable(WORLD.0, self.id, false) };
+    }
+
+    fn enable(&self) {
+        unsafe { ecs_enable(WORLD.0, self.id, true) };
     }
 }
 
@@ -1055,6 +1072,10 @@ impl GuestSystem for System {
             )
         }
     }
+    
+    fn get_id(&self) -> ecs_entity_t {
+        *self.entity.borrow()
+    }
 
     fn callback(&self) -> u64 {
        self.callback.borrow().handle
@@ -1064,6 +1085,14 @@ impl GuestSystem for System {
         *self.entity.borrow_mut() = unsafe { ecs_system_init(WORLD.0, self.desc.as_ptr()) };
         // Set tickrate using world, system id, description, and 0 (to use frames as a source)
         unsafe { ecs_set_rate(WORLD.0, *self.entity.borrow(), self.desc.borrow().rate, 0) };
+    }
+
+    fn disable(&self) {
+        unsafe { ecs_enable(WORLD.0, *self.entity.borrow(), false) };
+    }
+
+    fn enable(&self) {
+        unsafe { ecs_enable(WORLD.0, *self.entity.borrow(), true) };
     }
 }
 
@@ -1132,6 +1161,71 @@ impl GuestCallback for Callback {
     }
 }
 
+impl GuestPhase for Phase {
+    fn new(name: String) -> Phase {
+        let entity = unsafe { ecs_new_w_id(WORLD.0, EcsPhase) };
+        Phase { name, entity: RefCell::new(entity) }
+    }
+
+    fn depends_on(&self, phase: Phases) {
+       let phase = unsafe { 
+            match phase {
+                Phases::OnStart => EcsOnStart,
+                Phases::OnLoad => EcsOnLoad,
+                Phases::PostLoad => EcsPostLoad,
+                Phases::PreUpdate => EcsPreUpdate,
+                Phases::OnUpdate => EcsOnUpdate,
+                Phases::OnValidate => EcsOnValidate,
+                Phases::PostUpdate => EcsPostUpdate,
+                Phases::PreStore => EcsPreStore,
+                Phases::OnStore => EcsOnStore,
+                Phases::Custom(entity) => entity
+            } 
+        };
+        let pair = unsafe { ecs_make_pair(EcsDependsOn, phase) };
+        unsafe { ecs_add_id(WORLD.0, *self.entity.borrow(), pair) };
+    }
+
+    fn get_id(&self) -> ecs_entity_t {
+        *self.entity.borrow()
+    }
+}
+
+impl GuestPipeline for Pipeline {
+    fn new(desc: PipelineDesc) -> Pipeline {
+        let mut entity_desc: ecs_entity_desc_t = unsafe { MaybeUninit::zeroed().assume_init() };
+        entity_desc.name = c_string(&desc.name);
+        let entity = unsafe { ecs_entity_init(WORLD.0, &entity_desc) };
+        let mut pipeline_desc: ecs_pipeline_desc_t = unsafe { MaybeUninit::zeroed().assume_init() };
+        pipeline_desc.entity = entity;
+        let mut query_desc: ecs_query_desc_t = unsafe { MaybeUninit::zeroed().assume_init() };
+        query_desc.expr = c_string(&desc.query_desc.expr);
+        pipeline_desc.query = query_desc;
+        Pipeline { desc: RefCell::new(pipeline_desc), entity: RefCell::new(entity) }
+    }
+
+    fn build(&self) {
+        *self.entity.borrow_mut() = unsafe { ecs_pipeline_init(WORLD.0, self.desc.as_ptr()) };
+    }
+
+    fn add_phase(&self, phase: ecs_entity_t) {
+        unsafe { ecs_add_id(WORLD.0, *self.entity.borrow(), phase) };
+    }
+
+    fn get_id(&self) -> ecs_entity_t {
+        *self.entity.borrow()
+    }
+
+    fn disable(&self) {
+        unsafe { ecs_enable(WORLD.0, *self.entity.borrow(), false) };
+    }
+
+    fn enable(&self) {
+        unsafe { ecs_enable(WORLD.0, *self.entity.borrow(), true) };
+    }
+}
+
+
 impl Guest for ToxoidApi {
     type ComponentType = ComponentType;
     type Component = Component;
@@ -1141,6 +1235,8 @@ impl Guest for ToxoidApi {
     type System = System;
     type Observer = Observer;
     type Callback = Callback;
+    type Phase = Phase;
+    type Pipeline = Pipeline;
     
     fn add_singleton(component: ecs_entity_t) {
         unsafe { ecs_add_id(WORLD.0, component, component) };   
