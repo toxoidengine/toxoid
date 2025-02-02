@@ -56,7 +56,9 @@ interface ecs {
     }
 
     record entity-desc {
-        name: option<string>
+        name: option<string>,
+        add: option<list<ecs-entity-t>>,
+        prefab: bool
     }
 
     record query-desc {
@@ -122,13 +124,14 @@ interface ecs {
     }
     
     resource entity {
-        constructor(init: entity-desc);
+        constructor(init: entity-desc, inherits: option<ecs-entity-t>);
         from-id: static func(id: u64) -> entity;
         get-id: func() -> ecs-entity-t;
         get-name: func() -> string;
         set-name: func(name: string);
         get: func(component: ecs-entity-t) -> component;
         add: func(component: ecs-entity-t);
+        has: func(component: ecs-entity-t) -> bool;
         remove: func(component: ecs-entity-t);
         add-relationship: func(relationship: relationship, target: ecs-entity-t);
         remove-relationship: func(relationship: relationship, target: ecs-entity-t);
