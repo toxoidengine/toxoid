@@ -79,6 +79,7 @@ fn main() {
             .header(sokol_headers_path.join("sokol").join("sokol_gfx.h").to_str().unwrap())
             .header(sokol_headers_path.join("sokol").join("sokol_glue.h").to_str().unwrap())
             .header(sokol_headers_path.join("sokol").join("sokol_fetch.h").to_str().unwrap())
+            .header(sokol_headers_path.join("sokol").join("util").join("sokol_spine.h").to_str().unwrap())
             .header(sokol_headers_path.join("cimgui").join("cimgui.h").to_str().unwrap())
             .header(sokol_headers_path.join("sokol").join("util").join("sokol_imgui.h").to_str().unwrap())
             .header(sokol_headers_path.join("sokol_gp").join("sokol_gp.h").to_str().unwrap())
@@ -139,12 +140,12 @@ fn main() {
             .files(imgui_files);
     }
     // If spine feature is enabled, add spine files
-    // if var("CARGO_FEATURE_SPINE").is_ok() {
-    //     build
-    //         .define("TOXOID_SPINE", None)
-    //         .include("lib/spine-runtimes/spine-c/spine-c/include")
-    //         .files(spine_files);
-    // }
+    if var("CARGO_FEATURE_SPINE").is_ok() {
+        build
+            .define("TOXOID_SPINE", None)
+            .include("lib/spine-runtimes/spine-c/spine-c/include")
+            .files(spine_files);
+    }
     if var("CARGO_FEATURE_STB").is_ok() {
         build.define("TOXOID_STB", None);
         build.define("STBI_NO_STDIO", None);

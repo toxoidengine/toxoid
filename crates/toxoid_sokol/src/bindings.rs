@@ -228,6 +228,7 @@ pub const SOKOL_LOG_INCLUDED: u32 = 1;
 pub const SOKOL_TIME_INCLUDED: u32 = 1;
 pub const SOKOL_GFX_INCLUDED: u32 = 1;
 pub const SOKOL_FETCH_INCLUDED: u32 = 1;
+pub const SOKOL_SPINE_INCLUDED: u32 = 1;
 pub const __API_TO_BE_DEPRECATED: u32 = 100000;
 pub const __API_TO_BE_DEPRECATED_MACOS: u32 = 100000;
 pub const __API_TO_BE_DEPRECATED_IOS: u32 = 100000;
@@ -5981,6 +5982,1248 @@ unsafe extern "C" {
 }
 unsafe extern "C" {
     pub fn sfetch_continue(h: sfetch_handle_t);
+}
+pub const SSPINE_INVALID_ID: _bindgen_ty_4 = 0;
+pub const SSPINE_MAX_SKINSET_SKINS: _bindgen_ty_4 = 32;
+pub const SSPINE_MAX_STRING_SIZE: _bindgen_ty_4 = 61;
+pub type _bindgen_ty_4 = ::std::os::raw::c_uint;
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct sspine_context {
+    pub id: u32,
+}
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
+const _: () = {
+    ["Size of sspine_context"][::std::mem::size_of::<sspine_context>() - 4usize];
+    ["Alignment of sspine_context"][::std::mem::align_of::<sspine_context>() - 4usize];
+    ["Offset of field: sspine_context::id"][::std::mem::offset_of!(sspine_context, id) - 0usize];
+};
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct sspine_atlas {
+    pub id: u32,
+}
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
+const _: () = {
+    ["Size of sspine_atlas"][::std::mem::size_of::<sspine_atlas>() - 4usize];
+    ["Alignment of sspine_atlas"][::std::mem::align_of::<sspine_atlas>() - 4usize];
+    ["Offset of field: sspine_atlas::id"][::std::mem::offset_of!(sspine_atlas, id) - 0usize];
+};
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct sspine_skeleton {
+    pub id: u32,
+}
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
+const _: () = {
+    ["Size of sspine_skeleton"][::std::mem::size_of::<sspine_skeleton>() - 4usize];
+    ["Alignment of sspine_skeleton"][::std::mem::align_of::<sspine_skeleton>() - 4usize];
+    ["Offset of field: sspine_skeleton::id"][::std::mem::offset_of!(sspine_skeleton, id) - 0usize];
+};
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct sspine_instance {
+    pub id: u32,
+}
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
+const _: () = {
+    ["Size of sspine_instance"][::std::mem::size_of::<sspine_instance>() - 4usize];
+    ["Alignment of sspine_instance"][::std::mem::align_of::<sspine_instance>() - 4usize];
+    ["Offset of field: sspine_instance::id"][::std::mem::offset_of!(sspine_instance, id) - 0usize];
+};
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct sspine_skinset {
+    pub id: u32,
+}
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
+const _: () = {
+    ["Size of sspine_skinset"][::std::mem::size_of::<sspine_skinset>() - 4usize];
+    ["Alignment of sspine_skinset"][::std::mem::align_of::<sspine_skinset>() - 4usize];
+    ["Offset of field: sspine_skinset::id"][::std::mem::offset_of!(sspine_skinset, id) - 0usize];
+};
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct sspine_image {
+    pub atlas_id: u32,
+    pub index: ::std::os::raw::c_int,
+}
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
+const _: () = {
+    ["Size of sspine_image"][::std::mem::size_of::<sspine_image>() - 8usize];
+    ["Alignment of sspine_image"][::std::mem::align_of::<sspine_image>() - 4usize];
+    ["Offset of field: sspine_image::atlas_id"]
+        [::std::mem::offset_of!(sspine_image, atlas_id) - 0usize];
+    ["Offset of field: sspine_image::index"][::std::mem::offset_of!(sspine_image, index) - 4usize];
+};
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct sspine_atlas_page {
+    pub atlas_id: u32,
+    pub index: ::std::os::raw::c_int,
+}
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
+const _: () = {
+    ["Size of sspine_atlas_page"][::std::mem::size_of::<sspine_atlas_page>() - 8usize];
+    ["Alignment of sspine_atlas_page"][::std::mem::align_of::<sspine_atlas_page>() - 4usize];
+    ["Offset of field: sspine_atlas_page::atlas_id"]
+        [::std::mem::offset_of!(sspine_atlas_page, atlas_id) - 0usize];
+    ["Offset of field: sspine_atlas_page::index"]
+        [::std::mem::offset_of!(sspine_atlas_page, index) - 4usize];
+};
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct sspine_anim {
+    pub skeleton_id: u32,
+    pub index: ::std::os::raw::c_int,
+}
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
+const _: () = {
+    ["Size of sspine_anim"][::std::mem::size_of::<sspine_anim>() - 8usize];
+    ["Alignment of sspine_anim"][::std::mem::align_of::<sspine_anim>() - 4usize];
+    ["Offset of field: sspine_anim::skeleton_id"]
+        [::std::mem::offset_of!(sspine_anim, skeleton_id) - 0usize];
+    ["Offset of field: sspine_anim::index"][::std::mem::offset_of!(sspine_anim, index) - 4usize];
+};
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct sspine_bone {
+    pub skeleton_id: u32,
+    pub index: ::std::os::raw::c_int,
+}
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
+const _: () = {
+    ["Size of sspine_bone"][::std::mem::size_of::<sspine_bone>() - 8usize];
+    ["Alignment of sspine_bone"][::std::mem::align_of::<sspine_bone>() - 4usize];
+    ["Offset of field: sspine_bone::skeleton_id"]
+        [::std::mem::offset_of!(sspine_bone, skeleton_id) - 0usize];
+    ["Offset of field: sspine_bone::index"][::std::mem::offset_of!(sspine_bone, index) - 4usize];
+};
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct sspine_slot {
+    pub skeleton_id: u32,
+    pub index: ::std::os::raw::c_int,
+}
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
+const _: () = {
+    ["Size of sspine_slot"][::std::mem::size_of::<sspine_slot>() - 8usize];
+    ["Alignment of sspine_slot"][::std::mem::align_of::<sspine_slot>() - 4usize];
+    ["Offset of field: sspine_slot::skeleton_id"]
+        [::std::mem::offset_of!(sspine_slot, skeleton_id) - 0usize];
+    ["Offset of field: sspine_slot::index"][::std::mem::offset_of!(sspine_slot, index) - 4usize];
+};
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct sspine_event {
+    pub skeleton_id: u32,
+    pub index: ::std::os::raw::c_int,
+}
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
+const _: () = {
+    ["Size of sspine_event"][::std::mem::size_of::<sspine_event>() - 8usize];
+    ["Alignment of sspine_event"][::std::mem::align_of::<sspine_event>() - 4usize];
+    ["Offset of field: sspine_event::skeleton_id"]
+        [::std::mem::offset_of!(sspine_event, skeleton_id) - 0usize];
+    ["Offset of field: sspine_event::index"][::std::mem::offset_of!(sspine_event, index) - 4usize];
+};
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct sspine_iktarget {
+    pub skeleton_id: u32,
+    pub index: ::std::os::raw::c_int,
+}
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
+const _: () = {
+    ["Size of sspine_iktarget"][::std::mem::size_of::<sspine_iktarget>() - 8usize];
+    ["Alignment of sspine_iktarget"][::std::mem::align_of::<sspine_iktarget>() - 4usize];
+    ["Offset of field: sspine_iktarget::skeleton_id"]
+        [::std::mem::offset_of!(sspine_iktarget, skeleton_id) - 0usize];
+    ["Offset of field: sspine_iktarget::index"]
+        [::std::mem::offset_of!(sspine_iktarget, index) - 4usize];
+};
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct sspine_skin {
+    pub skeleton_id: u32,
+    pub index: ::std::os::raw::c_int,
+}
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
+const _: () = {
+    ["Size of sspine_skin"][::std::mem::size_of::<sspine_skin>() - 8usize];
+    ["Alignment of sspine_skin"][::std::mem::align_of::<sspine_skin>() - 4usize];
+    ["Offset of field: sspine_skin::skeleton_id"]
+        [::std::mem::offset_of!(sspine_skin, skeleton_id) - 0usize];
+    ["Offset of field: sspine_skin::index"][::std::mem::offset_of!(sspine_skin, index) - 4usize];
+};
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct sspine_range {
+    pub ptr: *const ::std::os::raw::c_void,
+    pub size: usize,
+}
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
+const _: () = {
+    ["Size of sspine_range"][::std::mem::size_of::<sspine_range>() - 16usize];
+    ["Alignment of sspine_range"][::std::mem::align_of::<sspine_range>() - 8usize];
+    ["Offset of field: sspine_range::ptr"][::std::mem::offset_of!(sspine_range, ptr) - 0usize];
+    ["Offset of field: sspine_range::size"][::std::mem::offset_of!(sspine_range, size) - 8usize];
+};
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct sspine_vec2 {
+    pub x: f32,
+    pub y: f32,
+}
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
+const _: () = {
+    ["Size of sspine_vec2"][::std::mem::size_of::<sspine_vec2>() - 8usize];
+    ["Alignment of sspine_vec2"][::std::mem::align_of::<sspine_vec2>() - 4usize];
+    ["Offset of field: sspine_vec2::x"][::std::mem::offset_of!(sspine_vec2, x) - 0usize];
+    ["Offset of field: sspine_vec2::y"][::std::mem::offset_of!(sspine_vec2, y) - 4usize];
+};
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct sspine_mat4 {
+    pub m: [f32; 16usize],
+}
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
+const _: () = {
+    ["Size of sspine_mat4"][::std::mem::size_of::<sspine_mat4>() - 64usize];
+    ["Alignment of sspine_mat4"][::std::mem::align_of::<sspine_mat4>() - 4usize];
+    ["Offset of field: sspine_mat4::m"][::std::mem::offset_of!(sspine_mat4, m) - 0usize];
+};
+pub type sspine_color = sg_color;
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct sspine_string {
+    pub valid: bool,
+    pub truncated: bool,
+    pub len: u8,
+    pub cstr: [::std::os::raw::c_char; 61usize],
+}
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
+const _: () = {
+    ["Size of sspine_string"][::std::mem::size_of::<sspine_string>() - 64usize];
+    ["Alignment of sspine_string"][::std::mem::align_of::<sspine_string>() - 1usize];
+    ["Offset of field: sspine_string::valid"]
+        [::std::mem::offset_of!(sspine_string, valid) - 0usize];
+    ["Offset of field: sspine_string::truncated"]
+        [::std::mem::offset_of!(sspine_string, truncated) - 1usize];
+    ["Offset of field: sspine_string::len"][::std::mem::offset_of!(sspine_string, len) - 2usize];
+    ["Offset of field: sspine_string::cstr"][::std::mem::offset_of!(sspine_string, cstr) - 3usize];
+};
+pub const sspine_resource_state_SSPINE_RESOURCESTATE_INITIAL: sspine_resource_state = 0;
+pub const sspine_resource_state_SSPINE_RESOURCESTATE_ALLOC: sspine_resource_state = 1;
+pub const sspine_resource_state_SSPINE_RESOURCESTATE_VALID: sspine_resource_state = 2;
+pub const sspine_resource_state_SSPINE_RESOURCESTATE_FAILED: sspine_resource_state = 3;
+pub const sspine_resource_state_SSPINE_RESOURCESTATE_INVALID: sspine_resource_state = 4;
+pub const sspine_resource_state__SSPINE_RESOURCESTATE_FORCE_U32: sspine_resource_state = 2147483647;
+pub type sspine_resource_state = ::std::os::raw::c_uint;
+pub const sspine_log_item_SSPINE_LOGITEM_OK: sspine_log_item = 0;
+pub const sspine_log_item_SSPINE_LOGITEM_MALLOC_FAILED: sspine_log_item = 1;
+pub const sspine_log_item_SSPINE_LOGITEM_CONTEXT_POOL_EXHAUSTED: sspine_log_item = 2;
+pub const sspine_log_item_SSPINE_LOGITEM_ATLAS_POOL_EXHAUSTED: sspine_log_item = 3;
+pub const sspine_log_item_SSPINE_LOGITEM_SKELETON_POOL_EXHAUSTED: sspine_log_item = 4;
+pub const sspine_log_item_SSPINE_LOGITEM_SKINSET_POOL_EXHAUSTED: sspine_log_item = 5;
+pub const sspine_log_item_SSPINE_LOGITEM_INSTANCE_POOL_EXHAUSTED: sspine_log_item = 6;
+pub const sspine_log_item_SSPINE_LOGITEM_CANNOT_DESTROY_DEFAULT_CONTEXT: sspine_log_item = 7;
+pub const sspine_log_item_SSPINE_LOGITEM_ATLAS_DESC_NO_DATA: sspine_log_item = 8;
+pub const sspine_log_item_SSPINE_LOGITEM_SPINE_ATLAS_CREATION_FAILED: sspine_log_item = 9;
+pub const sspine_log_item_SSPINE_LOGITEM_SG_ALLOC_IMAGE_FAILED: sspine_log_item = 10;
+pub const sspine_log_item_SSPINE_LOGITEM_SG_ALLOC_SAMPLER_FAILED: sspine_log_item = 11;
+pub const sspine_log_item_SSPINE_LOGITEM_SKELETON_DESC_NO_DATA: sspine_log_item = 12;
+pub const sspine_log_item_SSPINE_LOGITEM_SKELETON_DESC_NO_ATLAS: sspine_log_item = 13;
+pub const sspine_log_item_SSPINE_LOGITEM_SKELETON_ATLAS_NOT_VALID: sspine_log_item = 14;
+pub const sspine_log_item_SSPINE_LOGITEM_CREATE_SKELETON_DATA_FROM_JSON_FAILED: sspine_log_item =
+    15;
+pub const sspine_log_item_SSPINE_LOGITEM_CREATE_SKELETON_DATA_FROM_BINARY_FAILED: sspine_log_item =
+    16;
+pub const sspine_log_item_SSPINE_LOGITEM_SKINSET_DESC_NO_SKELETON: sspine_log_item = 17;
+pub const sspine_log_item_SSPINE_LOGITEM_SKINSET_SKELETON_NOT_VALID: sspine_log_item = 18;
+pub const sspine_log_item_SSPINE_LOGITEM_SKINSET_INVALID_SKIN_HANDLE: sspine_log_item = 19;
+pub const sspine_log_item_SSPINE_LOGITEM_INSTANCE_DESC_NO_SKELETON: sspine_log_item = 20;
+pub const sspine_log_item_SSPINE_LOGITEM_INSTANCE_SKELETON_NOT_VALID: sspine_log_item = 21;
+pub const sspine_log_item_SSPINE_LOGITEM_INSTANCE_ATLAS_NOT_VALID: sspine_log_item = 22;
+pub const sspine_log_item_SSPINE_LOGITEM_SPINE_SKELETON_CREATION_FAILED: sspine_log_item = 23;
+pub const sspine_log_item_SSPINE_LOGITEM_SPINE_ANIMATIONSTATE_CREATION_FAILED: sspine_log_item = 24;
+pub const sspine_log_item_SSPINE_LOGITEM_SPINE_SKELETONCLIPPING_CREATION_FAILED: sspine_log_item =
+    25;
+pub const sspine_log_item_SSPINE_LOGITEM_COMMAND_BUFFER_FULL: sspine_log_item = 26;
+pub const sspine_log_item_SSPINE_LOGITEM_VERTEX_BUFFER_FULL: sspine_log_item = 27;
+pub const sspine_log_item_SSPINE_LOGITEM_INDEX_BUFFER_FULL: sspine_log_item = 28;
+pub const sspine_log_item_SSPINE_LOGITEM_STRING_TRUNCATED: sspine_log_item = 29;
+pub const sspine_log_item_SSPINE_LOGITEM_ADD_COMMIT_LISTENER_FAILED: sspine_log_item = 30;
+pub type sspine_log_item = ::std::os::raw::c_uint;
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct sspine_layer_transform {
+    pub size: sspine_vec2,
+    pub origin: sspine_vec2,
+}
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
+const _: () = {
+    ["Size of sspine_layer_transform"][::std::mem::size_of::<sspine_layer_transform>() - 16usize];
+    ["Alignment of sspine_layer_transform"]
+        [::std::mem::align_of::<sspine_layer_transform>() - 4usize];
+    ["Offset of field: sspine_layer_transform::size"]
+        [::std::mem::offset_of!(sspine_layer_transform, size) - 0usize];
+    ["Offset of field: sspine_layer_transform::origin"]
+        [::std::mem::offset_of!(sspine_layer_transform, origin) - 8usize];
+};
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct sspine_bone_transform {
+    pub position: sspine_vec2,
+    pub rotation: f32,
+    pub scale: sspine_vec2,
+    pub shear: sspine_vec2,
+}
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
+const _: () = {
+    ["Size of sspine_bone_transform"][::std::mem::size_of::<sspine_bone_transform>() - 28usize];
+    ["Alignment of sspine_bone_transform"]
+        [::std::mem::align_of::<sspine_bone_transform>() - 4usize];
+    ["Offset of field: sspine_bone_transform::position"]
+        [::std::mem::offset_of!(sspine_bone_transform, position) - 0usize];
+    ["Offset of field: sspine_bone_transform::rotation"]
+        [::std::mem::offset_of!(sspine_bone_transform, rotation) - 8usize];
+    ["Offset of field: sspine_bone_transform::scale"]
+        [::std::mem::offset_of!(sspine_bone_transform, scale) - 12usize];
+    ["Offset of field: sspine_bone_transform::shear"]
+        [::std::mem::offset_of!(sspine_bone_transform, shear) - 20usize];
+};
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct sspine_context_desc {
+    pub max_vertices: ::std::os::raw::c_int,
+    pub max_commands: ::std::os::raw::c_int,
+    pub color_format: sg_pixel_format,
+    pub depth_format: sg_pixel_format,
+    pub sample_count: ::std::os::raw::c_int,
+    pub color_write_mask: sg_color_mask,
+}
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
+const _: () = {
+    ["Size of sspine_context_desc"][::std::mem::size_of::<sspine_context_desc>() - 24usize];
+    ["Alignment of sspine_context_desc"][::std::mem::align_of::<sspine_context_desc>() - 4usize];
+    ["Offset of field: sspine_context_desc::max_vertices"]
+        [::std::mem::offset_of!(sspine_context_desc, max_vertices) - 0usize];
+    ["Offset of field: sspine_context_desc::max_commands"]
+        [::std::mem::offset_of!(sspine_context_desc, max_commands) - 4usize];
+    ["Offset of field: sspine_context_desc::color_format"]
+        [::std::mem::offset_of!(sspine_context_desc, color_format) - 8usize];
+    ["Offset of field: sspine_context_desc::depth_format"]
+        [::std::mem::offset_of!(sspine_context_desc, depth_format) - 12usize];
+    ["Offset of field: sspine_context_desc::sample_count"]
+        [::std::mem::offset_of!(sspine_context_desc, sample_count) - 16usize];
+    ["Offset of field: sspine_context_desc::color_write_mask"]
+        [::std::mem::offset_of!(sspine_context_desc, color_write_mask) - 20usize];
+};
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct sspine_context_info {
+    pub num_vertices: ::std::os::raw::c_int,
+    pub num_indices: ::std::os::raw::c_int,
+    pub num_commands: ::std::os::raw::c_int,
+}
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
+const _: () = {
+    ["Size of sspine_context_info"][::std::mem::size_of::<sspine_context_info>() - 12usize];
+    ["Alignment of sspine_context_info"][::std::mem::align_of::<sspine_context_info>() - 4usize];
+    ["Offset of field: sspine_context_info::num_vertices"]
+        [::std::mem::offset_of!(sspine_context_info, num_vertices) - 0usize];
+    ["Offset of field: sspine_context_info::num_indices"]
+        [::std::mem::offset_of!(sspine_context_info, num_indices) - 4usize];
+    ["Offset of field: sspine_context_info::num_commands"]
+        [::std::mem::offset_of!(sspine_context_info, num_commands) - 8usize];
+};
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct sspine_image_info {
+    pub valid: bool,
+    pub sgimage: sg_image,
+    pub sgsampler: sg_sampler,
+    pub min_filter: sg_filter,
+    pub mag_filter: sg_filter,
+    pub mipmap_filter: sg_filter,
+    pub wrap_u: sg_wrap,
+    pub wrap_v: sg_wrap,
+    pub width: ::std::os::raw::c_int,
+    pub height: ::std::os::raw::c_int,
+    pub premul_alpha: bool,
+    pub filename: sspine_string,
+}
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
+const _: () = {
+    ["Size of sspine_image_info"][::std::mem::size_of::<sspine_image_info>() - 108usize];
+    ["Alignment of sspine_image_info"][::std::mem::align_of::<sspine_image_info>() - 4usize];
+    ["Offset of field: sspine_image_info::valid"]
+        [::std::mem::offset_of!(sspine_image_info, valid) - 0usize];
+    ["Offset of field: sspine_image_info::sgimage"]
+        [::std::mem::offset_of!(sspine_image_info, sgimage) - 4usize];
+    ["Offset of field: sspine_image_info::sgsampler"]
+        [::std::mem::offset_of!(sspine_image_info, sgsampler) - 8usize];
+    ["Offset of field: sspine_image_info::min_filter"]
+        [::std::mem::offset_of!(sspine_image_info, min_filter) - 12usize];
+    ["Offset of field: sspine_image_info::mag_filter"]
+        [::std::mem::offset_of!(sspine_image_info, mag_filter) - 16usize];
+    ["Offset of field: sspine_image_info::mipmap_filter"]
+        [::std::mem::offset_of!(sspine_image_info, mipmap_filter) - 20usize];
+    ["Offset of field: sspine_image_info::wrap_u"]
+        [::std::mem::offset_of!(sspine_image_info, wrap_u) - 24usize];
+    ["Offset of field: sspine_image_info::wrap_v"]
+        [::std::mem::offset_of!(sspine_image_info, wrap_v) - 28usize];
+    ["Offset of field: sspine_image_info::width"]
+        [::std::mem::offset_of!(sspine_image_info, width) - 32usize];
+    ["Offset of field: sspine_image_info::height"]
+        [::std::mem::offset_of!(sspine_image_info, height) - 36usize];
+    ["Offset of field: sspine_image_info::premul_alpha"]
+        [::std::mem::offset_of!(sspine_image_info, premul_alpha) - 40usize];
+    ["Offset of field: sspine_image_info::filename"]
+        [::std::mem::offset_of!(sspine_image_info, filename) - 41usize];
+};
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct sspine_atlas_overrides {
+    pub min_filter: sg_filter,
+    pub mag_filter: sg_filter,
+    pub mipmap_filter: sg_filter,
+    pub wrap_u: sg_wrap,
+    pub wrap_v: sg_wrap,
+    pub premul_alpha_enabled: bool,
+    pub premul_alpha_disabled: bool,
+}
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
+const _: () = {
+    ["Size of sspine_atlas_overrides"][::std::mem::size_of::<sspine_atlas_overrides>() - 24usize];
+    ["Alignment of sspine_atlas_overrides"]
+        [::std::mem::align_of::<sspine_atlas_overrides>() - 4usize];
+    ["Offset of field: sspine_atlas_overrides::min_filter"]
+        [::std::mem::offset_of!(sspine_atlas_overrides, min_filter) - 0usize];
+    ["Offset of field: sspine_atlas_overrides::mag_filter"]
+        [::std::mem::offset_of!(sspine_atlas_overrides, mag_filter) - 4usize];
+    ["Offset of field: sspine_atlas_overrides::mipmap_filter"]
+        [::std::mem::offset_of!(sspine_atlas_overrides, mipmap_filter) - 8usize];
+    ["Offset of field: sspine_atlas_overrides::wrap_u"]
+        [::std::mem::offset_of!(sspine_atlas_overrides, wrap_u) - 12usize];
+    ["Offset of field: sspine_atlas_overrides::wrap_v"]
+        [::std::mem::offset_of!(sspine_atlas_overrides, wrap_v) - 16usize];
+    ["Offset of field: sspine_atlas_overrides::premul_alpha_enabled"]
+        [::std::mem::offset_of!(sspine_atlas_overrides, premul_alpha_enabled) - 20usize];
+    ["Offset of field: sspine_atlas_overrides::premul_alpha_disabled"]
+        [::std::mem::offset_of!(sspine_atlas_overrides, premul_alpha_disabled) - 21usize];
+};
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct sspine_atlas_desc {
+    pub data: sspine_range,
+    pub override_: sspine_atlas_overrides,
+}
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
+const _: () = {
+    ["Size of sspine_atlas_desc"][::std::mem::size_of::<sspine_atlas_desc>() - 40usize];
+    ["Alignment of sspine_atlas_desc"][::std::mem::align_of::<sspine_atlas_desc>() - 8usize];
+    ["Offset of field: sspine_atlas_desc::data"]
+        [::std::mem::offset_of!(sspine_atlas_desc, data) - 0usize];
+    ["Offset of field: sspine_atlas_desc::override_"]
+        [::std::mem::offset_of!(sspine_atlas_desc, override_) - 16usize];
+};
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct sspine_atlas_page_info {
+    pub valid: bool,
+    pub atlas: sspine_atlas,
+    pub image: sspine_image_info,
+    pub overrides: sspine_atlas_overrides,
+}
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
+const _: () = {
+    ["Size of sspine_atlas_page_info"][::std::mem::size_of::<sspine_atlas_page_info>() - 140usize];
+    ["Alignment of sspine_atlas_page_info"]
+        [::std::mem::align_of::<sspine_atlas_page_info>() - 4usize];
+    ["Offset of field: sspine_atlas_page_info::valid"]
+        [::std::mem::offset_of!(sspine_atlas_page_info, valid) - 0usize];
+    ["Offset of field: sspine_atlas_page_info::atlas"]
+        [::std::mem::offset_of!(sspine_atlas_page_info, atlas) - 4usize];
+    ["Offset of field: sspine_atlas_page_info::image"]
+        [::std::mem::offset_of!(sspine_atlas_page_info, image) - 8usize];
+    ["Offset of field: sspine_atlas_page_info::overrides"]
+        [::std::mem::offset_of!(sspine_atlas_page_info, overrides) - 116usize];
+};
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct sspine_skeleton_desc {
+    pub atlas: sspine_atlas,
+    pub prescale: f32,
+    pub anim_default_mix: f32,
+    pub json_data: *const ::std::os::raw::c_char,
+    pub binary_data: sspine_range,
+}
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
+const _: () = {
+    ["Size of sspine_skeleton_desc"][::std::mem::size_of::<sspine_skeleton_desc>() - 40usize];
+    ["Alignment of sspine_skeleton_desc"][::std::mem::align_of::<sspine_skeleton_desc>() - 8usize];
+    ["Offset of field: sspine_skeleton_desc::atlas"]
+        [::std::mem::offset_of!(sspine_skeleton_desc, atlas) - 0usize];
+    ["Offset of field: sspine_skeleton_desc::prescale"]
+        [::std::mem::offset_of!(sspine_skeleton_desc, prescale) - 4usize];
+    ["Offset of field: sspine_skeleton_desc::anim_default_mix"]
+        [::std::mem::offset_of!(sspine_skeleton_desc, anim_default_mix) - 8usize];
+    ["Offset of field: sspine_skeleton_desc::json_data"]
+        [::std::mem::offset_of!(sspine_skeleton_desc, json_data) - 16usize];
+    ["Offset of field: sspine_skeleton_desc::binary_data"]
+        [::std::mem::offset_of!(sspine_skeleton_desc, binary_data) - 24usize];
+};
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct sspine_skinset_desc {
+    pub skeleton: sspine_skeleton,
+    pub skins: [sspine_skin; 32usize],
+}
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
+const _: () = {
+    ["Size of sspine_skinset_desc"][::std::mem::size_of::<sspine_skinset_desc>() - 260usize];
+    ["Alignment of sspine_skinset_desc"][::std::mem::align_of::<sspine_skinset_desc>() - 4usize];
+    ["Offset of field: sspine_skinset_desc::skeleton"]
+        [::std::mem::offset_of!(sspine_skinset_desc, skeleton) - 0usize];
+    ["Offset of field: sspine_skinset_desc::skins"]
+        [::std::mem::offset_of!(sspine_skinset_desc, skins) - 4usize];
+};
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct sspine_anim_info {
+    pub valid: bool,
+    pub index: ::std::os::raw::c_int,
+    pub duration: f32,
+    pub name: sspine_string,
+}
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
+const _: () = {
+    ["Size of sspine_anim_info"][::std::mem::size_of::<sspine_anim_info>() - 76usize];
+    ["Alignment of sspine_anim_info"][::std::mem::align_of::<sspine_anim_info>() - 4usize];
+    ["Offset of field: sspine_anim_info::valid"]
+        [::std::mem::offset_of!(sspine_anim_info, valid) - 0usize];
+    ["Offset of field: sspine_anim_info::index"]
+        [::std::mem::offset_of!(sspine_anim_info, index) - 4usize];
+    ["Offset of field: sspine_anim_info::duration"]
+        [::std::mem::offset_of!(sspine_anim_info, duration) - 8usize];
+    ["Offset of field: sspine_anim_info::name"]
+        [::std::mem::offset_of!(sspine_anim_info, name) - 12usize];
+};
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct sspine_bone_info {
+    pub valid: bool,
+    pub index: ::std::os::raw::c_int,
+    pub parent_bone: sspine_bone,
+    pub length: f32,
+    pub pose: sspine_bone_transform,
+    pub color: sspine_color,
+    pub name: sspine_string,
+}
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
+const _: () = {
+    ["Size of sspine_bone_info"][::std::mem::size_of::<sspine_bone_info>() - 128usize];
+    ["Alignment of sspine_bone_info"][::std::mem::align_of::<sspine_bone_info>() - 4usize];
+    ["Offset of field: sspine_bone_info::valid"]
+        [::std::mem::offset_of!(sspine_bone_info, valid) - 0usize];
+    ["Offset of field: sspine_bone_info::index"]
+        [::std::mem::offset_of!(sspine_bone_info, index) - 4usize];
+    ["Offset of field: sspine_bone_info::parent_bone"]
+        [::std::mem::offset_of!(sspine_bone_info, parent_bone) - 8usize];
+    ["Offset of field: sspine_bone_info::length"]
+        [::std::mem::offset_of!(sspine_bone_info, length) - 16usize];
+    ["Offset of field: sspine_bone_info::pose"]
+        [::std::mem::offset_of!(sspine_bone_info, pose) - 20usize];
+    ["Offset of field: sspine_bone_info::color"]
+        [::std::mem::offset_of!(sspine_bone_info, color) - 48usize];
+    ["Offset of field: sspine_bone_info::name"]
+        [::std::mem::offset_of!(sspine_bone_info, name) - 64usize];
+};
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct sspine_slot_info {
+    pub valid: bool,
+    pub index: ::std::os::raw::c_int,
+    pub bone: sspine_bone,
+    pub color: sspine_color,
+    pub attachment_name: sspine_string,
+    pub name: sspine_string,
+}
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
+const _: () = {
+    ["Size of sspine_slot_info"][::std::mem::size_of::<sspine_slot_info>() - 160usize];
+    ["Alignment of sspine_slot_info"][::std::mem::align_of::<sspine_slot_info>() - 4usize];
+    ["Offset of field: sspine_slot_info::valid"]
+        [::std::mem::offset_of!(sspine_slot_info, valid) - 0usize];
+    ["Offset of field: sspine_slot_info::index"]
+        [::std::mem::offset_of!(sspine_slot_info, index) - 4usize];
+    ["Offset of field: sspine_slot_info::bone"]
+        [::std::mem::offset_of!(sspine_slot_info, bone) - 8usize];
+    ["Offset of field: sspine_slot_info::color"]
+        [::std::mem::offset_of!(sspine_slot_info, color) - 16usize];
+    ["Offset of field: sspine_slot_info::attachment_name"]
+        [::std::mem::offset_of!(sspine_slot_info, attachment_name) - 32usize];
+    ["Offset of field: sspine_slot_info::name"]
+        [::std::mem::offset_of!(sspine_slot_info, name) - 96usize];
+};
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct sspine_iktarget_info {
+    pub valid: bool,
+    pub index: ::std::os::raw::c_int,
+    pub target_bone: sspine_bone,
+    pub name: sspine_string,
+}
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
+const _: () = {
+    ["Size of sspine_iktarget_info"][::std::mem::size_of::<sspine_iktarget_info>() - 80usize];
+    ["Alignment of sspine_iktarget_info"][::std::mem::align_of::<sspine_iktarget_info>() - 4usize];
+    ["Offset of field: sspine_iktarget_info::valid"]
+        [::std::mem::offset_of!(sspine_iktarget_info, valid) - 0usize];
+    ["Offset of field: sspine_iktarget_info::index"]
+        [::std::mem::offset_of!(sspine_iktarget_info, index) - 4usize];
+    ["Offset of field: sspine_iktarget_info::target_bone"]
+        [::std::mem::offset_of!(sspine_iktarget_info, target_bone) - 8usize];
+    ["Offset of field: sspine_iktarget_info::name"]
+        [::std::mem::offset_of!(sspine_iktarget_info, name) - 16usize];
+};
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct sspine_skin_info {
+    pub valid: bool,
+    pub index: ::std::os::raw::c_int,
+    pub name: sspine_string,
+}
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
+const _: () = {
+    ["Size of sspine_skin_info"][::std::mem::size_of::<sspine_skin_info>() - 72usize];
+    ["Alignment of sspine_skin_info"][::std::mem::align_of::<sspine_skin_info>() - 4usize];
+    ["Offset of field: sspine_skin_info::valid"]
+        [::std::mem::offset_of!(sspine_skin_info, valid) - 0usize];
+    ["Offset of field: sspine_skin_info::index"]
+        [::std::mem::offset_of!(sspine_skin_info, index) - 4usize];
+    ["Offset of field: sspine_skin_info::name"]
+        [::std::mem::offset_of!(sspine_skin_info, name) - 8usize];
+};
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct sspine_event_info {
+    pub valid: bool,
+    pub index: ::std::os::raw::c_int,
+    pub int_value: ::std::os::raw::c_int,
+    pub float_value: f32,
+    pub volume: f32,
+    pub balance: f32,
+    pub name: sspine_string,
+    pub string_value: sspine_string,
+    pub audio_path: sspine_string,
+}
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
+const _: () = {
+    ["Size of sspine_event_info"][::std::mem::size_of::<sspine_event_info>() - 216usize];
+    ["Alignment of sspine_event_info"][::std::mem::align_of::<sspine_event_info>() - 4usize];
+    ["Offset of field: sspine_event_info::valid"]
+        [::std::mem::offset_of!(sspine_event_info, valid) - 0usize];
+    ["Offset of field: sspine_event_info::index"]
+        [::std::mem::offset_of!(sspine_event_info, index) - 4usize];
+    ["Offset of field: sspine_event_info::int_value"]
+        [::std::mem::offset_of!(sspine_event_info, int_value) - 8usize];
+    ["Offset of field: sspine_event_info::float_value"]
+        [::std::mem::offset_of!(sspine_event_info, float_value) - 12usize];
+    ["Offset of field: sspine_event_info::volume"]
+        [::std::mem::offset_of!(sspine_event_info, volume) - 16usize];
+    ["Offset of field: sspine_event_info::balance"]
+        [::std::mem::offset_of!(sspine_event_info, balance) - 20usize];
+    ["Offset of field: sspine_event_info::name"]
+        [::std::mem::offset_of!(sspine_event_info, name) - 24usize];
+    ["Offset of field: sspine_event_info::string_value"]
+        [::std::mem::offset_of!(sspine_event_info, string_value) - 88usize];
+    ["Offset of field: sspine_event_info::audio_path"]
+        [::std::mem::offset_of!(sspine_event_info, audio_path) - 152usize];
+};
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct sspine_triggered_event_info {
+    pub valid: bool,
+    pub event: sspine_event,
+    pub time: f32,
+    pub int_value: ::std::os::raw::c_int,
+    pub float_value: f32,
+    pub volume: f32,
+    pub balance: f32,
+    pub string_value: sspine_string,
+}
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
+const _: () = {
+    ["Size of sspine_triggered_event_info"]
+        [::std::mem::size_of::<sspine_triggered_event_info>() - 96usize];
+    ["Alignment of sspine_triggered_event_info"]
+        [::std::mem::align_of::<sspine_triggered_event_info>() - 4usize];
+    ["Offset of field: sspine_triggered_event_info::valid"]
+        [::std::mem::offset_of!(sspine_triggered_event_info, valid) - 0usize];
+    ["Offset of field: sspine_triggered_event_info::event"]
+        [::std::mem::offset_of!(sspine_triggered_event_info, event) - 4usize];
+    ["Offset of field: sspine_triggered_event_info::time"]
+        [::std::mem::offset_of!(sspine_triggered_event_info, time) - 12usize];
+    ["Offset of field: sspine_triggered_event_info::int_value"]
+        [::std::mem::offset_of!(sspine_triggered_event_info, int_value) - 16usize];
+    ["Offset of field: sspine_triggered_event_info::float_value"]
+        [::std::mem::offset_of!(sspine_triggered_event_info, float_value) - 20usize];
+    ["Offset of field: sspine_triggered_event_info::volume"]
+        [::std::mem::offset_of!(sspine_triggered_event_info, volume) - 24usize];
+    ["Offset of field: sspine_triggered_event_info::balance"]
+        [::std::mem::offset_of!(sspine_triggered_event_info, balance) - 28usize];
+    ["Offset of field: sspine_triggered_event_info::string_value"]
+        [::std::mem::offset_of!(sspine_triggered_event_info, string_value) - 32usize];
+};
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct sspine_instance_desc {
+    pub skeleton: sspine_skeleton,
+}
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
+const _: () = {
+    ["Size of sspine_instance_desc"][::std::mem::size_of::<sspine_instance_desc>() - 4usize];
+    ["Alignment of sspine_instance_desc"][::std::mem::align_of::<sspine_instance_desc>() - 4usize];
+    ["Offset of field: sspine_instance_desc::skeleton"]
+        [::std::mem::offset_of!(sspine_instance_desc, skeleton) - 0usize];
+};
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct sspine_allocator {
+    pub alloc_fn: ::std::option::Option<
+        unsafe extern "C" fn(
+            size: usize,
+            user_data: *mut ::std::os::raw::c_void,
+        ) -> *mut ::std::os::raw::c_void,
+    >,
+    pub free_fn: ::std::option::Option<
+        unsafe extern "C" fn(
+            ptr: *mut ::std::os::raw::c_void,
+            user_data: *mut ::std::os::raw::c_void,
+        ),
+    >,
+    pub user_data: *mut ::std::os::raw::c_void,
+}
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
+const _: () = {
+    ["Size of sspine_allocator"][::std::mem::size_of::<sspine_allocator>() - 24usize];
+    ["Alignment of sspine_allocator"][::std::mem::align_of::<sspine_allocator>() - 8usize];
+    ["Offset of field: sspine_allocator::alloc_fn"]
+        [::std::mem::offset_of!(sspine_allocator, alloc_fn) - 0usize];
+    ["Offset of field: sspine_allocator::free_fn"]
+        [::std::mem::offset_of!(sspine_allocator, free_fn) - 8usize];
+    ["Offset of field: sspine_allocator::user_data"]
+        [::std::mem::offset_of!(sspine_allocator, user_data) - 16usize];
+};
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct sspine_logger {
+    pub func: ::std::option::Option<
+        unsafe extern "C" fn(
+            tag: *const ::std::os::raw::c_char,
+            log_level: u32,
+            log_item_id: u32,
+            message_or_null: *const ::std::os::raw::c_char,
+            line_nr: u32,
+            filename_or_null: *const ::std::os::raw::c_char,
+            user_data: *mut ::std::os::raw::c_void,
+        ),
+    >,
+    pub user_data: *mut ::std::os::raw::c_void,
+}
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
+const _: () = {
+    ["Size of sspine_logger"][::std::mem::size_of::<sspine_logger>() - 16usize];
+    ["Alignment of sspine_logger"][::std::mem::align_of::<sspine_logger>() - 8usize];
+    ["Offset of field: sspine_logger::func"][::std::mem::offset_of!(sspine_logger, func) - 0usize];
+    ["Offset of field: sspine_logger::user_data"]
+        [::std::mem::offset_of!(sspine_logger, user_data) - 8usize];
+};
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct sspine_desc {
+    pub max_vertices: ::std::os::raw::c_int,
+    pub max_commands: ::std::os::raw::c_int,
+    pub context_pool_size: ::std::os::raw::c_int,
+    pub atlas_pool_size: ::std::os::raw::c_int,
+    pub skeleton_pool_size: ::std::os::raw::c_int,
+    pub skinset_pool_size: ::std::os::raw::c_int,
+    pub instance_pool_size: ::std::os::raw::c_int,
+    pub color_format: sg_pixel_format,
+    pub depth_format: sg_pixel_format,
+    pub sample_count: ::std::os::raw::c_int,
+    pub color_write_mask: sg_color_mask,
+    pub allocator: sspine_allocator,
+    pub logger: sspine_logger,
+}
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
+const _: () = {
+    ["Size of sspine_desc"][::std::mem::size_of::<sspine_desc>() - 88usize];
+    ["Alignment of sspine_desc"][::std::mem::align_of::<sspine_desc>() - 8usize];
+    ["Offset of field: sspine_desc::max_vertices"]
+        [::std::mem::offset_of!(sspine_desc, max_vertices) - 0usize];
+    ["Offset of field: sspine_desc::max_commands"]
+        [::std::mem::offset_of!(sspine_desc, max_commands) - 4usize];
+    ["Offset of field: sspine_desc::context_pool_size"]
+        [::std::mem::offset_of!(sspine_desc, context_pool_size) - 8usize];
+    ["Offset of field: sspine_desc::atlas_pool_size"]
+        [::std::mem::offset_of!(sspine_desc, atlas_pool_size) - 12usize];
+    ["Offset of field: sspine_desc::skeleton_pool_size"]
+        [::std::mem::offset_of!(sspine_desc, skeleton_pool_size) - 16usize];
+    ["Offset of field: sspine_desc::skinset_pool_size"]
+        [::std::mem::offset_of!(sspine_desc, skinset_pool_size) - 20usize];
+    ["Offset of field: sspine_desc::instance_pool_size"]
+        [::std::mem::offset_of!(sspine_desc, instance_pool_size) - 24usize];
+    ["Offset of field: sspine_desc::color_format"]
+        [::std::mem::offset_of!(sspine_desc, color_format) - 28usize];
+    ["Offset of field: sspine_desc::depth_format"]
+        [::std::mem::offset_of!(sspine_desc, depth_format) - 32usize];
+    ["Offset of field: sspine_desc::sample_count"]
+        [::std::mem::offset_of!(sspine_desc, sample_count) - 36usize];
+    ["Offset of field: sspine_desc::color_write_mask"]
+        [::std::mem::offset_of!(sspine_desc, color_write_mask) - 40usize];
+    ["Offset of field: sspine_desc::allocator"]
+        [::std::mem::offset_of!(sspine_desc, allocator) - 48usize];
+    ["Offset of field: sspine_desc::logger"][::std::mem::offset_of!(sspine_desc, logger) - 72usize];
+};
+unsafe extern "C" {
+    pub fn sspine_setup(desc: *const sspine_desc);
+}
+unsafe extern "C" {
+    pub fn sspine_shutdown();
+}
+unsafe extern "C" {
+    pub fn sspine_make_context(desc: *const sspine_context_desc) -> sspine_context;
+}
+unsafe extern "C" {
+    pub fn sspine_destroy_context(ctx: sspine_context);
+}
+unsafe extern "C" {
+    pub fn sspine_set_context(ctx: sspine_context);
+}
+unsafe extern "C" {
+    pub fn sspine_get_context() -> sspine_context;
+}
+unsafe extern "C" {
+    pub fn sspine_default_context() -> sspine_context;
+}
+unsafe extern "C" {
+    pub fn sspine_get_context_info(ctx: sspine_context) -> sspine_context_info;
+}
+unsafe extern "C" {
+    pub fn sspine_make_atlas(desc: *const sspine_atlas_desc) -> sspine_atlas;
+}
+unsafe extern "C" {
+    pub fn sspine_make_skeleton(desc: *const sspine_skeleton_desc) -> sspine_skeleton;
+}
+unsafe extern "C" {
+    pub fn sspine_make_skinset(desc: *const sspine_skinset_desc) -> sspine_skinset;
+}
+unsafe extern "C" {
+    pub fn sspine_make_instance(desc: *const sspine_instance_desc) -> sspine_instance;
+}
+unsafe extern "C" {
+    pub fn sspine_destroy_atlas(atlas: sspine_atlas);
+}
+unsafe extern "C" {
+    pub fn sspine_destroy_skeleton(skeleton: sspine_skeleton);
+}
+unsafe extern "C" {
+    pub fn sspine_destroy_skinset(skinset: sspine_skinset);
+}
+unsafe extern "C" {
+    pub fn sspine_destroy_instance(instance: sspine_instance);
+}
+unsafe extern "C" {
+    pub fn sspine_set_skinset(instance: sspine_instance, skinset: sspine_skinset);
+}
+unsafe extern "C" {
+    pub fn sspine_update_instance(instance: sspine_instance, delta_time: f32);
+}
+unsafe extern "C" {
+    pub fn sspine_num_triggered_events(instance: sspine_instance) -> ::std::os::raw::c_int;
+}
+unsafe extern "C" {
+    pub fn sspine_get_triggered_event_info(
+        instance: sspine_instance,
+        triggered_event_index: ::std::os::raw::c_int,
+    ) -> sspine_triggered_event_info;
+}
+unsafe extern "C" {
+    pub fn sspine_draw_instance_in_layer(instance: sspine_instance, layer: ::std::os::raw::c_int);
+}
+unsafe extern "C" {
+    pub fn sspine_context_draw_instance_in_layer(
+        ctx: sspine_context,
+        instance: sspine_instance,
+        layer: ::std::os::raw::c_int,
+    );
+}
+unsafe extern "C" {
+    pub fn sspine_layer_transform_to_mat4(tform: *const sspine_layer_transform) -> sspine_mat4;
+}
+unsafe extern "C" {
+    pub fn sspine_draw_layer(layer: ::std::os::raw::c_int, tform: *const sspine_layer_transform);
+}
+unsafe extern "C" {
+    pub fn sspine_context_draw_layer(
+        ctx: sspine_context,
+        layer: ::std::os::raw::c_int,
+        tform: *const sspine_layer_transform,
+    );
+}
+unsafe extern "C" {
+    pub fn sspine_get_context_resource_state(context: sspine_context) -> sspine_resource_state;
+}
+unsafe extern "C" {
+    pub fn sspine_get_atlas_resource_state(atlas: sspine_atlas) -> sspine_resource_state;
+}
+unsafe extern "C" {
+    pub fn sspine_get_skeleton_resource_state(skeleton: sspine_skeleton) -> sspine_resource_state;
+}
+unsafe extern "C" {
+    pub fn sspine_get_skinset_resource_state(skinset: sspine_skinset) -> sspine_resource_state;
+}
+unsafe extern "C" {
+    pub fn sspine_get_instance_resource_state(instance: sspine_instance) -> sspine_resource_state;
+}
+unsafe extern "C" {
+    pub fn sspine_context_valid(context: sspine_context) -> bool;
+}
+unsafe extern "C" {
+    pub fn sspine_atlas_valid(atlas: sspine_atlas) -> bool;
+}
+unsafe extern "C" {
+    pub fn sspine_skeleton_valid(skeleton: sspine_skeleton) -> bool;
+}
+unsafe extern "C" {
+    pub fn sspine_instance_valid(instance: sspine_instance) -> bool;
+}
+unsafe extern "C" {
+    pub fn sspine_skinset_valid(skinset: sspine_skinset) -> bool;
+}
+unsafe extern "C" {
+    pub fn sspine_get_skeleton_atlas(skeleton: sspine_skeleton) -> sspine_atlas;
+}
+unsafe extern "C" {
+    pub fn sspine_get_instance_skeleton(instance: sspine_instance) -> sspine_skeleton;
+}
+unsafe extern "C" {
+    pub fn sspine_num_images(atlas: sspine_atlas) -> ::std::os::raw::c_int;
+}
+unsafe extern "C" {
+    pub fn sspine_image_by_index(atlas: sspine_atlas, index: ::std::os::raw::c_int)
+        -> sspine_image;
+}
+unsafe extern "C" {
+    pub fn sspine_image_valid(image: sspine_image) -> bool;
+}
+unsafe extern "C" {
+    pub fn sspine_image_equal(first: sspine_image, second: sspine_image) -> bool;
+}
+unsafe extern "C" {
+    pub fn sspine_get_image_info(image: sspine_image) -> sspine_image_info;
+}
+unsafe extern "C" {
+    pub fn sspine_num_atlas_pages(atlas: sspine_atlas) -> ::std::os::raw::c_int;
+}
+unsafe extern "C" {
+    pub fn sspine_atlas_page_by_index(
+        atlas: sspine_atlas,
+        index: ::std::os::raw::c_int,
+    ) -> sspine_atlas_page;
+}
+unsafe extern "C" {
+    pub fn sspine_atlas_page_valid(page: sspine_atlas_page) -> bool;
+}
+unsafe extern "C" {
+    pub fn sspine_atlas_page_equal(first: sspine_atlas_page, second: sspine_atlas_page) -> bool;
+}
+unsafe extern "C" {
+    pub fn sspine_get_atlas_page_info(page: sspine_atlas_page) -> sspine_atlas_page_info;
+}
+unsafe extern "C" {
+    pub fn sspine_set_position(instance: sspine_instance, position: sspine_vec2);
+}
+unsafe extern "C" {
+    pub fn sspine_set_scale(instance: sspine_instance, scale: sspine_vec2);
+}
+unsafe extern "C" {
+    pub fn sspine_set_color(instance: sspine_instance, color: sspine_color);
+}
+unsafe extern "C" {
+    pub fn sspine_get_position(instance: sspine_instance) -> sspine_vec2;
+}
+unsafe extern "C" {
+    pub fn sspine_get_scale(instance: sspine_instance) -> sspine_vec2;
+}
+unsafe extern "C" {
+    pub fn sspine_get_color(instance: sspine_instance) -> sspine_color;
+}
+unsafe extern "C" {
+    pub fn sspine_num_anims(skeleton: sspine_skeleton) -> ::std::os::raw::c_int;
+}
+unsafe extern "C" {
+    pub fn sspine_anim_by_name(
+        skeleton: sspine_skeleton,
+        name: *const ::std::os::raw::c_char,
+    ) -> sspine_anim;
+}
+unsafe extern "C" {
+    pub fn sspine_anim_by_index(
+        skeleton: sspine_skeleton,
+        index: ::std::os::raw::c_int,
+    ) -> sspine_anim;
+}
+unsafe extern "C" {
+    pub fn sspine_anim_valid(anim: sspine_anim) -> bool;
+}
+unsafe extern "C" {
+    pub fn sspine_anim_equal(first: sspine_anim, second: sspine_anim) -> bool;
+}
+unsafe extern "C" {
+    pub fn sspine_get_anim_info(anim: sspine_anim) -> sspine_anim_info;
+}
+unsafe extern "C" {
+    pub fn sspine_clear_animation_tracks(instance: sspine_instance);
+}
+unsafe extern "C" {
+    pub fn sspine_clear_animation_track(
+        instance: sspine_instance,
+        track_index: ::std::os::raw::c_int,
+    );
+}
+unsafe extern "C" {
+    pub fn sspine_set_animation(
+        instance: sspine_instance,
+        anim: sspine_anim,
+        track_index: ::std::os::raw::c_int,
+        loop_: bool,
+    );
+}
+unsafe extern "C" {
+    pub fn sspine_add_animation(
+        instance: sspine_instance,
+        anim: sspine_anim,
+        track_index: ::std::os::raw::c_int,
+        loop_: bool,
+        delay: f32,
+    );
+}
+unsafe extern "C" {
+    pub fn sspine_set_empty_animation(
+        instance: sspine_instance,
+        track_index: ::std::os::raw::c_int,
+        mix_duration: f32,
+    );
+}
+unsafe extern "C" {
+    pub fn sspine_add_empty_animation(
+        instance: sspine_instance,
+        track_index: ::std::os::raw::c_int,
+        mix_duration: f32,
+        delay: f32,
+    );
+}
+unsafe extern "C" {
+    pub fn sspine_num_bones(skeleton: sspine_skeleton) -> ::std::os::raw::c_int;
+}
+unsafe extern "C" {
+    pub fn sspine_bone_by_name(
+        skeleton: sspine_skeleton,
+        name: *const ::std::os::raw::c_char,
+    ) -> sspine_bone;
+}
+unsafe extern "C" {
+    pub fn sspine_bone_by_index(
+        skeleton: sspine_skeleton,
+        index: ::std::os::raw::c_int,
+    ) -> sspine_bone;
+}
+unsafe extern "C" {
+    pub fn sspine_bone_valid(bone: sspine_bone) -> bool;
+}
+unsafe extern "C" {
+    pub fn sspine_bone_equal(first: sspine_bone, second: sspine_bone) -> bool;
+}
+unsafe extern "C" {
+    pub fn sspine_get_bone_info(bone: sspine_bone) -> sspine_bone_info;
+}
+unsafe extern "C" {
+    pub fn sspine_set_bone_transform(
+        instance: sspine_instance,
+        bone: sspine_bone,
+        transform: *const sspine_bone_transform,
+    );
+}
+unsafe extern "C" {
+    pub fn sspine_set_bone_position(
+        instance: sspine_instance,
+        bone: sspine_bone,
+        position: sspine_vec2,
+    );
+}
+unsafe extern "C" {
+    pub fn sspine_set_bone_rotation(instance: sspine_instance, bone: sspine_bone, rotation: f32);
+}
+unsafe extern "C" {
+    pub fn sspine_set_bone_scale(instance: sspine_instance, bone: sspine_bone, scale: sspine_vec2);
+}
+unsafe extern "C" {
+    pub fn sspine_set_bone_shear(instance: sspine_instance, bone: sspine_bone, shear: sspine_vec2);
+}
+unsafe extern "C" {
+    pub fn sspine_get_bone_transform(
+        instance: sspine_instance,
+        bone: sspine_bone,
+    ) -> sspine_bone_transform;
+}
+unsafe extern "C" {
+    pub fn sspine_get_bone_position(instance: sspine_instance, bone: sspine_bone) -> sspine_vec2;
+}
+unsafe extern "C" {
+    pub fn sspine_get_bone_rotation(instance: sspine_instance, bone: sspine_bone) -> f32;
+}
+unsafe extern "C" {
+    pub fn sspine_get_bone_scale(instance: sspine_instance, bone: sspine_bone) -> sspine_vec2;
+}
+unsafe extern "C" {
+    pub fn sspine_get_bone_shear(instance: sspine_instance, bone: sspine_bone) -> sspine_vec2;
+}
+unsafe extern "C" {
+    pub fn sspine_get_bone_world_position(
+        instance: sspine_instance,
+        bone: sspine_bone,
+    ) -> sspine_vec2;
+}
+unsafe extern "C" {
+    pub fn sspine_bone_local_to_world(
+        instance: sspine_instance,
+        bone: sspine_bone,
+        local_pos: sspine_vec2,
+    ) -> sspine_vec2;
+}
+unsafe extern "C" {
+    pub fn sspine_bone_world_to_local(
+        instance: sspine_instance,
+        bone: sspine_bone,
+        world_pos: sspine_vec2,
+    ) -> sspine_vec2;
+}
+unsafe extern "C" {
+    pub fn sspine_num_slots(skeleton: sspine_skeleton) -> ::std::os::raw::c_int;
+}
+unsafe extern "C" {
+    pub fn sspine_slot_by_name(
+        skeleton: sspine_skeleton,
+        name: *const ::std::os::raw::c_char,
+    ) -> sspine_slot;
+}
+unsafe extern "C" {
+    pub fn sspine_slot_by_index(
+        skeleton: sspine_skeleton,
+        index: ::std::os::raw::c_int,
+    ) -> sspine_slot;
+}
+unsafe extern "C" {
+    pub fn sspine_slot_valid(slot: sspine_slot) -> bool;
+}
+unsafe extern "C" {
+    pub fn sspine_slot_equal(first: sspine_slot, second: sspine_slot) -> bool;
+}
+unsafe extern "C" {
+    pub fn sspine_get_slot_info(slot: sspine_slot) -> sspine_slot_info;
+}
+unsafe extern "C" {
+    pub fn sspine_set_slot_color(instance: sspine_instance, slot: sspine_slot, color: sspine_color);
+}
+unsafe extern "C" {
+    pub fn sspine_get_slot_color(instance: sspine_instance, slot: sspine_slot) -> sspine_color;
+}
+unsafe extern "C" {
+    pub fn sspine_num_events(skeleton: sspine_skeleton) -> ::std::os::raw::c_int;
+}
+unsafe extern "C" {
+    pub fn sspine_event_by_name(
+        skeleton: sspine_skeleton,
+        name: *const ::std::os::raw::c_char,
+    ) -> sspine_event;
+}
+unsafe extern "C" {
+    pub fn sspine_event_by_index(
+        skeleton: sspine_skeleton,
+        index: ::std::os::raw::c_int,
+    ) -> sspine_event;
+}
+unsafe extern "C" {
+    pub fn sspine_event_valid(event: sspine_event) -> bool;
+}
+unsafe extern "C" {
+    pub fn sspine_event_equal(first: sspine_event, second: sspine_event) -> bool;
+}
+unsafe extern "C" {
+    pub fn sspine_get_event_info(event: sspine_event) -> sspine_event_info;
+}
+unsafe extern "C" {
+    pub fn sspine_num_iktargets(skeleton: sspine_skeleton) -> ::std::os::raw::c_int;
+}
+unsafe extern "C" {
+    pub fn sspine_iktarget_by_name(
+        skeleton: sspine_skeleton,
+        name: *const ::std::os::raw::c_char,
+    ) -> sspine_iktarget;
+}
+unsafe extern "C" {
+    pub fn sspine_iktarget_by_index(
+        skeleton: sspine_skeleton,
+        index: ::std::os::raw::c_int,
+    ) -> sspine_iktarget;
+}
+unsafe extern "C" {
+    pub fn sspine_iktarget_valid(iktarget: sspine_iktarget) -> bool;
+}
+unsafe extern "C" {
+    pub fn sspine_iktarget_equal(first: sspine_iktarget, second: sspine_iktarget) -> bool;
+}
+unsafe extern "C" {
+    pub fn sspine_get_iktarget_info(iktarget: sspine_iktarget) -> sspine_iktarget_info;
+}
+unsafe extern "C" {
+    pub fn sspine_set_iktarget_world_pos(
+        instance: sspine_instance,
+        iktarget: sspine_iktarget,
+        world_pos: sspine_vec2,
+    );
+}
+unsafe extern "C" {
+    pub fn sspine_num_skins(skeleton: sspine_skeleton) -> ::std::os::raw::c_int;
+}
+unsafe extern "C" {
+    pub fn sspine_skin_by_name(
+        skeleton: sspine_skeleton,
+        name: *const ::std::os::raw::c_char,
+    ) -> sspine_skin;
+}
+unsafe extern "C" {
+    pub fn sspine_skin_by_index(
+        skeleton: sspine_skeleton,
+        index: ::std::os::raw::c_int,
+    ) -> sspine_skin;
+}
+unsafe extern "C" {
+    pub fn sspine_skin_valid(skin: sspine_skin) -> bool;
+}
+unsafe extern "C" {
+    pub fn sspine_skin_equal(first: sspine_skin, second: sspine_skin) -> bool;
+}
+unsafe extern "C" {
+    pub fn sspine_get_skin_info(skin: sspine_skin) -> sspine_skin_info;
+}
+unsafe extern "C" {
+    pub fn sspine_set_skin(instance: sspine_instance, skin: sspine_skin);
 }
 pub type __darwin_nl_item = ::std::os::raw::c_int;
 pub type __darwin_wctrans_t = ::std::os::raw::c_int;
@@ -21769,8 +23012,8 @@ unsafe extern "C" {
 unsafe extern "C" {
     pub fn ImVector_ImWchar_UnInit(p: *mut ImVector_ImWchar);
 }
-pub const SIMGUI_INVALID_ID: _bindgen_ty_4 = 0;
-pub type _bindgen_ty_4 = ::std::os::raw::c_uint;
+pub const SIMGUI_INVALID_ID: _bindgen_ty_5 = 0;
+pub type _bindgen_ty_5 = ::std::os::raw::c_uint;
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
 pub struct simgui_image_t {
@@ -22517,12 +23760,12 @@ unsafe extern "C" {
 unsafe extern "C" {
     pub fn sgp_query_desc() -> sgp_desc;
 }
-pub const STBI_default: _bindgen_ty_5 = 0;
-pub const STBI_grey: _bindgen_ty_5 = 1;
-pub const STBI_grey_alpha: _bindgen_ty_5 = 2;
-pub const STBI_rgb: _bindgen_ty_5 = 3;
-pub const STBI_rgb_alpha: _bindgen_ty_5 = 4;
-pub type _bindgen_ty_5 = ::std::os::raw::c_uint;
+pub const STBI_default: _bindgen_ty_6 = 0;
+pub const STBI_grey: _bindgen_ty_6 = 1;
+pub const STBI_grey_alpha: _bindgen_ty_6 = 2;
+pub const STBI_rgb: _bindgen_ty_6 = 3;
+pub const STBI_rgb_alpha: _bindgen_ty_6 = 4;
+pub type _bindgen_ty_6 = ::std::os::raw::c_uint;
 pub const idtype_t_P_ALL: idtype_t = 0;
 pub const idtype_t_P_PID: idtype_t = 1;
 pub const idtype_t_P_PGID: idtype_t = 2;
