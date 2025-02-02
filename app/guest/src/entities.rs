@@ -107,34 +107,7 @@ pub fn create_food() {
     color.set_b(0.);
     color.set_a(1.);
 
-    let mut food_instance = Entity::from_prefab_id(None, food.get_id());
-    println!("Food instance 1 has size: {}", food_instance.has::<Size>());
-    println!("Food instance 1 has food: {}", food_instance.has::<Food>());
-    println!("Food instance 1 has position: {}", food_instance.has::<Position>());
-    println!("Food instance 1 has rect: {}", food_instance.has::<Rect>());
-    println!("Food instance 1 has snake head: {}", food_instance.has::<Head>());
-    println!("Food instance 1, Position X: {}", food_instance.get::<Position>().get_x());
-    println!("Food instance 1, Position Y: {}", food_instance.get::<Position>().get_y());
-    
-
-    let mut food_entity = World::get_singleton::<FoodEntity>();
-    food_entity.set_entity(food_instance.get_id());
-
-    let mut food_instance_2 = Entity::from_prefab_id(None, food.get_id());
-    println!("Food instance 2 has size: {}", food_instance_2.has::<Size>());
-    println!("Food instance 2 has food: {}", food_instance_2.has::<Food>());
-    println!("Food instance 2 has position: {}", food_instance_2.has::<Position>());
-    println!("Food instance 2 has rect: {}", food_instance_2.has::<Rect>());
-    println!("Food instance 2 has snake head: {}", food_instance_2.has::<Head>());
-    let mut pos = food_instance_2.get::<Position>();
-    pos.set_x(777);
-    pos.set_y(777);
-    println!("Food instance 2, Position X: {}", pos.get_x());
-    println!("Food instance 2, Position Y: {}", pos.get_y());
-
-    println!("Food instance 1, Position X: {}", food_instance.get::<Position>().get_x());
-    println!("Food instance 1, Position Y: {}", food_instance.get::<Position>().get_y());
-    
+    let food_instance = Entity::from_prefab_id(None, food.get_id());
     let mut food_entity = World::get_singleton::<FoodEntity>();
     food_entity.set_entity(food_instance.get_id());
 }

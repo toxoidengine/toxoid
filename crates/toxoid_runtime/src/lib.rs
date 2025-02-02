@@ -12,13 +12,15 @@ bindgen!({
         "toxoid-component:component/ecs/callback": CallbackProxy,
         "toxoid-component:component/ecs/iter": IterProxy,
         "toxoid-component:component/ecs/observer": ObserverProxy,
+        "toxoid-component:component/ecs/pipeline": PipelineProxy,
+        "toxoid-component:component/ecs/phase": PhaseProxy,
     },
 });
 
 use std::collections::HashMap;
-use toxoid_api::GuestObserver;
+use toxoid_api::{EcsEntityT, GuestObserver};
 use toxoid_component::component::ecs::PointerT;
-use toxoid_host::bindings::exports::toxoid::engine::ecs::{Guest, GuestCallback, GuestComponent, GuestComponentType, GuestEntity, GuestIter, GuestQuery, GuestSystem};
+use toxoid_host::bindings::exports::toxoid::engine::ecs::{Guest, GuestCallback, GuestComponent, GuestComponentType, GuestEntity, GuestIter, GuestPhase, GuestPipeline, GuestQuery, GuestSystem};
 use toxoid_host::ToxoidApi;
 use wasmtime::component::{bindgen, Component, Linker, Resource, ResourceTable};
 use wasmtime::{Config, Engine, OptLevel, Result, Store};
@@ -58,6 +60,15 @@ pub struct ObserverProxy {
     pub ptr: *mut toxoid_host::Observer
 }
 unsafe impl Send for ObserverProxy {}
+pub struct PipelineProxy {
+    pub ptr: *mut toxoid_host::Pipeline
+}
+unsafe impl Send for PipelineProxy {}
+pub struct PhaseProxy {
+    pub ptr: *mut toxoid_host::Phase
+}
+unsafe impl Send for PhaseProxy {}
+
 // StoreState is the state of the WASM store.
 pub struct StoreState {
     pub ctx: WasiCtx,
@@ -249,6 +260,14 @@ impl toxoid_component::component::ecs::HostSystem for StoreState {
         Box::into_raw(callback);
         id
     }
+
+    fn get_id(&mut self, system: Resource<toxoid_component::component::ecs::System>) -> u64 {
+        let system_proxy = self.table.get(&system).unwrap() as &SystemProxy;
+        let system = unsafe { Box::from_raw(system_proxy.ptr) };
+        let id = system.get_id();
+        Box::into_raw(system);
+        id
+    }
     
     fn callback(&mut self, system: Resource<toxoid_component::component::ecs::System>) -> Resource<CallbackProxy> {
         let system_proxy = self.table.get(&system).unwrap() as &SystemProxy;
@@ -262,6 +281,20 @@ impl toxoid_component::component::ecs::HostSystem for StoreState {
         let system_proxy = self.table.get(&system).unwrap() as &SystemProxy;
         let mut system = unsafe { Box::from_raw(system_proxy.ptr) };
         system.as_mut().build();
+        Box::into_raw(system);
+    }
+
+    fn disable(&mut self, system: Resource<toxoid_component::component::ecs::System>) -> () {
+        let system_proxy = self.table.get(&system).unwrap() as &SystemProxy;
+        let mut system = unsafe { Box::from_raw(system_proxy.ptr) };
+        system.as_mut().disable();
+        Box::into_raw(system);
+    }
+
+    fn enable(&mut self, system: Resource<toxoid_component::component::ecs::System>) -> () {
+        let system_proxy = self.table.get(&system).unwrap() as &SystemProxy;
+        let mut system = unsafe { Box::from_raw(system_proxy.ptr) };
+        system.as_mut().enable();
         Box::into_raw(system);
     }
 
@@ -484,6 +517,20 @@ impl toxoid_component::component::ecs::HostEntity for StoreState {
         let relationships = entity.relationships();
         Box::into_raw(entity);
         relationships.iter().map(|relationship| self.from_id(*relationship)).collect()
+    }
+
+    fn disable(&mut self, entity: Resource<toxoid_component::component::ecs::Entity>) -> () {
+        let entity_proxy = self.table.get(&entity).unwrap() as &EntityProxy;
+        let entity = unsafe { Box::from_raw(entity_proxy.ptr) };
+        entity.disable();
+        Box::into_raw(entity);
+    }
+
+    fn enable(&mut self, entity: Resource<toxoid_component::component::ecs::Entity>) -> () {
+        let entity_proxy = self.table.get(&entity).unwrap() as &EntityProxy;
+        let entity = unsafe { Box::from_raw(entity_proxy.ptr) };
+        entity.enable();
+        Box::into_raw(entity);
     }
 
     fn drop(&mut self, _entity: Resource<toxoid_component::component::ecs::Entity>) -> Result<(), wasmtime::Error> {
@@ -927,7 +974,9 @@ impl toxoid_component::component::ecs::HostQuery for StoreState {
     fn count(&mut self, query: Resource<toxoid_component::component::ecs::Query>) -> i32 {
         let query_proxy = self.table.get(&query).unwrap() as &QueryProxy;
         let query = unsafe { Box::from_raw(query_proxy.ptr) };
-        query.count()
+        let count = query.count();
+        Box::into_raw(query);
+        count
     }
 
     fn entities(&mut self, query: Resource<toxoid_component::component::ecs::Query>) -> Vec<Resource<EntityProxy>> {
@@ -954,10 +1003,104 @@ impl toxoid_component::component::ecs::HostQuery for StoreState {
     fn components(&mut self, query: Resource<toxoid_component::component::ecs::Query>, index: i8) -> Vec<PointerT> {
         let query_proxy = self.table.get(&query).unwrap() as &QueryProxy;
         let query = unsafe { Box::from_raw(query_proxy.ptr) };
-        query.components(index)
+        let components = query.components(index);
+        Box::into_raw(query);
+        components
     }
 
     fn drop(&mut self, _query: Resource<toxoid_component::component::ecs::Query>) -> Result<(), wasmtime::Error> {
+        Ok(())
+    }
+}
+
+impl toxoid_component::component::ecs::HostPhase for StoreState {
+    fn new(&mut self, name: String) -> Resource<toxoid_component::component::ecs::Phase> {
+        let phase = toxoid_host::Phase::new(name);
+        let ptr = Box::into_raw(Box::new(phase));
+        let phase_resource = self.table.push(PhaseProxy { ptr }).unwrap();
+        phase_resource
+    }
+
+    fn depends_on(&mut self, phase: Resource<toxoid_component::component::ecs::Phase>, dependency: toxoid_component::component::ecs::Phases) -> () {
+        let phase_proxy = self.table.get(&phase).unwrap() as &PhaseProxy;
+        let phase = unsafe { Box::from_raw(phase_proxy.ptr) };
+        let dependency = match dependency {
+            toxoid_component::component::ecs::Phases::OnStart => toxoid_host::bindings::exports::toxoid::engine::ecs::Phases::OnStart,
+            toxoid_component::component::ecs::Phases::OnLoad => toxoid_host::bindings::exports::toxoid::engine::ecs::Phases::OnLoad,
+            toxoid_component::component::ecs::Phases::PostLoad => toxoid_host::bindings::exports::toxoid::engine::ecs::Phases::PostLoad,
+            toxoid_component::component::ecs::Phases::PreUpdate => toxoid_host::bindings::exports::toxoid::engine::ecs::Phases::PreUpdate,
+            toxoid_component::component::ecs::Phases::OnUpdate => toxoid_host::bindings::exports::toxoid::engine::ecs::Phases::OnUpdate,
+            toxoid_component::component::ecs::Phases::OnValidate => toxoid_host::bindings::exports::toxoid::engine::ecs::Phases::OnValidate,
+            toxoid_component::component::ecs::Phases::PostUpdate => toxoid_host::bindings::exports::toxoid::engine::ecs::Phases::PostUpdate,
+            toxoid_component::component::ecs::Phases::PreStore => toxoid_host::bindings::exports::toxoid::engine::ecs::Phases::PreStore,
+            toxoid_component::component::ecs::Phases::OnStore => toxoid_host::bindings::exports::toxoid::engine::ecs::Phases::OnStore,
+            toxoid_component::component::ecs::Phases::Custom(entity) => toxoid_host::bindings::exports::toxoid::engine::ecs::Phases::Custom(entity),
+        };
+        phase.depends_on(dependency);
+        Box::into_raw(phase);
+    }
+
+    fn get_id(&mut self, phase: Resource<toxoid_component::component::ecs::Phase>) -> u64 {
+        let phase_proxy = self.table.get(&phase).unwrap() as &PhaseProxy;
+        let phase = unsafe { Box::from_raw(phase_proxy.ptr) };
+        let id = phase.get_id();
+        Box::into_raw(phase);
+        id
+    }
+
+    fn drop(&mut self, _phase: Resource<toxoid_component::component::ecs::Phase>) -> Result<(), wasmtime::Error> {
+        Ok(())
+    }
+}
+
+impl toxoid_component::component::ecs::HostPipeline for StoreState {
+    fn new(&mut self, desc: toxoid_component::component::ecs::PipelineDesc) -> Resource<PipelineProxy> {
+        let query_desc = toxoid_host::bindings::exports::toxoid::engine::ecs::QueryDesc { expr: desc.query_desc.expr };
+        let pipeline = toxoid_host::Pipeline::new(toxoid_host::bindings::exports::toxoid::engine::ecs::PipelineDesc { 
+            name: desc.name,
+            query_desc: query_desc,
+            phases: desc.phases
+        });
+        let ptr = Box::into_raw(Box::new(pipeline));
+        let pipeline_resource = self.table.push(PipelineProxy { ptr }).unwrap();
+        pipeline_resource
+    }
+
+    fn build(&mut self, pipeline: Resource<toxoid_component::component::ecs::Pipeline>) -> () {
+        let pipeline_proxy = self.table.get(&pipeline).unwrap() as &PipelineProxy;
+        let pipeline = unsafe { Box::from_raw(pipeline_proxy.ptr) };
+        pipeline.build();
+        Box::into_raw(pipeline);
+    }
+
+    fn add_phase(&mut self, pipeline: Resource<toxoid_component::component::ecs::Pipeline>, phase: EcsEntityT) -> () {
+        let pipeline_proxy = self.table.get(&pipeline).unwrap() as &PipelineProxy;
+        let pipeline = unsafe { Box::from_raw(pipeline_proxy.ptr) };
+        pipeline.add_phase(phase);
+        Box::into_raw(pipeline);
+    }
+
+    fn get_id(&mut self, pipeline: Resource<toxoid_component::component::ecs::Pipeline>) -> u64 {
+        let pipeline_proxy = self.table.get(&pipeline).unwrap() as &PipelineProxy;
+        let pipeline = unsafe { Box::from_raw(pipeline_proxy.ptr) };
+        pipeline.get_id()
+    }
+
+    fn disable(&mut self, pipeline: Resource<toxoid_component::component::ecs::Pipeline>) -> () {
+        let pipeline_proxy = self.table.get(&pipeline).unwrap() as &PipelineProxy;
+        let pipeline = unsafe { Box::from_raw(pipeline_proxy.ptr) };
+        pipeline.disable();
+        Box::into_raw(pipeline);
+    }
+
+    fn enable(&mut self, pipeline: Resource<toxoid_component::component::ecs::Pipeline>) -> () {
+        let pipeline_proxy = self.table.get(&pipeline).unwrap() as &PipelineProxy;
+        let pipeline = unsafe { Box::from_raw(pipeline_proxy.ptr) };
+        pipeline.enable();
+        Box::into_raw(pipeline);
+    }
+
+    fn drop(&mut self, _pipeline: Resource<toxoid_component::component::ecs::Pipeline>) -> Result<(), wasmtime::Error> {
         Ok(())
     }
 }
