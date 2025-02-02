@@ -9,7 +9,6 @@ pub trait Guest {
 }
 #[doc(hidden)]
 #[macro_export]
-#[macro_export]
 macro_rules! __export_world_toxoid_component_world_cabi {
     ($ty:ident with_types_in $($path_to_types:tt)*) => {
         const _ : () = { #[export_name = "init"] unsafe extern "C" fn export_init() {
@@ -2903,6 +2902,25 @@ pub mod toxoid_component {
             }
             impl System {
                 #[allow(unused_unsafe, clippy::all)]
+                pub fn get_id(&self) -> EcsEntityT {
+                    unsafe {
+                        #[cfg(target_arch = "wasm32")]
+                        #[link(wasm_import_module = "toxoid-component:component/ecs")]
+                        extern "C" {
+                            #[link_name = "[method]system.get-id"]
+                            fn wit_import(_: i32) -> i64;
+                        }
+                        #[cfg(not(target_arch = "wasm32"))]
+                        fn wit_import(_: i32) -> i64 {
+                            unreachable!()
+                        }
+                        let ret = wit_import((self).handle() as i32);
+                        ret as u64
+                    }
+                }
+            }
+            impl System {
+                #[allow(unused_unsafe, clippy::all)]
                 pub fn build(&self) {
                     unsafe {
                         #[cfg(target_arch = "wasm32")]
@@ -3479,7 +3497,6 @@ pub mod exports {
                 }
                 #[doc(hidden)]
                 #[macro_export]
-#[macro_export]
 macro_rules! __export_toxoid_component_component_callbacks_cabi {
                     ($ty:ident with_types_in $($path_to_types:tt)*) => {
                         const _ : () = { #[export_name =
@@ -3755,9 +3772,9 @@ pub use __export_toxoid_component_world_impl as export;
 #[cfg(target_arch = "wasm32")]
 #[link_section = "component-type:wit-bindgen:0.35.0:toxoid-component:component:toxoid-component-world:encoded world"]
 #[doc(hidden)]
-pub static __WIT_BINDGEN_COMPONENT_TYPE: [u8; 6590] = *b"\
-\0asm\x0d\0\x01\0\0\x19\x16wit-component-encoding\x04\0\x07\xb12\x01A\x02\x01A\x07\
-\x01B\x90\x02\x01w\x04\0\x0cecs-entity-t\x03\0\0\x01w\x04\0\x09pointer-t\x03\0\x02\
+pub static __WIT_BINDGEN_COMPONENT_TYPE: [u8; 6629] = *b"\
+\0asm\x0d\0\x01\0\0\x19\x16wit-component-encoding\x04\0\x07\xd82\x01A\x02\x01A\x07\
+\x01B\x92\x02\x01w\x04\0\x0cecs-entity-t\x03\0\0\x01w\x04\0\x09pointer-t\x03\0\x02\
 \x01q\x03\x04is-a\0\0\x08child-of\0\0\x06custom\x01\x01\0\x04\0\x0crelationship\x03\
 \0\x04\x01q\x0a\x08on-start\0\0\x07on-load\0\0\x09post-load\0\0\x0apre-update\0\0\
 \x09on-update\0\0\x0bon-validate\0\0\x0bpost-update\0\0\x09pre-store\0\0\x08on-s\
@@ -3861,27 +3878,28 @@ t\x01\x84\x01\x01@\x01\x04self\x83\x01\0z\x04\0\x12[method]iter.count\x01\x85\x0
 \x01@\x02\x04self\x89\x01\x04iter\xfb\0\x01\0\x04\0\x14[method]callback.run\x01\x8a\
 \x01\x01@\x01\x04self\x89\x01\0\x03\x04\0\x1a[method]callback.cb-handle\x01\x8b\x01\
 \x01i!\x01@\x01\x04desc\x20\0\x8c\x01\x04\0\x13[constructor]system\x01\x8d\x01\x01\
-h!\x01@\x01\x04self\x8e\x01\x01\0\x04\0\x14[method]system.build\x01\x8f\x01\x01@\
-\x01\x04self\x8e\x01\0\x1e\x04\0\x17[method]system.callback\x01\x90\x01\x04\0\x16\
-[method]system.disable\x01\x8f\x01\x04\0\x15[method]system.enable\x01\x8f\x01\x01\
-i\"\x01@\x01\x04names\0\x91\x01\x04\0\x12[constructor]phase\x01\x92\x01\x01h\"\x01\
-@\x02\x04self\x93\x01\x05phase\x07\x01\0\x04\0\x18[method]phase.depends-on\x01\x94\
-\x01\x01@\x01\x04self\x93\x01\0\x01\x04\0\x14[method]phase.get-id\x01\x95\x01\x01\
-i%\x01@\x01\x04desc$\0\x96\x01\x04\0\x15[constructor]pipeline\x01\x97\x01\x01h%\x01\
-@\x01\x04self\x98\x01\x01\0\x04\0\x16[method]pipeline.build\x01\x99\x01\x01@\x02\
-\x04self\x98\x01\x05phase\x01\x01\0\x04\0\x1a[method]pipeline.add-phase\x01\x9a\x01\
-\x01@\x01\x04self\x98\x01\0\x01\x04\0\x17[method]pipeline.get-id\x01\x9b\x01\x04\
-\0\x18[method]pipeline.disable\x01\x99\x01\x04\0\x17[method]pipeline.enable\x01\x99\
-\x01\x01i)\x01@\x01\x04desc(\0\x9c\x01\x04\0\x15[constructor]observer\x01\x9d\x01\
-\x01h)\x01@\x01\x04self\x9e\x01\x01\0\x04\0\x16[method]observer.build\x01\x9f\x01\
-\x01@\x01\x04self\x9e\x01\0\x1e\x04\0\x19[method]observer.callback\x01\xa0\x01\x01\
-@\x01\x09component\x01\x01\0\x04\0\x0dadd-singleton\x01\xa1\x01\x01@\x01\x09comp\
-onent\x01\0.\x04\0\x0dget-singleton\x01\xa2\x01\x04\0\x10remove-singleton\x01\xa1\
-\x01\x01@\x01\x06entity\x01\x01\0\x04\0\x0aadd-entity\x01\xa3\x01\x04\0\x0dremov\
-e-entity\x01\xa3\x01\x01@\x01\x04names\0\x7f\x04\0\x10has-entity-named\x01\xa4\x01\
-\x01@\x01\x0ecomponent-names\0\x01\x04\0\x10get-component-id\x01\xa5\x01\x03\0\x1e\
-toxoid-component:component/ecs\x05\0\x01@\0\x01\0\x04\0\x04init\x01\x01\x02\x03\0\
-\0\x04iter\x01B\x05\x02\x03\x02\x01\x02\x04\0\x04iter\x03\0\0\x01i\x01\x01@\x02\x04\
+h!\x01@\x01\x04self\x8e\x01\0\x01\x04\0\x15[method]system.get-id\x01\x8f\x01\x01\
+@\x01\x04self\x8e\x01\x01\0\x04\0\x14[method]system.build\x01\x90\x01\x01@\x01\x04\
+self\x8e\x01\0\x1e\x04\0\x17[method]system.callback\x01\x91\x01\x04\0\x16[method\
+]system.disable\x01\x90\x01\x04\0\x15[method]system.enable\x01\x90\x01\x01i\"\x01\
+@\x01\x04names\0\x92\x01\x04\0\x12[constructor]phase\x01\x93\x01\x01h\"\x01@\x02\
+\x04self\x94\x01\x05phase\x07\x01\0\x04\0\x18[method]phase.depends-on\x01\x95\x01\
+\x01@\x01\x04self\x94\x01\0\x01\x04\0\x14[method]phase.get-id\x01\x96\x01\x01i%\x01\
+@\x01\x04desc$\0\x97\x01\x04\0\x15[constructor]pipeline\x01\x98\x01\x01h%\x01@\x01\
+\x04self\x99\x01\x01\0\x04\0\x16[method]pipeline.build\x01\x9a\x01\x01@\x02\x04s\
+elf\x99\x01\x05phase\x01\x01\0\x04\0\x1a[method]pipeline.add-phase\x01\x9b\x01\x01\
+@\x01\x04self\x99\x01\0\x01\x04\0\x17[method]pipeline.get-id\x01\x9c\x01\x04\0\x18\
+[method]pipeline.disable\x01\x9a\x01\x04\0\x17[method]pipeline.enable\x01\x9a\x01\
+\x01i)\x01@\x01\x04desc(\0\x9d\x01\x04\0\x15[constructor]observer\x01\x9e\x01\x01\
+h)\x01@\x01\x04self\x9f\x01\x01\0\x04\0\x16[method]observer.build\x01\xa0\x01\x01\
+@\x01\x04self\x9f\x01\0\x1e\x04\0\x19[method]observer.callback\x01\xa1\x01\x01@\x01\
+\x09component\x01\x01\0\x04\0\x0dadd-singleton\x01\xa2\x01\x01@\x01\x09component\
+\x01\0.\x04\0\x0dget-singleton\x01\xa3\x01\x04\0\x10remove-singleton\x01\xa2\x01\
+\x01@\x01\x06entity\x01\x01\0\x04\0\x0aadd-entity\x01\xa4\x01\x04\0\x0dremove-en\
+tity\x01\xa4\x01\x01@\x01\x04names\0\x7f\x04\0\x10has-entity-named\x01\xa5\x01\x01\
+@\x01\x0ecomponent-names\0\x01\x04\0\x10get-component-id\x01\xa6\x01\x03\0\x1eto\
+xoid-component:component/ecs\x05\0\x01@\0\x01\0\x04\0\x04init\x01\x01\x02\x03\0\0\
+\x04iter\x01B\x05\x02\x03\x02\x01\x02\x04\0\x04iter\x03\0\0\x01i\x01\x01@\x02\x04\
 iter\x02\x06handlew\x01\0\x04\0\x03run\x01\x03\x04\0$toxoid-component:component/\
 callbacks\x05\x03\x04\01toxoid-component:component/toxoid-component-world\x04\0\x0b\
 \x1c\x01\0\x16toxoid-component-world\x03\0\0\0G\x09producers\x01\x0cprocessed-by\

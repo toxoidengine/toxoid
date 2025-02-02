@@ -260,6 +260,14 @@ impl toxoid_component::component::ecs::HostSystem for StoreState {
         Box::into_raw(callback);
         id
     }
+
+    fn get_id(&mut self, system: Resource<toxoid_component::component::ecs::System>) -> u64 {
+        let system_proxy = self.table.get(&system).unwrap() as &SystemProxy;
+        let system = unsafe { Box::from_raw(system_proxy.ptr) };
+        let id = system.get_id();
+        Box::into_raw(system);
+        id
+    }
     
     fn callback(&mut self, system: Resource<toxoid_component::component::ecs::System>) -> Resource<CallbackProxy> {
         let system_proxy = self.table.get(&system).unwrap() as &SystemProxy;

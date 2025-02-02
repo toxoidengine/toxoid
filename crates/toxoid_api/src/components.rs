@@ -8,6 +8,9 @@ component! {
         left: bool,
         right: bool, 
     },
+    RenderSystems {
+        entity: u64
+    },
 
     // -- Components --
     // Space
@@ -52,7 +55,7 @@ component! {
 pub fn init() {
     // Register singletons
     KeyboardInput::register();
-
+    RenderSystems::register();
     // Register components
     Position::register();
     Size::register();
@@ -68,4 +71,5 @@ pub fn init() {
     
     // Add singletons
     World::add_singleton::<KeyboardInput>();
+    World::add_singleton::<RenderSystems>();
 }

@@ -192,6 +192,7 @@ interface ecs {
 
     resource system {
         constructor(desc: system-desc);
+        get-id: func() -> ecs-entity-t;
         build: func();
         callback: func() -> callback;
         disable: func();
