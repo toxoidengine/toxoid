@@ -47,31 +47,10 @@ pub unsafe extern "C" fn query_trampoline(iter: *mut toxoid_host::ecs_iter_t) {
     }
 }
 
-#[components(Color, Size, Position)]
-pub fn test_system(iter: &Iter) {
-    for (color, size, pos) in components {
-        println!("Color: {:?}, Size: {:?}, Position: {:?}", color.get_a(), size.get_width(), pos.get_y());  
-        // println!("Color: {:?}, Size: {:?}, Position: {:?}", color, size, pos);
-    }
-}
-
 pub fn init() {    
     unsafe {
         toxoid_host::QUERY_TRAMPOLINE = Some(query_trampoline);
     }
     render::init();
     fetch::init();
-    System::dsl("Color, Size, Position", None, test_system).build();
-    
-    // System::dsl("", None, |_iter| {
-    //     Query::dsl_each("Position", |query| {
-    //         while query.next() {
-    //             let positions = query.components::<Position>(0);
-    //             positions.iter().for_each(|position| {
-    //                 println!("Position X: {:?}, Y: {:?}", position.get_x(), position.get_y());
-    //             });
-    //         }
-    //     });
-    // })
-    //     .build();
 }
