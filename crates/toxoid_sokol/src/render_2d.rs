@@ -25,12 +25,12 @@ pub struct SokolRenderTarget {
     pub pass: sg::Pass,
 }
 
-// pub struct SpineOffscreenCtx {
-//     pub ctx: sspine_context,
-//     pub img: sg::Image,
-//     pub attachments: sg::Attachments,
-//     pub pass_action: sg::PassAction,
-// }
+pub struct SpineOffscreenCtx {
+    pub ctx: sspine_context,
+    pub img: sg::Image,
+    pub attachments: sg::Attachments,
+    pub pass_action: sg::PassAction,
+}
 
 fn filter_from_c_int(value: u32) -> Option<sg::Filter> {
     match value {
@@ -131,28 +131,28 @@ impl SokolRenderer2D {
         sg::init_sampler(sg::Sampler { id: sgsampler.id }, &sampler_desc);
     }
 
-    // fn draw_animation_to_render_target(render_target: &Box<dyn RenderTarget>) {
-    //     // Get the size of the window
-    //     let (window_width, window_height) = (sapp::width(), sapp::height());
-    //     // The actual sokol-gfx render pass, here we also don't need to care about
-    //     // if the atlas image have already been loaded yet, if the image handles
-    //     // recorded by sokol-spine for rendering are not yet valid, rendering
-    //     // operations will silently be skipped.
-    //     // Render Spine
-    //     let layer_transform = sspine_layer_transform {
-    //         size: sspine_vec2 { 
-    //             x: window_width as f32, 
-    //             y: window_height as f32 
-    //         },
-    //         origin: sspine_vec2 { 
-    //             x: 0., 
-    //             y: 0. 
-    //         }
-    //     };
-    //     unsafe { 
-    //         sspine_draw_layer(0, &layer_transform); 
-    //     }
-    // }
+    fn draw_animation_to_render_target(render_target: &Box<dyn RenderTarget>) {
+        // Get the size of the window
+        let (window_width, window_height) = (sapp::width(), sapp::height());
+        // The actual sokol-gfx render pass, here we also don't need to care about
+        // if the atlas image have already been loaded yet, if the image handles
+        // recorded by sokol-spine for rendering are not yet valid, rendering
+        // operations will silently be skipped.
+        // Render Spine
+        let layer_transform = sspine_layer_transform {
+            size: sspine_vec2 { 
+                x: window_width as f32, 
+                y: window_height as f32 
+            },
+            origin: sspine_vec2 { 
+                x: 0., 
+                y: 0. 
+            }
+        };
+        unsafe { 
+            sspine_draw_layer(0, &layer_transform); 
+        }
+    }
 }
 
 impl Renderer2D for SokolRenderer2D {
