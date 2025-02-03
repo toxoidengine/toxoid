@@ -757,6 +757,9 @@ pub fn fetch(path: &str, data_type: DataType, user_data: Option<u64>) {
     let mut fetch_request = entity.get::<FetchRequest>();
     fetch_request.set_path(path.to_string());
     fetch_request.set_data_type(data_type as u8);
+    if let Some(user_data) = user_data {
+        fetch_request.set_user_data(user_data);
+    }
     entity.add::<Loading>();
 }
 

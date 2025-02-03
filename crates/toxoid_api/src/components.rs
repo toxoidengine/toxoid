@@ -96,6 +96,7 @@ pub fn init() {
     // Rendering
     Color::register();
     Sprite::register();
+    Image::register();
     // Fetch
     FetchRequest::register();
     // Animation
