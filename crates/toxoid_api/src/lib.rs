@@ -751,13 +751,22 @@ pub enum DataType {
 }
 
 // Fetch assets / resources from the asset server or local file system
-pub fn fetch(path: &str, data_type: DataType) {
+pub fn fetch(path: &str, data_type: DataType, user_data: Option<u64>) {
     let mut entity = Entity::new(None);
     entity.add::<FetchRequest>();
     let mut fetch_request = entity.get::<FetchRequest>();
     fetch_request.set_path(path.to_string());
     fetch_request.set_data_type(data_type as u8);
     entity.add::<Loading>();
+}
+
+pub fn load_sprite(path: &str) {
+    // let mut entity = Entity::new(None);
+    // entity.add::<Loading>();
+    // entity.add::<Sprite>();
+    // entity.add::<Size>();
+    // fetch(path, DataType::Sprite, Some(entity.get_id()));
+    fetch(path, DataType::Sprite, None);
 }
 
 pub fn load_animation(atlas_filename: &str, skeleton_filename: &str) {
@@ -775,6 +784,6 @@ pub fn load_animation(atlas_filename: &str, skeleton_filename: &str) {
     let mut skeleton = entity.get::<Skeleton>();
     skeleton.set_filename(skeleton_filename.to_string());
 
-    fetch(atlas_filename, DataType::BoneAnimationAtlas);
-    fetch(skeleton_filename, DataType::BoneAnimationSkeleton);
+    fetch(atlas_filename, DataType::BoneAnimationAtlas, Some(entity.get_id()));
+    fetch(skeleton_filename, DataType::BoneAnimationSkeleton, Some(entity.get_id()));
 }

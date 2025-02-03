@@ -10,6 +10,9 @@ pub fn init() {
     entities::init();
     systems::init();
 
-    use toxoid_api::{fetch, DataType};
-    fetch("sprite.png", DataType::Sprite);
+    // Load sprite
+    toxoid_api::load_sprite("assets/sprite.png");
+
+    // Load animation
+    toxoid_api::load_animation("assets/animations/player.atlas", "assets/animations/player.json");
 }

@@ -1,4 +1,4 @@
 /target
 **/*.wasm
 guest.wasm
-sprite.png
+app/host/assets/*

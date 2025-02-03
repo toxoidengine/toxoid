@@ -36,21 +36,20 @@ component! {
     FetchRequest {
         path: String,
         data: Vec::<u8>,
-        data_type: u8
+        data_type: u8,
+        user_data: u64
     },
     // Animation
     Atlas {
         atlas: u64,
         filename: String,
         data: Vec::<u8>,
-        data_size: i32,
         loaded: bool,
     },
     Skeleton {
         skeleton: u64,
         filename: String,
         data: Vec::<u8>,
-        data_size: i32,
         loaded: bool,
     },
     Images {
@@ -60,6 +59,11 @@ component! {
     BoneAnimation {
         animation_state: String,
         animation: String
+    },
+    SpineInstance {
+        instance: u64,
+        ctx: u64,
+        instantiated: bool
     },
 
     // -- Tags --
@@ -96,6 +100,7 @@ pub fn init() {
     Skeleton::register();
     Images::register();
     BoneAnimation::register();
+    SpineInstance::register();
 
     // Register tags
     // Rendering
