@@ -47,7 +47,8 @@ fn main() {
             .join("src")
             .join("spine");
 
-        let spine_files: Vec<PathBuf> = std::fs::read_dir(lib_c_spine)
+        // Add Json.c to the list of spine files
+        let mut spine_files: Vec<PathBuf> = std::fs::read_dir(lib_c_spine.clone())
             .expect("Unable to list spine files")
             .filter_map(|entry| {
                 println!("toxoid_sokol build.rs spine file entry: {:?}", entry);
@@ -57,6 +58,8 @@ fn main() {
                 })
             })
             .collect();
+        // Add Json.c explicitly
+        spine_files.push(lib_c_spine.join("Json.c"));
         spine_files
     } else {
         eprintln!("Skipping spine files");
