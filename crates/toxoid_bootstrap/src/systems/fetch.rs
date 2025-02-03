@@ -65,7 +65,6 @@ pub fn bone_animation_loaded(entity: &mut Entity) {
     let mut atlas = entity.get::<Atlas>();
     let data = atlas.get_data();
     let size = data.len() as usize;
-    println!("Atlas data: {:?}", data.len());
     
     // Convert Vec into Box to keep the data alive
     let data_box = data.into_boxed_slice();
@@ -92,7 +91,7 @@ pub fn bone_animation_loaded(entity: &mut Entity) {
     let data_ptr = Box::into_raw(data_box);
     
     skeleton_desc.json_data = data_ptr as *const i8;
-    skeleton_desc.prescale = 1.0;
+    skeleton_desc.prescale = 5.0;
     skeleton_desc.anim_default_mix = 0.2;
 
     let spine_skeleton = unsafe { sspine_make_skeleton(&skeleton_desc) };
@@ -205,7 +204,6 @@ pub fn init() {
                 d if d == DataType::BoneAnimationAtlas as u8 => {
                     let mut animation_entity = Entity::from_id(fetch_request.get_user_data());
                     let mut atlas = animation_entity.get::<Atlas>();
-                    println!("Atlas data first: {:?}", data.len());
                     atlas.set_data(data);
                     atlas.set_loaded(true);
                     if animation_entity.get::<Skeleton>().get_loaded() {
@@ -215,7 +213,6 @@ pub fn init() {
                 d if d == DataType::BoneAnimationSkeleton as u8 => {
                     let mut animation_entity = Entity::from_id(fetch_request.get_user_data());
                     let mut skeleton = animation_entity.get::<Skeleton>();
-                    println!("Skeleton data first: {:?}", data.len());
                     skeleton.set_data(data);
                     skeleton.set_loaded(true);
                     if animation_entity.get::<Atlas>().get_loaded() {
