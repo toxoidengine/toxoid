@@ -32,6 +32,9 @@ component! {
     Sprite {
         sprite: u64
     },
+    Image {
+        info: u64
+    },
     // Fetch
     FetchRequest {
         path: String,

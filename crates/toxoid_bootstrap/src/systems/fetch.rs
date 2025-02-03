@@ -103,6 +103,7 @@ pub fn bone_animation_loaded(entity: &mut Entity) {
     instance_component.set_ctx(Box::into_raw(Box::new(ctx)) as u64);
     
     // configure a simple animation sequence
+
     unsafe { sspine_add_animation(instance, sspine_anim_by_name(spine_skeleton, c_string("idle_down")), 0, true, 0.) };
     unsafe { sspine_set_animation(instance, sspine_anim_by_name(spine_skeleton, c_string("idle_down")), 0, true) };
 
@@ -126,7 +127,12 @@ pub fn bone_animation_loaded(entity: &mut Entity) {
         let file_path = format!("assets/animations/{}", filename_c_str.to_str().unwrap());
         let file_path = file_path.as_str();
         println!("Fetching image: {}", file_path);
-        // fetch(file_path, image_load_callback, Box::into_raw(Box::new(img_info)) as *mut u64);
+        let mut image_entity = Entity::new(None);
+        image_entity.child_of_id(entity.get_id());
+        image_entity.add::<Image>();
+        let mut image = image_entity.get::<Image>();
+        image.set_info(Box::into_raw(Box::new(img_info)) as u64);
+        fetch(file_path, DataType::Image, Some(image_entity.get_id()));
     }
 
     entity.add::<Blittable>();
@@ -150,6 +156,29 @@ pub fn init() {
             let data_type = fetch_request.get_data_type();
             let size = data.len() as usize;
             match data_type as u8 {
+                d if d == DataType::Image as u8 => {
+                    // Get image data
+                    // let mut image_entity = Entity::from_id(fetch_request.get_user_data());
+                    // let image = image_entity.get::<Image>();
+                    // let img_info = image.get_info();
+                    // let img_info = unsafe { Box::from_raw(img_info as *mut sspine_image_info) };
+                    // let filename = unsafe { core::ffi::CStr::from_ptr(img_info.filename.cstr.as_ptr()) };
+                    // println!("Image filename: {}", filename.to_str().unwrap());
+                    // let data_ptr = data.as_ptr() as *const u8;
+                    // Box::into_raw(img_info);
+                    // // Initialize sokol-gfx image object
+                    // SokolRenderer2D::init_image(img_info.sgimage, data_ptr, size);
+                    // // Initialize sokol-gfx sampler object
+                    // SokolRenderer2D::init_sampler(
+                    //     img_info.sgsampler,
+                    //     img_info.min_filter,
+                    //     img_info.mag_filter,
+                    //     img_info.mipmap_filter,
+                    //     img_info.wrap_u,
+                    //     img_info.wrap_v,
+                    //     &img_info.filename.cstr as *const _ as *const i8
+                    // );
+                },
                 d if d == DataType::Sprite as u8 => {
                     // let data = data.as_slice().as_ptr();
                     // let sokol_sprite = SokolRenderer2D::create_sprite(data, size);
