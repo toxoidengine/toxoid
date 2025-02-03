@@ -2,3 +2,4 @@
 **/*.wasm
 guest.wasm
 app/host/assets/*
+assets/
