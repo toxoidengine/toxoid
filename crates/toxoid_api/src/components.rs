@@ -32,16 +32,47 @@ component! {
     Sprite {
         sprite: u64
     },
+    Image {
+        info: u64
+    },
     // Fetch
     FetchRequest {
         path: String,
         data: Vec::<u8>,
-        data_type: u8
+        data_type: u8,
+        user_data: u64
+    },
+    // Animation
+    Atlas {
+        atlas: u64,
+        filename: String,
+        data: Vec::<u8>,
+        loaded: bool,
+    },
+    Skeleton {
+        skeleton: u64,
+        filename: String,
+        data: Vec::<u8>,
+        loaded: bool,
+    },
+    Images {
+        images: Vec::<u64>,
+        loaded: bool,
+    },
+    BoneAnimation {
+        animation_state: String,
+        animation: String
+    },
+    SpineInstance {
+        instance: u64,
+        ctx: u64,
+        instantiated: bool
     },
 
     // -- Tags --
     // Rendering
     Rect {},
+    Blittable {},
     Renderable {},
     // UI
     Window {},
@@ -49,7 +80,9 @@ component! {
     Button {},
     // General
     Loading {},
-    Loaded {}
+    Loaded {},
+    Connected {},
+    Disconnected {},
 }
 
 pub fn init() {
@@ -57,18 +90,37 @@ pub fn init() {
     KeyboardInput::register();
     RenderSystems::register();
     // Register components
+    // Space
     Position::register();
     Size::register();
+    // Rendering
     Color::register();
     Sprite::register();
+    Image::register();
+    // Fetch
     FetchRequest::register();
-    
+    // Animation
+    Atlas::register();
+    Skeleton::register();
+    Images::register();
+    BoneAnimation::register();
+    SpineInstance::register();
+
     // Register tags
+    // Rendering
     Rect::register();
+    Blittable::register();
     Renderable::register();
+    // UI
+    Window::register();
+    Text::register();
+    Button::register();
+    // General
     Loading::register();
     Loaded::register();
-    
+    Connected::register();
+    Disconnected::register();
+
     // Add singletons
     World::add_singleton::<KeyboardInput>();
     World::add_singleton::<RenderSystems>();
