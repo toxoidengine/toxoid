@@ -737,11 +737,44 @@ pub fn get_component_id(component_name: &str) -> ecs_entity_t {
     return ToxoidApi::get_component_id(component_name.to_string());
 }
 
+#[repr(u8)]
+pub enum DataType {
+    Raw,
+    Image,
+    Sprite,
+    BoneAnimationAtlas,
+    BoneAnimationSkeleton,
+    Worldmap,
+    Cell,
+    Audio,
+    Font
+}
+
 // Fetch assets / resources from the asset server or local file system
-pub fn fetch(path: &str) {
+pub fn fetch(path: &str, data_type: DataType) {
     let mut entity = Entity::new(None);
     entity.add::<FetchRequest>();
     let mut fetch_request = entity.get::<FetchRequest>();
     fetch_request.set_path(path.to_string());
+    fetch_request.set_data_type(data_type as u8);
     entity.add::<Loading>();
+}
+
+pub fn load_animation(atlas_filename: &str, skeleton_filename: &str) {
+    let mut entity = Entity::new(None);
+    entity.add::<Loading>();
+    entity.add::<Skeleton>();
+    entity.add::<BoneAnimation>();
+    entity.add::<Atlas>();
+    entity.add::<Images>();
+    entity.add::<Position>();
+    entity.add::<Size>();
+
+    let mut atlas = entity.get::<Atlas>();
+    atlas.set_filename(atlas_filename.to_string());
+    let mut skeleton = entity.get::<Skeleton>();
+    skeleton.set_filename(skeleton_filename.to_string());
+
+    fetch(atlas_filename, DataType::BoneAnimationAtlas);
+    fetch(skeleton_filename, DataType::BoneAnimationSkeleton);
 }

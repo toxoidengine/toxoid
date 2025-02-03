@@ -2,17 +2,6 @@ use toxoid_api::*;
 
 component! {
     // Components
-    Direction {
-        direction: u8
-    },
-    Stats {
-        score: u32,
-        high_score: u32,
-        tail_length: u32
-    },
-    Tails {
-        max_length: u32
-    },
     // Tags
     Head {},
     Tail {},
@@ -21,19 +10,36 @@ component! {
     // Singleton
     FoodEntity {
         entity: u64
-    }
+    },
+    Direction {
+        direction: u8
+    },
+    Tails {
+        max_length: u32
+    },
+    Stats {
+        score: u32,
+        high_score: u32,
+        tail_length: u32
+    },
 }
 
 pub fn init() {
-    Direction::register();
-    Stats::register();
-    Tails::register();
+    // Tags
+    Head::register();
     Tail::register();
     Player::register();
     Food::register();
-    Head::register();
+
+    // Singletons
     FoodEntity::register();
+    Direction::register();
+    Tails::register();
+    Stats::register();
+
+    // Add singletons
     World::add_singleton::<FoodEntity>();
     World::add_singleton::<Direction>();
     World::add_singleton::<Tails>();
+    World::add_singleton::<Stats>();
 }

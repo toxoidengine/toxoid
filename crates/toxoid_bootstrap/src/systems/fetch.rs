@@ -2,15 +2,7 @@ use toxoid_api::*;
 use toxoid_render::Renderer2D;
 use toxoid_sokol::{bindings::*, SokolRenderer2D}; 
 
-enum DataType {
-    Raw,
-    Image,
-    Spine,
-    Worldmap,
-    Cell,
-    Audio,
-    Font
-}
+
 
 #[no_mangle]
 pub extern "C" fn fetch_callback(response: *const sfetch_response_t) {
@@ -68,8 +60,22 @@ pub fn init() {
         iter.entities().iter_mut().for_each(|entity| {
             let fetch_request = entity.get::<FetchRequest>();
             let path = fetch_request.get_path();
-            println!("Fetching asset: {:?}", path);
-            sokol_fetch(&path, entity);
+            let data_type = fetch_request.get_data_type();
+            // Map
+            match data_type as u8 {
+                d if d == DataType::Sprite as u8 => {
+                    sokol_fetch(&path, entity);
+                }
+                d if d == DataType::BoneAnimationAtlas as u8 => {
+                    sokol_fetch(&path, entity);
+                },
+                d if d == DataType::BoneAnimationSkeleton as u8 => {
+                    sokol_fetch(&path, entity);
+                },
+                _ => {
+                    sokol_fetch(&path, entity);
+                }
+            }
         });
     })
         .build();
@@ -78,19 +84,24 @@ pub fn init() {
         iter.entities().iter_mut().for_each(|entity| {
             let fetch_request = entity.get::<FetchRequest>();
             let data = fetch_request.get_data();
+            println!("Data type: {:?}", fetch_request.get_data_type());
+            println!("Data: {:?}", data);
             let size = data.len() as usize;
             let data = data.as_slice().as_ptr();
-            let sokol_sprite = SokolRenderer2D::create_sprite(data, size);
-            let mut entity = Entity::new(None);
-            entity.add::<Size>();
-            entity.add::<Sprite>();
-            let mut size = entity.get::<Size>();
-            size.set_width(sokol_sprite.width());
-            size.set_height(sokol_sprite.height());
-            let mut sprite = entity.get::<Sprite>();
-            sprite.set_sprite(Box::into_raw(sokol_sprite) as *mut () as u64);
+            // let sokol_sprite = SokolRenderer2D::create_sprite(data, size);
+            // let mut entity = Entity::new(None);
+            // entity.add::<Size>();
+            // entity.add::<Sprite>();
+            // let mut size = entity.get::<Size>();
+            // size.set_width(sokol_sprite.width());
+            // size.set_height(sokol_sprite.height());
+            // let mut sprite = entity.get::<Sprite>();
+            // sprite.set_sprite(Box::into_raw(sokol_sprite) as *mut () as u64);
         });
     })
         .build();
+
+    
+    
 }
 
