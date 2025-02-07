@@ -6,11 +6,11 @@ use toxoid_sokol::{bindings::*, SokolRenderer2D};
 pub extern "C" fn fetch_callback(response: *const sfetch_response_t) {
     let response = unsafe { *response };
     // Get user data / entity 
-    let entity_id = unsafe { *(response.user_data as *mut u64) };
     // println!("User data: {:?}", unsafe { *user_data });
     // println!("Data: {:?}", response.data.ptr);
     // println!("Data size: {:?}", response.data.size);
     // println!("Failed: {:?}", response.failed);
+    let entity_id = unsafe { *(response.user_data as *mut u64) };
     let mut entity = Entity::from_id(entity_id);
     let mut fetch_request = entity.get::<FetchRequest>();
     let data = unsafe { std::slice::from_raw_parts(response.data.ptr as *const u8, response.data.size) };
