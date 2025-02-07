@@ -587,6 +587,13 @@ impl toxoid_component::component::ecs::HostComponent for StoreState {
         self.table.push::<ComponentProxy>(ComponentProxy { ptr: boxed_component_ptr }).unwrap()
     }
 
+    fn from_ptr(&mut self, ptr: u64) -> Resource<ComponentProxy> {
+        let component = toxoid_host::Component::from_ptr_host(ptr);
+        let boxed_component = Box::new(component);
+        let boxed_component_ptr = Box::into_raw(boxed_component);
+        self.table.push::<ComponentProxy>(ComponentProxy { ptr: boxed_component_ptr as *mut toxoid_host::Component }).unwrap()
+    }
+
     fn set_member_u8(&mut self, component: Resource<toxoid_component::component::ecs::Component>, offset: u32, value: u8) -> () {
         let component_proxy = self.table.get(&component).unwrap() as &ComponentProxy;
         let component = unsafe { Box::from_raw(component_proxy.ptr) };
