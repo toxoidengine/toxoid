@@ -10,6 +10,13 @@ enum DirectionEnum {
     Right
 }
 
+#[components(Position, Head)]
+fn test_system(iter: &Iter) {
+    for (pos, _head) in components {
+        println!("Position: {:?}", pos.get_x());
+    }
+}
+
 pub fn init() {    
     // Movement System
     System::dsl("Head, Position", Some(10), |iter| {
@@ -160,4 +167,7 @@ pub fn init() {
     //     });
     // })
     //     .build();
+
+    System::dsl("Position, Head", None, test_system)
+        .build();
 }

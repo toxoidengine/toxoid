@@ -395,11 +395,7 @@ impl Query {
             .iter()
             .map(|component_ptr| {
                 let mut component = T::default();
-                #[cfg(any(not(target_arch = "wasm32"), target_os = "emscripten"))]
                 let toxoid_component = ToxoidComponent::new(*component_ptr, 0, T::get_id());
-                #[cfg(all(target_arch = "wasm32", not(target_os = "emscripten")))]
-                let toxoid_component = component_ptr;
-                #[cfg(any(not(target_arch = "wasm32"), target_os = "emscripten"))]
                 component.set_component(toxoid_component);
                 component.set_component_type(T::get_id());
                 component
@@ -645,14 +641,18 @@ impl Iter {
             .iter()
             .map(|component_ptr| {
                 let mut component = T::default();
-                #[cfg(any(not(target_arch = "wasm32"), target_os = "emscripten"))]
-                let toxoid_component = ToxoidComponent::new(*component_ptr, 0, T::get_id());
-                #[cfg(all(target_arch = "wasm32", not(target_os = "emscripten")))]
-                let toxoid_component = component_ptr;
-                #[cfg(any(not(target_arch = "wasm32"), target_os = "emscripten"))]
-                component.set_component(toxoid_component);
-                component.set_component_type(T::get_id());
-                component
+                #[cfg(any(not(target_arch = "wasm32"), target_os = "emscripten"))] {
+                    let toxoid_component = ToxoidComponent::from_ptr_host(*component_ptr);
+                    component.set_component(toxoid_component);
+                    component.set_component_type(T::get_id());
+                    component
+                }
+                #[cfg(all(target_arch = "wasm32", not(target_os = "emscripten")))] {
+                    let toxoid_component = ToxoidComponent::from_ptr(*component_ptr);
+                    component.set_component(toxoid_component);
+                    component.set_component_type(T::get_id());
+                    component
+                }
             })
             .collect();
         components
