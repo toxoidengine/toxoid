@@ -241,6 +241,24 @@ impl GuestComponentType for ComponentType {
     }
 }
 
+impl Component {
+    // TODO: Make all functions in host that pass back pointers
+    // use this style of function implementation
+    // Unfortunately it goes against the WASM component model
+    // generated trait. Look into this in the future.
+    // But it's a better than leaking memory with boxed
+    // allocations on the heap and managing their lifetimes
+    // manually.
+    pub fn from_ptr_host(ptr: u64) -> Component {
+        Component {
+            ptr: ptr as *const c_void,
+            field_offsets: vec![],
+            entity_added: 0,
+            component_type_id: 0
+        }
+    }
+}
+
 impl GuestComponent for Component {
     // This is a component instance so it will need a the entity it belongs to and the component type
     // This is required for observers / events to work
@@ -251,6 +269,18 @@ impl GuestComponent for Component {
             entity_added, 
             component_type_id
         }
+    }
+
+    fn from_ptr(ptr: u64) -> PointerT {
+        unimplemented!("Use from_ptr_host instead");
+        // unsafe {
+        //     Box::into_raw(Box::new(Component {
+        //         ptr: ptr as *const c_void,
+        //         field_offsets: vec![],
+        //         entity_added: 0,
+        //         component_type_id: 0
+        //     })) as PointerT
+        // }
     }
 
     fn set_member_u8(&self, offset: u32, value: u8) {

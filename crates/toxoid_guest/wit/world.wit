@@ -87,6 +87,7 @@ interface ecs {
         // This is a component instance so it will need a the entity it belongs to and the component type
         // This is required for observers / events to work
         constructor(ptr: pointer-t, entity: ecs-entity-t, component-type: ecs-entity-t);
+        from-ptr: static func(ptr: pointer-t) -> component;
         // TODO: Change this to offset index instead of offset so that WASM guest does not have direct access to host memory.
         set-member-u8: func(offset: u32, value: u8);
         get-member-u8: func(offset: u32) -> u8;
