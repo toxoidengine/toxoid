@@ -59,7 +59,7 @@ fn c_string(rust_str: &str) -> *const i8 {
     c_ptr
 }
 
-#[cfg(feature = "spine")]
+// #[cfg(feature = "spine")]
 pub fn bone_animation_loaded(entity: &mut Entity) {
     // Create spine atlas object from loaded atlas data.
     let mut atlas_desc: sspine_atlas_desc = unsafe { core::mem::MaybeUninit::zeroed().assume_init() };
@@ -202,22 +202,22 @@ pub fn init() {
                     sprite.set_sprite(Box::into_raw(sokol_sprite) as *mut () as u64);
                 }
                 d if d == DataType::BoneAnimationAtlas as u8 => {
-                    // let mut animation_entity = Entity::from_id(fetch_request.get_user_data());
-                    // let mut atlas = animation_entity.get::<Atlas>();
-                    // atlas.set_data(data);
-                    // atlas.set_loaded(true);
-                    // if animation_entity.get::<Skeleton>().get_loaded() {
-                    //     bone_animation_loaded(&mut animation_entity);
-                    // }
+                    let mut animation_entity = Entity::from_id(fetch_request.get_user_data());
+                    let mut atlas = animation_entity.get::<Atlas>();
+                    atlas.set_data(data);
+                    atlas.set_loaded(true);
+                    if animation_entity.get::<Skeleton>().get_loaded() {
+                        bone_animation_loaded(&mut animation_entity);
+                    }
                 },
                 d if d == DataType::BoneAnimationSkeleton as u8 => {
-                    // let mut animation_entity = Entity::from_id(fetch_request.get_user_data());
-                    // let mut skeleton = animation_entity.get::<Skeleton>();
-                    // skeleton.set_data(data);
-                    // skeleton.set_loaded(true);
-                    // if animation_entity.get::<Atlas>().get_loaded() {
-                    //     bone_animation_loaded(&mut animation_entity);
-                    // }
+                    let mut animation_entity = Entity::from_id(fetch_request.get_user_data());
+                    let mut skeleton = animation_entity.get::<Skeleton>();
+                    skeleton.set_data(data);
+                    skeleton.set_loaded(true);
+                    if animation_entity.get::<Atlas>().get_loaded() {
+                        bone_animation_loaded(&mut animation_entity);
+                    }
                 },
                 _ => {
                     unimplemented!();

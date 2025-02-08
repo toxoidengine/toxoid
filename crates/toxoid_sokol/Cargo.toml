@@ -27,7 +27,7 @@ default = [
     "audio", 
     "stb",
     "imgui",
-    # "spine"
+    "spine"
 ]
 render = []
 spine = []
