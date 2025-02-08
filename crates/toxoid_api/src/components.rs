@@ -9,7 +9,7 @@ component! {
         right: bool, 
     },
     RenderSystems {
-        entity: EcsEntityT
+        entity: u64
     },
 
     // -- Components --
@@ -30,33 +30,33 @@ component! {
         a: f32
     },
     Sprite {
-        sprite: PointerT
+        sprite: u64
     },
     Image {
-        info: PointerT
+        info: u64
     },
     // Fetch
     FetchRequest {
+        data_type: u8,
         path: String,
         data: Vec::<u8>,
-        data_type: u8,
-        user_data: EcsEntityT
+        user_data: u64
     },
     // Animation
     Atlas {
-        atlas: PointerT,
+        atlas: u64,
         filename: String,
         data: Vec::<u8>,
         loaded: bool,
     },
     Skeleton {
-        skeleton: PointerT,
+        skeleton: u64,
         filename: String,
         data: Vec::<u8>,
         loaded: bool,
     },
     Images {
-        images: Vec::<PointerT>,
+        images: Vec::<u64>,
         loaded: bool,
     },
     BoneAnimation {
@@ -64,8 +64,8 @@ component! {
         animation: String
     },
     SpineInstance {
-        instance: PointerT,
-        ctx: PointerT,
+        instance: u64,
+        ctx: u64,
         instantiated: bool
     },
 
@@ -83,6 +83,13 @@ component! {
     Loaded {},
     Connected {},
     Disconnected {},
+
+    TestComponent {
+        test_4: String,
+        test_3: Vec::<u8>,
+        test_2: u8,
+        test: u64
+    }
 }
 
 pub fn init() {
@@ -124,4 +131,7 @@ pub fn init() {
     // Add singletons
     World::add_singleton::<KeyboardInput>();
     World::add_singleton::<RenderSystems>();
+
+    // Add test component
+    TestComponent::register();
 }

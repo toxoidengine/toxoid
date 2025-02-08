@@ -386,7 +386,7 @@ impl Renderer2D for SokolRenderer2D {
 
         // // Destroy the old image
         // unsafe { sg_destroy_image(old_image) };
-        unimplemented!()
+        unimplemented!("Resize sprite not implemented");
     }
 
     fn draw_sprite(sprite: &Box<dyn Sprite>, x: f32, y: f32) {
