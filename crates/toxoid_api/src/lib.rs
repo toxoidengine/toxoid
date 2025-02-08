@@ -35,7 +35,8 @@ pub use toxoid_host::{
         Relationship,
         Event,
         Guest as WorldGuest,
-        EcsEntityT
+        EcsEntityT,
+        PointerT
     },
     ToxoidApi
 };
@@ -62,6 +63,7 @@ pub use toxoid_guest::bindings::{
         Relationship,
         Event,
         EcsEntityT,
+        PointerT,
         self as ToxoidApi
     },
     self,

@@ -9,7 +9,7 @@ component! {
     Food {},
     // Singleton
     FoodEntity {
-        entity: u64
+        entity: EcsEntityT
     },
     Direction {
         direction: u8
