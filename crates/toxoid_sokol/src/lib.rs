@@ -113,16 +113,26 @@ pub extern "C" fn sokol_init() {
         // Initialize Spine
         #[cfg(feature = "spine")] 
         {
-            let mut sspine_desc_obj: sspine_desc = core::mem::MaybeUninit::zeroed().assume_init();
-            sspine_desc_obj.max_vertices = 1024;      // default: (1<<16) = 65536
-            sspine_desc_obj.max_commands = 128;       // default: (1<<14) = 16384
-            sspine_desc_obj.context_pool_size = 64;    // default: 4
-            sspine_desc_obj.atlas_pool_size = 64;      // default: 64
-            sspine_desc_obj.skeleton_pool_size = 64;   // default: 64
-            sspine_desc_obj.skinset_pool_size = 64;    // default: 64
-            sspine_desc_obj.instance_pool_size = 16;  // default: 1024
-            sspine_desc_obj.logger.func = Some(sokol::log::slog_func);
-            sspine_setup(&sspine_desc_obj);
+            let mut sspine_desc: sspine_desc = core::mem::MaybeUninit::zeroed().assume_init();
+            sspine_desc.max_vertices = 1024;      // default: (1<<16) = 65536
+            sspine_desc.max_commands = 128;       // default: (1<<14) = 16384
+            sspine_desc.context_pool_size = 64;    // default: 4
+            sspine_desc.atlas_pool_size = 64;      // default: 64
+            sspine_desc.skeleton_pool_size = 64;   // default: 64
+            sspine_desc.skinset_pool_size = 64;    // default: 64
+            sspine_desc.instance_pool_size = 16;  // default: 1024
+            sspine_desc.logger.func = Some(sokol::log::slog_func);
+            #[cfg(target_os = "emscripten")] 
+            {
+                // Get swapchain info to match WebGL context
+                let swapchain = sglue::swapchain();
+                sspine_desc.color_format = swapchain.color_format as i32;
+                sspine_desc.depth_format = swapchain.depth_format as i32;
+                sspine_desc.sample_count = swapchain.sample_count;
+                sspine_desc.max_commands = 10000;
+                sspine_desc.max_vertices = 50000;
+            }
+            sspine_setup(&sspine_desc);
         }
 
         // Initialize SFetch
