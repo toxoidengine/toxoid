@@ -1,6 +1,7 @@
 use toxoid_api::*;
-use toxoid_sokol::{SokolRenderer2D, SokolSprite};
+use toxoid_sokol::{bindings::*, SokolRenderTarget, SokolRenderer2D, SokolSprite};
 use toxoid_render::Renderer2D;
+use crate::prefabs::*;
 
 // Rect Renderer
 #[components(_, Position, Size, Color, _)]
@@ -21,8 +22,6 @@ pub fn sprite_render_system(iter: &Iter) {
 }
 
 // SpineInstance, Position, BoneAnimation
-use toxoid_sokol::bindings::*; 
-use toxoid_sokol::sokol::app as sapp;
 #[components(SpineInstance, Position, _)]
 pub fn render_bone_animation(iter: &Iter) {
     for (spine_instance, position) in components {
@@ -53,25 +52,91 @@ pub fn render_bone_animation(iter: &Iter) {
     }
 }
 
-// Rendering Systems
-pub fn init() {
-    // Render systems group
-    let mut render_systems_entity = Entity::named("Render Systems Group");
-    
+#[components(Sprite, _, Position, Size)]
+pub fn blit_sprite_system(iter: &Iter) {
+    for (sprite, position, size) in components {
+        // SokolRenderer2D::draw_sprite(sprite, position.get_x(), position.get_y());
+
+        // Create render target entity
+        // let mut rt_entity = render_target();
+        // let rt = SokolRenderer2D::create_render_target(size.get_width() as u32, size.get_height() as u32);
+        // let mut rt_component = rt_entity.get::<RenderTarget>();
+        // rt_component
+        //     .set_render_target(
+        //         Box::leak(rt) as *const _ as *const std::ffi::c_void as u64
+        //     );
+
+        // let mut rt_size = rt_entity.get::<Size>();
+        // rt_size.set_width(size.get_width());
+        // rt_size.set_height(size.get_height());
+        // let mut rt_pos = rt_entity.get::<Position>();
+        // rt_pos.set_x(position.get_x());
+        // rt_pos.set_y(position.get_y());
+    }
+}
+
+// Final
+#[components(RenderTarget, _, Size, Position, BlendMode)]
+pub fn draw_render_targets_system(iter: &Iter) {
+    for (rt, size, position, blend_mode) in components {
+        println!("Draw render target");
+        // Get render target object / pointer
+        let rt_ptr = rt.get_render_target();
+        let rt_ptr_box = unsafe { Box::from_raw(rt_ptr as *mut SokolRenderTarget) };
+        let rt_trait_object: &Box<dyn toxoid_render::RenderTarget> = Box::leak(Box::new(rt_ptr_box as Box<dyn toxoid_render::RenderTarget>));
+        // Get blend mode
+        let blend_mode = blend_mode.get_blend_mode();
+        // Get size
+        let width = size.get_width();
+        let height = size.get_height();
+        // Get position
+        let x = position.get_x();
+        let y = position.get_y();
+        // Draw render target
+        SokolRenderer2D::draw_render_target(rt_trait_object, 0., 0., width as f32, height as f32, x as f32, y as f32, width as f32, height as f32, blend_mode);
+    }
+}
+
+// Systems that draw render targets to the screen as a final output
+pub fn draw_systems(render_systems_entity: &mut Entity) {
     // // Rect Renderer
     // let mut system = System::dsl("Rect, Position, Size, Color, Renderable", None, rect_render_system);
     // system.build();
     // render_systems_entity.parent_of_id(system.get_id());
 
-    // Sprite Renderer
-    let mut system = System::dsl("Sprite, Size", None, sprite_render_system);
-    system.build();
-    render_systems_entity.parent_of_id(system.get_id());
+    // // Sprite Renderer
+    // let mut system = System::dsl("Sprite, Size", None, sprite_render_system);
+    // system.build();
+    // render_systems_entity.parent_of_id(system.get_id());
 
-    // Bone Animation Renderer
-    let mut system = System::dsl("SpineInstance, Position, BoneAnimation", None, render_bone_animation);
+    // // Bone Animation Renderer
+    // let mut system = System::dsl("SpineInstance, Position, BoneAnimation", None, render_bone_animation);
+    // system.build();
+    // render_systems_entity.parent_of_id(system.get_id());
+
+    // Draw Render Targets
+    let mut system = System::dsl("RenderTarget, Renderable, Size, Position, BlendMode", None, draw_render_targets_system);
     system.build();
     render_systems_entity.parent_of_id(system.get_id());
+}
+
+// Systems that blit render targets
+pub fn blit_systems(render_systems_entity: &mut Entity) {
+    // let mut system = System::dsl("Sprite, Blittable, Position, Size", None, blit_sprite_system);
+    // system.build();
+    // render_systems_entity.parent_of_id(system.get_id());
+}
+
+// Rendering Systems
+pub fn init() {
+    // Render systems group
+    let mut render_systems_entity = Entity::named("Render Systems Group");
+    
+    // Systems
+    // Blit systems
+    blit_systems(&mut render_systems_entity);
+    // Draw systems
+    draw_systems(&mut render_systems_entity);
 
     // Disable render systems
     render_systems_entity.disable();

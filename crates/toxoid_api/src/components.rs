@@ -29,6 +29,13 @@ component! {
         b: f32,
         a: f32
     },
+    RenderTarget {
+        render_target: u64
+    },
+    BlendMode {
+        blend_mode: u8,
+        alpha: f32
+    },
     Sprite {
         sprite: u64
     },
@@ -82,14 +89,7 @@ component! {
     Loading {},
     Loaded {},
     Connected {},
-    Disconnected {},
-
-    TestComponent {
-        test_4: String,
-        test_3: Vec::<u8>,
-        test_2: u8,
-        test: u64
-    }
+    Disconnected {}
 }
 
 pub fn init() {
@@ -104,6 +104,8 @@ pub fn init() {
     Color::register();
     Sprite::register();
     Image::register();
+    RenderTarget::register();
+    BlendMode::register();
     // Fetch
     FetchRequest::register();
     // Animation
@@ -131,7 +133,4 @@ pub fn init() {
     // Add singletons
     World::add_singleton::<KeyboardInput>();
     World::add_singleton::<RenderSystems>();
-
-    // Add test component
-    TestComponent::register();
 }

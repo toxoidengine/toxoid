@@ -752,6 +752,14 @@ pub enum DataType {
     Font
 }
 
+#[repr(u8)]
+pub enum CustomRelationship {
+    RenderTarget,
+    Sprite,
+    BoneAnimation,
+    Network
+}
+
 // Fetch assets / resources from the asset server or local file system
 pub fn fetch(path: &str, data_type: DataType, user_data: Option<u64>) {
     let mut entity = Entity::new(None);
