@@ -59,6 +59,7 @@ fn c_string(rust_str: &str) -> *const i8 {
     c_ptr
 }
 
+#[cfg(feature = "spine")]
 pub fn bone_animation_loaded(entity: &mut Entity) {
     // Create spine atlas object from loaded atlas data.
     let mut atlas_desc: sspine_atlas_desc = unsafe { core::mem::MaybeUninit::zeroed().assume_init() };
@@ -112,7 +113,7 @@ pub fn bone_animation_loaded(entity: &mut Entity) {
     instance_component.set_instance(Box::into_raw(Box::new(instance)) as u64);
     instance_component.set_instantiated(true);
     instance_component.set_ctx(Box::into_raw(Box::new(ctx)) as u64);
-    
+
     // configure a simple animation sequence
 
     unsafe { sspine_add_animation(instance, sspine_anim_by_name(spine_skeleton, c_string("idle_down")), 0, true, 0.) };
@@ -137,7 +138,6 @@ pub fn bone_animation_loaded(entity: &mut Entity) {
         // The downside is that loading multiple images would take longer.
         let file_path = format!("assets/animations/{}", filename_c_str.to_str().unwrap());
         let file_path = file_path.as_str();
-        println!("Fetching image: {}", file_path);
         let mut image_entity = Entity::new(None);
         image_entity.child_of_id(entity.get_id());
         image_entity.add::<Image>();
@@ -190,34 +190,34 @@ pub fn init() {
                     );
                 },
                 d if d == DataType::Sprite as u8 => {
-                    // let data = data.as_slice().as_ptr();
-                    // let sokol_sprite = SokolRenderer2D::create_sprite(data, size);
-                    // let mut entity = Entity::new(None);
-                    // entity.add::<Size>();
-                    // entity.add::<Sprite>();
-                    // let mut size = entity.get::<Size>();
-                    // size.set_width(sokol_sprite.width());
-                    // size.set_height(sokol_sprite.height());
-                    // let mut sprite = entity.get::<Sprite>();
-                    // sprite.set_sprite(Box::into_raw(sokol_sprite) as *mut () as u64);
+                    let data = data.as_slice().as_ptr();
+                    let sokol_sprite = SokolRenderer2D::create_sprite(data, size);
+                    let mut entity = Entity::new(None);
+                    entity.add::<Size>();
+                    entity.add::<Sprite>();
+                    let mut size = entity.get::<Size>();
+                    size.set_width(sokol_sprite.width());
+                    size.set_height(sokol_sprite.height());
+                    let mut sprite = entity.get::<Sprite>();
+                    sprite.set_sprite(Box::into_raw(sokol_sprite) as *mut () as u64);
                 }
                 d if d == DataType::BoneAnimationAtlas as u8 => {
-                    let mut animation_entity = Entity::from_id(fetch_request.get_user_data());
-                    let mut atlas = animation_entity.get::<Atlas>();
-                    atlas.set_data(data);
-                    atlas.set_loaded(true);
-                    if animation_entity.get::<Skeleton>().get_loaded() {
-                        bone_animation_loaded(&mut animation_entity);
-                    }
+                    // let mut animation_entity = Entity::from_id(fetch_request.get_user_data());
+                    // let mut atlas = animation_entity.get::<Atlas>();
+                    // atlas.set_data(data);
+                    // atlas.set_loaded(true);
+                    // if animation_entity.get::<Skeleton>().get_loaded() {
+                    //     bone_animation_loaded(&mut animation_entity);
+                    // }
                 },
                 d if d == DataType::BoneAnimationSkeleton as u8 => {
-                    let mut animation_entity = Entity::from_id(fetch_request.get_user_data());
-                    let mut skeleton = animation_entity.get::<Skeleton>();
-                    skeleton.set_data(data);
-                    skeleton.set_loaded(true);
-                    if animation_entity.get::<Atlas>().get_loaded() {
-                        bone_animation_loaded(&mut animation_entity);
-                    }
+                    // let mut animation_entity = Entity::from_id(fetch_request.get_user_data());
+                    // let mut skeleton = animation_entity.get::<Skeleton>();
+                    // skeleton.set_data(data);
+                    // skeleton.set_loaded(true);
+                    // if animation_entity.get::<Atlas>().get_loaded() {
+                    //     bone_animation_loaded(&mut animation_entity);
+                    // }
                 },
                 _ => {
                     unimplemented!();
