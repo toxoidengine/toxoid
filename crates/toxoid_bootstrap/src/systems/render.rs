@@ -25,6 +25,7 @@ use toxoid_sokol::bindings::*;
 use toxoid_sokol::sokol::app as sapp;
 #[components(SpineInstance, Position, _)]
 pub fn render_bone_animation(iter: &Iter) {
+    println!("Render bone animation");
     for (spine_instance, position) in components {
         if spine_instance.get_instantiated() {
             unsafe {

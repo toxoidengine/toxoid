@@ -28,7 +28,7 @@ var readyPromise = new Promise((resolve, reject) => {
   readyPromiseResolve = resolve;
   readyPromiseReject = reject;
 });
-["_query_trampoline","_sokol_event","_sokol_frame","_sokol_init","getExceptionMessage","incrementExceptionRefcount","decrementExceptionRefcount","_memory","___indirect_function_table","__sfetch_emsc_head_response","__sfetch_emsc_get_response","__sfetch_emsc_failed_http_status","__sfetch_emsc_failed_buffer_too_small","__saudio_emsc_pull","_toxoid_set_keypress_callback","_toxoid_set_keydown_callback","_toxoid_set_keyup_callback","_sfetch_js_send_head_request","_sfetch_js_send_get_request","_saudio_js_init","_saudio_js_shutdown","_saudio_js_sample_rate","_saudio_js_buffer_frames","_saudio_js_suspended","__ZN11toxoid_host8bindings7exports6toxoid6engine3ecs19__FORCE_SECTION_REF17h36dd5d6994a60ad3E","_slog_js_log","__sapp_emsc_onpaste","__sapp_html5_get_ask_leave_site","__sapp_emsc_begin_drop","__sapp_emsc_drop","__sapp_emsc_end_drop","__sapp_emsc_invoke_fetch_cb","___em_lib_deps_sokol_app","_sapp_js_add_beforeunload_listener","_sapp_js_remove_beforeunload_listener","_sapp_js_add_clipboard_listener","_sapp_js_remove_clipboard_listener","_sapp_js_write_clipboard","_sapp_js_add_dragndrop_listeners","_sapp_js_dropped_file_size","_sapp_js_fetch_dropped_file","_sapp_js_remove_dragndrop_listeners","_sapp_js_init","_sapp_js_request_pointerlock","_sapp_js_exit_pointerlock","_sapp_js_set_cursor","_sapp_js_clear_favicon","_sapp_js_set_favicon","_main","onRuntimeInitialized"].forEach((prop) => {
+["_init_host","_fetch_callback","_init_bootstrap","_query_trampoline","_sokol_event","_sokol_frame","getExceptionMessage","incrementExceptionRefcount","decrementExceptionRefcount","_memory","___indirect_function_table","__sfetch_emsc_head_response","__sfetch_emsc_get_response","__sfetch_emsc_failed_http_status","__sfetch_emsc_failed_buffer_too_small","__saudio_emsc_pull","__Z28toxoid_set_keypress_callbackPKcPvbPFbiPK23EmscriptenKeyboardEventS1_E","__Z27toxoid_set_keydown_callbackPKcPvbPFbiPK23EmscriptenKeyboardEventS1_E","__Z25toxoid_set_keyup_callbackPKcPvbPFbiPK23EmscriptenKeyboardEventS1_E","_sfetch_js_send_head_request","_sfetch_js_send_get_request","_saudio_js_init","_saudio_js_shutdown","_saudio_js_sample_rate","_saudio_js_buffer_frames","_saudio_js_suspended","_slog_js_log","__sapp_emsc_onpaste","__sapp_html5_get_ask_leave_site","__sapp_emsc_begin_drop","__sapp_emsc_drop","__sapp_emsc_end_drop","__sapp_emsc_invoke_fetch_cb","___em_lib_deps_sokol_app","_sapp_js_add_beforeunload_listener","_sapp_js_remove_beforeunload_listener","_sapp_js_add_clipboard_listener","_sapp_js_remove_clipboard_listener","_sapp_js_write_clipboard","_sapp_js_add_dragndrop_listeners","_sapp_js_dropped_file_size","_sapp_js_fetch_dropped_file","_sapp_js_remove_dragndrop_listeners","_sapp_js_init","_sapp_js_request_pointerlock","_sapp_js_exit_pointerlock","_sapp_js_set_cursor","_sapp_js_clear_favicon","_sapp_js_set_favicon","__ZN11toxoid_host8bindings7exports6toxoid6engine3ecs19__FORCE_SECTION_REF17h36dd5d6994a60ad3E","_main","onRuntimeInitialized"].forEach((prop) => {
   if (!Object.getOwnPropertyDescriptor(readyPromise, prop)) {
     Object.defineProperty(readyPromise, prop, {
       get: () => abort('You are getting ' + prop + ' on the Promise object, instead of the instance. Use .then() to get called back with the instance, see the MODULARIZE docs in src/settings.js'),
@@ -7106,11 +7106,17 @@ var wasmImports = {
   /** @export */
   invoke_iiiiii,
   /** @export */
+  invoke_iij,
+  /** @export */
+  invoke_iijii,
+  /** @export */
   invoke_j,
   /** @export */
   invoke_ji,
   /** @export */
   invoke_jii,
+  /** @export */
+  invoke_jiii,
   /** @export */
   invoke_jiiii,
   /** @export */
@@ -7134,11 +7140,23 @@ var wasmImports = {
   /** @export */
   invoke_viiiiii,
   /** @export */
+  invoke_viiiiiii,
+  /** @export */
+  invoke_viiijj,
+  /** @export */
+  invoke_viiijjii,
+  /** @export */
+  invoke_viijii,
+  /** @export */
   invoke_viijj,
+  /** @export */
+  invoke_viijji,
   /** @export */
   invoke_viijjjj,
   /** @export */
   invoke_vij,
+  /** @export */
+  invoke_vijjj,
   /** @export */
   llvm_eh_typeid_for: _llvm_eh_typeid_for,
   /** @export */
@@ -7166,16 +7184,20 @@ var wasmImports = {
   /** @export */
   sfetch_js_send_get_request,
   /** @export */
+  sfetch_js_send_head_request,
+  /** @export */
   slog_js_log
 };
 var wasmExports;
 createWasm();
 var ___wasm_call_ctors = createExportWrapper('__wasm_call_ctors', 0);
+var _init_host = Module['_init_host'] = createExportWrapper('init_host', 0);
 var _main = Module['_main'] = createExportWrapper('main', 2);
-var _sokol_event = Module['_sokol_event'] = createExportWrapper('sokol_event', 1);
-var _sokol_init = Module['_sokol_init'] = createExportWrapper('sokol_init', 0);
-var _sokol_frame = Module['_sokol_frame'] = createExportWrapper('sokol_frame', 0);
 var _query_trampoline = Module['_query_trampoline'] = createExportWrapper('query_trampoline', 1);
+var _sokol_event = Module['_sokol_event'] = createExportWrapper('sokol_event', 1);
+var _fetch_callback = Module['_fetch_callback'] = createExportWrapper('fetch_callback', 1);
+var _sokol_frame = Module['_sokol_frame'] = createExportWrapper('sokol_frame', 0);
+var _init_bootstrap = Module['_init_bootstrap'] = createExportWrapper('init_bootstrap', 1);
 var _malloc = createExportWrapper('malloc', 1);
 var _free = createExportWrapper('free', 1);
 var __sfetch_emsc_head_response = Module['__sfetch_emsc_head_response'] = createExportWrapper('_sfetch_emsc_head_response', 2);
@@ -7183,16 +7205,16 @@ var __sfetch_emsc_get_response = Module['__sfetch_emsc_get_response'] = createEx
 var __sfetch_emsc_failed_http_status = Module['__sfetch_emsc_failed_http_status'] = createExportWrapper('_sfetch_emsc_failed_http_status', 2);
 var __sfetch_emsc_failed_buffer_too_small = Module['__sfetch_emsc_failed_buffer_too_small'] = createExportWrapper('_sfetch_emsc_failed_buffer_too_small', 1);
 var __saudio_emsc_pull = Module['__saudio_emsc_pull'] = createExportWrapper('_saudio_emsc_pull', 1);
-var _toxoid_set_keypress_callback = Module['_toxoid_set_keypress_callback'] = createExportWrapper('toxoid_set_keypress_callback', 4);
-var _toxoid_set_keydown_callback = Module['_toxoid_set_keydown_callback'] = createExportWrapper('toxoid_set_keydown_callback', 4);
-var _toxoid_set_keyup_callback = Module['_toxoid_set_keyup_callback'] = createExportWrapper('toxoid_set_keyup_callback', 4);
-var _strerror = createExportWrapper('strerror', 1);
+var __Z28toxoid_set_keypress_callbackPKcPvbPFbiPK23EmscriptenKeyboardEventS1_E = Module['__Z28toxoid_set_keypress_callbackPKcPvbPFbiPK23EmscriptenKeyboardEventS1_E'] = createExportWrapper('_Z28toxoid_set_keypress_callbackPKcPvbPFbiPK23EmscriptenKeyboardEventS1_E', 4);
+var __Z27toxoid_set_keydown_callbackPKcPvbPFbiPK23EmscriptenKeyboardEventS1_E = Module['__Z27toxoid_set_keydown_callbackPKcPvbPFbiPK23EmscriptenKeyboardEventS1_E'] = createExportWrapper('_Z27toxoid_set_keydown_callbackPKcPvbPFbiPK23EmscriptenKeyboardEventS1_E', 4);
+var __Z25toxoid_set_keyup_callbackPKcPvbPFbiPK23EmscriptenKeyboardEventS1_E = Module['__Z25toxoid_set_keyup_callbackPKcPvbPFbiPK23EmscriptenKeyboardEventS1_E'] = createExportWrapper('_Z25toxoid_set_keyup_callbackPKcPvbPFbiPK23EmscriptenKeyboardEventS1_E', 4);
 var __sapp_emsc_onpaste = Module['__sapp_emsc_onpaste'] = createExportWrapper('_sapp_emsc_onpaste', 1);
 var __sapp_html5_get_ask_leave_site = Module['__sapp_html5_get_ask_leave_site'] = createExportWrapper('_sapp_html5_get_ask_leave_site', 0);
 var __sapp_emsc_begin_drop = Module['__sapp_emsc_begin_drop'] = createExportWrapper('_sapp_emsc_begin_drop', 1);
 var __sapp_emsc_drop = Module['__sapp_emsc_drop'] = createExportWrapper('_sapp_emsc_drop', 2);
 var __sapp_emsc_end_drop = Module['__sapp_emsc_end_drop'] = createExportWrapper('_sapp_emsc_end_drop', 3);
 var __sapp_emsc_invoke_fetch_cb = Module['__sapp_emsc_invoke_fetch_cb'] = createExportWrapper('_sapp_emsc_invoke_fetch_cb', 8);
+var _strerror = createExportWrapper('strerror', 1);
 var _fflush = createExportWrapper('fflush', 1);
 var _htonl = createExportWrapper('htonl', 1);
 var _htons = createExportWrapper('htons', 1);
@@ -7212,57 +7234,43 @@ var ___cxa_decrement_exception_refcount = createExportWrapper('__cxa_decrement_e
 var ___get_exception_message = createExportWrapper('__get_exception_message', 3);
 var ___cxa_can_catch = createExportWrapper('__cxa_can_catch', 3);
 var ___cxa_get_exception_ptr = createExportWrapper('__cxa_get_exception_ptr', 1);
+var dynCall_jj = Module['dynCall_jj'] = createExportWrapper('dynCall_jj', 3);
 var dynCall_ji = Module['dynCall_ji'] = createExportWrapper('dynCall_ji', 2);
 var dynCall_vij = Module['dynCall_vij'] = createExportWrapper('dynCall_vij', 4);
-var dynCall_jii = Module['dynCall_jii'] = createExportWrapper('dynCall_jii', 3);
-var dynCall_jiiii = Module['dynCall_jiiii'] = createExportWrapper('dynCall_jiiii', 5);
-var dynCall_jj = Module['dynCall_jj'] = createExportWrapper('dynCall_jj', 3);
+var dynCall_viiijj = Module['dynCall_viiijj'] = createExportWrapper('dynCall_viiijj', 8);
 var dynCall_j = Module['dynCall_j'] = createExportWrapper('dynCall_j', 1);
+var dynCall_vijjj = Module['dynCall_vijjj'] = createExportWrapper('dynCall_vijjj', 8);
 var dynCall_jij = Module['dynCall_jij'] = createExportWrapper('dynCall_jij', 4);
+var dynCall_jiiii = Module['dynCall_jiiii'] = createExportWrapper('dynCall_jiiii', 5);
+var dynCall_viijji = Module['dynCall_viijji'] = createExportWrapper('dynCall_viijji', 8);
+var dynCall_viiijjii = Module['dynCall_viiijjii'] = createExportWrapper('dynCall_viiijjii', 10);
+var dynCall_jii = Module['dynCall_jii'] = createExportWrapper('dynCall_jii', 3);
 var dynCall_viijjjj = Module['dynCall_viijjjj'] = createExportWrapper('dynCall_viijjjj', 11);
 var dynCall_viijj = Module['dynCall_viijj'] = createExportWrapper('dynCall_viijj', 7);
+var dynCall_iij = Module['dynCall_iij'] = createExportWrapper('dynCall_iij', 4);
+var dynCall_jiii = Module['dynCall_jiii'] = createExportWrapper('dynCall_jiii', 4);
+var dynCall_viijii = Module['dynCall_viijii'] = createExportWrapper('dynCall_viijii', 7);
+var dynCall_iijii = Module['dynCall_iijii'] = createExportWrapper('dynCall_iijii', 6);
 var dynCall_ijiji = Module['dynCall_ijiji'] = createExportWrapper('dynCall_ijiji', 7);
 var dynCall_viji = Module['dynCall_viji'] = createExportWrapper('dynCall_viji', 5);
 var dynCall_jiiji = Module['dynCall_jiiji'] = createExportWrapper('dynCall_jiiji', 6);
 var dynCall_jiji = Module['dynCall_jiji'] = createExportWrapper('dynCall_jiji', 5);
-var __ZN11toxoid_host8bindings7exports6toxoid6engine3ecs19__FORCE_SECTION_REF17h36dd5d6994a60ad3E = Module['__ZN11toxoid_host8bindings7exports6toxoid6engine3ecs19__FORCE_SECTION_REF17h36dd5d6994a60ad3E'] = 1206920;
+var __ZN11toxoid_host8bindings7exports6toxoid6engine3ecs19__FORCE_SECTION_REF17h36dd5d6994a60ad3E = Module['__ZN11toxoid_host8bindings7exports6toxoid6engine3ecs19__FORCE_SECTION_REF17h36dd5d6994a60ad3E'] = 1243240;
+function invoke_v(index) {
+  var sp = stackSave();
+  try {
+    getWasmTableEntry(index)();
+  } catch(e) {
+    stackRestore(sp);
+    if (!(e instanceof EmscriptenEH)) throw e;
+    _setThrew(1, 0);
+  }
+}
+
 function invoke_ii(index,a1) {
   var sp = stackSave();
   try {
     return getWasmTableEntry(index)(a1);
-  } catch(e) {
-    stackRestore(sp);
-    if (!(e instanceof EmscriptenEH)) throw e;
-    _setThrew(1, 0);
-  }
-}
-
-function invoke_iiii(index,a1,a2,a3) {
-  var sp = stackSave();
-  try {
-    return getWasmTableEntry(index)(a1,a2,a3);
-  } catch(e) {
-    stackRestore(sp);
-    if (!(e instanceof EmscriptenEH)) throw e;
-    _setThrew(1, 0);
-  }
-}
-
-function invoke_viii(index,a1,a2,a3) {
-  var sp = stackSave();
-  try {
-    getWasmTableEntry(index)(a1,a2,a3);
-  } catch(e) {
-    stackRestore(sp);
-    if (!(e instanceof EmscriptenEH)) throw e;
-    _setThrew(1, 0);
-  }
-}
-
-function invoke_vi(index,a1) {
-  var sp = stackSave();
-  try {
-    getWasmTableEntry(index)(a1);
   } catch(e) {
     stackRestore(sp);
     if (!(e instanceof EmscriptenEH)) throw e;
@@ -7281,10 +7289,10 @@ function invoke_vii(index,a1,a2) {
   }
 }
 
-function invoke_vif(index,a1,a2) {
+function invoke_viii(index,a1,a2,a3) {
   var sp = stackSave();
   try {
-    getWasmTableEntry(index)(a1,a2);
+    getWasmTableEntry(index)(a1,a2,a3);
   } catch(e) {
     stackRestore(sp);
     if (!(e instanceof EmscriptenEH)) throw e;
@@ -7303,10 +7311,32 @@ function invoke_iii(index,a1,a2) {
   }
 }
 
-function invoke_v(index) {
+function invoke_viiiii(index,a1,a2,a3,a4,a5) {
   var sp = stackSave();
   try {
-    getWasmTableEntry(index)();
+    getWasmTableEntry(index)(a1,a2,a3,a4,a5);
+  } catch(e) {
+    stackRestore(sp);
+    if (!(e instanceof EmscriptenEH)) throw e;
+    _setThrew(1, 0);
+  }
+}
+
+function invoke_viiii(index,a1,a2,a3,a4) {
+  var sp = stackSave();
+  try {
+    getWasmTableEntry(index)(a1,a2,a3,a4);
+  } catch(e) {
+    stackRestore(sp);
+    if (!(e instanceof EmscriptenEH)) throw e;
+    _setThrew(1, 0);
+  }
+}
+
+function invoke_vi(index,a1) {
+  var sp = stackSave();
+  try {
+    getWasmTableEntry(index)(a1);
   } catch(e) {
     stackRestore(sp);
     if (!(e instanceof EmscriptenEH)) throw e;
@@ -7336,10 +7366,10 @@ function invoke_i(index) {
   }
 }
 
-function invoke_viiii(index,a1,a2,a3,a4) {
+function invoke_viiiiiii(index,a1,a2,a3,a4,a5,a6,a7) {
   var sp = stackSave();
   try {
-    getWasmTableEntry(index)(a1,a2,a3,a4);
+    getWasmTableEntry(index)(a1,a2,a3,a4,a5,a6,a7);
   } catch(e) {
     stackRestore(sp);
     if (!(e instanceof EmscriptenEH)) throw e;
@@ -7347,10 +7377,10 @@ function invoke_viiii(index,a1,a2,a3,a4) {
   }
 }
 
-function invoke_viiiii(index,a1,a2,a3,a4,a5) {
+function invoke_iiii(index,a1,a2,a3) {
   var sp = stackSave();
   try {
-    getWasmTableEntry(index)(a1,a2,a3,a4,a5);
+    return getWasmTableEntry(index)(a1,a2,a3);
   } catch(e) {
     stackRestore(sp);
     if (!(e instanceof EmscriptenEH)) throw e;
@@ -7380,6 +7410,17 @@ function invoke_if(index,a1) {
   }
 }
 
+function invoke_vif(index,a1,a2) {
+  var sp = stackSave();
+  try {
+    getWasmTableEntry(index)(a1,a2);
+  } catch(e) {
+    stackRestore(sp);
+    if (!(e instanceof EmscriptenEH)) throw e;
+    _setThrew(1, 0);
+  }
+}
+
 function invoke_viiiiii(index,a1,a2,a3,a4,a5,a6) {
   var sp = stackSave();
   try {
@@ -7395,6 +7436,17 @@ function invoke_iiiiii(index,a1,a2,a3,a4,a5) {
   var sp = stackSave();
   try {
     return getWasmTableEntry(index)(a1,a2,a3,a4,a5);
+  } catch(e) {
+    stackRestore(sp);
+    if (!(e instanceof EmscriptenEH)) throw e;
+    _setThrew(1, 0);
+  }
+}
+
+function invoke_jj(index,a1,a2) {
+  var sp = stackSave();
+  try {
+    return dynCall_jj(index,a1,a2);
   } catch(e) {
     stackRestore(sp);
     if (!(e instanceof EmscriptenEH)) throw e;
@@ -7424,32 +7476,10 @@ function invoke_vij(index,a1,a2,a3) {
   }
 }
 
-function invoke_jii(index,a1,a2) {
+function invoke_viiijj(index,a1,a2,a3,a4,a5,a6,a7) {
   var sp = stackSave();
   try {
-    return dynCall_jii(index,a1,a2);
-  } catch(e) {
-    stackRestore(sp);
-    if (!(e instanceof EmscriptenEH)) throw e;
-    _setThrew(1, 0);
-  }
-}
-
-function invoke_jiiii(index,a1,a2,a3,a4) {
-  var sp = stackSave();
-  try {
-    return dynCall_jiiii(index,a1,a2,a3,a4);
-  } catch(e) {
-    stackRestore(sp);
-    if (!(e instanceof EmscriptenEH)) throw e;
-    _setThrew(1, 0);
-  }
-}
-
-function invoke_jj(index,a1,a2) {
-  var sp = stackSave();
-  try {
-    return dynCall_jj(index,a1,a2);
+    dynCall_viiijj(index,a1,a2,a3,a4,a5,a6,a7);
   } catch(e) {
     stackRestore(sp);
     if (!(e instanceof EmscriptenEH)) throw e;
@@ -7468,10 +7498,65 @@ function invoke_j(index) {
   }
 }
 
+function invoke_vijjj(index,a1,a2,a3,a4,a5,a6,a7) {
+  var sp = stackSave();
+  try {
+    dynCall_vijjj(index,a1,a2,a3,a4,a5,a6,a7);
+  } catch(e) {
+    stackRestore(sp);
+    if (!(e instanceof EmscriptenEH)) throw e;
+    _setThrew(1, 0);
+  }
+}
+
 function invoke_jij(index,a1,a2,a3) {
   var sp = stackSave();
   try {
     return dynCall_jij(index,a1,a2,a3);
+  } catch(e) {
+    stackRestore(sp);
+    if (!(e instanceof EmscriptenEH)) throw e;
+    _setThrew(1, 0);
+  }
+}
+
+function invoke_jiiii(index,a1,a2,a3,a4) {
+  var sp = stackSave();
+  try {
+    return dynCall_jiiii(index,a1,a2,a3,a4);
+  } catch(e) {
+    stackRestore(sp);
+    if (!(e instanceof EmscriptenEH)) throw e;
+    _setThrew(1, 0);
+  }
+}
+
+function invoke_viijji(index,a1,a2,a3,a4,a5,a6,a7) {
+  var sp = stackSave();
+  try {
+    dynCall_viijji(index,a1,a2,a3,a4,a5,a6,a7);
+  } catch(e) {
+    stackRestore(sp);
+    if (!(e instanceof EmscriptenEH)) throw e;
+    _setThrew(1, 0);
+  }
+}
+
+function invoke_viiijjii(index,a1,a2,a3,a4,a5,a6,a7,a8,a9) {
+  var sp = stackSave();
+  try {
+    dynCall_viiijjii(index,a1,a2,a3,a4,a5,a6,a7,a8,a9);
+  } catch(e) {
+    stackRestore(sp);
+    if (!(e instanceof EmscriptenEH)) throw e;
+    _setThrew(1, 0);
+  }
+}
+
+function invoke_jii(index,a1,a2) {
+  var sp = stackSave();
+  try {
+    return dynCall_jii(index,a1,a2);
   } catch(e) {
     stackRestore(sp);
     if (!(e instanceof EmscriptenEH)) throw e;
@@ -7494,6 +7579,50 @@ function invoke_viijj(index,a1,a2,a3,a4,a5,a6) {
   var sp = stackSave();
   try {
     dynCall_viijj(index,a1,a2,a3,a4,a5,a6);
+  } catch(e) {
+    stackRestore(sp);
+    if (!(e instanceof EmscriptenEH)) throw e;
+    _setThrew(1, 0);
+  }
+}
+
+function invoke_jiii(index,a1,a2,a3) {
+  var sp = stackSave();
+  try {
+    return dynCall_jiii(index,a1,a2,a3);
+  } catch(e) {
+    stackRestore(sp);
+    if (!(e instanceof EmscriptenEH)) throw e;
+    _setThrew(1, 0);
+  }
+}
+
+function invoke_iij(index,a1,a2,a3) {
+  var sp = stackSave();
+  try {
+    return dynCall_iij(index,a1,a2,a3);
+  } catch(e) {
+    stackRestore(sp);
+    if (!(e instanceof EmscriptenEH)) throw e;
+    _setThrew(1, 0);
+  }
+}
+
+function invoke_viijii(index,a1,a2,a3,a4,a5,a6) {
+  var sp = stackSave();
+  try {
+    dynCall_viijii(index,a1,a2,a3,a4,a5,a6);
+  } catch(e) {
+    stackRestore(sp);
+    if (!(e instanceof EmscriptenEH)) throw e;
+    _setThrew(1, 0);
+  }
+}
+
+function invoke_iijii(index,a1,a2,a3,a4,a5) {
+  var sp = stackSave();
+  try {
+    return dynCall_iijii(index,a1,a2,a3,a4,a5);
   } catch(e) {
     stackRestore(sp);
     if (!(e instanceof EmscriptenEH)) throw e;

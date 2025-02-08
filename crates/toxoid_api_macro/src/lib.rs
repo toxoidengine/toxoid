@@ -599,6 +599,9 @@ fn get_type_code(ty: &Type) -> u8 {
 }
 
 fn get_type_size(ty: &Type) -> u32 {
+    let target = std::env::var("TARGET").unwrap_or("".to_string());
+    // let pointer_size = if target.contains("emscripten") { 4 } else { 8 };
+    let pointer_size = 4;
     match ty {
         Type::Path(tp) if tp.path.is_ident("u8") => 1,
         Type::Path(tp) if tp.path.is_ident("u16") => 2,
@@ -613,20 +616,20 @@ fn get_type_size(ty: &Type) -> u32 {
         Type::Path(tp) if tp.path.is_ident("bool") => 1,
         Type::Path(tp) if tp.path.is_ident("PointerT") => 8,
         Type::Path(tp) if tp.path.is_ident("EcsEntityT") => 8,
-        Type::Path(tp) if tp.path.is_ident("String") => 8,
-        Type::Path(tp) if tp.path.is_ident("Vec<u8>") => 8,
-        Type::Path(tp) if tp.path.is_ident("Vec<u16>") => 8,
-        Type::Path(tp) if tp.path.is_ident("Vec<u32>") => 8,
-        Type::Path(tp) if tp.path.is_ident("Vec<u64>") => 8,
-        Type::Path(tp) if tp.path.is_ident("Vec<i8>") => 8,
-        Type::Path(tp) if tp.path.is_ident("Vec<i16>") => 8,
-        Type::Path(tp) if tp.path.is_ident("Vec<i32>") => 8,
-        Type::Path(tp) if tp.path.is_ident("Vec<i64>") => 8,
-        Type::Path(tp) if tp.path.is_ident("Vec<f32>") => 8,
-        Type::Path(tp) if tp.path.is_ident("Vec<f64>") => 8,
-        Type::Path(tp) if tp.path.is_ident("Vec<PointerT>") => 8,
-        Type::Path(tp) if tp.path.is_ident("Vec<EcsEntityT>") => 8,
-        Type::Ptr(_) => 8,
+        Type::Path(tp) if tp.path.is_ident("String") => pointer_size,
+        Type::Path(tp) if tp.path.is_ident("Vec<u8>") => pointer_size,
+        Type::Path(tp) if tp.path.is_ident("Vec<u16>") => pointer_size,
+        Type::Path(tp) if tp.path.is_ident("Vec<u32>") => pointer_size,
+        Type::Path(tp) if tp.path.is_ident("Vec<u64>") => pointer_size,
+        Type::Path(tp) if tp.path.is_ident("Vec<i8>") => pointer_size,
+        Type::Path(tp) if tp.path.is_ident("Vec<i16>") => pointer_size,
+        Type::Path(tp) if tp.path.is_ident("Vec<i32>") => pointer_size,
+        Type::Path(tp) if tp.path.is_ident("Vec<i64>") => pointer_size,
+        Type::Path(tp) if tp.path.is_ident("Vec<f32>") => pointer_size,
+        Type::Path(tp) if tp.path.is_ident("Vec<f64>") => pointer_size,
+        Type::Path(tp) if tp.path.is_ident("Vec<PointerT>") => pointer_size,
+        Type::Path(tp) if tp.path.is_ident("Vec<EcsEntityT>") => pointer_size,
+        Type::Ptr(_) => pointer_size,
         Type::Path(tp) => {
             let segment = match tp.path.segments.last() {
                 Some(seg) => seg,
@@ -673,7 +676,7 @@ fn get_type_size(ty: &Type) -> u32 {
                inner_type.path.is_ident("PointerT") ||
                inner_type.path.is_ident("EcsEntityT")
             {
-                return 8;
+                return pointer_size;
             }
         
             println!("Unsupported Vec type: {}", quote!(#ty));
@@ -687,6 +690,9 @@ fn get_type_size(ty: &Type) -> u32 {
 }  
 
 fn get_type_alignment(ty: &Type) -> u32 {
+    let target = std::env::var("TARGET").unwrap_or("".to_string());
+    // let pointer_size = if target.contains("emscripten") { 4 } else { 8 };
+    let pointer_size = 4;
     match ty {
         Type::Path(tp) if tp.path.is_ident("u8") => 1,
         Type::Path(tp) if tp.path.is_ident("u16") => 2,
@@ -701,20 +707,20 @@ fn get_type_alignment(ty: &Type) -> u32 {
         Type::Path(tp) if tp.path.is_ident("bool") => 1,
         Type::Path(tp) if tp.path.is_ident("PointerT") => 8,
         Type::Path(tp) if tp.path.is_ident("EcsEntityT") => 8,
-        Type::Path(tp) if tp.path.is_ident("String") => 8, // Assuming String is a pointer
-        Type::Path(tp) if tp.path.is_ident("Vec<u8>") => 8,
-        Type::Path(tp) if tp.path.is_ident("Vec<u16>") => 8,
-        Type::Path(tp) if tp.path.is_ident("Vec<u32>") => 8,
-        Type::Path(tp) if tp.path.is_ident("Vec<u64>") => 8,
-        Type::Path(tp) if tp.path.is_ident("Vec<i8>") => 8,
-        Type::Path(tp) if tp.path.is_ident("Vec<i16>") => 8,
-        Type::Path(tp) if tp.path.is_ident("Vec<i32>") => 8,
-        Type::Path(tp) if tp.path.is_ident("Vec<i64>") => 8,
-        Type::Path(tp) if tp.path.is_ident("Vec<f32>") => 8,
-        Type::Path(tp) if tp.path.is_ident("Vec<f64>") => 8,
-        Type::Path(tp) if tp.path.is_ident("Vec<PointerT>") => 8,
-        Type::Path(tp) if tp.path.is_ident("Vec<EcsEntityT>") => 8,
-        Type::Ptr(_) => 8, // Pointers are 8 bytes in a 64-bit context
+        Type::Path(tp) if tp.path.is_ident("String") => pointer_size, // Assuming String is a pointer
+        Type::Path(tp) if tp.path.is_ident("Vec<u8>") => pointer_size,
+        Type::Path(tp) if tp.path.is_ident("Vec<u16>") => pointer_size,
+        Type::Path(tp) if tp.path.is_ident("Vec<u32>") => pointer_size,
+        Type::Path(tp) if tp.path.is_ident("Vec<u64>") => pointer_size,
+        Type::Path(tp) if tp.path.is_ident("Vec<i8>") => pointer_size,
+        Type::Path(tp) if tp.path.is_ident("Vec<i16>") => pointer_size,
+        Type::Path(tp) if tp.path.is_ident("Vec<i32>") => pointer_size,
+        Type::Path(tp) if tp.path.is_ident("Vec<i64>") => pointer_size,
+        Type::Path(tp) if tp.path.is_ident("Vec<f32>") => pointer_size,
+        Type::Path(tp) if tp.path.is_ident("Vec<f64>") => pointer_size,
+        Type::Path(tp) if tp.path.is_ident("Vec<PointerT>") => pointer_size,
+        Type::Path(tp) if tp.path.is_ident("Vec<EcsEntityT>") => pointer_size,
+        Type::Ptr(_) => pointer_size, // Pointers are 8 bytes in a 64-bit context
         Type::Path(tp) => {
             let segment = match tp.path.segments.last() {
                 Some(seg) => seg,
@@ -761,7 +767,7 @@ fn get_type_alignment(ty: &Type) -> u32 {
                inner_type.path.is_ident("PointerT") ||
                inner_type.path.is_ident("EcsEntityT")
             {
-                return 8;
+                return pointer_size;
             }
         
             println!("Unsupported Vec type: {}", quote!(#ty));

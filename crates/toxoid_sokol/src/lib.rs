@@ -13,7 +13,9 @@ pub mod bindings_x86;
 #[cfg(not(target_os = "emscripten"))]
 use bindings::*;
 #[cfg(target_os = "emscripten")]
-use bindings_x86::*;
+pub use bindings_x86 as bindings;
+#[cfg(target_os = "emscripten")]
+pub use bindings::*;
 pub mod render_2d;
 // include!(concat!(env!("OUT_DIR"), "/bindings.rs"));
 pub use render_2d::*;
