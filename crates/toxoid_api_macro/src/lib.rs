@@ -600,8 +600,7 @@ fn get_type_code(ty: &Type) -> u8 {
 
 fn get_type_size(ty: &Type) -> u32 {
     let target = std::env::var("TARGET").unwrap_or("".to_string());
-    // let pointer_size = if target.contains("emscripten") { 4 } else { 8 };
-    let pointer_size = 4;
+    let pointer_size = if target.contains("emscripten") { 4 } else { 8 };
     match ty {
         Type::Path(tp) if tp.path.is_ident("u8") => 1,
         Type::Path(tp) if tp.path.is_ident("u16") => 2,
@@ -691,8 +690,7 @@ fn get_type_size(ty: &Type) -> u32 {
 
 fn get_type_alignment(ty: &Type) -> u32 {
     let target = std::env::var("TARGET").unwrap_or("".to_string());
-    // let pointer_size = if target.contains("emscripten") { 4 } else { 8 };
-    let pointer_size = 4;
+    let pointer_size = if target.contains("emscripten") { 4 } else { 8 };
     match ty {
         Type::Path(tp) if tp.path.is_ident("u8") => 1,
         Type::Path(tp) if tp.path.is_ident("u16") => 2,
