@@ -2,6 +2,7 @@ mod renderer;
 mod input;
 mod systems;
 mod entities;
+mod prefabs;
 #[cfg(not(target_arch = "wasm32"))]
 mod watch;
 
@@ -15,6 +16,10 @@ pub extern "C" fn init_bootstrap(user_data: *mut core::ffi::c_void) {
     let mut entity = toxoid_api::Entity::from_id(render_systems.get_entity());
     entity.enable();
 
+    // Initialize engine bootstrap entities
+    entities::init();
+
+    // Initialize app host after engine is bootstrapped
     // Call user data "init_host" as function
     let init_host = unsafe {
         std::mem::transmute::<*mut core::ffi::c_void, extern "C" fn() -> ()>(user_data)
@@ -30,13 +35,12 @@ pub extern "C" fn init_bootstrap(user_data: *mut core::ffi::c_void) {
 pub fn init(init_host: extern "C" fn()) {
     // Initialize ECS
     toxoid_api::components::init();
-    entities::init();
     systems::init();
 
     // TODO: Possibly change this when we have Flecs system phases
     // so that we can dynamically enable / disable systems and the ECS
     // so initialization order vs the decoupled renderer is not 
-    // nessecarily an issue.
+    // nessecarily an issue. (This is already implmented, but should now be implemented in a threaded way with decoupling).
     // Also want to make sure we're running on different loops / threads 
     // for gameplay logic (ECS) vs rendering (Sokol + ECS with renderer phase tagged systems)
     renderer::init(init_host);
