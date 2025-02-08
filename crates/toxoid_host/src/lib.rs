@@ -904,7 +904,7 @@ impl GuestEntity for Entity {
 
     fn relationships(&self) -> Vec<EcsEntityT> {
         // TODO: Needs Flecs filter
-        unimplemented!()
+        unimplemented!("Relationships not implemented");
     }
 
     fn add_relationship(&self, relationship: Relationship, target: ecs_entity_t) {

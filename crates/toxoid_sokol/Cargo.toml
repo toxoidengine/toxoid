@@ -26,7 +26,7 @@ default = [
     "fetch", 
     "audio", 
     "stb",
-    # "imgui",
+    "imgui",
     "spine"
 ]
 render = []

@@ -63,10 +63,10 @@ pub fn init() {
     // system.build();
     // render_systems_entity.parent_of_id(system.get_id());
 
-    // // Sprite Renderer
-    // let mut system = System::dsl("Sprite, Size", None, sprite_render_system);
-    // system.build();
-    // render_systems_entity.parent_of_id(system.get_id());
+    // Sprite Renderer
+    let mut system = System::dsl("Sprite, Size", None, sprite_render_system);
+    system.build();
+    render_systems_entity.parent_of_id(system.get_id());
 
     // Bone Animation Renderer
     let mut system = System::dsl("SpineInstance, Position, BoneAnimation", None, render_bone_animation);

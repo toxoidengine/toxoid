@@ -56,10 +56,13 @@ build-em:
 		-s STANDALONE_WASM=1 \
 		-s EXPORTED_RUNTIME_METHODS=['ccall','cwrap'] \
 		-s NO_EXIT_RUNTIME=1" \
-	cd app/host && cargo build --target wasm32-unknown-emscripten
+	cd app/host && TARGET=wasm32-unknown-emscripten cargo build --target wasm32-unknown-emscripten
 	cp target/wasm32-unknown-emscripten/debug/host.wasm dist/host.wasm
 	cp target/wasm32-unknown-emscripten/debug/host.js dist/host.js
 
+run-em:
+	basic-http-server dist
+	
 run:
 	cd app/host && cargo run
 
