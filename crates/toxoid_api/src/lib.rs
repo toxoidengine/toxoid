@@ -372,7 +372,7 @@ impl Query {
 
     #[cfg(any(not(target_arch = "wasm32"), target_os = "emscripten"))]
     pub fn entities(&self) -> Vec<Entity> {
-        unimplemented!()
+        unimplemented!("Entities not implemented on native / Emscripten");
     }
 
     #[cfg(all(target_arch = "wasm32", not(target_os = "emscripten")))]
@@ -581,7 +581,7 @@ impl Observer {
     // WASM
     #[cfg(all(target_arch = "wasm32", not(target_os = "emscripten")))]
     pub fn callback(&self) -> i64 {
-        unimplemented!()
+        unimplemented!("Callback for observer not implemented on WASM");
     }
 }
 
@@ -763,6 +763,8 @@ pub fn fetch(path: &str, data_type: DataType, user_data: Option<u64>) {
         fetch_request.set_user_data(user_data);
     }
     entity.add::<Loading>();
+    // println!("Fetch request data type: {}", fetch_request.get_data_type());
+    // println!("Entity ID origin: {}", entity.get_id());
 }
 
 pub fn load_sprite(path: &str) {
@@ -788,7 +790,6 @@ pub fn load_animation(atlas_filename: &str, skeleton_filename: &str) {
     atlas.set_filename(atlas_filename.to_string());
     let mut skeleton = entity.get::<Skeleton>();
     skeleton.set_filename(skeleton_filename.to_string());
-
     fetch(atlas_filename, DataType::BoneAnimationAtlas, Some(entity.get_id()));
     fetch(skeleton_filename, DataType::BoneAnimationSkeleton, Some(entity.get_id()));
 }
