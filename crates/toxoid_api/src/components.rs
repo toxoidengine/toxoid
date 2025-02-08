@@ -9,7 +9,7 @@ component! {
         right: bool, 
     },
     RenderSystems {
-        entity: u64
+        entity: EcsEntityT
     },
 
     // -- Components --
@@ -30,33 +30,33 @@ component! {
         a: f32
     },
     Sprite {
-        sprite: u64
+        sprite: PointerT
     },
     Image {
-        info: u64
+        info: PointerT
     },
     // Fetch
     FetchRequest {
         path: String,
         data: Vec::<u8>,
         data_type: u8,
-        user_data: u64
+        user_data: EcsEntityT
     },
     // Animation
     Atlas {
-        atlas: u64,
+        atlas: PointerT,
         filename: String,
         data: Vec::<u8>,
         loaded: bool,
     },
     Skeleton {
-        skeleton: u64,
+        skeleton: PointerT,
         filename: String,
         data: Vec::<u8>,
         loaded: bool,
     },
     Images {
-        images: Vec::<u64>,
+        images: Vec::<PointerT>,
         loaded: bool,
     },
     BoneAnimation {
@@ -64,8 +64,8 @@ component! {
         animation: String
     },
     SpineInstance {
-        instance: u64,
-        ctx: u64,
+        instance: PointerT,
+        ctx: PointerT,
         instantiated: bool
     },
 

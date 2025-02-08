@@ -238,6 +238,34 @@ pub fn component(input: TokenStream) -> TokenStream {
                                     }
                                 }
                             },
+                            _ if field_type_str == "PointerT" => {
+                                quote! {
+                                    pub fn #getter_name(&self) -> PointerT {
+                                        unsafe {
+                                            self.component.as_mut().unwrap().get_member_u64(#field_offset)
+                                        }
+                                    }
+                                    pub fn #setter_name(&mut self, value: EcsEntityT) {
+                                        unsafe {
+                                            self.component.as_mut().unwrap().set_member_u64(#field_offset, value);
+                                        }
+                                    }
+                                }
+                            },
+                            _ if field_type_str == "EcsEntityT" => {
+                                quote! {
+                                    pub fn #getter_name(&self) -> EcsEntityT {
+                                        unsafe {
+                                            self.component.as_mut().unwrap().get_member_u64(#field_offset)
+                                        }
+                                    }
+                                    pub fn #setter_name(&mut self, value: u64) {
+                                        unsafe {
+                                            self.component.as_mut().unwrap().set_member_u64(#field_offset, value);
+                                        }
+                                    }
+                                }
+                            },
                             _ if field_type_str == "String" => {
                                 quote! {
                                     pub fn #getter_name(&self) -> String {
@@ -295,6 +323,48 @@ pub fn component(input: TokenStream) -> TokenStream {
                                     }
                                     #[cfg(any(not(target_arch = "wasm32"), target_os = "emscripten"))]
                                     pub fn #setter_name(&mut self, value: Vec<u64>) {
+                                        unsafe {
+                                            self.component.as_mut().unwrap().set_member_u64list(#field_offset, value);
+                                        }
+                                    }
+                                }
+                            },
+                            _ if field_type_str == "Vec :: < PointerT >" => {
+                                quote! {
+                                    pub fn #getter_name(&self) -> Vec<PointerT> {
+                                        unsafe {
+                                            self.component.as_mut().unwrap().get_member_u64list(#field_offset)
+                                        }
+                                    }
+                                    #[cfg(all(target_arch = "wasm32", not(target_os = "emscripten")))]
+                                    pub fn #setter_name(&mut self, value: Vec<PointerT>) {
+                                        unsafe {
+                                            self.component.as_mut().unwrap().set_member_u64list(#field_offset, value.as_slice());
+                                        }
+                                    }
+                                    #[cfg(any(not(target_arch = "wasm32"), target_os = "emscripten"))]
+                                    pub fn #setter_name(&mut self, value: Vec<PointerT>) {
+                                        unsafe {
+                                            self.component.as_mut().unwrap().set_member_u64list(#field_offset, value);
+                                        }
+                                    }
+                                }
+                            },
+                            _ if field_type_str == "Vec :: < EcsEntityT >" => {
+                                quote! {
+                                    pub fn #getter_name(&self) -> Vec<EcsEntityT> {
+                                        unsafe {
+                                            self.component.as_mut().unwrap().get_member_u64list(#field_offset)
+                                        }
+                                    }
+                                    #[cfg(all(target_arch = "wasm32", not(target_os = "emscripten")))]
+                                    pub fn #setter_name(&mut self, value: Vec<EcsEntityT>) {
+                                        unsafe {
+                                            self.component.as_mut().unwrap().set_member_u64list(#field_offset, value.as_slice());
+                                        }
+                                    }
+                                    #[cfg(any(not(target_arch = "wasm32"), target_os = "emscripten"))]
+                                    pub fn #setter_name(&mut self, value: Vec<EcsEntityT>) {
                                         unsafe {
                                             self.component.as_mut().unwrap().set_member_u64list(#field_offset, value);
                                         }
@@ -454,6 +524,8 @@ fn get_type_code(ty: &Type) -> u8 {
         Type::Path(tp) if tp.path.is_ident("f32") => FieldType::F32 as u8,
         Type::Path(tp) if tp.path.is_ident("f64") => FieldType::F64 as u8,
         Type::Path(tp) if tp.path.is_ident("bool") => FieldType::Bool as u8,
+        Type::Path(tp) if tp.path.is_ident("PointerT") => FieldType::Pointer as u8,
+        Type::Path(tp) if tp.path.is_ident("EcsEntityT") => FieldType::Pointer as u8,
         Type::Path(tp) if tp.path.is_ident("String") => FieldType::String as u8,
         Type::Path(tp) if tp.path.is_ident("Vec<u8>") => FieldType::Pointer as u8,
         Type::Path(tp) if tp.path.is_ident("Vec<u32>") => FieldType::Pointer as u8,
@@ -464,6 +536,8 @@ fn get_type_code(ty: &Type) -> u8 {
         Type::Path(tp) if tp.path.is_ident("Vec<i64>") => FieldType::Pointer as u8,
         Type::Path(tp) if tp.path.is_ident("Vec<f32>") => FieldType::Pointer as u8,
         Type::Path(tp) if tp.path.is_ident("Vec<f64>") => FieldType::Pointer as u8,
+        Type::Path(tp) if tp.path.is_ident("Vec<PointerT>") => FieldType::Pointer as u8,
+        Type::Path(tp) if tp.path.is_ident("Vec<EcsEntityT>") => FieldType::Pointer as u8,
         Type::Path(tp) => {
             let segment = match tp.path.segments.last() {
                 Some(seg) => seg,
@@ -506,7 +580,9 @@ fn get_type_code(ty: &Type) -> u8 {
                inner_type.path.is_ident("i32") || 
                inner_type.path.is_ident("i64") || 
                inner_type.path.is_ident("f32") || 
-               inner_type.path.is_ident("f64")
+               inner_type.path.is_ident("f64") ||
+               inner_type.path.is_ident("PointerT") ||
+               inner_type.path.is_ident("EcsEntityT")
             {
                 return FieldType::Pointer as u8;
             }
@@ -535,6 +611,8 @@ fn get_type_size(ty: &Type) -> u32 {
         Type::Path(tp) if tp.path.is_ident("f32") => 4,
         Type::Path(tp) if tp.path.is_ident("f64") => 8,
         Type::Path(tp) if tp.path.is_ident("bool") => 1,
+        Type::Path(tp) if tp.path.is_ident("PointerT") => 8,
+        Type::Path(tp) if tp.path.is_ident("EcsEntityT") => 8,
         Type::Path(tp) if tp.path.is_ident("String") => 8,
         Type::Path(tp) if tp.path.is_ident("Vec<u8>") => 8,
         Type::Path(tp) if tp.path.is_ident("Vec<u16>") => 8,
@@ -546,6 +624,8 @@ fn get_type_size(ty: &Type) -> u32 {
         Type::Path(tp) if tp.path.is_ident("Vec<i64>") => 8,
         Type::Path(tp) if tp.path.is_ident("Vec<f32>") => 8,
         Type::Path(tp) if tp.path.is_ident("Vec<f64>") => 8,
+        Type::Path(tp) if tp.path.is_ident("Vec<PointerT>") => 8,
+        Type::Path(tp) if tp.path.is_ident("Vec<EcsEntityT>") => 8,
         Type::Ptr(_) => 8,
         Type::Path(tp) => {
             let segment = match tp.path.segments.last() {
@@ -589,7 +669,9 @@ fn get_type_size(ty: &Type) -> u32 {
                inner_type.path.is_ident("i32") || 
                inner_type.path.is_ident("i64") || 
                inner_type.path.is_ident("f32") || 
-               inner_type.path.is_ident("f64") 
+               inner_type.path.is_ident("f64") ||
+               inner_type.path.is_ident("PointerT") ||
+               inner_type.path.is_ident("EcsEntityT")
             {
                 return 8;
             }
@@ -617,6 +699,8 @@ fn get_type_alignment(ty: &Type) -> u32 {
         Type::Path(tp) if tp.path.is_ident("f32") => 4,
         Type::Path(tp) if tp.path.is_ident("f64") => 8,
         Type::Path(tp) if tp.path.is_ident("bool") => 1,
+        Type::Path(tp) if tp.path.is_ident("PointerT") => 8,
+        Type::Path(tp) if tp.path.is_ident("EcsEntityT") => 8,
         Type::Path(tp) if tp.path.is_ident("String") => 8, // Assuming String is a pointer
         Type::Path(tp) if tp.path.is_ident("Vec<u8>") => 8,
         Type::Path(tp) if tp.path.is_ident("Vec<u16>") => 8,
@@ -628,6 +712,8 @@ fn get_type_alignment(ty: &Type) -> u32 {
         Type::Path(tp) if tp.path.is_ident("Vec<i64>") => 8,
         Type::Path(tp) if tp.path.is_ident("Vec<f32>") => 8,
         Type::Path(tp) if tp.path.is_ident("Vec<f64>") => 8,
+        Type::Path(tp) if tp.path.is_ident("Vec<PointerT>") => 8,
+        Type::Path(tp) if tp.path.is_ident("Vec<EcsEntityT>") => 8,
         Type::Ptr(_) => 8, // Pointers are 8 bytes in a 64-bit context
         Type::Path(tp) => {
             let segment = match tp.path.segments.last() {
@@ -671,7 +757,9 @@ fn get_type_alignment(ty: &Type) -> u32 {
                inner_type.path.is_ident("i32") || 
                inner_type.path.is_ident("i64") || 
                inner_type.path.is_ident("f32") || 
-               inner_type.path.is_ident("f64") 
+               inner_type.path.is_ident("f64") ||
+               inner_type.path.is_ident("PointerT") ||
+               inner_type.path.is_ident("EcsEntityT")
             {
                 return 8;
             }
