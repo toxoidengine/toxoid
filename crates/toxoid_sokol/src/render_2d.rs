@@ -6,7 +6,6 @@ use sokol::{app as sapp, gfx as sg, glue as sglue};
 use toxoid_render::{Renderer2D, RenderTarget, Sprite};
 use toxoid_api::components::{Position, Size, Color};
 use std::any::Any;
-use std::mem::MaybeUninit;
 
 pub struct SokolRenderer2D {
     pass_action: sg::PassAction,
