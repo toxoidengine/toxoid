@@ -3,83 +3,66 @@ use toxoid_sokol::{bindings::*, SokolRenderTarget, SokolRenderer2D, SokolSprite}
 use toxoid_render::Renderer2D;
 use crate::prefabs::*;
 
-// Rect Renderer
-#[components(_, Position, Size, Color, _)]
-pub fn rect_render_system(iter: &Iter) {
-    for (pos, size, color) in components {
-        SokolRenderer2D::draw_filled_rect(&pos, &size, &color);
-    }
-}
+// // Rect Renderer
+// #[components(_, Position, Size, Color, _)]
+// pub fn rect_render_system(iter: &Iter) {
+//     for (pos, size, color) in components {
+//         SokolRenderer2D::draw_filled_rect(&pos, &size, &color);
+//     }
+// }
 
-// Sprite Renderer
+// // Sprite Renderer
+// #[components(Sprite, Size)]
+// pub fn sprite_render_system(iter: &Iter) {
+//     for (sprite, _size) in components {
+//         let sprite_box = unsafe { Box::from_raw(sprite.get_sprite() as *mut SokolSprite) };
+//         let sprite_trait_object: &Box<dyn toxoid_render::Sprite> = Box::leak(Box::new(sprite_box as Box<dyn toxoid_render::Sprite>));
+//         SokolRenderer2D::draw_sprite(sprite_trait_object, 0., 0.);
+//     }
+// }
+
+// // SpineInstance, Position, BoneAnimation
+// #[components(SpineInstance, Position, _)]
+// pub fn render_bone_animation(iter: &Iter) {
+//     for (spine_instance, position) in components {
+//         if spine_instance.get_instantiated() {
+//             unsafe {
+//                 // Get the spine instance
+//                 let instance = spine_instance.get_instance() as *mut sspine_instance;
+//                 // Advance the instance animation and draw the instance.
+//                 // Important to note here is that no actual sokol-gfx rendering happens yet,
+//                 // instead sokol-spine will only record vertices, indices and draw commands.
+//                 // Also, all sokol-spine functions can be called with invalid or 'incomplete'
+//                 // handles, that way we don't need to care about whether the spine objects
+//                 // have actually been created yet (because their data might still be loading)
+//                 let mut delta_time = sapp_frame_duration();
+//                 if delta_time < 0.016 {
+//                     delta_time = delta_time / 8.
+//                 }
+//                 // Update animation and record draw commands
+//                 sspine_update_instance(*instance, delta_time as f32);
+//                 sspine_set_position(*instance, sspine_vec2 { 
+//                     x: position.get_x() as f32, 
+//                     y: position.get_y() as f32 
+//                 });
+//                 // Record draw commands (but don't render yet)
+//                 sspine_draw_instance_in_layer(*instance, 0);
+//             }
+//         }
+//     }
+// }
+
+// Blit sprite to render target
 #[components(Sprite, Size)]
-pub fn sprite_render_system(iter: &Iter) {
-    for (sprite, _size) in components {
-        let sprite_box = unsafe { Box::from_raw(sprite.get_sprite() as *mut SokolSprite) };
-        let sprite_trait_object: &Box<dyn toxoid_render::Sprite> = Box::leak(Box::new(sprite_box as Box<dyn toxoid_render::Sprite>));
-        SokolRenderer2D::draw_sprite(sprite_trait_object, 0., 0.);
-    }
-}
-
-// SpineInstance, Position, BoneAnimation
-#[components(SpineInstance, Position, _)]
-pub fn render_bone_animation(iter: &Iter) {
-    for (spine_instance, position) in components {
-        if spine_instance.get_instantiated() {
-            unsafe {
-                // Get the spine instance
-                let instance = spine_instance.get_instance() as *mut sspine_instance;
-                // Advance the instance animation and draw the instance.
-                // Important to note here is that no actual sokol-gfx rendering happens yet,
-                // instead sokol-spine will only record vertices, indices and draw commands.
-                // Also, all sokol-spine functions can be called with invalid or 'incomplete'
-                // handles, that way we don't need to care about whether the spine objects
-                // have actually been created yet (because their data might still be loading)
-                let mut delta_time = sapp_frame_duration();
-                if delta_time < 0.016 {
-                    delta_time = delta_time / 8.
-                }
-                // Update animation and record draw commands
-                sspine_update_instance(*instance, delta_time as f32);
-                sspine_set_position(*instance, sspine_vec2 { 
-                    x: position.get_x() as f32, 
-                    y: position.get_y() as f32 
-                });
-                // Record draw commands (but don't render yet)
-                sspine_draw_instance_in_layer(*instance, 0);
-            }
-        }
-    }
-}
-
-#[components(Sprite, _, Position, Size)]
 pub fn blit_sprite_system(iter: &Iter) {
-    for (sprite, position, size) in components {
-        // SokolRenderer2D::draw_sprite(sprite, position.get_x(), position.get_y());
-
-        // Create render target entity
-        // let mut rt_entity = render_target();
-        // let rt = SokolRenderer2D::create_render_target(size.get_width() as u32, size.get_height() as u32);
-        // let mut rt_component = rt_entity.get::<RenderTarget>();
-        // rt_component
-        //     .set_render_target(
-        //         Box::leak(rt) as *const _ as *const std::ffi::c_void as u64
-        //     );
-
-        // let mut rt_size = rt_entity.get::<Size>();
-        // rt_size.set_width(size.get_width());
-        // rt_size.set_height(size.get_height());
-        // let mut rt_pos = rt_entity.get::<Position>();
-        // rt_pos.set_x(position.get_x());
-        // rt_pos.set_y(position.get_y());
-    }
+    println!("Blitting sprite to render target");
+    // for (_sprite, _size) in components {}
 }
 
-// Final
+// Draw Render Targets to screen as final output
 #[components(RenderTarget, _, Size, Position, BlendMode)]
 pub fn draw_render_targets_system(iter: &Iter) {
     for (rt, size, position, blend_mode) in components {
-        println!("Draw render target");
         // Get render target object / pointer
         let rt_ptr = rt.get_render_target();
         let rt_ptr_box = unsafe { Box::from_raw(rt_ptr as *mut SokolRenderTarget) };
@@ -125,6 +108,10 @@ pub fn blit_systems(render_systems_entity: &mut Entity) {
     // let mut system = System::dsl("Sprite, Blittable, Position, Size", None, blit_sprite_system);
     // system.build();
     // render_systems_entity.parent_of_id(system.get_id());
+
+    let mut system = System::dsl("Sprite, Size, (ChildOf, $Parent), RenderTarget($Parent)", None, blit_sprite_system);
+    system.build();
+    render_systems_entity.parent_of_id(system.get_id());
 }
 
 // Rendering Systems

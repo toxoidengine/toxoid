@@ -500,8 +500,6 @@ impl System {
     }
 }
 
-
-
 impl Observer {
     // Not wasm
     #[cfg(any(not(target_arch = "wasm32"), target_os = "emscripten"))]
@@ -752,14 +750,6 @@ pub enum DataType {
     Font
 }
 
-#[repr(u8)]
-pub enum CustomRelationship {
-    RenderTarget,
-    Sprite,
-    BoneAnimation,
-    Network
-}
-
 // Fetch assets / resources from the asset server or local file system
 pub fn fetch(path: &str, data_type: DataType, user_data: Option<u64>) {
     let mut entity = Entity::new(None);
@@ -775,13 +765,13 @@ pub fn fetch(path: &str, data_type: DataType, user_data: Option<u64>) {
     // println!("Entity ID origin: {}", entity.get_id());
 }
 
-pub fn load_sprite(path: &str) {
-    // let mut entity = Entity::new(None);
-    // entity.add::<Loading>();
-    // entity.add::<Sprite>();
-    // entity.add::<Size>();
-    // fetch(path, DataType::Sprite, Some(entity.get_id()));
-    fetch(path, DataType::Sprite, None);
+pub fn load_sprite(path: &str) -> Entity {
+    let mut entity = Entity::new(None);
+    entity.add::<Sprite>();
+    entity.add::<Position>();
+    entity.add::<Size>();
+    fetch(path, DataType::Sprite, Some(entity.get_id()));
+    entity
 }
 
 pub fn load_animation(atlas_filename: &str, skeleton_filename: &str) {
