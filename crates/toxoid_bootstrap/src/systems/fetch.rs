@@ -190,16 +190,20 @@ pub fn init() {
                     );
                 },
                 d if d == DataType::Sprite as u8 => {
+                    // Create entity from entity ID passed to user data
+                    let mut entity = Entity::from_id(fetch_request.get_user_data());
+                    // Get data
                     let data = data.as_slice().as_ptr();
+                    // Create sokol sprite
                     let sokol_sprite = SokolRenderer2D::create_sprite(data, size);
-                    let mut entity = Entity::new(None);
-                    entity.add::<Size>();
-                    entity.add::<Sprite>();
+                    // Set size
                     let mut size = entity.get::<Size>();
                     size.set_width(sokol_sprite.width());
                     size.set_height(sokol_sprite.height());
+                    // Set sprite
                     let mut sprite = entity.get::<Sprite>();
                     sprite.set_sprite(Box::into_raw(sokol_sprite) as *mut () as u64);
+                    entity.add::<Blittable>();
                 }
                 d if d == DataType::BoneAnimationAtlas as u8 => {
                     let mut animation_entity = Entity::from_id(fetch_request.get_user_data());

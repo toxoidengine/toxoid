@@ -1,3 +1,7 @@
 use toxoid_api::*;
+use crate::prefabs::*;
 
-pub fn init() {}
+pub fn init() {
+    // Create sprite
+    create_sprite("assets/sprite.png");
+}
