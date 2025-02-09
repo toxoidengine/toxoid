@@ -331,6 +331,85 @@ pub mod exports {
                         f.debug_struct("QueryDesc").field("expr", &self.expr).finish()
                     }
                 }
+                #[repr(C)]
+                #[derive(Clone, Copy)]
+                pub struct SortingDesc {
+                    pub id: EcsEntityT,
+                    pub callback: PointerT,
+                }
+                impl ::core::fmt::Debug for SortingDesc {
+                    fn fmt(
+                        &self,
+                        f: &mut ::core::fmt::Formatter<'_>,
+                    ) -> ::core::fmt::Result {
+                        f.debug_struct("SortingDesc")
+                            .field("id", &self.id)
+                            .field("callback", &self.callback)
+                            .finish()
+                    }
+                }
+                #[derive(Clone)]
+                pub struct SystemDesc {
+                    pub name: Option<_rt::String>,
+                    pub tick_rate: Option<i32>,
+                    pub callback: PointerT,
+                    pub query_desc: QueryDesc,
+                    pub is_guest: bool,
+                }
+                impl ::core::fmt::Debug for SystemDesc {
+                    fn fmt(
+                        &self,
+                        f: &mut ::core::fmt::Formatter<'_>,
+                    ) -> ::core::fmt::Result {
+                        f.debug_struct("SystemDesc")
+                            .field("name", &self.name)
+                            .field("tick-rate", &self.tick_rate)
+                            .field("callback", &self.callback)
+                            .field("query-desc", &self.query_desc)
+                            .field("is-guest", &self.is_guest)
+                            .finish()
+                    }
+                }
+                #[derive(Clone)]
+                pub struct PipelineDesc {
+                    pub name: _rt::String,
+                    pub query_desc: QueryDesc,
+                    pub phases: _rt::Vec<EcsEntityT>,
+                }
+                impl ::core::fmt::Debug for PipelineDesc {
+                    fn fmt(
+                        &self,
+                        f: &mut ::core::fmt::Formatter<'_>,
+                    ) -> ::core::fmt::Result {
+                        f.debug_struct("PipelineDesc")
+                            .field("name", &self.name)
+                            .field("query-desc", &self.query_desc)
+                            .field("phases", &self.phases)
+                            .finish()
+                    }
+                }
+                #[derive(Clone)]
+                pub struct ObserverDesc {
+                    pub name: Option<_rt::String>,
+                    pub query_desc: QueryDesc,
+                    pub events: _rt::Vec<Event>,
+                    pub callback: PointerT,
+                    pub is_guest: bool,
+                }
+                impl ::core::fmt::Debug for ObserverDesc {
+                    fn fmt(
+                        &self,
+                        f: &mut ::core::fmt::Formatter<'_>,
+                    ) -> ::core::fmt::Result {
+                        f.debug_struct("ObserverDesc")
+                            .field("name", &self.name)
+                            .field("query-desc", &self.query_desc)
+                            .field("events", &self.events)
+                            .field("callback", &self.callback)
+                            .field("is-guest", &self.is_guest)
+                            .finish()
+                    }
+                }
                 /// Convert to component-type instead and make component instances seperate
                 #[derive(Debug)]
                 #[repr(transparent)]
@@ -1052,28 +1131,6 @@ pub mod exports {
                         }
                     }
                 }
-                #[derive(Clone)]
-                pub struct SystemDesc {
-                    pub name: Option<_rt::String>,
-                    pub tick_rate: Option<i32>,
-                    pub callback: u64,
-                    pub query_desc: QueryDesc,
-                    pub is_guest: bool,
-                }
-                impl ::core::fmt::Debug for SystemDesc {
-                    fn fmt(
-                        &self,
-                        f: &mut ::core::fmt::Formatter<'_>,
-                    ) -> ::core::fmt::Result {
-                        f.debug_struct("SystemDesc")
-                            .field("name", &self.name)
-                            .field("tick-rate", &self.tick_rate)
-                            .field("callback", &self.callback)
-                            .field("query-desc", &self.query_desc)
-                            .field("is-guest", &self.is_guest)
-                            .finish()
-                    }
-                }
                 #[derive(Debug)]
                 #[repr(transparent)]
                 pub struct System {
@@ -1312,24 +1369,6 @@ pub mod exports {
                         }
                     }
                 }
-                #[derive(Clone)]
-                pub struct PipelineDesc {
-                    pub name: _rt::String,
-                    pub query_desc: QueryDesc,
-                    pub phases: _rt::Vec<EcsEntityT>,
-                }
-                impl ::core::fmt::Debug for PipelineDesc {
-                    fn fmt(
-                        &self,
-                        f: &mut ::core::fmt::Formatter<'_>,
-                    ) -> ::core::fmt::Result {
-                        f.debug_struct("PipelineDesc")
-                            .field("name", &self.name)
-                            .field("query-desc", &self.query_desc)
-                            .field("phases", &self.phases)
-                            .finish()
-                    }
-                }
                 #[derive(Debug)]
                 #[repr(transparent)]
                 pub struct Pipeline {
@@ -1447,28 +1486,6 @@ pub mod exports {
                             }
                             drop(_handle);
                         }
-                    }
-                }
-                #[derive(Clone)]
-                pub struct ObserverDesc {
-                    pub name: Option<_rt::String>,
-                    pub query_desc: QueryDesc,
-                    pub events: _rt::Vec<Event>,
-                    pub callback: PointerT,
-                    pub is_guest: bool,
-                }
-                impl ::core::fmt::Debug for ObserverDesc {
-                    fn fmt(
-                        &self,
-                        f: &mut ::core::fmt::Formatter<'_>,
-                    ) -> ::core::fmt::Result {
-                        f.debug_struct("ObserverDesc")
-                            .field("name", &self.name)
-                            .field("query-desc", &self.query_desc)
-                            .field("events", &self.events)
-                            .field("callback", &self.callback)
-                            .field("is-guest", &self.is_guest)
-                            .finish()
                     }
                 }
                 #[derive(Debug)]
@@ -2777,6 +2794,22 @@ pub mod exports {
                 }
                 #[doc(hidden)]
                 #[allow(non_snake_case)]
+                pub unsafe fn _export_method_query_order_by_cabi<T: GuestQuery>(
+                    arg0: *mut u8,
+                    arg1: i64,
+                    arg2: i64,
+                ) {
+                    #[cfg(target_arch = "wasm32")] _rt::run_ctors_once();
+                    T::order_by(
+                        QueryBorrow::lift(arg0 as u32 as usize).get(),
+                        SortingDesc {
+                            id: arg1 as u64,
+                            callback: arg2 as u64,
+                        },
+                    );
+                }
+                #[doc(hidden)]
+                #[allow(non_snake_case)]
                 pub unsafe fn _export_method_query_iter_cabi<T: GuestQuery>(
                     arg0: *mut u8,
                 ) -> i64 {
@@ -3058,6 +3091,22 @@ pub mod exports {
                 ) {
                     #[cfg(target_arch = "wasm32")] _rt::run_ctors_once();
                     T::build(SystemBorrow::lift(arg0 as u32 as usize).get());
+                }
+                #[doc(hidden)]
+                #[allow(non_snake_case)]
+                pub unsafe fn _export_method_system_order_by_cabi<T: GuestSystem>(
+                    arg0: *mut u8,
+                    arg1: i64,
+                    arg2: i64,
+                ) {
+                    #[cfg(target_arch = "wasm32")] _rt::run_ctors_once();
+                    T::order_by(
+                        SystemBorrow::lift(arg0 as u32 as usize).get(),
+                        SortingDesc {
+                            id: arg1 as u64,
+                            callback: arg2 as u64,
+                        },
+                    );
                 }
                 #[doc(hidden)]
                 #[allow(non_snake_case)]
@@ -3614,6 +3663,7 @@ pub mod exports {
                     }
                     fn new(desc: QueryDesc) -> Self;
                     fn build(&self);
+                    fn order_by(&self, desc: SortingDesc);
                     fn iter(&self) -> PointerT;
                     fn next(&self) -> bool;
                     fn count(&self) -> i32;
@@ -3757,7 +3807,8 @@ pub mod exports {
                     fn new(desc: SystemDesc) -> Self;
                     fn get_id(&self) -> EcsEntityT;
                     fn build(&self);
-                    fn callback(&self) -> u64;
+                    fn order_by(&self, desc: SortingDesc);
+                    fn callback(&self) -> PointerT;
                     fn disable(&self);
                     fn enable(&self);
                 }
@@ -4389,6 +4440,11 @@ pub mod exports {
                         extern "C" fn export_method_query_build(arg0 : * mut u8,) {
                         $($path_to_types)*:: _export_method_query_build_cabi::<<$ty as
                         $($path_to_types)*:: Guest >::Query > (arg0) } #[export_name =
+                        "toxoid:engine/ecs#[method]query.order-by"] unsafe extern "C" fn
+                        export_method_query_order_by(arg0 : * mut u8, arg1 : i64, arg2 :
+                        i64,) { $($path_to_types)*::
+                        _export_method_query_order_by_cabi::<<$ty as $($path_to_types)*::
+                        Guest >::Query > (arg0, arg1, arg2) } #[export_name =
                         "toxoid:engine/ecs#[method]query.iter"] unsafe extern "C" fn
                         export_method_query_iter(arg0 : * mut u8,) -> i64 {
                         $($path_to_types)*:: _export_method_query_iter_cabi::<<$ty as
@@ -4479,12 +4535,18 @@ pub mod exports {
                         export_method_system_build(arg0 : * mut u8,) {
                         $($path_to_types)*:: _export_method_system_build_cabi::<<$ty as
                         $($path_to_types)*:: Guest >::System > (arg0) } #[export_name =
-                        "toxoid:engine/ecs#[method]system.callback"] unsafe extern "C" fn
-                        export_method_system_callback(arg0 : * mut u8,) -> i64 {
-                        $($path_to_types)*:: _export_method_system_callback_cabi::<<$ty
-                        as $($path_to_types)*:: Guest >::System > (arg0) } #[export_name
-                        = "toxoid:engine/ecs#[method]system.disable"] unsafe extern "C"
-                        fn export_method_system_disable(arg0 : * mut u8,) {
+                        "toxoid:engine/ecs#[method]system.order-by"] unsafe extern "C" fn
+                        export_method_system_order_by(arg0 : * mut u8, arg1 : i64, arg2 :
+                        i64,) { $($path_to_types)*::
+                        _export_method_system_order_by_cabi::<<$ty as
+                        $($path_to_types)*:: Guest >::System > (arg0, arg1, arg2) }
+                        #[export_name = "toxoid:engine/ecs#[method]system.callback"]
+                        unsafe extern "C" fn export_method_system_callback(arg0 : * mut
+                        u8,) -> i64 { $($path_to_types)*::
+                        _export_method_system_callback_cabi::<<$ty as
+                        $($path_to_types)*:: Guest >::System > (arg0) } #[export_name =
+                        "toxoid:engine/ecs#[method]system.disable"] unsafe extern "C" fn
+                        export_method_system_disable(arg0 : * mut u8,) {
                         $($path_to_types)*:: _export_method_system_disable_cabi::<<$ty as
                         $($path_to_types)*:: Guest >::System > (arg0) } #[export_name =
                         "toxoid:engine/ecs#[method]system.enable"] unsafe extern "C" fn
@@ -4893,9 +4955,9 @@ pub(crate) use __export_toxoid_engine_world_impl as export;
 #[cfg(target_arch = "wasm32")]
 #[link_section = "component-type:wit-bindgen:0.35.0:toxoid:engine:toxoid-engine-world:encoded world"]
 #[doc(hidden)]
-pub static __WIT_BINDGEN_COMPONENT_TYPE: [u8; 6513] = *b"\
-\0asm\x0d\0\x01\0\0\x19\x16wit-component-encoding\x04\0\x07\xe71\x01A\x02\x01A\x02\
-\x01B\x92\x02\x01w\x04\0\x0cecs-entity-t\x03\0\0\x01w\x04\0\x09pointer-t\x03\0\x02\
+pub static __WIT_BINDGEN_COMPONENT_TYPE: [u8; 6641] = *b"\
+\0asm\x0d\0\x01\0\0\x19\x16wit-component-encoding\x04\0\x07\xe72\x01A\x02\x01A\x02\
+\x01B\x98\x02\x01w\x04\0\x0cecs-entity-t\x03\0\0\x01w\x04\0\x09pointer-t\x03\0\x02\
 \x01q\x03\x04is-a\0\0\x08child-of\0\0\x06custom\x01\x01\0\x04\0\x0crelationship\x03\
 \0\x04\x01q\x0a\x08on-start\0\0\x07on-load\0\0\x09post-load\0\0\x0apre-update\0\0\
 \x09on-update\0\0\x0bon-validate\0\0\x0bpost-update\0\0\x09pre-store\0\0\x08on-s\
@@ -4908,121 +4970,124 @@ on-delete\x10on-delete-target\x0fon-table-create\x0fon-table-delete\x0eon-table-
 empty\x0don-table-fill\x04\0\x05event\x03\0\x0a\x01ps\x01p}\x01r\x03\x04names\x0c\
 member-names\x0c\x0cmember-types\x0d\x04\0\x0ecomponent-desc\x03\0\x0e\x01ks\x01\
 p\x01\x01k\x11\x01r\x03\x04name\x10\x03add\x12\x06prefab\x7f\x04\0\x0bentity-des\
-c\x03\0\x13\x01r\x01\x04exprs\x04\0\x0aquery-desc\x03\0\x15\x04\0\x0ecomponent-t\
-ype\x03\x01\x04\0\x09component\x03\x01\x04\0\x06entity\x03\x01\x04\0\x05query\x03\
-\x01\x04\0\x04iter\x03\x01\x04\0\x08callback\x03\x01\x01kz\x01r\x05\x04name\x10\x09\
-tick-rate\x1d\x08callbackw\x0aquery-desc\x16\x08is-guest\x7f\x04\0\x0bsystem-des\
-c\x03\0\x1e\x04\0\x06system\x03\x01\x04\0\x05phase\x03\x01\x01r\x03\x04names\x0a\
-query-desc\x16\x06phases\x11\x04\0\x0dpipeline-desc\x03\0\"\x04\0\x08pipeline\x03\
-\x01\x01p\x0b\x01r\x05\x04name\x10\x0aquery-desc\x16\x06events%\x08callback\x03\x08\
-is-guest\x7f\x04\0\x0dobserver-desc\x03\0&\x04\0\x08observer\x03\x01\x01i\x17\x01\
-@\x01\x04desc\x0f\0)\x04\0\x1b[constructor]component-type\x01*\x01h\x17\x01@\x01\
-\x04self+\0\x01\x04\0\x1d[method]component-type.get-id\x01,\x01i\x18\x01@\x03\x03\
-ptr\x03\x06entity\x01\x0ecomponent-type\x01\0-\x04\0\x16[constructor]component\x01\
-.\x01@\x01\x03ptr\x03\0\x03\x04\0\x1a[static]component.from-ptr\x01/\x01h\x18\x01\
-@\x03\x04self0\x06offsety\x05value}\x01\0\x04\0\x1f[method]component.set-member-\
-u8\x011\x01@\x02\x04self0\x06offsety\0}\x04\0\x1f[method]component.get-member-u8\
-\x012\x01@\x03\x04self0\x06offsety\x05value{\x01\0\x04\0\x20[method]component.se\
-t-member-u16\x013\x01@\x02\x04self0\x06offsety\0{\x04\0\x20[method]component.get\
--member-u16\x014\x01@\x03\x04self0\x06offsety\x05valuey\x01\0\x04\0\x20[method]c\
-omponent.set-member-u32\x015\x01@\x02\x04self0\x06offsety\0y\x04\0\x20[method]co\
-mponent.get-member-u32\x016\x01@\x03\x04self0\x06offsety\x05valuew\x01\0\x04\0\x20\
-[method]component.set-member-u64\x017\x01@\x02\x04self0\x06offsety\0w\x04\0\x20[\
-method]component.get-member-u64\x018\x01@\x03\x04self0\x06offsety\x05value~\x01\0\
-\x04\0\x1f[method]component.set-member-i8\x019\x01@\x02\x04self0\x06offsety\0~\x04\
-\0\x1f[method]component.get-member-i8\x01:\x01@\x03\x04self0\x06offsety\x05value\
-|\x01\0\x04\0\x20[method]component.set-member-i16\x01;\x01@\x02\x04self0\x06offs\
-ety\0|\x04\0\x20[method]component.get-member-i16\x01<\x01@\x03\x04self0\x06offse\
-ty\x05valuez\x01\0\x04\0\x20[method]component.set-member-i32\x01=\x01@\x02\x04se\
-lf0\x06offsety\0z\x04\0\x20[method]component.get-member-i32\x01>\x01@\x03\x04sel\
-f0\x06offsety\x05valuex\x01\0\x04\0\x20[method]component.set-member-i64\x01?\x01\
-@\x02\x04self0\x06offsety\0x\x04\0\x20[method]component.get-member-i64\x01@\x01@\
-\x03\x04self0\x06offsety\x05valuev\x01\0\x04\0\x20[method]component.set-member-f\
-32\x01A\x01@\x02\x04self0\x06offsety\0v\x04\0\x20[method]component.get-member-f3\
-2\x01B\x01@\x03\x04self0\x06offsety\x05valueu\x01\0\x04\0\x20[method]component.s\
-et-member-f64\x01C\x01@\x02\x04self0\x06offsety\0u\x04\0\x20[method]component.ge\
-t-member-f64\x01D\x01@\x03\x04self0\x06offsety\x05value\x7f\x01\0\x04\0![method]\
-component.set-member-bool\x01E\x01@\x02\x04self0\x06offsety\0\x7f\x04\0![method]\
-component.get-member-bool\x01F\x01@\x03\x04self0\x06offsety\x05values\x01\0\x04\0\
-#[method]component.set-member-string\x01G\x01@\x02\x04self0\x06offsety\0s\x04\0#\
-[method]component.get-member-string\x01H\x01@\x03\x04self0\x06offsety\x05value\x0d\
-\x01\0\x04\0#[method]component.set-member-u8list\x01I\x01@\x02\x04self0\x06offse\
-ty\0\x0d\x04\0#[method]component.get-member-u8list\x01J\x01p{\x01@\x03\x04self0\x06\
-offsety\x05value\xcb\0\x01\0\x04\0$[method]component.set-member-u16list\x01L\x01\
-@\x02\x04self0\x06offsety\0\xcb\0\x04\0$[method]component.get-member-u16list\x01\
-M\x01py\x01@\x03\x04self0\x06offsety\x05value\xce\0\x01\0\x04\0$[method]componen\
-t.set-member-u32list\x01O\x01@\x02\x04self0\x06offsety\0\xce\0\x04\0$[method]com\
-ponent.get-member-u32list\x01P\x01pw\x01@\x03\x04self0\x06offsety\x05value\xd1\0\
-\x01\0\x04\0$[method]component.set-member-u64list\x01R\x01@\x02\x04self0\x06offs\
-ety\0\xd1\0\x04\0$[method]component.get-member-u64list\x01S\x01p~\x01@\x03\x04se\
-lf0\x06offsety\x05value\xd4\0\x01\0\x04\0#[method]component.set-member-i8list\x01\
-U\x01@\x02\x04self0\x06offsety\0\xd4\0\x04\0#[method]component.get-member-i8list\
-\x01V\x01p|\x01@\x03\x04self0\x06offsety\x05value\xd7\0\x01\0\x04\0$[method]comp\
-onent.set-member-i16list\x01X\x01@\x02\x04self0\x06offsety\0\xd7\0\x04\0$[method\
-]component.get-member-i16list\x01Y\x01pz\x01@\x03\x04self0\x06offsety\x05value\xda\
-\0\x01\0\x04\0$[method]component.set-member-i32list\x01[\x01@\x02\x04self0\x06of\
-fsety\0\xda\0\x04\0$[method]component.get-member-i32list\x01\\\x01px\x01@\x03\x04\
-self0\x06offsety\x05value\xdd\0\x01\0\x04\0$[method]component.set-member-i64list\
-\x01^\x01@\x02\x04self0\x06offsety\0\xdd\0\x04\0$[method]component.get-member-i6\
-4list\x01_\x01pv\x01@\x03\x04self0\x06offsety\x05value\xe0\0\x01\0\x04\0$[method\
-]component.set-member-f32list\x01a\x01@\x02\x04self0\x06offsety\0\xe0\0\x04\0$[m\
-ethod]component.get-member-f32list\x01b\x01pu\x01@\x03\x04self0\x06offsety\x05va\
-lue\xe3\0\x01\0\x04\0$[method]component.set-member-f64list\x01d\x01@\x02\x04self\
-0\x06offsety\0\xe3\0\x04\0$[method]component.get-member-f64list\x01e\x04\0$[meth\
-od]component.set-member-pointer\x017\x04\0$[method]component.get-member-pointer\x01\
-8\x01k\x01\x01i\x19\x01@\x02\x04desc\x14\x08inherits\xe6\0\0\xe7\0\x04\0\x13[con\
-structor]entity\x01h\x01h\x19\x01@\x01\x04self\xe9\0\0\x01\x04\0\x15[method]enti\
-ty.get-id\x01j\x01@\x01\x04self\xe9\0\0s\x04\0\x17[method]entity.get-name\x01k\x01\
-@\x02\x04self\xe9\0\x04names\x01\0\x04\0\x17[method]entity.set-name\x01l\x01@\x01\
-\x02idw\0\x03\x04\0\x16[static]entity.from-id\x01m\x01@\x02\x04self\xe9\0\x09com\
-ponent\x01\0\x03\x04\0\x12[method]entity.get\x01n\x01@\x02\x04self\xe9\0\x09comp\
-onent\x01\x01\0\x04\0\x12[method]entity.add\x01o\x01@\x02\x04self\xe9\0\x09compo\
-nent\x01\0\x7f\x04\0\x12[method]entity.has\x01p\x04\0\x15[method]entity.remove\x01\
-o\x01@\x03\x04self\xe9\0\x0crelationship\x05\x06target\x01\x01\0\x04\0\x1f[metho\
-d]entity.add-relationship\x01q\x04\0\"[method]entity.remove-relationship\x01q\x01\
-@\x02\x04self\xe9\0\x06target\x01\x01\0\x04\0\x18[method]entity.parent-of\x01r\x04\
-\0\x17[method]entity.child-of\x01r\x04\0\x15[method]entity.parent\x01j\x01@\x01\x04\
-self\xe9\0\0\x11\x04\0\x17[method]entity.children\x01s\x04\0\x1c[method]entity.r\
-elationships\x01s\x01@\x01\x04self\xe9\0\x01\0\x04\0\x16[method]entity.disable\x01\
-t\x04\0\x15[method]entity.enable\x01t\x01i\x1a\x01@\x01\x04desc\x16\0\xf5\0\x04\0\
-\x12[constructor]query\x01v\x01h\x1a\x01@\x01\x04self\xf7\0\x01\0\x04\0\x13[meth\
-od]query.build\x01x\x01@\x01\x04self\xf7\0\0\x03\x04\0\x12[method]query.iter\x01\
-y\x01@\x01\x04self\xf7\0\0\x7f\x04\0\x12[method]query.next\x01z\x01@\x01\x04self\
-\xf7\0\0z\x04\0\x13[method]query.count\x01{\x01@\x01\x04self\xf7\0\0\x11\x04\0\x16\
-[method]query.entities\x01|\x01p\x03\x01@\x02\x04self\xf7\0\x05index~\0\xfd\0\x04\
-\0\x18[method]query.components\x01~\x01i\x1b\x01@\x01\x03ptrw\0\xff\0\x04\0\x11[\
-constructor]iter\x01\x80\x01\x01h\x1b\x01@\x01\x04self\x81\x01\0\x7f\x04\0\x11[m\
-ethod]iter.next\x01\x82\x01\x01@\x01\x04self\x81\x01\0z\x04\0\x12[method]iter.co\
-unt\x01\x83\x01\x01@\x01\x04self\x81\x01\0\x11\x04\0\x15[method]iter.entities\x01\
-\x84\x01\x01@\x02\x04self\x81\x01\x05index~\0\xfd\0\x04\0\x17[method]iter.compon\
-ents\x01\x85\x01\x01i\x1c\x01@\x01\x06handlew\0\x86\x01\x04\0\x15[constructor]ca\
-llback\x01\x87\x01\x01h\x1c\x01@\x02\x04self\x88\x01\x04iter\xff\0\x01\0\x04\0\x14\
-[method]callback.run\x01\x89\x01\x01@\x01\x04self\x88\x01\0\x03\x04\0\x1a[method\
-]callback.cb-handle\x01\x8a\x01\x01i\x20\x01@\x01\x04desc\x1f\0\x8b\x01\x04\0\x13\
-[constructor]system\x01\x8c\x01\x01h\x20\x01@\x01\x04self\x8d\x01\0\x01\x04\0\x15\
-[method]system.get-id\x01\x8e\x01\x01@\x01\x04self\x8d\x01\x01\0\x04\0\x14[metho\
-d]system.build\x01\x8f\x01\x01@\x01\x04self\x8d\x01\0w\x04\0\x17[method]system.c\
-allback\x01\x90\x01\x04\0\x16[method]system.disable\x01\x8f\x01\x04\0\x15[method\
-]system.enable\x01\x8f\x01\x01i!\x01@\x01\x04names\0\x91\x01\x04\0\x12[construct\
-or]phase\x01\x92\x01\x01h!\x01@\x02\x04self\x93\x01\x05phase\x07\x01\0\x04\0\x18\
-[method]phase.depends-on\x01\x94\x01\x01@\x01\x04self\x93\x01\0\x01\x04\0\x14[me\
-thod]phase.get-id\x01\x95\x01\x01i$\x01@\x01\x04desc#\0\x96\x01\x04\0\x15[constr\
-uctor]pipeline\x01\x97\x01\x01h$\x01@\x01\x04self\x98\x01\x01\0\x04\0\x16[method\
-]pipeline.build\x01\x99\x01\x01@\x02\x04self\x98\x01\x05phase\x01\x01\0\x04\0\x1a\
-[method]pipeline.add-phase\x01\x9a\x01\x01@\x01\x04self\x98\x01\0\x01\x04\0\x17[\
-method]pipeline.get-id\x01\x9b\x01\x04\0\x18[method]pipeline.disable\x01\x99\x01\
-\x04\0\x17[method]pipeline.enable\x01\x99\x01\x01i(\x01@\x01\x04desc'\0\x9c\x01\x04\
-\0\x15[constructor]observer\x01\x9d\x01\x01h(\x01@\x01\x04self\x9e\x01\x01\0\x04\
-\0\x16[method]observer.build\x01\x9f\x01\x01@\x01\x04self\x9e\x01\0\x03\x04\0\x19\
-[method]observer.callback\x01\xa0\x01\x01@\x01\x0ccomponent-id\x01\x01\0\x04\0\x0d\
-add-singleton\x01\xa1\x01\x01@\x01\x0ccomponent-id\x01\0w\x04\0\x0dget-singleton\
-\x01\xa2\x01\x04\0\x10remove-singleton\x01\xa1\x01\x01@\x01\x09entity-id\x01\x01\
-\0\x04\0\x0aadd-entity\x01\xa3\x01\x04\0\x0dremove-entity\x01\xa3\x01\x01@\x01\x04\
-names\0\x7f\x04\0\x10has-entity-named\x01\xa4\x01\x01@\x01\x0ecomponent-names\0\x01\
-\x04\0\x10get-component-id\x01\xa5\x01\x04\0\x11toxoid:engine/ecs\x05\0\x04\0!to\
-xoid:engine/toxoid-engine-world\x04\0\x0b\x19\x01\0\x13toxoid-engine-world\x03\0\
-\0\0G\x09producers\x01\x0cprocessed-by\x02\x0dwit-component\x070.220.0\x10wit-bi\
-ndgen-rust\x060.35.0";
+c\x03\0\x13\x01r\x01\x04exprs\x04\0\x0aquery-desc\x03\0\x15\x01r\x02\x02id\x01\x08\
+callback\x03\x04\0\x0csorting-desc\x03\0\x17\x01kz\x01r\x05\x04name\x10\x09tick-\
+rate\x19\x08callback\x03\x0aquery-desc\x16\x08is-guest\x7f\x04\0\x0bsystem-desc\x03\
+\0\x1a\x01r\x03\x04names\x0aquery-desc\x16\x06phases\x11\x04\0\x0dpipeline-desc\x03\
+\0\x1c\x01p\x0b\x01r\x05\x04name\x10\x0aquery-desc\x16\x06events\x1e\x08callback\
+\x03\x08is-guest\x7f\x04\0\x0dobserver-desc\x03\0\x1f\x04\0\x0ecomponent-type\x03\
+\x01\x04\0\x09component\x03\x01\x04\0\x06entity\x03\x01\x04\0\x05query\x03\x01\x04\
+\0\x04iter\x03\x01\x04\0\x08callback\x03\x01\x04\0\x06system\x03\x01\x04\0\x05ph\
+ase\x03\x01\x04\0\x08pipeline\x03\x01\x04\0\x08observer\x03\x01\x01i!\x01@\x01\x04\
+desc\x0f\0+\x04\0\x1b[constructor]component-type\x01,\x01h!\x01@\x01\x04self-\0\x01\
+\x04\0\x1d[method]component-type.get-id\x01.\x01i\"\x01@\x03\x03ptr\x03\x06entit\
+y\x01\x0ecomponent-type\x01\0/\x04\0\x16[constructor]component\x010\x01@\x01\x03\
+ptr\x03\0\x03\x04\0\x1a[static]component.from-ptr\x011\x01h\"\x01@\x03\x04self2\x06\
+offsety\x05value}\x01\0\x04\0\x1f[method]component.set-member-u8\x013\x01@\x02\x04\
+self2\x06offsety\0}\x04\0\x1f[method]component.get-member-u8\x014\x01@\x03\x04se\
+lf2\x06offsety\x05value{\x01\0\x04\0\x20[method]component.set-member-u16\x015\x01\
+@\x02\x04self2\x06offsety\0{\x04\0\x20[method]component.get-member-u16\x016\x01@\
+\x03\x04self2\x06offsety\x05valuey\x01\0\x04\0\x20[method]component.set-member-u\
+32\x017\x01@\x02\x04self2\x06offsety\0y\x04\0\x20[method]component.get-member-u3\
+2\x018\x01@\x03\x04self2\x06offsety\x05valuew\x01\0\x04\0\x20[method]component.s\
+et-member-u64\x019\x01@\x02\x04self2\x06offsety\0w\x04\0\x20[method]component.ge\
+t-member-u64\x01:\x01@\x03\x04self2\x06offsety\x05value~\x01\0\x04\0\x1f[method]\
+component.set-member-i8\x01;\x01@\x02\x04self2\x06offsety\0~\x04\0\x1f[method]co\
+mponent.get-member-i8\x01<\x01@\x03\x04self2\x06offsety\x05value|\x01\0\x04\0\x20\
+[method]component.set-member-i16\x01=\x01@\x02\x04self2\x06offsety\0|\x04\0\x20[\
+method]component.get-member-i16\x01>\x01@\x03\x04self2\x06offsety\x05valuez\x01\0\
+\x04\0\x20[method]component.set-member-i32\x01?\x01@\x02\x04self2\x06offsety\0z\x04\
+\0\x20[method]component.get-member-i32\x01@\x01@\x03\x04self2\x06offsety\x05valu\
+ex\x01\0\x04\0\x20[method]component.set-member-i64\x01A\x01@\x02\x04self2\x06off\
+sety\0x\x04\0\x20[method]component.get-member-i64\x01B\x01@\x03\x04self2\x06offs\
+ety\x05valuev\x01\0\x04\0\x20[method]component.set-member-f32\x01C\x01@\x02\x04s\
+elf2\x06offsety\0v\x04\0\x20[method]component.get-member-f32\x01D\x01@\x03\x04se\
+lf2\x06offsety\x05valueu\x01\0\x04\0\x20[method]component.set-member-f64\x01E\x01\
+@\x02\x04self2\x06offsety\0u\x04\0\x20[method]component.get-member-f64\x01F\x01@\
+\x03\x04self2\x06offsety\x05value\x7f\x01\0\x04\0![method]component.set-member-b\
+ool\x01G\x01@\x02\x04self2\x06offsety\0\x7f\x04\0![method]component.get-member-b\
+ool\x01H\x01@\x03\x04self2\x06offsety\x05values\x01\0\x04\0#[method]component.se\
+t-member-string\x01I\x01@\x02\x04self2\x06offsety\0s\x04\0#[method]component.get\
+-member-string\x01J\x01@\x03\x04self2\x06offsety\x05value\x0d\x01\0\x04\0#[metho\
+d]component.set-member-u8list\x01K\x01@\x02\x04self2\x06offsety\0\x0d\x04\0#[met\
+hod]component.get-member-u8list\x01L\x01p{\x01@\x03\x04self2\x06offsety\x05value\
+\xcd\0\x01\0\x04\0$[method]component.set-member-u16list\x01N\x01@\x02\x04self2\x06\
+offsety\0\xcd\0\x04\0$[method]component.get-member-u16list\x01O\x01py\x01@\x03\x04\
+self2\x06offsety\x05value\xd0\0\x01\0\x04\0$[method]component.set-member-u32list\
+\x01Q\x01@\x02\x04self2\x06offsety\0\xd0\0\x04\0$[method]component.get-member-u3\
+2list\x01R\x01pw\x01@\x03\x04self2\x06offsety\x05value\xd3\0\x01\0\x04\0$[method\
+]component.set-member-u64list\x01T\x01@\x02\x04self2\x06offsety\0\xd3\0\x04\0$[m\
+ethod]component.get-member-u64list\x01U\x01p~\x01@\x03\x04self2\x06offsety\x05va\
+lue\xd6\0\x01\0\x04\0#[method]component.set-member-i8list\x01W\x01@\x02\x04self2\
+\x06offsety\0\xd6\0\x04\0#[method]component.get-member-i8list\x01X\x01p|\x01@\x03\
+\x04self2\x06offsety\x05value\xd9\0\x01\0\x04\0$[method]component.set-member-i16\
+list\x01Z\x01@\x02\x04self2\x06offsety\0\xd9\0\x04\0$[method]component.get-membe\
+r-i16list\x01[\x01pz\x01@\x03\x04self2\x06offsety\x05value\xdc\0\x01\0\x04\0$[me\
+thod]component.set-member-i32list\x01]\x01@\x02\x04self2\x06offsety\0\xdc\0\x04\0\
+$[method]component.get-member-i32list\x01^\x01px\x01@\x03\x04self2\x06offsety\x05\
+value\xdf\0\x01\0\x04\0$[method]component.set-member-i64list\x01`\x01@\x02\x04se\
+lf2\x06offsety\0\xdf\0\x04\0$[method]component.get-member-i64list\x01a\x01pv\x01\
+@\x03\x04self2\x06offsety\x05value\xe2\0\x01\0\x04\0$[method]component.set-membe\
+r-f32list\x01c\x01@\x02\x04self2\x06offsety\0\xe2\0\x04\0$[method]component.get-\
+member-f32list\x01d\x01pu\x01@\x03\x04self2\x06offsety\x05value\xe5\0\x01\0\x04\0\
+$[method]component.set-member-f64list\x01f\x01@\x02\x04self2\x06offsety\0\xe5\0\x04\
+\0$[method]component.get-member-f64list\x01g\x04\0$[method]component.set-member-\
+pointer\x019\x04\0$[method]component.get-member-pointer\x01:\x01k\x01\x01i#\x01@\
+\x02\x04desc\x14\x08inherits\xe8\0\0\xe9\0\x04\0\x13[constructor]entity\x01j\x01\
+h#\x01@\x01\x04self\xeb\0\0\x01\x04\0\x15[method]entity.get-id\x01l\x01@\x01\x04\
+self\xeb\0\0s\x04\0\x17[method]entity.get-name\x01m\x01@\x02\x04self\xeb\0\x04na\
+mes\x01\0\x04\0\x17[method]entity.set-name\x01n\x01@\x01\x02idw\0\x03\x04\0\x16[\
+static]entity.from-id\x01o\x01@\x02\x04self\xeb\0\x09component\x01\0\x03\x04\0\x12\
+[method]entity.get\x01p\x01@\x02\x04self\xeb\0\x09component\x01\x01\0\x04\0\x12[\
+method]entity.add\x01q\x01@\x02\x04self\xeb\0\x09component\x01\0\x7f\x04\0\x12[m\
+ethod]entity.has\x01r\x04\0\x15[method]entity.remove\x01q\x01@\x03\x04self\xeb\0\
+\x0crelationship\x05\x06target\x01\x01\0\x04\0\x1f[method]entity.add-relationshi\
+p\x01s\x04\0\"[method]entity.remove-relationship\x01s\x01@\x02\x04self\xeb\0\x06\
+target\x01\x01\0\x04\0\x18[method]entity.parent-of\x01t\x04\0\x17[method]entity.\
+child-of\x01t\x04\0\x15[method]entity.parent\x01l\x01@\x01\x04self\xeb\0\0\x11\x04\
+\0\x17[method]entity.children\x01u\x04\0\x1c[method]entity.relationships\x01u\x01\
+@\x01\x04self\xeb\0\x01\0\x04\0\x16[method]entity.disable\x01v\x04\0\x15[method]\
+entity.enable\x01v\x01i$\x01@\x01\x04desc\x16\0\xf7\0\x04\0\x12[constructor]quer\
+y\x01x\x01h$\x01@\x01\x04self\xf9\0\x01\0\x04\0\x13[method]query.build\x01z\x01@\
+\x02\x04self\xf9\0\x04desc\x18\x01\0\x04\0\x16[method]query.order-by\x01{\x01@\x01\
+\x04self\xf9\0\0\x03\x04\0\x12[method]query.iter\x01|\x01@\x01\x04self\xf9\0\0\x7f\
+\x04\0\x12[method]query.next\x01}\x01@\x01\x04self\xf9\0\0z\x04\0\x13[method]que\
+ry.count\x01~\x01@\x01\x04self\xf9\0\0\x11\x04\0\x16[method]query.entities\x01\x7f\
+\x01p\x03\x01@\x02\x04self\xf9\0\x05index~\0\x80\x01\x04\0\x18[method]query.comp\
+onents\x01\x81\x01\x01i%\x01@\x01\x03ptrw\0\x82\x01\x04\0\x11[constructor]iter\x01\
+\x83\x01\x01h%\x01@\x01\x04self\x84\x01\0\x7f\x04\0\x11[method]iter.next\x01\x85\
+\x01\x01@\x01\x04self\x84\x01\0z\x04\0\x12[method]iter.count\x01\x86\x01\x01@\x01\
+\x04self\x84\x01\0\x11\x04\0\x15[method]iter.entities\x01\x87\x01\x01@\x02\x04se\
+lf\x84\x01\x05index~\0\x80\x01\x04\0\x17[method]iter.components\x01\x88\x01\x01i\
+&\x01@\x01\x06handlew\0\x89\x01\x04\0\x15[constructor]callback\x01\x8a\x01\x01h&\
+\x01@\x02\x04self\x8b\x01\x04iter\x82\x01\x01\0\x04\0\x14[method]callback.run\x01\
+\x8c\x01\x01@\x01\x04self\x8b\x01\0\x03\x04\0\x1a[method]callback.cb-handle\x01\x8d\
+\x01\x01i'\x01@\x01\x04desc\x1b\0\x8e\x01\x04\0\x13[constructor]system\x01\x8f\x01\
+\x01h'\x01@\x01\x04self\x90\x01\0\x01\x04\0\x15[method]system.get-id\x01\x91\x01\
+\x01@\x01\x04self\x90\x01\x01\0\x04\0\x14[method]system.build\x01\x92\x01\x01@\x02\
+\x04self\x90\x01\x04desc\x18\x01\0\x04\0\x17[method]system.order-by\x01\x93\x01\x01\
+@\x01\x04self\x90\x01\0\x03\x04\0\x17[method]system.callback\x01\x94\x01\x04\0\x16\
+[method]system.disable\x01\x92\x01\x04\0\x15[method]system.enable\x01\x92\x01\x01\
+i(\x01@\x01\x04names\0\x95\x01\x04\0\x12[constructor]phase\x01\x96\x01\x01h(\x01\
+@\x02\x04self\x97\x01\x05phase\x07\x01\0\x04\0\x18[method]phase.depends-on\x01\x98\
+\x01\x01@\x01\x04self\x97\x01\0\x01\x04\0\x14[method]phase.get-id\x01\x99\x01\x01\
+i)\x01@\x01\x04desc\x1d\0\x9a\x01\x04\0\x15[constructor]pipeline\x01\x9b\x01\x01\
+h)\x01@\x01\x04self\x9c\x01\x01\0\x04\0\x16[method]pipeline.build\x01\x9d\x01\x01\
+@\x02\x04self\x9c\x01\x05phase\x01\x01\0\x04\0\x1a[method]pipeline.add-phase\x01\
+\x9e\x01\x01@\x01\x04self\x9c\x01\0\x01\x04\0\x17[method]pipeline.get-id\x01\x9f\
+\x01\x04\0\x18[method]pipeline.disable\x01\x9d\x01\x04\0\x17[method]pipeline.ena\
+ble\x01\x9d\x01\x01i*\x01@\x01\x04desc\x20\0\xa0\x01\x04\0\x15[constructor]obser\
+ver\x01\xa1\x01\x01h*\x01@\x01\x04self\xa2\x01\x01\0\x04\0\x16[method]observer.b\
+uild\x01\xa3\x01\x01@\x01\x04self\xa2\x01\0\x03\x04\0\x19[method]observer.callba\
+ck\x01\xa4\x01\x01@\x01\x0ccomponent-id\x01\x01\0\x04\0\x0dadd-singleton\x01\xa5\
+\x01\x01@\x01\x0ccomponent-id\x01\0w\x04\0\x0dget-singleton\x01\xa6\x01\x04\0\x10\
+remove-singleton\x01\xa5\x01\x01@\x01\x09entity-id\x01\x01\0\x04\0\x0aadd-entity\
+\x01\xa7\x01\x04\0\x0dremove-entity\x01\xa7\x01\x01@\x01\x04names\0\x7f\x04\0\x10\
+has-entity-named\x01\xa8\x01\x01@\x01\x0ecomponent-names\0\x01\x04\0\x10get-comp\
+onent-id\x01\xa9\x01\x04\0\x11toxoid:engine/ecs\x05\0\x04\0!toxoid:engine/toxoid\
+-engine-world\x04\0\x0b\x19\x01\0\x13toxoid-engine-world\x03\0\0\0G\x09producers\
+\x01\x0cprocessed-by\x02\x0dwit-component\x070.220.0\x10wit-bindgen-rust\x060.35\
+.0";
 #[inline(never)]
 #[doc(hidden)]
 pub fn __link_custom_section_describing_imports() {

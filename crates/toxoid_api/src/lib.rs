@@ -31,6 +31,7 @@ pub use toxoid_host::{
         QueryDesc,
         SystemDesc,
         ObserverDesc,
+        SortingDesc,
         MemberType,
         Relationship,
         Event,
@@ -59,6 +60,7 @@ pub use toxoid_guest::bindings::{
         QueryDesc,
         SystemDesc,
         ObserverDesc,
+        SortingDesc,
         MemberType,
         Relationship,
         Event,
@@ -354,6 +356,12 @@ impl Query {
         self.query.build();
     }
 
+    // TODO: Use query trampoline instead of C functions directly and use callback resource to make this work on WASM.
+    // pub fn order_by(&mut self, id: EcsEntityT, callback: unsafe fn(u64, *const std::ffi::c_void, u64, *const std::ffi::c_void) -> i32) {
+    //     let sorting = SortingDesc { id, callback: unsafe { std::mem::transmute(callback) } };
+    //     self.query.order_by(sorting);
+    // }
+
     pub fn iter(&mut self) -> Iter {
         #[cfg(any(not(target_arch = "wasm32"), target_os = "emscripten"))]
         let iter = ToxoidIter::new(self.query.iter());
@@ -489,6 +497,20 @@ impl System {
 
     pub fn build(&mut self) {
         self.system.build();
+    }
+
+    // TODO: Use query trampoline instead of C functions directlyand use callback resource to make this work on WASM.
+    #[cfg(not(target_os = "emscripten"))]
+    pub fn order_by(&mut self, id: EcsEntityT, callback: unsafe extern "C" fn(u64, *const std::ffi::c_void, u64, *const std::ffi::c_void) -> i32) {
+        let sorting = SortingDesc { id, callback: unsafe { std::mem::transmute(callback) } };
+        self.system.order_by(sorting);
+    }
+
+    #[cfg(target_os = "emscripten")]
+    pub fn order_by(&mut self, id: EcsEntityT, callback: unsafe extern "C" fn(u64, *const std::ffi::c_void, u64, *const std::ffi::c_void) -> i32) {
+        let callback_ptr: u32 = unsafe { std::mem::transmute(callback as u32) };
+        let sorting = SortingDesc { id, callback: callback_ptr as u64 };
+        self.system.order_by(sorting);
     }
 
     pub fn disable(&mut self) {

@@ -30,7 +30,8 @@ component! {
         a: f32
     },
     RenderTarget {
-        render_target: u64
+        render_target: u64,
+        z_index: u32
     },
     BlendMode {
         blend_mode: u8,

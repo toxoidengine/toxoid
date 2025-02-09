@@ -81,6 +81,20 @@ pub fn blit_sprite_system(iter: &Iter) {
     }
 }
 
+// Sort Render Targets by Z-Index
+// TODO: Use query trampoline instead of C functions directly and use callback resource to make this work on WASM.
+pub extern "C" fn draw_render_target_sort(_e1: ecs_entity_t, v1: *const std::ffi::c_void, _e2: ecs_entity_t, v2: *const std::ffi::c_void) -> i32 {
+    let mut rt1 = RenderTarget::default();
+    let mut rt2 = RenderTarget::default();
+    let rt1_component = ToxoidComponent::from_ptr_host(v1 as u64);
+    let rt2_component = ToxoidComponent::from_ptr_host(v2 as u64);
+    rt1.set_component(rt1_component);
+    rt2.set_component(rt2_component);
+    let z1 = rt1.get_z_index();
+    let z2 = rt2.get_z_index();
+    z1.cmp(&z2) as i32
+}
+
 // Draw Render Targets to screen as final output
 #[components(RenderTarget, _, Size, Position, BlendMode)]
 pub fn draw_render_targets_system(iter: &Iter) {
@@ -121,6 +135,7 @@ pub fn draw_systems(render_systems_entity: &mut Entity) {
 
     // Draw Render Targets
     let mut system = System::dsl("RenderTarget, Renderable, Size, Position, BlendMode", None, draw_render_targets_system);
+    system.order_by(RenderTarget::get_id(), draw_render_target_sort);
     system.build();
     render_systems_entity.parent_of_id(system.get_id());
 }
