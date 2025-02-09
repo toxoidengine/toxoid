@@ -1,6 +1,6 @@
 use serde::{Serialize, Deserialize};
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct Object {
     pub id: u32,
     pub name: String,
@@ -16,7 +16,7 @@ pub struct Object {
     pub properties: Option<Vec<Property>>,
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct Layer {
     pub data: Option<Vec<u32>>,
     pub height: Option<u32>,
@@ -34,7 +34,7 @@ pub struct Layer {
     pub objects: Option<Vec<Object>>,
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct Property {
     pub name: String,
     #[serde(rename = "type")]
@@ -42,7 +42,7 @@ pub struct Property {
     pub value: String,
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct Tileset {
     pub columns: u32,
     pub firstgid: u32,
@@ -59,7 +59,7 @@ pub struct Tileset {
     pub sprite: Option<*mut std::ffi::c_void>
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct TiledCell {
     pub compressionlevel: i32,
     pub height: u32,
@@ -82,11 +82,11 @@ pub struct TiledCell {
     pub width: u32,
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct EditorSettings {
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct TiledCellData {
     #[serde(rename = "fileName")]
     pub file_name: String,
@@ -96,7 +96,7 @@ pub struct TiledCellData {
     pub y: i32,
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct TiledWorld {
     pub maps: Option<Vec<TiledCellData>>,
     #[serde(rename = "onlyShowAdjacentMaps")]

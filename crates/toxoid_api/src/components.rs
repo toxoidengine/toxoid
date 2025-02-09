@@ -126,6 +126,10 @@ pub fn init() {
     Images::register();
     BoneAnimation::register();
     SpineInstance::register();
+    // Tilemaps
+    TiledWorld::register();
+    TiledCell::register();
+    Tileset::register();
 
     // Register tags
     // Rendering
