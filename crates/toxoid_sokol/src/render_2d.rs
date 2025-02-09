@@ -216,13 +216,16 @@ impl Renderer2D for SokolRenderer2D {
     }
 
     fn create_render_target(width: u32, height: u32) -> Box<dyn RenderTarget> {
+        // Get swapchain info to match formats
+        let swapchain = sglue::swapchain();
+
         // Create framebuffer image
         let image_desc = sg::ImageDesc {
             render_target: true,
             width: width as i32,
             height: height as i32,
-            pixel_format: sg::PixelFormat::Rgba8,
-            sample_count: 1,
+            pixel_format: swapchain.color_format, // Match swapchain format
+            sample_count: swapchain.sample_count, // Match swapchain sample count
             ..Default::default()
         };
         let image = sg::make_image(&image_desc);
@@ -232,8 +235,8 @@ impl Renderer2D for SokolRenderer2D {
             render_target: true,
             width: width as i32,
             height: height as i32,
-            pixel_format: sg::PixelFormat::Depth,
-            sample_count: 1,
+            pixel_format: swapchain.depth_format, // Match swapchain depth format
+            sample_count: swapchain.sample_count, // Match swapchain sample count
             ..Default::default()
         };
         let depth_image = sg::make_image(&depth_image_desc);
@@ -255,7 +258,8 @@ impl Renderer2D for SokolRenderer2D {
         let attachments = sg::make_attachments(&attachments_desc);
         let mut pass_action = sg::PassAction::default();
         pass_action.colors[0] = sg::ColorAttachmentAction {
-            load_action: sg::LoadAction::Clear,
+            load_action: sg::LoadAction::Load, // Changed to Load to preserve contents
+            store_action: sg::StoreAction::Store,
             clear_value: { sg::Color { a: 0.0, r: 0.0, g: 0.0, b: 0.0 } },
             ..Default::default()
         };
@@ -324,6 +328,12 @@ impl Renderer2D for SokolRenderer2D {
             let sokol_destination = destination.as_any().downcast_ref::<SokolRenderTarget>().unwrap();
             sg::begin_pass(&sokol_destination.pass);
 
+            // Initialize sokol-gp context for the render target
+            sgp_begin(dw as i32, dh as i32);
+            sgp_viewport(0, 0, dw as i32, dh as i32);
+            // Flip the y-axis and maintain aspect ratio
+            // TODO: Might only need to flip the y-axis on web targets
+            sgp_project(0.0, dw, dh, 0.0);  // Changed order of y coordinates
             // sgp_begin(dw as i32, dh as i32);
             // #[cfg(all(target_arch="wasm32", target_os="emscripten"))]
             // sgp_project(0., dw, dh, 0.);
@@ -334,26 +344,27 @@ impl Renderer2D for SokolRenderer2D {
     }
 
     fn end_rt() {
-        // End the pass to apply the drawing commands to the framebuffer
-        sg::end_pass();
+        unsafe {
+            // Flush the sokol-gp commands to the current render target
+            sgp_flush();
+            sgp_end();
+            
+            // End the render pass
+            sg::end_pass();
+        }
     }
 
     fn blit_sprite(source: &Box<dyn Sprite>, sx: f32, sy: f32, sw: f32, sh: f32, destination: &Box<dyn RenderTarget>, dx: f32, dy: f32) {
         unsafe {      
             let sokol_source = source.as_any().downcast_ref::<SokolSprite>().unwrap();
-           
-            let sokol_destination = destination.as_any().downcast_ref::<SokolRenderTarget>().unwrap();
-        
+            
             // Set the source image
             sgp_set_image(0, sg_image { id: sokol_source.image.id });
-            // println!("Image id: {:?}", sokol_source.image.id);
         
             // Draw the source sprite onto the destination sprite
             let src_rect = sgp_rect { x: sx, y: sy, w: sw, h: sh };
             let dest_rect = sgp_rect { x: dx, y: dy, w: sw, h: sh };
             sgp_draw_textured_rect(0, dest_rect, src_rect);
-            // println!("Source rect: {:?}", src_rect);
-            // println!("Dest rect: {:?}", dest_rect);
         }
     }
 
