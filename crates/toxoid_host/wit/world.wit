@@ -78,6 +78,33 @@ interface ecs {
         expr: string
     }
 
+    record sorting-desc {
+        id: ecs-entity-t,
+        callback: pointer-t
+    }
+
+    record system-desc {
+        name: option<string>,
+        tick-rate: option<s32>,
+        callback: pointer-t,
+        query-desc: query-desc,
+        is-guest: bool
+    }
+
+    record pipeline-desc {
+        name: string,
+        query-desc: query-desc,
+        phases: list<ecs-entity-t>
+    }
+
+    record observer-desc {
+        name: option<string>,
+        query-desc: query-desc,
+        events: list<event>,
+        callback: pointer-t,
+        is-guest: bool
+    }
+
     // Convert to component-type instead and make component instances seperate
     resource component-type {
         constructor(desc: component-desc);
@@ -166,6 +193,7 @@ interface ecs {
     resource query {
         constructor(desc: query-desc);
         build: func();
+        order-by: func(desc: sorting-desc);
         iter: func() -> pointer-t;
         next: func() -> bool;
         count: func() -> s32;
@@ -188,19 +216,12 @@ interface ecs {
         cb-handle: func() -> pointer-t;
     }
 
-    record system-desc {
-        name: option<string>,
-        tick-rate: option<s32>,
-        callback: u64,
-        query-desc: query-desc,
-        is-guest: bool
-    }
-
     resource system {
         constructor(desc: system-desc);
         get-id: func() -> ecs-entity-t;
         build: func();
-        callback: func() -> u64;
+        order-by: func(desc: sorting-desc);
+        callback: func() -> pointer-t;
         disable: func();
         enable: func();
     }
@@ -211,12 +232,6 @@ interface ecs {
         get-id: func() -> ecs-entity-t;
     }
 
-    record pipeline-desc {
-        name: string,
-        query-desc: query-desc,
-        phases: list<ecs-entity-t>
-    }
-
     resource pipeline {
         constructor(desc: pipeline-desc);
         build: func();
@@ -224,14 +239,6 @@ interface ecs {
         get-id: func() -> ecs-entity-t;
         disable: func();
         enable: func();
-    }
-
-    record observer-desc {
-        name: option<string>,
-        query-desc: query-desc,
-        events: list<event>,
-        callback: pointer-t,
-        is-guest: bool
     }
 
     resource observer {
