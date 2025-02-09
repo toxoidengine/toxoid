@@ -284,6 +284,14 @@ impl toxoid_component::component::ecs::HostSystem for StoreState {
         Box::into_raw(system);
     }
 
+    fn order_by(&mut self, _system: Resource<toxoid_component::component::ecs::System>, _sorting: toxoid_component::component::ecs::SortingDesc) -> () {
+        unimplemented!("Order by not implemented for WASM");
+        // let system_proxy = self.table.get(&system).unwrap() as &SystemProxy;
+        // let mut system = unsafe { Box::from_raw(system_proxy.ptr) };
+        // system.as_mut().order_by(sorting);
+        // Box::into_raw(system);
+    }
+
     fn disable(&mut self, system: Resource<toxoid_component::component::ecs::System>) -> () {
         let system_proxy = self.table.get(&system).unwrap() as &SystemProxy;
         let mut system = unsafe { Box::from_raw(system_proxy.ptr) };
@@ -960,6 +968,14 @@ impl toxoid_component::component::ecs::HostQuery for StoreState {
         let query = unsafe { Box::from_raw(query_proxy.ptr) };
         query.build();
         Box::into_raw(query);
+    }
+
+    fn order_by(&mut self, _query: Resource<toxoid_component::component::ecs::Query>, _sorting: toxoid_component::component::ecs::SortingDesc) -> () {
+        unimplemented!("Order by not implemented for WASM");
+        // let query_proxy = self.table.get(&query).unwrap() as &QueryProxy;
+        // let query = unsafe { Box::from_raw(query_proxy.ptr) };
+        // query.order_by(sorting);
+        // Box::into_raw(query);
     }
 
     fn iter(&mut self, query: Resource<toxoid_component::component::ecs::Query>) -> Resource<IterProxy> {
