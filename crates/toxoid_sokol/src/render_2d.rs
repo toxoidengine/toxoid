@@ -320,26 +320,21 @@ impl Renderer2D for SokolRenderer2D {
     
     fn begin_rt(destination: &Box<dyn RenderTarget>, dw: f32, dh: f32) {
         unsafe {
-            sgp_begin(dw as i32, dh as i32);
-            #[cfg(all(target_arch="wasm32", target_os="emscripten"))]
-            sgp_project(0., dw, dh, 0.);
-            sgp_set_color(0., 0., 0., 0.);
-            sgp_clear();
-            sgp_reset_color();
-            sgp_set_blend_mode(sgp_blend_mode_SGP_BLENDMODE_BLEND);
-
             // Set the framebuffer as the current render target
             let sokol_destination = destination.as_any().downcast_ref::<SokolRenderTarget>().unwrap();
             sg::begin_pass(&sokol_destination.pass);
+
+            // sgp_begin(dw as i32, dh as i32);
+            // #[cfg(all(target_arch="wasm32", target_os="emscripten"))]
+            // sgp_project(0., dw, dh, 0.);
+            // sgp_set_color(0., 0., 0., 0.);
+            // sgp_clear();
+            // sgp_set_blend_mode(sgp_blend_mode_SGP_BLENDMODE_BLEND);
         }
     }
 
     fn end_rt() {
-        unsafe {
-            sgp_flush();
-            sgp_end();
-        }
-        // // End the pass to apply the drawing commands to the framebuffer
+        // End the pass to apply the drawing commands to the framebuffer
         sg::end_pass();
     }
 
