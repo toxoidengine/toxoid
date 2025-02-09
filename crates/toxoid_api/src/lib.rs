@@ -768,6 +768,7 @@ pub enum DataType {
     BoneAnimationSkeleton,
     Worldmap,
     Cell,
+    Tileset,
     Audio,
     Font
 }
@@ -796,7 +797,7 @@ pub fn load_sprite(path: &str) -> Entity {
     entity
 }
 
-pub fn load_animation(atlas_filename: &str, skeleton_filename: &str) {
+pub fn load_animation(atlas_filename: &str, skeleton_filename: &str) -> Entity {
     let mut entity = Entity::new(None);
     entity.add::<Loading>();
     entity.add::<Skeleton>();
@@ -812,4 +813,30 @@ pub fn load_animation(atlas_filename: &str, skeleton_filename: &str) {
     skeleton.set_filename(skeleton_filename.to_string());
     fetch(atlas_filename, DataType::BoneAnimationAtlas, Some(entity.get_id()));
     fetch(skeleton_filename, DataType::BoneAnimationSkeleton, Some(entity.get_id()));
+    entity
+}
+
+pub fn load_worldmap(path: &str) -> Entity {
+    let mut entity = Entity::new(None);
+    entity.add::<TiledWorld>();
+    entity.add::<Size>();
+    fetch(path, DataType::Worldmap, Some(entity.get_id()));
+    entity
+}
+
+pub fn load_cell(path: &str) -> Entity {
+    let mut entity = Entity::new(None);
+    entity.add::<TiledCell>();
+    entity.add::<Size>();
+    fetch(path, DataType::Cell, Some(entity.get_id()));
+    entity
+}
+
+pub fn load_tileset(path: &str) -> Entity {
+    let mut entity = Entity::new(None);
+    entity.add::<Tileset>();
+    entity.add::<Sprite>();
+    entity.add::<Size>();
+    fetch(path, DataType::Tileset, Some(entity.get_id()));
+    entity
 }

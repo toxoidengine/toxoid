@@ -81,6 +81,49 @@ pub fn blit_sprite_system(iter: &Iter) {
     }
 }
 
+// Blit cell to render target
+#[components(TiledCell, _, Size)]
+pub fn blit_cell_system(iter: &Iter) {
+    let mut entities = iter.entities();
+    for (i, (cell, size)) in components.into_iter().enumerate() {
+        let entity = entities.get_mut(i).unwrap();
+        let mut children = entity.children();
+        if children.len() > 0 {
+            // let child = children.get_mut(0).unwrap();
+            children.iter_mut().for_each(|child| {
+                if child.has::<Tileset>() && child.has::<Blittable>() {
+                    println!("Tileset: {:?}", child.get_id());
+
+                    // let mut sprite = child.get::<Sprite>();
+                    // let sprite_ptr = sprite.get_sprite();
+                    // let sprite_box = unsafe { Box::from_raw(sprite_ptr as *mut SokolSprite) };
+                    // let sprite_trait_object: &Box<dyn toxoid_render::Sprite> = Box::leak(Box::new(sprite_box as Box<dyn toxoid_render::Sprite>));
+                    // println!("Sprite: {:?}", sprite_ptr);
+
+                    // SokolRenderer2D::begin_rt(&rt_trait_object, rt_width as f32, rt_height as f32);
+                    // SokolRenderer2D::blit_sprite(sprite_trait_object, 0., 0., width as f32, height as f32, rt_trait_object, 0., 0.);
+                    // SokolRenderer2D::end_rt();
+                }
+
+                if child.has::<RenderTarget>() {
+                    println!("Render Target: {:?}", child.get_id());
+                    // let render_target = child.get::<RenderTarget>();
+                    // let render_target_ptr = render_target.get_render_target();
+                    // let render_target_box = unsafe { Box::from_raw(render_target_ptr as *mut SokolRenderTarget) };
+                    // let render_target_trait_object: &Box<dyn toxoid_render::RenderTarget> = Box::leak(Box::new(render_target_box as Box<dyn toxoid_render::RenderTarget>));
+                    // println!("Child: {}", child.get_id());
+                    // entity.remove::<Blittable>();
+                }
+            });
+
+        }
+        // // Get render target pointer / object / box / trait object
+        // let rt_ptr = render_target.get_render_target();
+        // let rt_ptr_box = unsafe { Box::from_raw(rt_ptr as *mut SokolRenderTarget) };
+        // let rt_trait_object: &Box<dyn toxoid_render::RenderTarget> = Box::leak(Box::new(rt_ptr_box as Box<dyn toxoid_render::RenderTarget>));
+    }
+}
+
 // Sort Render Targets by Z-Index
 // TODO: Use query trampoline instead of C functions directly and use callback resource to make this work on WASM.
 pub extern "C" fn draw_render_target_sort(_e1: ecs_entity_t, v1: *const std::ffi::c_void, _e2: ecs_entity_t, v2: *const std::ffi::c_void) -> i32 {
@@ -146,7 +189,13 @@ pub fn blit_systems(render_systems_entity: &mut Entity) {
     // system.build();
     // render_systems_entity.parent_of_id(system.get_id());
 
+    // Blit sprite to render target
     let mut system = System::dsl("Sprite, Blittable, Size, (ChildOf, $Parent), RenderTarget($Parent), Size($Parent)", None, blit_sprite_system);
+    system.build();
+    render_systems_entity.parent_of_id(system.get_id());
+
+    // Blit cell to render target
+    let mut system = System::dsl("TiledCell, Blittable, Size", None, blit_cell_system);
     system.build();
     render_systems_entity.parent_of_id(system.get_id());
 }
