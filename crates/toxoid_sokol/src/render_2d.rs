@@ -250,6 +250,7 @@ impl Renderer2D for SokolRenderer2D {
             ..Default::default()
         };
         let sampler = sg::make_sampler(&sampler_desc);
+        
 
         // Create framebuffer pass
         let mut attachments_desc = sg::AttachmentsDesc::default();
@@ -357,10 +358,17 @@ impl Renderer2D for SokolRenderer2D {
     fn blit_sprite(source: &Box<dyn Sprite>, sx: f32, sy: f32, sw: f32, sh: f32, destination: &Box<dyn RenderTarget>, dx: f32, dy: f32) {
         unsafe {      
             let sokol_source = source.as_any().downcast_ref::<SokolSprite>().unwrap();
-            
+        
             // Set the source image
             sgp_set_image(0, sg_image { id: sokol_source.image.id });
         
+            // Add sampler configuration to prevent wrapping
+            sgp_set_sampler(0, sg_sampler { 
+                id: destination.as_any()
+                    .downcast_ref::<SokolRenderTarget>()
+                    .unwrap().sampler.id 
+            });
+            
             // Draw the source sprite onto the destination sprite
             let src_rect = sgp_rect { x: sx, y: sy, w: sw, h: sh };
             let dest_rect = sgp_rect { x: dx, y: dy, w: sw, h: sh };

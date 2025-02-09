@@ -55,7 +55,6 @@ use crate::prefabs::*;
 // Blit sprite to render target
 #[components(Sprite, _, Size, _, RenderTarget, Size)]
 pub fn blit_sprite_system(iter: &Iter) {
-    println!("Blitting sprite to render target");
     let mut entities = iter.entities();
     for (i, (sprite, size, render_target, rt_size)) in components.into_iter().enumerate() {
         // Get render target pointer / object / box / trait object
