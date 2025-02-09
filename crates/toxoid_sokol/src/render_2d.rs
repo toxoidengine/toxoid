@@ -333,8 +333,9 @@ impl Renderer2D for SokolRenderer2D {
             sgp_begin(dw as i32, dh as i32);
             sgp_viewport(0, 0, dw as i32, dh as i32);
             // Flip the y-axis and maintain aspect ratio
-            // TODO: Might only need to flip the y-axis on web targets
-            sgp_project(0.0, dw, dh, 0.0);  // Changed order of y coordinates
+            #[cfg(all(target_arch="wasm32", target_os="emscripten"))]
+            sgp_project(0.0, dw, dh, 0.0);  
+            // Changed order of y coordinates
             // sgp_begin(dw as i32, dh as i32);
             // #[cfg(all(target_arch="wasm32", target_os="emscripten"))]
             // sgp_project(0., dw, dh, 0.);
