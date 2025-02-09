@@ -76,6 +76,17 @@ component! {
         ctx: u64,
         instantiated: bool
     },
+    // Tilemaps
+    TiledWorld {
+        world: u64
+    },
+    TiledCell {
+        cell: u64,
+        index: u32
+    },
+    Tileset {
+        tileset: String
+    },
 
     // -- Tags --
     // Rendering
