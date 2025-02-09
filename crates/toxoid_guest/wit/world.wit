@@ -9,7 +9,7 @@ interface ecs {
         child-of,
         custom(ecs-entity-t)
     }
-
+    
     variant phases {
         on-start,
         on-load,
@@ -22,7 +22,7 @@ interface ecs {
         on-store,
         custom(ecs-entity-t)
     }
-
+    
     enum member-type {
         u8-t,
         u16-t,
@@ -78,9 +78,36 @@ interface ecs {
         expr: string
     }
 
+    record sorting-desc {
+        id: ecs-entity-t,
+        callback: callback
+    }
+
     resource component-type {
         constructor(init: component-desc);
         get-id: func() -> ecs-entity-t;
+    }
+
+    record system-desc {
+        name: option<string>,
+        tick-rate: option<s32>,
+        callback: callback,
+        query-desc: query-desc,
+        is-guest: bool
+    }
+
+    record pipeline-desc {
+        name: string,
+        query-desc: query-desc,
+        phases: list<ecs-entity-t>
+    }
+
+    record observer-desc {
+        name: option<string>,
+        query-desc: query-desc,
+        events: list<event>,
+        callback: callback,
+        is-guest: bool
     }
 
     resource component {
@@ -161,6 +188,7 @@ interface ecs {
     resource query {
         constructor(desc: query-desc);
         build: func();
+        order-by: func(sorting: sorting-desc);
         iter: func() -> iter;
         next: func() -> bool;
         count: func() -> s32;
@@ -183,18 +211,11 @@ interface ecs {
         cb-handle: func() -> pointer-t;
     }
 
-    record system-desc {
-        name: option<string>,
-        tick-rate: option<s32>,
-        callback: callback,
-        query-desc: query-desc,
-        is-guest: bool
-    }
-
     resource system {
         constructor(desc: system-desc);
         get-id: func() -> ecs-entity-t;
         build: func();
+        order-by: func(sorting: sorting-desc);
         callback: func() -> callback;
         disable: func();
         enable: func();
@@ -206,12 +227,6 @@ interface ecs {
         get-id: func() -> ecs-entity-t;
     }
 
-    record pipeline-desc {
-        name: string,
-        query-desc: query-desc,
-        phases: list<ecs-entity-t>
-    }
-
     resource pipeline {
         constructor(desc: pipeline-desc);
         build: func();
@@ -219,14 +234,6 @@ interface ecs {
         get-id: func() -> ecs-entity-t;
         disable: func();
         enable: func();
-    }
-
-    record observer-desc {
-        name: option<string>,
-        query-desc: query-desc,
-        events: list<event>,
-        callback: callback,
-        is-guest: bool
     }
 
     resource observer {
