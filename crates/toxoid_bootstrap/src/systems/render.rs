@@ -53,10 +53,30 @@ use crate::prefabs::*;
 // }
 
 // Blit sprite to render target
-#[components(Sprite, Size)]
+#[components(Sprite, _, Size, _, RenderTarget)]
 pub fn blit_sprite_system(iter: &Iter) {
     println!("Blitting sprite to render target");
-    // for (_sprite, _size) in components {}
+    // let mut entities = iter.entities();
+    for (i, (sprite, size, render_target)) in components.into_iter().enumerate() {
+        // Get render target pointer / object / box / trait object
+        let rt_ptr = render_target.get_render_target();
+        let rt_ptr_box = unsafe { Box::from_raw(rt_ptr as *mut SokolRenderTarget) };
+        let rt_trait_object: &Box<dyn toxoid_render::RenderTarget> = Box::leak(Box::new(rt_ptr_box as Box<dyn toxoid_render::RenderTarget>));
+        // Get sprite size
+        let width = size.get_width();
+        let height = size.get_height();
+        // Get sprite pointer / object / box / trait object
+        let sprite_ptr = sprite.get_sprite();
+        let sprite_box = unsafe { Box::from_raw(sprite_ptr as *mut SokolSprite) };
+        let sprite_trait_object: &Box<dyn toxoid_render::Sprite> = Box::leak(Box::new(sprite_box as Box<dyn toxoid_render::Sprite>));
+        // Begin render target
+        SokolRenderer2D::begin_rt(&rt_trait_object, width as f32, height as f32);
+        // Blit sprite to render target
+        SokolRenderer2D::blit_sprite(sprite_trait_object, 0., 0., width as f32, height as f32, rt_trait_object, 0., 0.);
+        // End render target
+        SokolRenderer2D::end_rt();
+        // entities[i].remove::<Blittable>();
+    }
 }
 
 // Draw Render Targets to screen as final output
@@ -109,7 +129,7 @@ pub fn blit_systems(render_systems_entity: &mut Entity) {
     // system.build();
     // render_systems_entity.parent_of_id(system.get_id());
 
-    let mut system = System::dsl("Sprite, Size, (ChildOf, $Parent), RenderTarget($Parent)", None, blit_sprite_system);
+    let mut system = System::dsl("Sprite, Blittable, Size, (ChildOf, $Parent), RenderTarget($Parent)", None, blit_sprite_system);
     system.build();
     render_systems_entity.parent_of_id(system.get_id());
 }
