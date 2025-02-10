@@ -25,7 +25,10 @@ pub fn create_render_target(width: u32, height: u32) -> Entity {
 
 pub fn create_sprite(path: &str) -> Entity {
     // Create render target entity
-    let mut rt_entity = create_render_target(800, 600);
+    let game_config = World::get_singleton::<GameConfig>();
+    let game_width = game_config.get_width();
+    let game_height = game_config.get_height();
+    let mut rt_entity = create_render_target(game_width, game_height);
     // Create renderable entity
     rt_entity.add::<Renderable>();
     // Create sprite entity

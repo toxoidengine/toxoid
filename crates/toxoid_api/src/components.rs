@@ -110,13 +110,14 @@ component! {
     },
     RenderSystems {
         entity: u64
+    },
+    GameConfig {
+        width: u32,
+        height: u32
     }
 }
 
 pub fn init() {
-    // Register singletons
-    KeyboardInput::register();
-    RenderSystems::register();
     // Register components
     // Space
     Position::register();
@@ -163,8 +164,14 @@ pub fn init() {
     FrameByFrameAnimationRelationship::register();
     SpriteRelationship::register();
     RectRelationship::register();
+    
+    // Register singletons
+    KeyboardInput::register();
+    RenderSystems::register();
+    GameConfig::register();
 
     // Add singletons
     World::add_singleton::<KeyboardInput>();
     World::add_singleton::<RenderSystems>();
+    World::add_singleton::<GameConfig>();
 }

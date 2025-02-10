@@ -35,6 +35,11 @@ pub extern "C" fn init_bootstrap(user_data: *mut core::ffi::c_void) {
 pub fn init(init_host: extern "C" fn()) {
     // Initialize ECS
     toxoid_api::components::init();
+    // Game settings
+    let mut game_config = toxoid_api::World::get_singleton::<toxoid_api::GameConfig>();
+    game_config.set_width(1280);
+    game_config.set_height(720);
+    // Initialize systems
     systems::init();
 
     // TODO: Possibly change this when we have Flecs system phases
