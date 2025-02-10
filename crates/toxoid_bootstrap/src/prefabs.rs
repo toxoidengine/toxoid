@@ -24,12 +24,5 @@ pub fn create_render_target(width: u32, height: u32) -> Entity {
 }
 
 pub fn create_sprite(path: &str) -> Entity {
-    // Create render target entity
-    let mut rt_entity = create_render_target(800, 600);
-    // Create renderable entity
-    rt_entity.add::<Renderable>();
-    // Create sprite entity
-    let mut sprite_entity = load_sprite(path);
-    sprite_entity.child_of(rt_entity);
-    sprite_entity
+    load_sprite(path)
 }

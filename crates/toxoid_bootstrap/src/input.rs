@@ -62,5 +62,5 @@ pub extern "C" fn sokol_event(event: *const Event) {
     }
 
     // #[cfg(feature = "imgui")]
-    unsafe { toxoid_sokol::bindings::simgui_handle_event(&event as *const _ as *const _) };
+    // unsafe { toxoid_sokol::bindings::simgui_handle_event(&event as *const _ as *const _) };
 }
