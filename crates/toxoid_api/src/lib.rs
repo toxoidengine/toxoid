@@ -378,19 +378,22 @@ impl Query {
         self.query.count()
     }
 
-    #[cfg(any(not(target_arch = "wasm32"), target_os = "emscripten"))]
-    pub fn entities(&self) -> Vec<Entity> {
-        unimplemented!("Entities not implemented on native / Emscripten");
-    }
-
-    #[cfg(all(target_arch = "wasm32", not(target_os = "emscripten")))]
     pub fn entities(&self) -> Vec<Entity> {
         self
             .query
             .entities()
             .iter()
-            .map(|entity| Entity { 
-                entity: ToxoidEntity::from_id(entity.get_id()) 
+            .map(|entity| {
+                #[cfg(any(not(target_arch = "wasm32"), target_os = "emscripten"))]
+                // In native mode, we get a u64 ID directly
+                return Entity {
+                    entity: ToxoidEntity { id: *entity }
+                };
+                #[cfg(all(target_arch = "wasm32", not(target_os = "emscripten")))]
+                // In WASM mode, we're working with the guest component object
+                return Entity {
+                    entity: ToxoidEntity::from_id(entity.get_id())
+                };
             })
             .collect()
     }
@@ -825,6 +828,11 @@ pub fn load_worldmap(path: &str) -> Entity {
 }
 
 pub fn load_cell(path: &str) -> Entity {
+    // let cell_index = path.split("cell_")
+    //     .nth(1)
+    //     .and_then(|s| s.split(".").next())
+    //     .and_then(|s| s.parse::<u32>().ok())
+    //     .unwrap_or(0);
     let mut entity = Entity::new(None);
     entity.add::<TiledCell>();
     entity.add::<Size>();
