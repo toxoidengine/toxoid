@@ -5,7 +5,7 @@ pub mod bindings;
 use bindings::exports::toxoid::engine::ecs::{EcsEntityT, GuestIter, GuestObserver, ObserverDesc, Phases, PointerT, Relationship};
 use bindings::exports::toxoid::engine::ecs::{self, ComponentDesc, EntityDesc, Guest, GuestCallback, GuestComponent, GuestComponentType, GuestEntity, GuestQuery, GuestSystem, GuestPhase, GuestPipeline, QueryDesc, SystemDesc, PipelineDesc, Event, SortingDesc};
 pub use toxoid_flecs::bindings::{ecs_add_id, ecs_entity_desc_t, ecs_entity_init, ecs_fini, ecs_get_mut_id, ecs_init, ecs_iter_t, ecs_lookup, ecs_make_pair, ecs_member_t, ecs_progress, ecs_query_desc_t, ecs_query_init, ecs_query_iter, ecs_query_next, ecs_query_t, ecs_struct_desc_t, ecs_struct_init, ecs_system_desc_t, ecs_system_init, ecs_system_t, ecs_world_t, EcsDependsOn, EcsOnUpdate, ecs_set_rate, ecs_get_id, ecs_remove_id};
-use toxoid_flecs::{ecs_children, ecs_children_next, ecs_delete, ecs_enable, ecs_ensure_id, ecs_field_size, ecs_field_w_size, ecs_get_name, ecs_get_parent, ecs_has_id, ecs_modified_id, ecs_new_w_id, ecs_observer_desc_t, ecs_observer_init, ecs_observer_t, ecs_pipeline_desc_t, ecs_pipeline_init, ecs_set_name, EcsChildOf, EcsInherit, EcsIsA, EcsOnInstantiate, EcsOnLoad, EcsOnStart, EcsOnStore, EcsOnValidate, EcsPhase, EcsPostLoad, EcsPostUpdate, EcsPreStore, EcsPreUpdate, EcsPrefab};
+use toxoid_flecs::{ecs_children, ecs_children_next, ecs_delete, ecs_enable, ecs_ensure_id, ecs_field_size, ecs_field_w_size, ecs_get_name, ecs_get_parent, ecs_get_path_w_sep, ecs_has_id, ecs_modified_id, ecs_new_w_id, ecs_observer_desc_t, ecs_observer_init, ecs_observer_t, ecs_pipeline_desc_t, ecs_pipeline_init, ecs_set_name, EcsChildOf, EcsInherit, EcsIsA, EcsOnInstantiate, EcsOnLoad, EcsOnStart, EcsOnStore, EcsOnValidate, EcsPhase, EcsPostLoad, EcsPostUpdate, EcsPreStore, EcsPreUpdate, EcsPrefab};
 use std::ffi::CStr;
 use std::{borrow::BorrowMut, mem::MaybeUninit};
 use core::ffi::c_void;
@@ -831,8 +831,11 @@ impl GuestEntity for Entity {
     fn get_name(&self) -> String {
         unsafe {
             let name = ecs_get_name(WORLD.0, self.id);
+            if name.is_null() {
+                return String::new();
+            }
             let name_str = unsafe { CStr::from_ptr(name) };
-            name_str.to_str().unwrap().to_string()
+            name_str.to_str().unwrap_or("").to_string()
         }
     }
 
@@ -842,8 +845,6 @@ impl GuestEntity for Entity {
 
     fn add(&self, component: ecs_entity_t) {
         unsafe {
-            // println!("Adding component {:?} to entity {:?}", component, self.id);
-            // ecs_emplace_id(WORLD.0, self.id, component, &mut true as *mut bool);
             ecs_add_id(WORLD.0, self.id, component);
         }
     }

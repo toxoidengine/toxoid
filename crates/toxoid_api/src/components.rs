@@ -1,17 +1,6 @@
 use crate::*;
 
 component! {
-    // -- Singletons --
-    KeyboardInput {
-        up: bool,
-        down: bool,
-        left: bool,
-        right: bool, 
-    },
-    RenderSystems {
-        entity: u64
-    },
-
     // -- Components --
     // Space
     Position {
@@ -50,7 +39,7 @@ component! {
         data: Vec::<u8>,
         user_data: u64
     },
-    // Animation
+    // Bone Animation
     Atlas {
         atlas: u64,
         filename: String,
@@ -76,6 +65,8 @@ component! {
         ctx: u64,
         instantiated: bool
     },
+    // Frame by Frame Animation
+    FrameByFrameAnimation {},
     // Tilemaps
     TiledWorld {
         world: u64
@@ -101,7 +92,25 @@ component! {
     Loading {},
     Loaded {},
     Connected {},
-    Disconnected {}
+    Disconnected {},
+    // Relationships
+    RenderTargetRelationship {},
+    TilesetRelationship {},
+    BoneAnimationRelationship {},
+    FrameByFrameAnimationRelationship {},
+    SpriteRelationship {},
+    RectRelationship {},
+
+    // -- Singletons --
+    KeyboardInput {
+        up: bool,
+        down: bool,
+        left: bool,
+        right: bool, 
+    },
+    RenderSystems {
+        entity: u64
+    }
 }
 
 pub fn init() {
@@ -126,6 +135,8 @@ pub fn init() {
     Images::register();
     BoneAnimation::register();
     SpineInstance::register();
+    // Frame by Frame Animation
+    FrameByFrameAnimation::register();
     // Tilemaps
     TiledWorld::register();
     TiledCell::register();
@@ -145,6 +156,13 @@ pub fn init() {
     Loaded::register();
     Connected::register();
     Disconnected::register();
+    // Relationships
+    RenderTargetRelationship::register();
+    TilesetRelationship::register();
+    BoneAnimationRelationship::register();
+    FrameByFrameAnimationRelationship::register();
+    SpriteRelationship::register();
+    RectRelationship::register();
 
     // Add singletons
     World::add_singleton::<KeyboardInput>();
