@@ -4,7 +4,7 @@
 pub mod bindings;
 use bindings::exports::toxoid::engine::ecs::{EcsEntityT, GuestIter, GuestObserver, ObserverDesc, Phases, PointerT, Relationship};
 use bindings::exports::toxoid::engine::ecs::{self, ComponentDesc, EntityDesc, Guest, GuestCallback, GuestComponent, GuestComponentType, GuestEntity, GuestQuery, GuestSystem, GuestPhase, GuestPipeline, QueryDesc, SystemDesc, PipelineDesc, Event, SortingDesc};
-pub use toxoid_flecs::bindings::{ecs_add_id, ecs_entity_desc_t, ecs_entity_init, ecs_fini, ecs_get_mut_id, ecs_init, ecs_iter_t, ecs_lookup, ecs_make_pair, ecs_member_t, ecs_progress, ecs_query_desc_t, ecs_query_init, ecs_query_iter, ecs_query_next, ecs_query_t, ecs_struct_desc_t, ecs_struct_init, ecs_system_desc_t, ecs_system_init, ecs_system_t, ecs_world_t, EcsDependsOn, EcsOnUpdate, ecs_set_rate, ecs_get_id, ecs_remove_id};
+pub use toxoid_flecs::bindings::{ecs_add_id, ecs_entity_desc_t, ecs_entity_init, ecs_fini, ecs_get_mut_id, ecs_init, ecs_iter_t, ecs_lookup, ecs_make_pair, ecs_member_t, ecs_progress, ecs_query_desc_t, ecs_query_init, ecs_query_iter, ecs_query_next, ecs_iter_next, ecs_query_t, ecs_struct_desc_t, ecs_struct_init, ecs_system_desc_t, ecs_system_init, ecs_system_t, ecs_world_t, EcsDependsOn, EcsOnUpdate, ecs_set_rate, ecs_get_id, ecs_remove_id};
 use toxoid_flecs::{ecs_children, ecs_children_next, ecs_delete, ecs_enable, ecs_ensure_id, ecs_field_size, ecs_field_w_size, ecs_get_name, ecs_get_parent, ecs_get_path_w_sep, ecs_has_id, ecs_modified_id, ecs_new_w_id, ecs_observer_desc_t, ecs_observer_init, ecs_observer_t, ecs_pipeline_desc_t, ecs_pipeline_init, ecs_set_name, EcsChildOf, EcsInherit, EcsIsA, EcsOnInstantiate, EcsOnLoad, EcsOnStart, EcsOnStore, EcsOnValidate, EcsPhase, EcsPostLoad, EcsPostUpdate, EcsPreStore, EcsPreUpdate, EcsPrefab};
 use std::ffi::CStr;
 use std::{borrow::BorrowMut, mem::MaybeUninit};
@@ -143,8 +143,6 @@ fn map_event(event: Event) -> ecs_entity_t {
             Event::OnDeleteTarget => toxoid_flecs::EcsOnDeleteTarget,
             Event::OnTableCreate => toxoid_flecs::EcsOnTableCreate,
             Event::OnTableDelete => toxoid_flecs::EcsOnTableDelete,
-            Event::OnTableEmpty => toxoid_flecs::EcsOnTableEmpty,
-            Event::OnTableFill => toxoid_flecs::EcsOnTableFill,
             _ => 0
         }
     }
@@ -976,6 +974,7 @@ impl GuestQuery for Query {
     }
 
     fn iter(&self) -> PointerT {
+        let query = unsafe { *self.query.as_ptr() };
         // Create new iterator
         let iter = unsafe { ecs_query_iter(WORLD.0, self.query.as_ptr()) };
         
@@ -994,7 +993,7 @@ impl GuestQuery for Query {
         if iter_ptr.is_null() {
             return false;
         }
-        unsafe { ecs_query_next(iter_ptr) }
+        unsafe { ecs_iter_next(iter_ptr) }
     }
 
     fn count(&self) -> i32 {
@@ -1043,7 +1042,7 @@ impl GuestIter for Iter {
         if self.ptr.is_null() {
             return false;
         }
-        unsafe { ecs_query_next(self.ptr as *mut ecs_iter_t) }
+        unsafe { ecs_iter_next(self.ptr as *mut ecs_iter_t) }
     }
 
     fn count(&self) -> i32 {
