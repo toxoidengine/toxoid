@@ -835,6 +835,7 @@ pub fn load_cell(path: &str) -> Entity {
     //     .and_then(|s| s.split(".").next())
     //     .and_then(|s| s.parse::<u32>().ok())
     //     .unwrap_or(0);
+    // let mut entity = Entity::new(None);
     let mut entity = Entity::new(None);
     entity.add::<TiledCell>();
     entity.add::<Size>();

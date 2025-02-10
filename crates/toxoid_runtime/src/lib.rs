@@ -328,9 +328,7 @@ impl toxoid_component::component::ecs::HostObserver for StoreState {
                 toxoid_component::component::ecs::Event::OnDelete => toxoid_api::Event::OnDelete,
                 toxoid_component::component::ecs::Event::OnDeleteTarget => toxoid_api::Event::OnDeleteTarget,
                 toxoid_component::component::ecs::Event::OnTableCreate => toxoid_api::Event::OnTableCreate,
-                toxoid_component::component::ecs::Event::OnTableDelete => toxoid_api::Event::OnTableDelete,
-                toxoid_component::component::ecs::Event::OnTableEmpty => toxoid_api::Event::OnTableEmpty,
-                toxoid_component::component::ecs::Event::OnTableFill => toxoid_api::Event::OnTableFill
+                toxoid_component::component::ecs::Event::OnTableDelete => toxoid_api::Event::OnTableDelete
             })
                 .collect::<Vec<toxoid_api::Event>>(),
             callback: callback.cb_handle(),
