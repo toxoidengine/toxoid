@@ -262,9 +262,9 @@ impl Renderer2D for SokolRenderer2D {
         let attachments = sg::make_attachments(&attachments_desc);
         let mut pass_action = sg::PassAction::default();
         pass_action.colors[0] = sg::ColorAttachmentAction {
-            load_action: sg::LoadAction::Load, // Changed to Load to preserve contents
+            load_action: sg::LoadAction::Clear,
             store_action: sg::StoreAction::Store,
-            clear_value: { sg::Color { a: 0.0, r: 0.0, g: 0.0, b: 0.0 } },
+            clear_value: sg::Color { r: 0.0, g: 0.0, b: 0.0, a: 0.0 },
             ..Default::default()
         };
         let fb_pass = sg::Pass {
@@ -342,6 +342,8 @@ impl Renderer2D for SokolRenderer2D {
             // sgp_set_color(0., 0., 0., 0.);
             // sgp_clear();
             // sgp_set_blend_mode(sgp_blend_mode_SGP_BLENDMODE_BLEND);
+            sgp_reset_color();
+            sgp_set_blend_mode(sgp_blend_mode_SGP_BLENDMODE_BLEND);
         }
     }
 
