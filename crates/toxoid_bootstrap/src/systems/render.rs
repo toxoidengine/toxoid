@@ -125,6 +125,7 @@ pub fn blit_cell_system(iter: &Iter) {
                 let rt = SokolRenderer2D::create_render_target(pixel_width, pixel_height);
                 SokolRenderer2D::begin_rt(&rt, pixel_width as f32, pixel_height as f32);
                 unsafe {
+                    // Set proper blend mode before drawing tiles
                     (*cell)
                         .layers
                         .iter()
