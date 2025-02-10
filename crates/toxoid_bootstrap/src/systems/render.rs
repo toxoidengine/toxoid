@@ -87,65 +87,65 @@ pub fn blit_cell_system(iter: &Iter) {
     let mut entities = iter.entities();
     for (i, (cell, size)) in components.into_iter().enumerate() {
         let cell_entity = entities.get_mut(i).unwrap();
-        // cell_entity.remove::<Blittable>();
-        // let mut render_targets_query = Query::dsl("TiledCell, (RenderTargetRelationship, $Relation), RenderTarget($Relation)");
-        // let mut test_query = Query::dsl("Position");
-        // test_query.build();
-        // let mut iter = test_query.iter();
-        // // println!("Test Query: {:?}", iter.next());
-        // if test_query.next() {
-        //     let mut entities = test_query.entities();
-        // }
-        Query::dsl_each("TiledCell", |query| {
-            let mut entities = query.entities();
-            println!("Entities: {:?}", entities.len());
-        });
+        let mut children = cell_entity.children();
+        if children.len() > 0 {
+            // TODO: Make this into Flecs Query with custom relationships
+            let mut tileset_entities = children.iter_mut().filter(|child| child.has::<Tileset>() && child.has::<Blittable>()).collect::<Vec<_>>();
+            let mut children = cell_entity.children();
+            let mut render_target_entities = children.iter_mut().filter(|child| child.has::<RenderTarget>()).collect::<Vec<_>>();
 
-        // while test_query.next() {
-        //     let mut entities = test_query.entities();
-        //     let mut components = test_query.components::<Position>(0);
-        //     println!("Entities: {:?}", test_query.entities().len());
-        //     println!("Components: {:?}", test_query.components::<Position>(0).len());
-        // }
-        
-        // render_targets.iter().for_each(|entity| {
-        //     println!("Render Target: {:?}", entity.get_id());
-        // });
-        // render_targets_query.entities().iter().for_each(|entity| {
-        //     println!("Render Target: {:?}", entity.get_id());
-        // });
-        // let mut children = Query::dsl("TiledCell, (RenderTargetRelationship, $Relation), (Tileset, Blittable)").build();
+            if tileset_entities.len() > 0 && render_target_entities.len() > 0 {
+                // Get tileset 
+                let tileset_entity = tileset_entities.get_mut(0).unwrap();
+                let sprite = tileset_entity.get::<Sprite>();
+                
+                let sprite_ptr = sprite.get_sprite();
+                let sprite_box = unsafe { Box::from_raw(sprite_ptr as *mut SokolSprite) };
+                let sprite_trait_object: &Box<dyn toxoid_render::Sprite> = Box::leak(Box::new(sprite_box as Box<dyn toxoid_render::Sprite>));
+                let tileset_size = tileset_entity.get::<Size>();
+                let width = tileset_size.get_width();
+                let height = tileset_size.get_height();
 
-        // let mut children = entity.children();
-        // if children.len() > 0 {
-        //     // let child = children.get_mut(0).unwrap();
-        //     children.iter_mut().for_each(|child| {
-        //         if child.has::<Tileset>() && child.has::<Blittable>() {
-        //             println!("Tileset: {:?}", child.get_id());
+                let rt_entity = render_target_entities.get_mut(0).unwrap();
+                let render_target = rt_entity.get::<RenderTarget>();
+                let render_target_ptr = render_target.get_render_target();
+                let render_target_box = unsafe { Box::from_raw(render_target_ptr as *mut SokolRenderTarget) };
+                let render_target_trait_object: &Box<dyn toxoid_render::RenderTarget> = Box::leak(Box::new(render_target_box as Box<dyn toxoid_render::RenderTarget>));
+                
+                SokolRenderer2D::begin_rt(&render_target_trait_object, width as f32, height as f32);
+                SokolRenderer2D::blit_sprite(sprite_trait_object, 0., 0., width as f32, height as f32, render_target_trait_object, 0., 0.);
+                SokolRenderer2D::end_rt();
+                rt_entity.add::<Renderable>();
+            }
 
-        //             // let mut sprite = child.get::<Sprite>();
-        //             // let sprite_ptr = sprite.get_sprite();
-        //             // let sprite_box = unsafe { Box::from_raw(sprite_ptr as *mut SokolSprite) };
-        //             // let sprite_trait_object: &Box<dyn toxoid_render::Sprite> = Box::leak(Box::new(sprite_box as Box<dyn toxoid_render::Sprite>));
-        //             // println!("Sprite: {:?}", sprite_ptr);
+            // let render_target_entities = children.iter_mut().filter(|child| child.has::<RenderTarget>()).collect::<Vec<_>>();
+            // children.iter_mut().for_each(|child| {
+            //     if child.has::<Tileset>() && child.has::<Blittable>() {
+            //         println!("Tileset: {:?}", child.get_id());
 
-        //             // SokolRenderer2D::begin_rt(&rt_trait_object, rt_width as f32, rt_height as f32);
-        //             // SokolRenderer2D::blit_sprite(sprite_trait_object, 0., 0., width as f32, height as f32, rt_trait_object, 0., 0.);
-        //             // SokolRenderer2D::end_rt();
-        //         }
+            //         // let mut sprite = child.get::<Sprite>();
+            //         // let sprite_ptr = sprite.get_sprite();
+            //         // let sprite_box = unsafe { Box::from_raw(sprite_ptr as *mut SokolSprite) };
+            //         // let sprite_trait_object: &Box<dyn toxoid_render::Sprite> = Box::leak(Box::new(sprite_box as Box<dyn toxoid_render::Sprite>));
+            //         // println!("Sprite: {:?}", sprite_ptr);
 
-        //         if child.has::<RenderTarget>() {
-        //             println!("Render Target: {:?}", child.get_id());
-        //             // let render_target = child.get::<RenderTarget>();
-        //             // let render_target_ptr = render_target.get_render_target();
-        //             // let render_target_box = unsafe { Box::from_raw(render_target_ptr as *mut SokolRenderTarget) };
-        //             // let render_target_trait_object: &Box<dyn toxoid_render::RenderTarget> = Box::leak(Box::new(render_target_box as Box<dyn toxoid_render::RenderTarget>));
-        //             // println!("Child: {}", child.get_id());
-        //             // entity.remove::<Blittable>();
-        //         }
-        //     });
-        // }
-        // // Get render target pointer / object / box / trait object
+            //         // SokolRenderer2D::begin_rt(&rt_trait_object, rt_width as f32, rt_height as f32);
+            //         // SokolRenderer2D::blit_sprite(sprite_trait_object, 0., 0., width as f32, height as f32, rt_trait_object, 0., 0.);
+            //         // SokolRenderer2D::end_rt();
+            //     }
+
+            //     if child.has::<RenderTarget>() {
+            //         println!("Render Target: {:?}", child.get_id());
+            //         // let render_target = child.get::<RenderTarget>();
+            //         // let render_target_ptr = render_target.get_render_target();
+            //         // let render_target_box = unsafe { Box::from_raw(render_target_ptr as *mut SokolRenderTarget) };
+            //         // let render_target_trait_object: &Box<dyn toxoid_render::RenderTarget> = Box::leak(Box::new(render_target_box as Box<dyn toxoid_render::RenderTarget>));
+            //         // println!("Child: {}", child.get_id());
+            //         // entity.remove::<Blittable>();
+            //     }
+            // });
+        }
+        // Get render target pointer / object / box / trait object
         // let rt_ptr = render_target.get_render_target();
         // let rt_ptr_box = unsafe { Box::from_raw(rt_ptr as *mut SokolRenderTarget) };
         // let rt_trait_object: &Box<dyn toxoid_render::RenderTarget> = Box::leak(Box::new(rt_ptr_box as Box<dyn toxoid_render::RenderTarget>));
@@ -209,6 +209,11 @@ pub fn draw_systems(render_systems_entity: &mut Entity) {
     system.order_by(RenderTarget::get_id(), draw_render_target_sort);
     system.build();
     render_systems_entity.parent_of_id(system.get_id());
+}
+
+pub fn test_system(iter: &Iter) {
+    let mut entities = iter.entities();
+    println!("Entities: {:?}", entities.len());
 }
 
 // Systems that blit render targets

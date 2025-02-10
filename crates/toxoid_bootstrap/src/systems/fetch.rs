@@ -241,7 +241,8 @@ pub fn init() {
                             cell_entity.set_name(format!("TiledCellEntity{}", cell_entity.get_id()));
 
                             let mut render_target = create_render_target(800, 600);
-                            cell_entity.add_relationship(Relationship::Custom(RenderTargetRelationship::get_id()), render_target);
+                            // cell_entity.add_relationship(Relationship::Custom(RenderTargetRelationship::get_id()), render_target);
+                            render_target.child_of_id(cell_entity.get_id());
                             cell_entity.add::<Blittable>();
                         });
                 },
@@ -253,7 +254,8 @@ pub fn init() {
                     cell.set_cell(Box::into_raw(Box::new(tiled_cell.clone())) as u64);
                     let tileset = tiled_cell.tilesets.get(0).unwrap();
                     let mut tileset_entity = toxoid_api::load_tileset(format!("assets/{}", tileset.image.as_str()).as_str());
-                    cell_entity.add_relationship(Relationship::Custom(TilesetRelationship::get_id()), tileset_entity);
+                    // cell_entity.add_relationship(Relationship::Custom(TilesetRelationship::get_id()), tileset_entity);
+                    tileset_entity.child_of_id(cell_entity.get_id());
                     cell_entity.add::<Blittable>();
                     // let mut tileset = tileset_entity.get::<Tileset>();
                     // tileset.set_tileset(Box::into_raw(Box::new(tileset.clone())) as u64);
