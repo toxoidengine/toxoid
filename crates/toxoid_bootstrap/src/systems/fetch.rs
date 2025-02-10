@@ -197,14 +197,21 @@ pub fn init() {
                     let data = data.as_slice().as_ptr();
                     // Create sokol sprite
                     let sokol_sprite = SokolRenderer2D::create_sprite(data, size);
+                    let sprite_width = sokol_sprite.width();
+                    let sprite_height = sokol_sprite.height();
                     // Set size
                     let mut size = sprite_entity.get::<Size>();
-                    size.set_width(sokol_sprite.width());
-                    size.set_height(sokol_sprite.height());
+                    size.set_width(sprite_width);
+                    size.set_height(sprite_height);
                     // Set sprite
                     let mut sprite = sprite_entity.get::<Sprite>();
                     sprite.set_sprite(Box::into_raw(sokol_sprite) as *mut () as u64);
                     sprite_entity.add::<Blittable>();
+                    // Create render target entity
+                    let mut rt_entity = create_render_target(sprite_width, sprite_height);
+                    sprite_entity.child_of_id(rt_entity.get_id());
+                    // Create renderable entity
+                    rt_entity.add::<Renderable>();
                 }
                 d if d == DataType::BoneAnimationAtlas as u8 => {
                     let mut animation_entity = Entity::from_id(fetch_request.get_user_data());
