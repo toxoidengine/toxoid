@@ -89,10 +89,18 @@ pub fn blit_cell_system(iter: &Iter) {
         let cell_entity = entities.get_mut(i).unwrap();
         // cell_entity.remove::<Blittable>();
         // let mut render_targets_query = Query::dsl("TiledCell, (RenderTargetRelationship, $Relation), RenderTarget($Relation)");
-        let mut test_query = Query::dsl("Position");
-        test_query.build();
-        println!("Test Query: {:?}", test_query.iter().next());
-        // println!("Test Query: {:?}", test_query.next());
+        // let mut test_query = Query::dsl("Position");
+        // test_query.build();
+        // let mut iter = test_query.iter();
+        // // println!("Test Query: {:?}", iter.next());
+        // if test_query.next() {
+        //     let mut entities = test_query.entities();
+        // }
+        Query::dsl_each("TiledCell", |query| {
+            let mut entities = query.entities();
+            println!("Entities: {:?}", entities.len());
+        });
+
         // while test_query.next() {
         //     let mut entities = test_query.entities();
         //     let mut components = test_query.components::<Position>(0);

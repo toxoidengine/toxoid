@@ -341,14 +341,16 @@ impl Query {
         Self::new(Some(desc))
     }
 
-    pub fn dsl_each<F>(dsl: &str, f: F) -> Self 
+    pub fn dsl_each<F>(dsl: &str, mut f: F) -> Self 
     where 
-        F: FnOnce(&mut Query)
+        F: FnMut(&mut Query)
     {
         let mut query = Self::new(Some(QueryDesc { expr: dsl.to_string() }));
         query.build();
         let mut iter = query.iter();
-        f(&mut query);
+        while query.next() {
+            f(&mut query);
+        }
         query
     }
 
