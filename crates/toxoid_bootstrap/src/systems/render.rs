@@ -122,13 +122,20 @@ pub fn blit_cell_system(iter: &Iter) {
                 let tile_height = unsafe { (*cell).tileheight };
                 let image_width = 4800;
                 let image_height = 720;
-                let rt = SokolRenderer2D::create_render_target(800, 600);
+                let rt = SokolRenderer2D::create_render_target(pixel_width, pixel_height);
                 SokolRenderer2D::begin_rt(&rt, pixel_width as f32, pixel_height as f32);
                 unsafe {
                     (*cell)
                         .layers
                         .iter()
                         .for_each(|layer| {
+                            if layer.layer_type == "group" {
+                                layer
+                                    .layers
+                                    .as_ref()
+                                    .unwrap()
+                                    .iter()
+                                    .for_each(|layer| {
                             if layer.layer_type == "tilelayer" {
                                 let height = (*cell).height;
                                 let width = (*cell).width;
@@ -201,6 +208,8 @@ pub fn blit_cell_system(iter: &Iter) {
                                         });
                                     }
                             });
+                        }
+                    });
                 }
                 SokolRenderer2D::end_rt();
 
@@ -240,41 +249,8 @@ pub fn blit_cell_system(iter: &Iter) {
                 
                 // Remove the blittable component
                 cell_entity.remove::<Blittable>();
-
-                println!("Render Target: {:?}", entity.get_id());
             }
-
-            // let render_target_entities = children.iter_mut().filter(|child| child.has::<RenderTarget>()).collect::<Vec<_>>();
-            // children.iter_mut().for_each(|child| {
-            //     if child.has::<Tileset>() && child.has::<Blittable>() {
-            //         println!("Tileset: {:?}", child.get_id());
-
-            //         // let mut sprite = child.get::<Sprite>();
-            //         // let sprite_ptr = sprite.get_sprite();
-            //         // let sprite_box = unsafe { Box::from_raw(sprite_ptr as *mut SokolSprite) };
-            //         // let sprite_trait_object: &Box<dyn toxoid_render::Sprite> = Box::leak(Box::new(sprite_box as Box<dyn toxoid_render::Sprite>));
-            //         // println!("Sprite: {:?}", sprite_ptr);
-
-            //         // SokolRenderer2D::begin_rt(&rt_trait_object, rt_width as f32, rt_height as f32);
-            //         // SokolRenderer2D::blit_sprite(sprite_trait_object, 0., 0., width as f32, height as f32, rt_trait_object, 0., 0.);
-            //         // SokolRenderer2D::end_rt();
-            //     }
-
-            //     if child.has::<RenderTarget>() {
-            //         println!("Render Target: {:?}", child.get_id());
-            //         // let render_target = child.get::<RenderTarget>();
-            //         // let render_target_ptr = render_target.get_render_target();
-            //         // let render_target_box = unsafe { Box::from_raw(render_target_ptr as *mut SokolRenderTarget) };
-            //         // let render_target_trait_object: &Box<dyn toxoid_render::RenderTarget> = Box::leak(Box::new(render_target_box as Box<dyn toxoid_render::RenderTarget>));
-            //         // println!("Child: {}", child.get_id());
-            //         // entity.remove::<Blittable>();
-            //     }
-            // });
         }
-        // Get render target pointer / object / box / trait object
-        // let rt_ptr = render_target.get_render_target();
-        // let rt_ptr_box = unsafe { Box::from_raw(rt_ptr as *mut SokolRenderTarget) };
-        // let rt_trait_object: &Box<dyn toxoid_render::RenderTarget> = Box::leak(Box::new(rt_ptr_box as Box<dyn toxoid_render::RenderTarget>));
     }
 }
 
@@ -295,10 +271,6 @@ pub extern "C" fn draw_render_target_sort(_e1: ecs_entity_t, v1: *const std::ffi
 // Draw Render Targets to screen as final output
 #[components(RenderTarget, _, Size, Position, BlendMode)]
 pub fn draw_render_targets_system(iter: &Iter) {
-    let entities = iter.entities();
-    entities.iter().for_each(|entity| {
-        println!("Entity: {:?}", entity.get_id());
-    });
     for (rt, size, position, blend_mode) in components {
         // Get render target object / pointer
         let rt_ptr = rt.get_render_target();

@@ -239,8 +239,10 @@ pub fn init() {
                             let mut cell_entity = toxoid_api::load_cell(format!("assets/{}", cell.file_name).as_str());
                             cell_entity.child_of_id(world_entity_id);
                             // cell_entity.set_name(format!("TiledCellEntity{}", cell_entity.get_id()));
-
-                            let mut render_target = create_render_target(800, 600);
+                            let game_config = World::get_singleton::<GameConfig>();
+                            let game_width = game_config.get_width();
+                            let game_height = game_config.get_height();
+                            let mut render_target = create_render_target(4800, 720);
                             // cell_entity.add_relationship(Relationship::Custom(RenderTargetRelationship::get_id()), render_target);
                             render_target.child_of_id(cell_entity.get_id());
                             cell_entity.add::<Blittable>();
