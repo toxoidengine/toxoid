@@ -8,6 +8,7 @@ toxoid_api = { path = "../toxoid_api" }
 toxoid_host = { path = "../toxoid_host" }
 toxoid_sokol = { path = "../toxoid_sokol" }
 toxoid_render = { path = "../toxoid_render" }
+toxoid_tiled = { path = "../toxoid_tiled" }
 rand = "0.8.5"
 
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]

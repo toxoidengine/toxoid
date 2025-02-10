@@ -31,6 +31,7 @@ use sokol::{app as sapp, gfx as sg, glue as sglue};
 // use sokol::app::{Event, EventType};
 use sokol::app::Event;
 use once_cell::sync::Lazy;
+use toxoid_api::*;
 
 // Global pass action for Sokol
 pub static PASS_ACTION: Lazy<sg::PassAction> = Lazy::new(|| sg::PassAction::new());
@@ -47,14 +48,14 @@ pub extern "C" fn sokol_init() {
     sg::setup(&sg::Desc {
         environment: sglue::environment(),
         logger: sg::Logger { func: Some(sokol::log::slog_func), ..Default::default() },
-        // image_pool_size: 128 * SOKOL_POOL_MODIFIER,
-        // buffer_pool_size: 128 * SOKOL_POOL_MODIFIER,
-        // shader_pool_size: 32 * SOKOL_POOL_MODIFIER,
-        // pipeline_pool_size: 64 * SOKOL_POOL_MODIFIER,
-        // sampler_pool_size: 64 * SOKOL_POOL_MODIFIER,
-        // uniform_buffer_size: 4 * 1024 * 1024 * SOKOL_POOL_MODIFIER,
-        // attachments_pool_size: 64 * SOKOL_POOL_MODIFIER,
-        // wgpu_bindgroups_cache_size: 64 * SOKOL_POOL_MODIFIER,
+        // Increase resource pools for large tilemaps
+        image_pool_size: 1024,
+        buffer_pool_size: 1024,
+        shader_pool_size: 64,
+        pipeline_pool_size: 128,
+        sampler_pool_size: 128,
+        attachments_pool_size: 128,
+        uniform_buffer_size: 16 * 1024 * 1024,  // 16MB
         ..Default::default()
     });
 
@@ -66,9 +67,9 @@ pub extern "C" fn sokol_init() {
             
             // Initialize Sokol GP with matching swapchain configuration
             let mut desc = sgp_desc {
-                max_commands: 10000,
-                max_vertices: 50000,
-                // Match the color format with the swapchain
+                // Increase SGP limits for tile rendering
+                max_commands: 65536,    // Was 10000
+                max_vertices: 262144,    // Was 50000
                 color_format: swapchain.color_format as i32,
                 // Match the depth format with the swapchain
                 depth_format: swapchain.depth_format as i32,
@@ -83,8 +84,8 @@ pub extern "C" fn sokol_init() {
         {
             // Initialize Sokol GP, adjust the size of command buffers for your own use.
             let mut desc = sgp_desc {
-                max_commands: 0,
-                max_vertices: 0,
+                max_commands: 131072,   // 128k commands
+                max_vertices: 1048576,  // 1M verticesmax_commands: 0,
                 color_format: 0,
                 depth_format: 0,
                 sample_count: 0,
@@ -154,18 +155,18 @@ extern "C" fn sokol_cleanup() {
     sg::shutdown()
 }
 
-pub const GAME_WIDTH: i32 = 800;
-pub const GAME_HEIGHT: i32 = 600;
 
 #[cfg(feature = "render")]
 pub fn init(sokol_init: extern "C" fn(*mut core::ffi::c_void), sokol_frame: extern "C" fn(), sokol_event: extern "C" fn(*const Event), user_data: *mut core::ffi::c_void) {
-    // let game_config = World::get_singleton::<GameConfig>();
     let window_title = b"Toxoid Engine Demo\0".as_ptr() as _;
     let canvas_id = std::ffi::CString::new("canvas").unwrap();
+    let game_config = World::get_singleton::<GameConfig>();
+    let game_width = game_config.get_width() as i32;
+    let game_height = game_config.get_height() as i32;
     
     #[cfg(target_os = "emscripten")]
     unsafe {
-        emscripten_set_canvas_element_size(canvas_id.as_ptr(), GAME_WIDTH, GAME_HEIGHT);
+        emscripten_set_canvas_element_size(canvas_id.as_ptr(), game_width, game_height);
     }
 
     sapp::run(&sapp::Desc {
@@ -176,8 +177,8 @@ pub fn init(sokol_init: extern "C" fn(*mut core::ffi::c_void), sokol_frame: exte
         frame_cb: Some(sokol_frame),
         event_cb: Some(sokol_event),
         window_title,
-        width: GAME_WIDTH,
-        height: GAME_HEIGHT,
+        width: game_width,
+        height: game_height,
         sample_count: 1,
         icon: sapp::IconDesc {
             sokol_default: true,

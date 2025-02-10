@@ -341,14 +341,16 @@ impl Query {
         Self::new(Some(desc))
     }
 
-    pub fn dsl_each<F>(dsl: &str, f: F) -> Self 
+    pub fn dsl_each<F>(dsl: &str, mut f: F) -> Self 
     where 
-        F: FnOnce(&mut Query)
+        F: FnMut(&mut Query)
     {
         let mut query = Self::new(Some(QueryDesc { expr: dsl.to_string() }));
         query.build();
         let mut iter = query.iter();
-        f(&mut query);
+        while query.next() {
+            f(&mut query);
+        }
         query
     }
 
@@ -378,19 +380,22 @@ impl Query {
         self.query.count()
     }
 
-    #[cfg(any(not(target_arch = "wasm32"), target_os = "emscripten"))]
-    pub fn entities(&self) -> Vec<Entity> {
-        unimplemented!("Entities not implemented on native / Emscripten");
-    }
-
-    #[cfg(all(target_arch = "wasm32", not(target_os = "emscripten")))]
     pub fn entities(&self) -> Vec<Entity> {
         self
             .query
             .entities()
             .iter()
-            .map(|entity| Entity { 
-                entity: ToxoidEntity::from_id(entity.get_id()) 
+            .map(|entity| {
+                #[cfg(any(not(target_arch = "wasm32"), target_os = "emscripten"))]
+                // In native mode, we get a u64 ID directly
+                return Entity {
+                    entity: ToxoidEntity { id: *entity }
+                };
+                #[cfg(all(target_arch = "wasm32", not(target_os = "emscripten")))]
+                // In WASM mode, we're working with the guest component object
+                return Entity {
+                    entity: ToxoidEntity::from_id(entity.get_id())
+                };
             })
             .collect()
     }
@@ -768,6 +773,7 @@ pub enum DataType {
     BoneAnimationSkeleton,
     Worldmap,
     Cell,
+    Tileset,
     Audio,
     Font
 }
@@ -796,7 +802,7 @@ pub fn load_sprite(path: &str) -> Entity {
     entity
 }
 
-pub fn load_animation(atlas_filename: &str, skeleton_filename: &str) {
+pub fn load_animation(atlas_filename: &str, skeleton_filename: &str) -> Entity {
     let mut entity = Entity::new(None);
     entity.add::<Loading>();
     entity.add::<Skeleton>();
@@ -812,4 +818,35 @@ pub fn load_animation(atlas_filename: &str, skeleton_filename: &str) {
     skeleton.set_filename(skeleton_filename.to_string());
     fetch(atlas_filename, DataType::BoneAnimationAtlas, Some(entity.get_id()));
     fetch(skeleton_filename, DataType::BoneAnimationSkeleton, Some(entity.get_id()));
+    entity
+}
+
+pub fn load_worldmap(path: &str) -> Entity {
+    let mut entity = Entity::new(None);
+    entity.add::<TiledWorld>();
+    entity.add::<Size>();
+    fetch(path, DataType::Worldmap, Some(entity.get_id()));
+    entity
+}
+
+pub fn load_cell(path: &str) -> Entity {
+    // let cell_index = path.split("cell_")
+    //     .nth(1)
+    //     .and_then(|s| s.split(".").next())
+    //     .and_then(|s| s.parse::<u32>().ok())
+    //     .unwrap_or(0);
+    let mut entity = Entity::new(None);
+    entity.add::<TiledCell>();
+    entity.add::<Size>();
+    fetch(path, DataType::Cell, Some(entity.get_id()));
+    entity
+}
+
+pub fn load_tileset(path: &str) -> Entity {
+    let mut entity = Entity::new(None);
+    entity.add::<Tileset>();
+    entity.add::<Sprite>();
+    entity.add::<Size>();
+    fetch(path, DataType::Tileset, Some(entity.get_id()));
+    entity
 }

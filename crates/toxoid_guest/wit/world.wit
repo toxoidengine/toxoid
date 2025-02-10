@@ -57,9 +57,7 @@ interface ecs {
         on-delete,
         on-delete-target,
         on-table-create,
-        on-table-delete,
-        on-table-empty,
-        on-table-fill
+        on-table-delete
     }
     
     record component-desc {

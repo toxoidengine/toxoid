@@ -4,7 +4,7 @@ use crate::bindings::*;
 use crate::bindings_x86::*;
 use sokol::{app as sapp, gfx as sg, glue as sglue};
 use toxoid_render::{Renderer2D, RenderTarget, Sprite};
-use toxoid_api::components::{Position, Size, Color};
+use toxoid_api::{components::{Color, Position, Size, GameConfig}, World};
 use std::any::Any;
 
 pub struct SokolRenderer2D {
@@ -145,7 +145,10 @@ impl Renderer2D for SokolRenderer2D {
     fn begin() {
         // Get the size of the window
         let (window_width, window_height) = (sapp::width(), sapp::height());
-        let scale_factor = window_width as f32 / crate::GAME_WIDTH as f32;
+        let game_config = World::get_singleton::<GameConfig>();
+        let game_width = game_config.get_width();
+        let game_height = game_config.get_height();
+        let scale_factor = window_width as f32 / game_width as f32;
         unsafe {
             // Begin recording draw commands for a frame buffer of size (width, height).
             sgp_begin(window_width, window_height);
@@ -259,9 +262,9 @@ impl Renderer2D for SokolRenderer2D {
         let attachments = sg::make_attachments(&attachments_desc);
         let mut pass_action = sg::PassAction::default();
         pass_action.colors[0] = sg::ColorAttachmentAction {
-            load_action: sg::LoadAction::Load, // Changed to Load to preserve contents
+            load_action: sg::LoadAction::Clear,
             store_action: sg::StoreAction::Store,
-            clear_value: { sg::Color { a: 0.0, r: 0.0, g: 0.0, b: 0.0 } },
+            clear_value: sg::Color { r: 0.0, g: 0.0, b: 0.0, a: 0.0 },
             ..Default::default()
         };
         let fb_pass = sg::Pass {
@@ -336,12 +339,11 @@ impl Renderer2D for SokolRenderer2D {
             #[cfg(all(target_arch="wasm32", target_os="emscripten"))]
             sgp_project(0.0, dw, dh, 0.0);  
             // Changed order of y coordinates
-            // sgp_begin(dw as i32, dh as i32);
-            // #[cfg(all(target_arch="wasm32", target_os="emscripten"))]
-            // sgp_project(0., dw, dh, 0.);
             // sgp_set_color(0., 0., 0., 0.);
             // sgp_clear();
             // sgp_set_blend_mode(sgp_blend_mode_SGP_BLENDMODE_BLEND);
+            sgp_reset_color();
+            sgp_set_blend_mode(sgp_blend_mode_SGP_BLENDMODE_BLEND);
         }
     }
 
@@ -477,7 +479,10 @@ impl Renderer2D for SokolRenderer2D {
     fn draw_filled_rect(pos: &Position, size: &Size, color: &Color) {
         unsafe {
             let (window_width, _) = SokolRenderer2D::window_size();
-            let scale_factor = window_width as f32 / crate::GAME_WIDTH as f32;
+            let game_config = World::get_singleton::<GameConfig>();
+            let game_width = game_config.get_width();
+            let game_height = game_config.get_height();
+            let scale_factor = window_width as f32 / game_width as f32;
             sgp_reset_color();
             sgp_set_color(color.get_r(), color.get_g(), color.get_b(), color.get_a());
             sgp_draw_filled_rect(pos.get_x() as f32 * scale_factor, pos.get_y() as f32 * scale_factor, size.get_width() as f32 * scale_factor, size.get_height() as f32 * scale_factor);
@@ -487,7 +492,10 @@ impl Renderer2D for SokolRenderer2D {
     fn draw_line(ax: f32, ay: f32, bx: f32, by: f32) {
         unsafe {
             let (window_width, _) = SokolRenderer2D::window_size();
-            let scale_factor = window_width as f32 / crate::GAME_WIDTH as f32;
+            let game_config = World::get_singleton::<GameConfig>(); 
+            let game_width = game_config.get_width();
+            let game_height = game_config.get_height();
+            let scale_factor = window_width as f32 / game_width as f32;
             sgp_draw_line(ax * scale_factor, ay * scale_factor, bx * scale_factor, by * scale_factor);
         }
     }

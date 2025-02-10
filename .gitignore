@@ -5,3 +5,4 @@ app/host/assets/*
 assets/
 dist/host.wasm
 dist/host.js
+.DS_Store

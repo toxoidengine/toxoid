@@ -1,6 +1,8 @@
 use toxoid_api::*;
 use toxoid_render::Renderer2D;
-use toxoid_sokol::{bindings::*, SokolRenderer2D}; 
+use toxoid_sokol::{bindings::*, SokolRenderer2D};
+
+use crate::prefabs::create_render_target; 
 
 #[no_mangle]
 pub extern "C" fn fetch_callback(response: *const sfetch_response_t) {
@@ -145,7 +147,6 @@ pub fn bone_animation_loaded(entity: &mut Entity) {
         image.set_info(Box::into_raw(Box::new(img_info)) as u64);
         fetch(file_path, DataType::Image, Some(image_entity.get_id()));
     }
-
     entity.add::<Blittable>();
 }
 
@@ -191,19 +192,26 @@ pub fn init() {
                 },
                 d if d == DataType::Sprite as u8 => {
                     // Create entity from entity ID passed to user data
-                    let mut entity = Entity::from_id(fetch_request.get_user_data());
+                    let mut sprite_entity = Entity::from_id(fetch_request.get_user_data());
                     // Get data
                     let data = data.as_slice().as_ptr();
                     // Create sokol sprite
                     let sokol_sprite = SokolRenderer2D::create_sprite(data, size);
+                    let sprite_width = sokol_sprite.width();
+                    let sprite_height = sokol_sprite.height();
                     // Set size
-                    let mut size = entity.get::<Size>();
-                    size.set_width(sokol_sprite.width());
-                    size.set_height(sokol_sprite.height());
+                    let mut size = sprite_entity.get::<Size>();
+                    size.set_width(sprite_width);
+                    size.set_height(sprite_height);
                     // Set sprite
-                    let mut sprite = entity.get::<Sprite>();
+                    let mut sprite = sprite_entity.get::<Sprite>();
                     sprite.set_sprite(Box::into_raw(sokol_sprite) as *mut () as u64);
-                    entity.add::<Blittable>();
+                    sprite_entity.add::<Blittable>();
+                    // Create render target entity
+                    let mut rt_entity = create_render_target(sprite_width, sprite_height);
+                    sprite_entity.child_of_id(rt_entity.get_id());
+                    // Create renderable entity
+                    rt_entity.add::<Renderable>();
                 }
                 d if d == DataType::BoneAnimationAtlas as u8 => {
                     let mut animation_entity = Entity::from_id(fetch_request.get_user_data());
@@ -222,6 +230,59 @@ pub fn init() {
                     if animation_entity.get::<Atlas>().get_loaded() {
                         bone_animation_loaded(&mut animation_entity);
                     }
+                },
+                d if d == DataType::Worldmap as u8 => {
+                    let mut world_entity = Entity::from_id(fetch_request.get_user_data());
+                    let mut world = world_entity.get::<TiledWorld>();
+                    let data_str = std::str::from_utf8(data.as_slice()).unwrap();
+                    let tiled_world = toxoid_tiled::parse_world(data_str);
+                    world.set_world(Box::into_raw(Box::new(tiled_world.clone())) as u64);
+                    let world_entity_id = world_entity.get_id();
+                    tiled_world
+                        .maps
+                        .unwrap()
+                        .iter()
+                        .for_each(|cell| {
+                            let mut cell_entity = toxoid_api::load_cell(format!("assets/{}", cell.file_name).as_str());
+                            cell_entity.child_of_id(world_entity_id);
+                            // cell_entity.set_name(format!("TiledCellEntity{}", cell_entity.get_id()));
+                            let game_config = World::get_singleton::<GameConfig>();
+                            let game_width = game_config.get_width();
+                            let game_height = game_config.get_height();
+                            let mut render_target = create_render_target(4800, 720);
+                            // cell_entity.add_relationship(Relationship::Custom(RenderTargetRelationship::get_id()), render_target);
+                            render_target.child_of_id(cell_entity.get_id());
+                            cell_entity.add::<Blittable>();
+                        });
+                },
+                d if d == DataType::Cell as u8 => {
+                    let mut cell_entity = Entity::from_id(fetch_request.get_user_data());
+                    let mut cell = cell_entity.get::<TiledCell>();
+                    let data_str = std::str::from_utf8(data.as_slice()).unwrap();
+                    let tiled_cell = toxoid_tiled::parse_cell(data_str);
+                    cell.set_cell(Box::into_raw(Box::new(tiled_cell.clone())) as u64);
+                    let tileset = tiled_cell.tilesets.get(0).unwrap();
+                    let mut tileset_entity = toxoid_api::load_tileset(format!("assets/{}", tileset.image.as_str()).as_str());
+                    // cell_entity.add_relationship(Relationship::Custom(TilesetRelationship::get_id()), tileset_entity);
+                    tileset_entity.child_of_id(cell_entity.get_id());
+                    cell_entity.add::<Blittable>();
+                    // let mut tileset = tileset_entity.get::<Tileset>();
+                    // tileset.set_tileset(Box::into_raw(Box::new(tileset.clone())) as u64);
+                },
+                d if d == DataType::Tileset as u8 => {
+                    let mut tileset_entity = Entity::from_id(fetch_request.get_user_data());
+                    // Get data
+                    let data = data.as_slice().as_ptr();
+                    // Create sokol sprite
+                    let sokol_sprite = SokolRenderer2D::create_sprite(data, size);
+                    // Set size
+                    let mut size = tileset_entity.get::<Size>();
+                    size.set_width(sokol_sprite.width());
+                    size.set_height(sokol_sprite.height());
+                    // Set sprite
+                    let mut sprite = tileset_entity.get::<Sprite>();
+                    sprite.set_sprite(Box::into_raw(sokol_sprite) as *mut () as u64);
+                    tileset_entity.add::<Blittable>();
                 },
                 _ => {
                     unimplemented!();
