@@ -238,7 +238,7 @@ pub fn init() {
                         .for_each(|cell| {
                             let mut cell_entity = toxoid_api::load_cell(format!("assets/{}", cell.file_name).as_str());
                             cell_entity.child_of_id(world_entity_id);
-                            cell_entity.set_name(format!("TiledCellEntity{}", cell_entity.get_id()));
+                            // cell_entity.set_name(format!("TiledCellEntity{}", cell_entity.get_id()));
 
                             let mut render_target = create_render_target(800, 600);
                             // cell_entity.add_relationship(Relationship::Custom(RenderTargetRelationship::get_id()), render_target);
