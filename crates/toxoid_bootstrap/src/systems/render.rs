@@ -182,8 +182,8 @@ pub fn blit_cell_system(iter: &Iter) {
                                         let mut tile_entity = Entity::new(None);
                                         tile_entity.add::<Position>();
                                         let mut position = tile_entity.get::<Position>();
-                                        position.set_x(dest_x as u32);
-                                        position.set_y(dest_y as u32);
+                                        position.set_x(dest_x as i32);
+                                        position.set_y(dest_y as i32);
                                         tile_entity.add::<Size>();
                                         let mut size = tile_entity.get::<Size>();
                                         size.set_width(tile_width);
@@ -238,8 +238,8 @@ pub fn blit_cell_system(iter: &Iter) {
                 // Calculate grid positions based on the index
                 let grid_x = index % grid_width; // Calculate x position in the grid
                 let grid_y = index / grid_width; // Calculate y position in the grid
-                let position_x = grid_x as u32 * pixel_width; // Position x for the cell
-                let position_y = grid_y as u32 * pixel_height; // Position y for the cell
+                let position_x = grid_x as i32 * pixel_width as i32; // Position x for the cell
+                let position_y = grid_y as i32 * pixel_height as i32; // Position y for the cell
                 position.set_x(position_x);
                 position.set_y(position_y);
                 // println!("i: {}, pixel_width: {}, pixel_height: {}", index, pixel_width, pixel_height);
