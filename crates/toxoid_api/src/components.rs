@@ -66,7 +66,6 @@ component! {
     },
     SpineInstance {
         instance: u64,
-        ctx: u64,
         instantiated: bool
     },
     // Frame by Frame Animation
