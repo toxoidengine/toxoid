@@ -22,6 +22,7 @@ pub struct SokolRenderTarget {
     pub depth_image: sg::Image,
     pub sampler: sg::Sampler,
     pub pass: sg::Pass,
+    pub spine_ctx: sspine_context,
 }
 
 pub struct SpineOffscreenCtx {
@@ -191,19 +192,19 @@ impl Renderer2D for SokolRenderer2D {
             sgp_end();
             
             // Draw Spine layer
-            #[cfg(feature = "spine")] {
-                let layer_transform = sspine_layer_transform {
-                    size: sspine_vec2 { 
-                        x: window_width as f32, 
-                        y: window_height as f32
-                    },
-                    origin: sspine_vec2 { 
-                        x: window_width as f32 * 0.5, 
-                        y: window_height as f32 * 0.5
-                    }
-                };
-                sspine_draw_layer(0, &layer_transform);
-            }
+            // #[cfg(feature = "spine")] {
+            //     let layer_transform = sspine_layer_transform {
+            //         size: sspine_vec2 { 
+            //             x: window_width as f32, 
+            //             y: window_height as f32
+            //         },
+            //         origin: sspine_vec2 { 
+            //             x: window_width as f32 * 0.5, 
+            //             y: window_height as f32 * 0.5
+            //         }
+            //     };
+            //     sspine_draw_layer(0, &layer_transform);
+            // }
 
             // Render ImGui
             #[cfg(feature = "imgui")]
@@ -282,6 +283,19 @@ impl Renderer2D for SokolRenderer2D {
         // println!("Depth image state: {:?}", state_2);
         // println!("Sampler state: {:?}", state_3);
         
+        // Create spine context for this render target
+        let spine_ctx = unsafe {
+            sspine_make_context(&sspine_context_desc {
+                color_format: swapchain.color_format as i32,
+                depth_format: swapchain.depth_format as i32,
+                sample_count: swapchain.sample_count,
+                max_vertices: 10000,
+                max_commands: 10000,
+                color_write_mask: 15,
+                // ... other context params as needed ...
+            })
+        };
+
         Box::new(SokolRenderTarget {
             sprite: Box::new(SokolSprite {
                 width,
@@ -291,6 +305,7 @@ impl Renderer2D for SokolRenderer2D {
             depth_image: sg::Image { id: depth_image.id },
             sampler: sg::Sampler { id: sampler.id },
             pass: fb_pass,
+            spine_ctx,
         })
     }
 
