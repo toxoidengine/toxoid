@@ -22,6 +22,8 @@ default = [
     # "fetch",
     # "imgui"
 ]
+static-linking = []
+wasm-linking = []
 # runtime = []
 # sokol = []
 # render = []
