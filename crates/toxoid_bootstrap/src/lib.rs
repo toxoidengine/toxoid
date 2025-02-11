@@ -29,6 +29,7 @@ pub extern "C" fn init_bootstrap(user_data: *mut core::ffi::c_void) {
     // WASM Runtime
     // Watch for file changes for WASM scripts
     #[cfg(not(target_arch = "wasm32"))]
+    #[cfg(not(feature = "static-linking"))]
     watch::init();
 }
 

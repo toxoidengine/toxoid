@@ -491,7 +491,11 @@ impl System {
         // Register the callback in the guest environment
         let callback = Callback::new(callback_fn);
         let desc = SystemDesc { 
-            name: None, 
+            // TODO: Only do this in dev mode with hot reload enabled
+            // TODO: Map something other than the query string to the system name
+            // so that multiple systems can have the same query on
+            // hot reload
+            name: Some(dsl.to_string()), 
             callback: callback.cb_handle(), 
             query_desc: QueryDesc { expr: dsl.to_string() }, 
             is_guest: false,
