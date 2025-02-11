@@ -86,9 +86,7 @@ pub fn blit_sprite_system(iter: &Iter) {
         SokolRenderer2D::blit_sprite(sprite_trait_object, 0., 0., width as f32, height as f32, rt_trait_object, 0., 0.);
         // End render target
         SokolRenderer2D::end_rt();
-        let mut rt_entity = entities[i].parent();
-        let mut rt = rt_entity.get::<RenderTarget>();
-        rt.set_z_depth(ZDepth::AbovePlayer as u32);
+        render_target.set_z_depth(ZDepth::AbovePlayer as u32);
         entities[i].remove::<Blittable>();
     }
 }
@@ -115,16 +113,16 @@ pub fn blit_cell_system(iter: &Iter) {
                 let sprite_box = unsafe { Box::from_raw(sprite_ptr as *mut SokolSprite) };
                 let tileset_sprite: &Box<dyn toxoid_render::Sprite> = Box::leak(Box::new(sprite_box as Box<dyn toxoid_render::Sprite>));
                 let tileset_size = tileset_entity.get::<Size>();
-                let width = tileset_size.get_width();
-                let height = tileset_size.get_height();
+                // let width = tileset_size.get_width();
+                // let height = tileset_size.get_height();
 
                 let rt_entity = render_target_entities.get_mut(0).unwrap();
                 let render_target = rt_entity.get::<RenderTarget>();
                 let render_target_ptr = render_target.get_render_target();
                 let render_target_box = unsafe { Box::from_raw(render_target_ptr as *mut SokolRenderTarget) };
-                let render_target_trait_object: &Box<dyn toxoid_render::RenderTarget> = Box::leak(Box::new(render_target_box as Box<dyn toxoid_render::RenderTarget>));
-                let rt_width = 800.;
-                let rt_height = 600.;
+                // let render_target_trait_object: &Box<dyn toxoid_render::RenderTarget> = Box::leak(Box::new(render_target_box as Box<dyn toxoid_render::RenderTarget>));
+                // let rt_width = 800.;
+                // let rt_height = 600.;
 
                 let cell = cell_entity.get::<TiledCell>();
                 let cell = cell.get_cell() as *mut toxoid_tiled::TiledCell;
@@ -133,7 +131,7 @@ pub fn blit_cell_system(iter: &Iter) {
                 let tile_width = unsafe { (*cell).tilewidth };
                 let tile_height = unsafe { (*cell).tileheight };
                 let image_width = 4800;
-                let image_height = 720;
+                // let image_height = 720;
                 let rt = SokolRenderer2D::create_render_target(pixel_width, pixel_height);
                 SokolRenderer2D::begin_rt(&rt, pixel_width as f32, pixel_height as f32);
                 unsafe {
@@ -347,6 +345,7 @@ pub fn test_system(iter: &Iter) {
     let mut entities = iter.entities();
     for mut entity in entities {
         let mut rt_entity = entity.parent();
+
         // println!("RT Entity: {}", rt_entity.get_id());
         // let mut position = rt_entity.get::<Position>();
         // position.set_x(position.get_x() + 1);
