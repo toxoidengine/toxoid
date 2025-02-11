@@ -4,8 +4,8 @@ component! {
     // -- Components --
     // Space
     Position {
-        x: u32,
-        y: u32
+        x: i32,
+        y: i32
     },
     Size {
         width: u32,
