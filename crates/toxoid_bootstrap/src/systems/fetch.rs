@@ -1,7 +1,6 @@
 use toxoid_api::*;
 use toxoid_render::Renderer2D;
 use toxoid_sokol::{bindings::*, SokolRenderer2D};
-
 use crate::prefabs::create_render_target; 
 
 #[no_mangle]
@@ -94,7 +93,7 @@ pub fn bone_animation_loaded(entity: &mut Entity) {
     let data_ptr = Box::into_raw(data_box);
     
     skeleton_desc.json_data = data_ptr as *const i8;
-    skeleton_desc.prescale = 5.0;
+    skeleton_desc.prescale = 1.0;
     skeleton_desc.anim_default_mix = 0.2;
 
     let spine_skeleton = unsafe { sspine_make_skeleton(&skeleton_desc) };
@@ -107,14 +106,8 @@ pub fn bone_animation_loaded(entity: &mut Entity) {
     let instance = unsafe { sspine_make_instance(&spine_instance_desc) };
     entity.add::<SpineInstance>();
     let mut instance_component = entity.get::<SpineInstance>();
-    let mut ctx_desc: sspine_context_desc = unsafe { core::mem::MaybeUninit::zeroed().assume_init() };
-    ctx_desc.color_format = 0;
-    ctx_desc.depth_format = 0;
-    ctx_desc.sample_count = 1;
-    let ctx = unsafe { sspine_make_context(&ctx_desc) };
     instance_component.set_instance(Box::into_raw(Box::new(instance)) as u64);
     instance_component.set_instantiated(true);
-    instance_component.set_ctx(Box::into_raw(Box::new(ctx)) as u64);
 
     // configure a simple animation sequence
 
@@ -147,6 +140,12 @@ pub fn bone_animation_loaded(entity: &mut Entity) {
         image.set_info(Box::into_raw(Box::new(img_info)) as u64);
         fetch(file_path, DataType::Image, Some(image_entity.get_id()));
     }
+
+    let game_config = World::get_singleton::<GameConfig>();
+    let width = game_config.get_width();
+    let height = game_config.get_height();
+    let rt_entity = create_render_target(1280, 720);
+    entity.child_of_id(rt_entity.get_id());
     entity.add::<Blittable>();
 }
 

@@ -21,7 +21,7 @@ pub struct SokolRenderTarget {
     pub sprite: Box<dyn Sprite>,
     pub depth_image: sg::Image,
     pub sampler: sg::Sampler,
-    pub pass: sg::Pass,
+    pub pass: sg::Pass
 }
 
 pub struct SpineOffscreenCtx {
@@ -191,19 +191,19 @@ impl Renderer2D for SokolRenderer2D {
             sgp_end();
             
             // Draw Spine layer
-            #[cfg(feature = "spine")] {
-                let layer_transform = sspine_layer_transform {
-                    size: sspine_vec2 { 
-                        x: window_width as f32, 
-                        y: window_height as f32
-                    },
-                    origin: sspine_vec2 { 
-                        x: window_width as f32 * 0.5, 
-                        y: window_height as f32 * 0.5
-                    }
-                };
-                sspine_draw_layer(0, &layer_transform);
-            }
+            // #[cfg(feature = "spine")] {
+            //     let layer_transform = sspine_layer_transform {
+            //         size: sspine_vec2 { 
+            //             x: window_width as f32, 
+            //             y: window_height as f32
+            //         },
+            //         origin: sspine_vec2 { 
+            //             x: window_width as f32 * 0.5, 
+            //             y: window_height as f32 * 0.5
+            //         }
+            //     };
+            //     sspine_draw_layer(0, &layer_transform);
+            // }
 
             // Render ImGui
             #[cfg(feature = "imgui")]
@@ -281,7 +281,7 @@ impl Renderer2D for SokolRenderer2D {
         // println!("Image state: {:?}", state_1);
         // println!("Depth image state: {:?}", state_2);
         // println!("Sampler state: {:?}", state_3);
-        
+
         Box::new(SokolRenderTarget {
             sprite: Box::new(SokolSprite {
                 width,
@@ -290,7 +290,7 @@ impl Renderer2D for SokolRenderer2D {
             }),
             depth_image: sg::Image { id: depth_image.id },
             sampler: sg::Sampler { id: sampler.id },
-            pass: fb_pass,
+            pass: fb_pass
         })
     }
 
