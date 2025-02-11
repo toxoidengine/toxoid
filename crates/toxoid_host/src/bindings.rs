@@ -4760,8 +4760,6 @@ mod _rt {
     pub fn run_ctors_once() {
         #[cfg(not(target_os = "emscripten"))]
 #[cfg(not(target_os = "emscripten"))]
-#[cfg(not(target_os = "emscripten"))]
-#[cfg(not(target_os = "emscripten"))]
 wit_bindgen_rt::run_ctors_once();
     }
     pub unsafe fn string_lift(bytes: Vec<u8>) -> String {
@@ -5084,8 +5082,6 @@ bindgen-rust\x060.35.0";
 #[doc(hidden)]
 pub fn __link_custom_section_describing_imports() {
     #[cfg(not(target_os = "emscripten"))]
-#[cfg(not(target_os = "emscripten"))]
-#[cfg(not(target_os = "emscripten"))]
 #[cfg(not(target_os = "emscripten"))]
 wit_bindgen_rt::maybe_link_cabi_realloc();
 }

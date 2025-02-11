@@ -11,6 +11,9 @@ component! {
         width: u32,
         height: u32
     },
+    Direction {
+        direction: u8
+    },
     // Rendering
     Color {
         r: f32,
@@ -20,7 +23,8 @@ component! {
     },
     RenderTarget {
         render_target: u64,
-        z_index: u32
+        z_depth: u32,
+        flip_y: bool
     },
     BlendMode {
         blend_mode: u8,
@@ -122,6 +126,7 @@ pub fn init() {
     // Space
     Position::register();
     Size::register();
+    Direction::register();
     // Rendering
     Color::register();
     Sprite::register();
@@ -174,4 +179,5 @@ pub fn init() {
     World::add_singleton::<KeyboardInput>();
     World::add_singleton::<RenderSystems>();
     World::add_singleton::<GameConfig>();
+    World::add_singleton::<Direction>();
 }

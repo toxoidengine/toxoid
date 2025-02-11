@@ -6,15 +6,12 @@ mod systems;
 mod wasm;
 
 pub fn init() {
-    components::init();
-    entities::init();
-    systems::init();
+    // components::init();
+    // entities::init();
+    // systems::init();
 
-    // Load sprite
-    // toxoid_api::load_sprite("assets/sprite.png");
-
-    // Load animation
-    // toxoid_api::load_animation("assets/animations/player.atlas", "assets/animations/player.json");
-
+    // Create sprite
+    // toxoid_api::load_sprite("assets/character.png");
+    toxoid_api::load_animation("assets/animations/player.atlas", "assets/animations/player.json");
     toxoid_api::load_worldmap("assets/world_0.world");
 }
