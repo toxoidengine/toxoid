@@ -1,15 +1,6 @@
 use toxoid_api::*;
-use toxoid_sokol::{bindings::*, SokolRenderTarget, SokolRenderer2D, SokolSprite, sg, sapp};
+use toxoid_sokol::{bindings::*, SokolRenderTarget, SokolRenderer2D, SokolSprite, sapp};
 use toxoid_render::Renderer2D;
-use crate::prefabs::*;
-
-// Rect Renderer
-#[components(_, Position, Size, Color, _)]
-pub fn rect_render_system(iter: &Iter) {
-    for (pos, size, color) in components {
-        SokolRenderer2D::draw_filled_rect(&pos, &size, &color);
-    }
-}
 
 // SpineInstance, Position, BoneAnimation
 #[components(SpineInstance, Position, _)]
@@ -21,7 +12,7 @@ pub fn blit_bone_animation_system(iter: &Iter) {
             unsafe {
                 // Get render target and its spine context
                 let mut rt_entity = entity.parent();
-                let mut rt = rt_entity.get::<RenderTarget>();
+                let rt = rt_entity.get::<RenderTarget>();
                 let rt_ptr = rt.get_render_target();
                 let rt_ptr_box = Box::from_raw(rt_ptr as *mut SokolRenderTarget);
                 let rt_trait_object: &Box<dyn toxoid_render::RenderTarget> = Box::leak(Box::new(rt_ptr_box as Box<dyn toxoid_render::RenderTarget>));
@@ -95,14 +86,14 @@ pub fn blit_sprite_system(iter: &Iter) {
 #[components(TiledCell, _, Size)]
 pub fn blit_cell_system(iter: &Iter) {
     let mut entities = iter.entities();
-    for (i, (cell, size)) in components.into_iter().enumerate() {
+    for (i, (_cell, _size)) in components.into_iter().enumerate() {
         let cell_entity = entities.get_mut(i).unwrap();
         let mut children = cell_entity.children();
         if children.len() > 0 {
             // TODO: Make this into Flecs Query with custom relationships
             let mut tileset_entities = children.iter_mut().filter(|child| child.has::<Tileset>() && child.has::<Blittable>()).collect::<Vec<_>>();
             let mut children = cell_entity.children();
-            let mut render_target_entities = children.iter_mut().filter(|child| child.has::<RenderTarget>()).collect::<Vec<_>>();
+            let render_target_entities = children.iter_mut().filter(|child| child.has::<RenderTarget>()).collect::<Vec<_>>();
 
             if tileset_entities.len() > 0 && render_target_entities.len() > 0 {
                 // Get tileset 
@@ -112,14 +103,14 @@ pub fn blit_cell_system(iter: &Iter) {
                 let sprite_ptr = sprite.get_sprite();
                 let sprite_box = unsafe { Box::from_raw(sprite_ptr as *mut SokolSprite) };
                 let tileset_sprite: &Box<dyn toxoid_render::Sprite> = Box::leak(Box::new(sprite_box as Box<dyn toxoid_render::Sprite>));
-                let tileset_size = tileset_entity.get::<Size>();
+                // let tileset_size = tileset_entity.get::<Size>();
                 // let width = tileset_size.get_width();
                 // let height = tileset_size.get_height();
 
-                let rt_entity = render_target_entities.get_mut(0).unwrap();
-                let render_target = rt_entity.get::<RenderTarget>();
-                let render_target_ptr = render_target.get_render_target();
-                let render_target_box = unsafe { Box::from_raw(render_target_ptr as *mut SokolRenderTarget) };
+                // let rt_entity = render_target_entities.get_mut(0).unwrap();
+                // let render_target = rt_entity.get::<RenderTarget>();
+                // let render_target_ptr = render_target.get_render_target();
+                // let render_target_box = unsafe { Box::from_raw(render_target_ptr as *mut SokolRenderTarget) };
                 // let render_target_trait_object: &Box<dyn toxoid_render::RenderTarget> = Box::leak(Box::new(render_target_box as Box<dyn toxoid_render::RenderTarget>));
                 // let rt_width = 800.;
                 // let rt_height = 600.;
@@ -181,11 +172,11 @@ pub fn blit_cell_system(iter: &Iter) {
                                         // Create an entity for each tile
                                         let mut tile_entity = Entity::new(None);
                                         tile_entity.add::<Position>();
-                                        let mut position = tile_entity.get::<Position>();
+                                        let position = tile_entity.get::<Position>();
                                         position.set_x(dest_x as i32);
                                         position.set_y(dest_y as i32);
                                         tile_entity.add::<Size>();
-                                        let mut size = tile_entity.get::<Size>();
+                                        let size = tile_entity.get::<Size>();
                                         size.set_width(tile_width);
                                         size.set_height(tile_height);
                                         // Add other components as needed, e.g., for collision checks
@@ -231,7 +222,7 @@ pub fn blit_cell_system(iter: &Iter) {
                 entity.add::<Size>();
                 entity.add::<BlendMode>();
                 
-                let mut position = entity.get::<Position>();
+                let position = entity.get::<Position>();
                 // Assuming grid dimensions are known
                 let grid_width = 2; // Number of cells horizontally
                 let index = cell_entity.get::<TiledCell>().get_index();
@@ -246,13 +237,13 @@ pub fn blit_cell_system(iter: &Iter) {
                 // println!("Position: {}, {}", position_x, position_y);
                 
                 // Set the position of the cell entity
-                let mut position = cell_entity.get::<Position>();
+                let position = cell_entity.get::<Position>();
                 position.set_x(position_x);
                 position.set_y(position_y);
-                let mut size = entity.get::<Size>();
+                let size = entity.get::<Size>();
                 size.set_width(pixel_width);
                 size.set_height(pixel_height);
-                let mut render_target = entity.get::<RenderTarget>();
+                let render_target = entity.get::<RenderTarget>();
                 render_target.set_render_target(Box::leak(rt) as *const _ as *const std::ffi::c_void as u64);
                 render_target.set_z_depth(ZDepth::BottomLayer as u32);
                 
@@ -265,6 +256,14 @@ pub fn blit_cell_system(iter: &Iter) {
         }
     }
 }
+
+// Rect Renderer
+// #[components(_, Position, Size, Color, _)]
+// pub fn blit_rect_system(iter: &Iter) {
+//     for (pos, size, color) in components {
+//         SokolRenderer2D::draw_filled_rect(&pos, &size, &color);
+//     }
+// }
 
 // Sort Render Targets by Z-Index
 // TODO: Use query trampoline instead of C functions directly and use callback resource to make this work on WASM.
@@ -335,31 +334,10 @@ pub fn blit_systems(render_systems_entity: &mut Entity) {
     render_systems_entity.parent_of_id(system.get_id());
 
     // // Rect Renderer
-    // let mut system = System::dsl("Rect, Position, Size, Color, Renderable", None, rect_render_system);
+    // let mut system = System::dsl("Rect, Position, Size, Color, Blittable", None, blit_rect_system);
     // system.build();
     // render_systems_entity.parent_of_id(system.get_id());
 }
-
-#[components(SpineInstance, Position, Blittable)]
-pub fn test_system(iter: &Iter) {
-    let mut entities = iter.entities();
-    for mut entity in entities {
-        let mut rt_entity = entity.parent();
-
-        // println!("RT Entity: {}", rt_entity.get_id());
-        // let mut position = rt_entity.get::<Position>();
-        // position.set_x(position.get_x() + 1);
-        // position.set_y(position.get_y() + 1);
-    }
-}
-
-fn c_string(rust_str: &str) -> *const i8 {
-    let c_string = std::ffi::CString::new(rust_str).expect("CString::new failed");
-    let c_ptr = c_string.as_ptr();
-    std::mem::forget(c_string); // Prevent CString from being deallocated
-    c_ptr
-}
-static mut CURRENT_ANIMATION: &str = "idle_down";
 
 // Rendering Systems
 pub fn init() {
@@ -372,85 +350,10 @@ pub fn init() {
     // Draw systems
     draw_systems(&mut render_systems_entity);
 
-    use toxoid_api::*;
-    use toxoid_sokol::bindings::*;
-    let mut direction = World::get_singleton::<Direction>();
-    direction.set_direction(DirectionEnum::Down as u8);
-    let mut system = System::dsl("SpineInstance, Skeleton, BoneAnimation, Position", None, |iter| {
-        iter.entities().iter_mut().for_each(|entity| {
-            let mut keyboard_input = World::get_singleton::<KeyboardInput>();
-            let mut position = entity.get::<Position>();
-            let mut direction = World::get_singleton::<Direction>();
-            if keyboard_input.get_up() {
-                position.set_y(position.get_y() - 3);
-                direction.set_direction(DirectionEnum::Up as u8);
-            }
-            if keyboard_input.get_down() {
-                position.set_y(position.get_y() + 3);
-                direction.set_direction(DirectionEnum::Down as u8);
-            }
-            if keyboard_input.get_left() {
-                position.set_x(position.get_x() - 3);
-                direction.set_direction(DirectionEnum::Left as u8);
-            }
-            if keyboard_input.get_right() {
-                position.set_x(position.get_x() + 3);
-                direction.set_direction(DirectionEnum::Right as u8);
-            }
-
-            let instance_component = entity.get::<SpineInstance>();
-            let instance = instance_component.get_instance() as *mut sspine_instance;
-            let skeleton_component = entity.get::<Skeleton>();
-            let skeleton = skeleton_component.get_skeleton() as *mut sspine_skeleton;
-
-            if !keyboard_input.get_up() && !keyboard_input.get_down() && !keyboard_input.get_left() && !keyboard_input.get_right() {
-                unsafe {
-                    if direction.get_direction() == DirectionEnum::Up as u8 && CURRENT_ANIMATION != "idle_up" {
-                        // configure a simple animation sequence
-                        sspine_set_animation(*instance, sspine_anim_by_name(*skeleton, c_string("idle_up")), 0, true);
-                        CURRENT_ANIMATION = "idle_up";
-                    }
-                    if direction.get_direction() == DirectionEnum::Down as u8 && CURRENT_ANIMATION != "idle_down"{
-                        sspine_set_animation(*instance, sspine_anim_by_name(*skeleton, c_string("idle_down")), 0, true);
-                        CURRENT_ANIMATION = "idle_down";
-                    }
-                    if direction.get_direction() == DirectionEnum::Left as u8 && CURRENT_ANIMATION != "idle_left" {
-                        sspine_set_animation(*instance, sspine_anim_by_name(*skeleton, c_string("idle_left")), 0, true);
-                        CURRENT_ANIMATION = "idle_left";
-                    }
-                    if direction.get_direction() == DirectionEnum::Right as u8 && CURRENT_ANIMATION != "idle_right" {
-                        sspine_set_animation(*instance, sspine_anim_by_name(*skeleton, c_string("idle_right")), 0, true);
-                        CURRENT_ANIMATION = "idle_right";
-                    }
-                }
-            }
-            unsafe {
-                if keyboard_input.get_up() && CURRENT_ANIMATION != "walk_up" { 
-                    sspine_set_animation(*instance, sspine_anim_by_name(*skeleton, c_string("walk_up")), 0, true);
-                    CURRENT_ANIMATION = "walk_up";
-                }
-                if keyboard_input.get_down() && CURRENT_ANIMATION != "walk_down" {
-                    sspine_set_animation(*instance, sspine_anim_by_name(*skeleton, c_string("walk_down")), 0, true);
-                    CURRENT_ANIMATION = "walk_down";
-                }
-                if keyboard_input.get_left() && CURRENT_ANIMATION != "walk_left" {
-                    sspine_set_animation(*instance, sspine_anim_by_name(*skeleton, c_string("walk_left")), 0, true);
-                    CURRENT_ANIMATION = "walk_left";
-                }
-                if keyboard_input.get_right() && CURRENT_ANIMATION != "walk_right" {
-                    sspine_set_animation(*instance, sspine_anim_by_name(*skeleton, c_string("walk_right")), 0, true);
-                    CURRENT_ANIMATION = "walk_right";
-                }
-            }
-        });
-    });
-    render_systems_entity.parent_of_id(system.get_id());
-    system.build();
-
     // Disable render systems
     render_systems_entity.disable();
 
     // Set render systems group
-    let mut render_systems_singleton = World::get_singleton::<RenderSystems>();
+    let render_systems_singleton = World::get_singleton::<RenderSystems>();
     render_systems_singleton.set_entity(render_systems_entity.get_id());
 }
