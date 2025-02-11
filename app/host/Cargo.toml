@@ -8,7 +8,7 @@ toxoid_bootstrap = { path = "../../crates/toxoid_bootstrap" }
 guest = { path = "../guest", optional = true }
 
 [features]
-# default = ["wasm-linking"]
-default = ["static-linking"]
-wasm-linking = []
-static-linking = ["guest"]
+default = ["wasm-linking"]
+# default = ["static-linking"]
+wasm-linking = ["toxoid_bootstrap/wasm-linking"]
+static-linking = ["toxoid_bootstrap/static-linking", "guest"]
