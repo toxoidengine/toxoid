@@ -24,7 +24,7 @@ pub use sokol;
 // use toxoid_api::World;
 // use toxoid_render::Renderer2D;
 
-use sokol::{app as sapp, gfx as sg, glue as sglue};
+pub use sokol::{app as sapp, gfx as sg, glue as sglue};
 // use core::ffi::c_int;
 // use core::ffi::c_char;
 // use std::sync::Mutex;
