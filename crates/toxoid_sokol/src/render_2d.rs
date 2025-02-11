@@ -208,8 +208,6 @@ impl Renderer2D for SokolRenderer2D {
             // Render ImGui
             #[cfg(feature = "imgui")]
             {
-                let hello_world = std::ffi::CString::new("Hello, world!").unwrap();
-                igText(hello_world.as_ptr() as *const i8);
                 simgui_render();
             }
         }
