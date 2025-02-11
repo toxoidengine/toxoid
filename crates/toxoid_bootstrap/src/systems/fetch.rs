@@ -1,7 +1,6 @@
 use toxoid_api::*;
 use toxoid_render::Renderer2D;
 use toxoid_sokol::{bindings::*, SokolRenderer2D};
-
 use crate::prefabs::create_render_target; 
 
 #[no_mangle]
@@ -107,16 +106,8 @@ pub fn bone_animation_loaded(entity: &mut Entity) {
     let instance = unsafe { sspine_make_instance(&spine_instance_desc) };
     entity.add::<SpineInstance>();
     let mut instance_component = entity.get::<SpineInstance>();
-    let mut ctx_desc: sspine_context_desc = unsafe { core::mem::MaybeUninit::zeroed().assume_init() };
-    use toxoid_sokol::{sglue};
-    let swapchain = sglue::swapchain();
-    ctx_desc.color_format = swapchain.color_format as i32;
-    ctx_desc.depth_format = swapchain.depth_format as i32;
-    ctx_desc.sample_count = swapchain.sample_count;
-    let ctx = unsafe { sspine_make_context(&ctx_desc) };
     instance_component.set_instance(Box::into_raw(Box::new(instance)) as u64);
     instance_component.set_instantiated(true);
-    instance_component.set_ctx(Box::into_raw(Box::new(ctx)) as u64);
 
     // configure a simple animation sequence
 

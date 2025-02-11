@@ -22,23 +22,17 @@ pub fn blit_bone_animation_system(iter: &Iter) {
                 // Get render target and its spine context
                 let mut rt_entity = entity.parent();
                 let mut rt = rt_entity.get::<RenderTarget>();
-            let rt_ptr = rt.get_render_target();
+                let rt_ptr = rt.get_render_target();
                 let rt_ptr_box = Box::from_raw(rt_ptr as *mut SokolRenderTarget);
-                // let ctx = rt_ptr_box.spine_ctx;
                 let rt_trait_object: &Box<dyn toxoid_render::RenderTarget> = Box::leak(Box::new(rt_ptr_box as Box<dyn toxoid_render::RenderTarget>));
-                // let rt_pass = rt_ptr_box.pass;
                 let instance = spine_instance.get_instance() as *mut sspine_instance;
-                let ctx = spine_instance.get_ctx() as *mut sspine_context;
                 // Update and draw spine instance
                 sspine_update_instance(*instance, sapp_frame_duration() as f32);
                 sspine_set_position(*instance, sspine_vec2 {
                     x: position.get_x() as f32,
                     y: position.get_y() as f32
                 });
-                sspine_set_context(*ctx);
                 sspine_draw_instance_in_layer(*instance, 0);
-                sspine_set_context(*ctx);
-                sspine_context_draw_instance_in_layer(*ctx, *instance, 0);
 
                 let (window_width, window_height) = (sapp::width(), sapp::height());
                 // Set up render target pass
@@ -53,11 +47,8 @@ pub fn blit_bone_animation_system(iter: &Iter) {
                         y: 70.
                     }
                 };
-                // sg::begin_pass(&rt_pass);
                 SokolRenderer2D::begin_rt(&rt_trait_object, window_width as f32, window_height as f32);
-                // sspine_set_context(*ctx);
                 sspine_draw_layer(0, &layer_transform);
-                // sg::end_pass();
                 SokolRenderer2D::end_rt();
 
                 rt.set_flip_y(true);
@@ -310,7 +301,10 @@ pub fn draw_render_targets_system(iter: &Iter) {
 
         // Flip Y for Spine
         // TODO: Figure out some other way to do this
+        #[cfg(all(target_arch="wasm32", target_os="emscripten"))]
         let source_height = if rt.get_flip_y() { -(height as f32) } else { height as f32 };
+        #[cfg(not(all(target_arch="wasm32", target_os="emscripten")))]
+        let source_height = height as f32;
         // Draw render target
         SokolRenderer2D::draw_render_target(rt_trait_object, 0., 0., width as f32, source_height, x as f32, y as f32, width as f32, height as f32, blend_mode);
     }

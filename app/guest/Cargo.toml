@@ -10,8 +10,8 @@ toxoid_api = { path = "../../crates/toxoid_api" }
 rand = "0.8.5"
 
 [lib]
-# crate-type = ["cdylib", "rlib"]
-# [target.'cfg(target_os = "emscripten")'.lib]
+crate-type = ["cdylib", "rlib"]
+[target.'cfg(target_os = "emscripten")'.lib]
 crate-type = ["rlib"]
 
 [profile.release]
