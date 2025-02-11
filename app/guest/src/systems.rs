@@ -99,7 +99,7 @@ pub fn init() {
             //     });
 
             // Recursively update children positions
-            fn update_child_positions(entity: &mut Entity, prev_x: u32, prev_y: u32) -> (u32, u32) {
+            fn update_child_positions(entity: &mut Entity, prev_x: i32, prev_y: i32) -> (i32, i32) {
                 let mut child_pos = entity.get::<Position>();
                 let old_x = child_pos.get_x();
                 let old_y = child_pos.get_y();

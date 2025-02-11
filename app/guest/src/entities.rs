@@ -3,20 +3,20 @@ use crate::components::*;
 use rand::{Rng, thread_rng};
 
 // TODO: Move this config ECS singleton
-pub const SCREEN_WIDTH: u32 = 800;
-pub const SCREEN_HEIGHT: u32 = 600;
+pub const SCREEN_WIDTH: i32 = 800;
+pub const SCREEN_HEIGHT: i32 = 600;
 const DEFAULT_TAIL_LENGTH: u32 = 2;
 
-pub fn get_random(max: u32) -> u32 {
+pub fn get_random(max: i32) -> i32 {
     let mut rng = thread_rng();
     rng.gen_range(0..max)
 }
 
 pub fn aabb(a: &Position, a2: &Size, b: &Position, b2: &Size) -> bool {
-    a.get_x() + a2.get_width() > b.get_x() &&
-    a.get_x() < b.get_x() + b2.get_width() &&
-    a.get_y() + a2.get_height() > b.get_y() &&
-    a.get_y() < b.get_y() + b2.get_height()
+    a.get_x() + a2.get_width() as i32 > b.get_x() &&
+    a.get_x() < b.get_x() + b2.get_width() as i32 &&
+    a.get_y() + a2.get_height() as i32 > b.get_y() &&
+    a.get_y() < b.get_y() + b2.get_height() as i32
 }
 
 pub fn create_snake_head() -> Entity {
@@ -61,7 +61,7 @@ pub fn create_snake_tail(tail_num: u32) -> Entity {
     if !exists {
         let mut pos = tail_entity.get::<Position>();
         pos.set_x((SCREEN_WIDTH - 100) / 2);
-        pos.set_y(((SCREEN_HEIGHT - 100) / 2) - (tail_num * 50));
+        pos.set_y(((SCREEN_HEIGHT - 100) / 2) - (tail_num as i32 * 50));
     }
 
     let mut size = tail_entity.get::<Size>();
