@@ -818,16 +818,19 @@ pub fn fetch(path: &str, data_type: DataType, user_data: Option<u64>) {
     // println!("Entity ID origin: {}", entity.get_id());
 }
 
-pub fn load_sprite(path: &str) -> Entity {
+pub fn load_sprite(path: &str, rendered_on_load: bool) -> Entity {
     let mut entity = Entity::new(None);
     entity.add::<Sprite>();
     entity.add::<Position>();
     entity.add::<Size>();
+    if rendered_on_load {
+        entity.add::<RenderableOnLoad>();
+    }
     fetch(path, DataType::Sprite, Some(entity.get_id()));
     entity
 }
 
-pub fn load_animation(atlas_filename: &str, skeleton_filename: &str) -> Entity {
+pub fn load_animation(atlas_filename: &str, skeleton_filename: &str, rendered_on_load: bool) -> Entity {
     let mut entity = Entity::new(None);
     entity.add::<Loading>();
     entity.add::<Skeleton>();
@@ -836,7 +839,9 @@ pub fn load_animation(atlas_filename: &str, skeleton_filename: &str) -> Entity {
     entity.add::<Images>();
     entity.add::<Position>();
     entity.add::<Size>();
-
+    if rendered_on_load {
+        entity.add::<RenderableOnLoad>();
+    }
     let mut atlas = entity.get::<Atlas>();
     atlas.set_filename(atlas_filename.to_string());
     let mut skeleton = entity.get::<Skeleton>();
@@ -846,15 +851,18 @@ pub fn load_animation(atlas_filename: &str, skeleton_filename: &str) -> Entity {
     entity
 }
 
-pub fn load_worldmap(path: &str) -> Entity {
+pub fn load_worldmap(path: &str, rendered_on_load: bool) -> Entity {
     let mut entity = Entity::new(None);
     entity.add::<TiledWorld>();
     entity.add::<Size>();
+    if rendered_on_load {
+        entity.add::<RenderableOnLoad>();
+    }
     fetch(path, DataType::Worldmap, Some(entity.get_id()));
     entity
 }
 
-pub fn load_cell(path: &str) -> Entity {
+pub fn load_cell(path: &str, rendered_on_load: bool) -> Entity {
     // let cell_index = path.split("cell_")
     //     .nth(1)
     //     .and_then(|s| s.split(".").next())
@@ -863,15 +871,21 @@ pub fn load_cell(path: &str) -> Entity {
     let mut entity = Entity::new(None);
     entity.add::<TiledCell>();
     entity.add::<Size>();
+    if rendered_on_load {
+        entity.add::<RenderableOnLoad>();
+    }
     fetch(path, DataType::Cell, Some(entity.get_id()));
     entity
 }
 
-pub fn load_tileset(path: &str) -> Entity {
+pub fn load_tileset(path: &str, rendered_on_load: bool) -> Entity {
     let mut entity = Entity::new(None);
     entity.add::<Tileset>();
     entity.add::<Sprite>();
     entity.add::<Size>();
+    if rendered_on_load {
+        entity.add::<RenderableOnLoad>();
+    }
     fetch(path, DataType::Tileset, Some(entity.get_id()));
     entity
 }

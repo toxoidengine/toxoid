@@ -11,18 +11,14 @@ pub fn create_render_target(width: u32, height: u32) -> Entity {
     entity.add::<BlendMode>();
     // Set render target object pointer
     let rt = SokolRenderer2D::create_render_target(width, height);
-    let mut rt_component = entity.get::<RenderTarget>();
+    let rt_component = entity.get::<RenderTarget>();
     rt_component
         .set_render_target(
             Box::leak(rt) as *const _ as *const std::ffi::c_void as u64
         );
     // Set size
-    let mut size = entity.get::<Size>();
+    let size = entity.get::<Size>();
     size.set_width(width);
     size.set_height(height);
     entity
-}
-
-pub fn create_sprite(path: &str) -> Entity {
-    load_sprite(path)
 }

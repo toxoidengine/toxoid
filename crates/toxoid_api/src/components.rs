@@ -87,10 +87,14 @@ component! {
     Rect {},
     Blittable {},
     Renderable {},
+    RenderableOnLoad {},
     // UI
     Window {},
     Text {},
     Button {},
+    UIImage {
+        texture_id: u64,
+    },
     // General
     Loading {},
     Loaded {},
@@ -156,6 +160,7 @@ pub fn init() {
     Window::register();
     Text::register();
     Button::register();
+    UIImage::register();
     // General
     Loading::register();
     Loaded::register();

@@ -10,13 +10,6 @@ enum DirectionEnum {
     Right
 }
 
-#[components(Position, Head)]
-fn test_system(iter: &Iter) {
-    for (pos, _head) in components {
-        println!("Position: {:?}", pos.get_x());
-    }
-}
-
 pub fn init() {    
     // Movement System
     System::dsl("Head, Position", Some(10), |iter| {
@@ -24,10 +17,10 @@ pub fn init() {
             // println!("Snake entity id: {:?}", snake_entity.get_id());
             // println!("Snake entity children: {:?}", snake_entity.children().len());
             // Keeping track of all tail entities
-            let mut tails = World::get_singleton::<Tails>();
+            let tails = World::get_singleton::<Tails>();
 
             // Get current position of head
-            let mut pos = snake_entity.get::<Position>();
+            let pos = snake_entity.get::<Position>();
             let size = snake_entity.get::<Size>();
             let current_x = pos.get_x();
             let current_y = pos.get_y();
@@ -100,7 +93,7 @@ pub fn init() {
 
             // Recursively update children positions
             fn update_child_positions(entity: &mut Entity, prev_x: i32, prev_y: i32) -> (i32, i32) {
-                let mut child_pos = entity.get::<Position>();
+                let child_pos = entity.get::<Position>();
                 let old_x = child_pos.get_x();
                 let old_y = child_pos.get_y();
                 child_pos.set_x(prev_x);
@@ -125,8 +118,8 @@ pub fn init() {
     // Input System
     System::dsl("KeyboardInput", None, |iter| {
         iter.entities().iter_mut().for_each(|entity| {
-            let mut direction = World::get_singleton::<Direction>();
-            let mut keyboard_input = entity.get::<KeyboardInput>();
+            let direction = World::get_singleton::<Direction>();
+            let keyboard_input = entity.get::<KeyboardInput>();
             if keyboard_input.get_up() {
                 direction.set_direction(DirectionEnum::Up as u8);
                 keyboard_input.set_up(false);
