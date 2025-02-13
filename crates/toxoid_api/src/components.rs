@@ -122,7 +122,9 @@ component! {
         window_width: u32,
         window_height: u32,
         game_width: u32,
-        game_height: u32
+        game_height: u32,
+        min_window_width: u32,
+        min_window_height: u32
     },
 
     // Camera components
