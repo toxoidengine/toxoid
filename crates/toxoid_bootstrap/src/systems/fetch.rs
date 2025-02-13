@@ -135,16 +135,16 @@ pub fn bone_animation_loaded(entity: &mut Entity) {
     }
 
     let game_config = World::get_singleton::<GameConfig>();
-    let window_width = game_config.get_width();
-    let window_height = game_config.get_height();
+    let window_width = game_config.get_window_width();
+    let game_width = game_config.get_game_width();
 
     // Create Player entity
     let mut player_entity = Entity::new(None);
     player_entity.add::<Player>();
     player_entity.add::<Position>();
-
+    
     // Create render target with scaled size
-    let scale_factor = window_width as f32 / 720.0;
+    let scale_factor = window_width as f32 / game_width as f32;
     let rt_width = (150.0 * scale_factor) as u32;
     let rt_height = (150.0 * scale_factor) as u32;
     let mut rt_entity = create_render_target(rt_width, rt_height);

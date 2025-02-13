@@ -1,8 +1,9 @@
 use toxoid_sokol::sokol::app::{EventType, Event, Keycode};
+use toxoid_sokol::sokol::app as sapp;
 use toxoid_api::*;
 
 fn key_up(key_code: Keycode) {
-    let mut keyboard_input = World::get_singleton::<KeyboardInput>();
+    let keyboard_input = World::get_singleton::<KeyboardInput>();
     if key_code == Keycode::Up {
         keyboard_input.set_up(false);
     }
@@ -18,7 +19,7 @@ fn key_up(key_code: Keycode) {
 }
 
 fn key_down(key_code: Keycode) {
-    let mut keyboard_input = World::get_singleton::<KeyboardInput>();
+    let keyboard_input = World::get_singleton::<KeyboardInput>();
     if key_code == Keycode::Up {
         keyboard_input.set_up(true);
     }
@@ -45,6 +46,14 @@ pub extern "C" fn sokol_event(event: *const Event) {
         },
         EventType::KeyUp => {
             key_up(event.key_code);
+        },
+        EventType::Resized => {
+            // Update GameConfig with new window dimensions
+            let game_config = World::get_singleton::<GameConfig>();
+            let (window_width, window_height) = (sapp::width(), sapp::height());
+            game_config.set_window_width(window_width as u32);
+            game_config.set_window_height(window_height as u32);
+            // Game resolution stays the same - only window size changes
         },
         // EventType::MouseDown => {
         //     println!("Mouse down: {:?}", event.mouse_button);

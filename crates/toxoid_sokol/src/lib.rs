@@ -161,8 +161,8 @@ pub fn init(sokol_init: extern "C" fn(*mut core::ffi::c_void), sokol_frame: exte
     let window_title = b"Toxoid Engine Demo\0".as_ptr() as _;
     let canvas_id = std::ffi::CString::new("canvas").unwrap();
     let game_config = World::get_singleton::<GameConfig>();
-    let game_width = game_config.get_width() as i32;
-    let game_height = game_config.get_height() as i32;
+    let game_width = game_config.get_game_width() as i32;
+    let game_height = game_config.get_game_height() as i32;
     
     #[cfg(target_os = "emscripten")]
     unsafe {

@@ -24,5 +24,5 @@ extern "C" fn sokol_frame() {
 
 pub fn init(init_host: extern "C" fn()) {
     // toxoid_sokol::init(sokol_init, sokol_frame, crate::input::sokol_event);
-    toxoid_sokol::init(crate::init_bootstrap, sokol_frame, crate::input::sokol_event, init_host as *mut core::ffi::c_void);
+    toxoid_sokol::init(crate::init_bootstrap, sokol_frame, crate::events::sokol_event, init_host as *mut core::ffi::c_void);
 }

@@ -139,35 +139,29 @@ impl Renderer2D for SokolRenderer2D {
     }
 
     fn window_size() -> (u32, u32) {
-        (sapp::width() as u32, sapp::height() as u32)
+        let game_config = World::get_singleton::<GameConfig>();
+        (game_config.get_window_width(), game_config.get_window_height())
     }
 
     fn begin() {
-        // Get the size of the window
-        let (window_width, window_height) = (sapp::width(), sapp::height());
         let game_config = World::get_singleton::<GameConfig>();
-        let game_width = game_config.get_width();
-        let game_height = game_config.get_height();
-        let scale_factor = window_width as f32 / game_width as f32;
-        unsafe {
-            // Begin recording draw commands for a frame buffer of size (width, height).
-            sgp_begin(window_width, window_height);
-            // Set frame buffer drawing region to (0,0,width,height).
-            sgp_viewport(0, 0, window_width, window_height);
-            // Set drawing coordinate space to (left=0, right=width, top=0, bottom=height).
-            sgp_project(0.0, window_width as f32, 0.0, window_height as f32);
-            // Clear the frame buffer.
-            // sgp_set_color(1., 1., 1., 1.);
-            // TODO: Make customizable
-            // sgp_set_color(0.1, 0.1, 0.1, 1.0);
-            // sgp_clear();
+        let window_width = game_config.get_window_width() as i32;
+        let window_height = game_config.get_window_height() as i32;
+        let game_width = game_config.get_game_width() as f32;
+        let game_height = game_config.get_game_height() as f32;
+        let scale_factor = window_width as f32 / game_width;
 
+        unsafe {
+            sgp_begin(window_width, window_height);
+            sgp_viewport(0, 0, window_width, window_height);
+            sgp_project(0.0, window_width as f32, 0.0, window_height as f32);
+            
             // Initialize ImGui frame
             #[cfg(feature = "imgui")]
             {
                 let desc = simgui_frame_desc_t {
                     width: window_width,
-                    height: window_height, 
+                    height: window_height,
                     delta_time: sapp::frame_duration(),
                     dpi_scale: sapp::dpi_scale(),
                 };
@@ -478,8 +472,8 @@ impl Renderer2D for SokolRenderer2D {
         unsafe {
             let (window_width, _) = SokolRenderer2D::window_size();
             let game_config = World::get_singleton::<GameConfig>();
-            let game_width = game_config.get_width();
-            let game_height = game_config.get_height();
+            let game_width = game_config.get_game_width();
+            let game_height = game_config.get_game_height();
             let scale_factor = window_width as f32 / game_width as f32;
             sgp_reset_color();
             sgp_set_color(color.get_r(), color.get_g(), color.get_b(), color.get_a());
@@ -491,8 +485,8 @@ impl Renderer2D for SokolRenderer2D {
         unsafe {
             let (window_width, _) = SokolRenderer2D::window_size();
             let game_config = World::get_singleton::<GameConfig>(); 
-            let game_width = game_config.get_width();
-            let game_height = game_config.get_height();
+            let game_width = game_config.get_game_width();
+            let game_height = game_config.get_game_height();
             let scale_factor = window_width as f32 / game_width as f32;
             sgp_draw_line(ax * scale_factor, ay * scale_factor, bx * scale_factor, by * scale_factor);
         }
