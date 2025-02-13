@@ -135,9 +135,22 @@ pub fn bone_animation_loaded(entity: &mut Entity) {
     }
 
     let game_config = World::get_singleton::<GameConfig>();
-    let width = game_config.get_width();
-    let height = game_config.get_height();
-    let rt_entity = create_render_target(1280, 720);
+    let window_width = game_config.get_width();
+    let window_height = game_config.get_height();
+
+    // Create Player entity
+    let mut player_entity = Entity::new(None);
+    player_entity.add::<Player>();
+    player_entity.add::<Position>();
+
+    // Create render target with scaled size
+    let scale_factor = window_width as f32 / 720.0;  // 720 is the base resolution
+    let rt_width = (1280.0 * scale_factor) as u32;
+    let rt_height = (720.0 * scale_factor) as u32;
+    let mut rt_entity = create_render_target(rt_width, rt_height);
+    rt_entity.child_of_id(player_entity.get_id());
+
+    // Make spine instance child of render target
     entity.child_of_id(rt_entity.get_id());
     entity.add::<Blittable>();
 }
