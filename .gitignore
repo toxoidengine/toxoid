@@ -4,5 +4,3 @@ guest.wasm
 dist/host.wasm
 dist/host.js
 .DS_Store
-crates/toxoid_host/src/bindings.rs
-crates/toxoid_guest/src/bindings.rs
