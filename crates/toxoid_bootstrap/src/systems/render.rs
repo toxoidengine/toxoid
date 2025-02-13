@@ -318,29 +318,23 @@ pub fn draw_render_targets_system(iter: &Iter) {
         
         // println!("Drawing RT at: ({}, {})", x, y);
 
-        // Apply camera transform to world position
+        // Remove all scaling calculations and use raw positions
         let world_x = position.get_x() - camera_pos.get_x();
         let world_y = position.get_y() - camera_pos.get_y();
         
-        // Scale positions and sizes by zoom
-        let scaled_x = world_x as f32 * scale_factor;
-        let scaled_y = world_y as f32 * scale_factor;
-        let scaled_width = width as f32 * scale_factor;
-        let scaled_height = height as f32 * scale_factor;
-
         // Flip Y for Spine
         // TODO: Figure out some other way to do this
         #[cfg(all(target_arch="wasm32", target_os="emscripten"))]
         let source_height = if rt.get_flip_y() { -(height as f32) } else { height as f32 };
         #[cfg(not(all(target_arch="wasm32", target_os="emscripten")))]
         let source_height = height as f32;
-        // Draw render target with camera transform applied
+        // Draw directly using game coordinates
         SokolRenderer2D::draw_render_target(
             rt_trait_object,
             0., 0.,
             width as f32, source_height,
-            scaled_x, scaled_y,
-            scaled_width, scaled_height,
+            world_x as f32, world_y as f32,
+            width as f32, height as f32,
             blend_mode
         );
     }
