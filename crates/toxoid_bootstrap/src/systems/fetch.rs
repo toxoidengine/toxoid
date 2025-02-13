@@ -252,6 +252,7 @@ pub fn init() {
                     let tiled_world = toxoid_tiled::parse_world(data_str);
                     world.set_world(Box::into_raw(Box::new(tiled_world.clone())) as u64);
                     let world_entity_id = world_entity.get_id();
+                    
                     tiled_world
                         .maps
                         .unwrap()
@@ -259,15 +260,30 @@ pub fn init() {
                         .for_each(|cell| {
                             let mut cell_entity = toxoid_api::load_cell(format!("assets/{}", cell.file_name).as_str(), true);
                             cell_entity.child_of_id(world_entity_id);
-                            // cell_entity.set_name(format!("TiledCellEntity{}", cell_entity.get_id()));
-                            let game_config = World::get_singleton::<GameConfig>();
-                            // let game_width = game_config.get_width();
-                            // let game_height = game_config.get_height();
-                            let mut render_target = create_render_target(4800, 720);
-                            // cell_entity.add_relationship(Relationship::Custom(RenderTargetRelationship::get_id()), render_target);
+                            
+                            // Set cell position and size
+                            cell_entity.add::<Position>();
+                            let mut cell_pos = cell_entity.get::<Position>();
+                            cell_pos.set_x(cell.x);
+                            cell_pos.set_y(cell.y);
+                            
+                            cell_entity.add::<Size>();
+                            let mut cell_size = cell_entity.get::<Size>();
+                            cell_size.set_width(cell.width);
+                            cell_size.set_height(cell.height);
+                            
+                            // Create render target
+                            let mut render_target = create_render_target(cell.width, cell.height);
                             render_target.child_of_id(cell_entity.get_id());
+                            
+                            // Set render target's position to match cell's world position
+                            let mut rt_pos = render_target.get::<Position>();
+                            rt_pos.set_x(cell.x);  // Use cell's world position from world file
+                            rt_pos.set_y(cell.y);
+                            
                             cell_entity.add::<Blittable>();
 
+                            // Parent player to this cell entity
                             let player_singleton = World::get_singleton::<Player>();
                             let mut player_entity = Entity::from_id(player_singleton.get_entity());
                             player_entity.child_of_id(cell_entity.get_id());
