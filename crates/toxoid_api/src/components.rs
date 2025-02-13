@@ -104,7 +104,9 @@ component! {
     FrameByFrameAnimationRelationship {},
     SpriteRelationship {},
     RectRelationship {},
-    Player {},
+    Player {
+        entity: u64
+    },
 
     // -- Singletons --
     KeyboardInput {
@@ -205,6 +207,7 @@ pub fn init() {
     MainCamera::register();
     AnimationState::register();
     MovementState::register();
+    Player::register();
 
     // Add singletons
     World::add_singleton::<KeyboardInput>();
@@ -213,4 +216,5 @@ pub fn init() {
     World::add_singleton::<MainCamera>();
     World::add_singleton::<AnimationState>();
     World::add_singleton::<MovementState>();
+    World::add_singleton::<Player>();
 }

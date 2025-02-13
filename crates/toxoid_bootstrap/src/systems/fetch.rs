@@ -137,12 +137,11 @@ pub fn bone_animation_loaded(entity: &mut Entity) {
     let game_config = World::get_singleton::<GameConfig>();
     let window_width = game_config.get_window_width();
     let game_width = game_config.get_game_width();
-
-    // Create Player entity
-    let mut player_entity = Entity::new(None);
-    player_entity.add::<Player>();
-    player_entity.add::<Position>();
     
+    // Set player entity in singleton
+    let player_singleton = World::get_singleton::<Player>();
+    let player_entity = Entity::from_id(player_singleton.get_entity());
+
     // Create render target with scaled size
     let scale_factor = window_width as f32 / game_width as f32;
     let rt_width = (150.0 * scale_factor) as u32;
@@ -268,6 +267,10 @@ pub fn init() {
                             // cell_entity.add_relationship(Relationship::Custom(RenderTargetRelationship::get_id()), render_target);
                             render_target.child_of_id(cell_entity.get_id());
                             cell_entity.add::<Blittable>();
+
+                            let player_singleton = World::get_singleton::<Player>();
+                            let mut player_entity = Entity::from_id(player_singleton.get_entity());
+                            player_entity.child_of_id(cell_entity.get_id());
                         });
                 },
                 d if d == DataType::Cell as u8 => {
@@ -275,6 +278,16 @@ pub fn init() {
                     let cell = cell_entity.get::<TiledCell>();
                     let data_str = std::str::from_utf8(data.as_slice()).unwrap();
                     let tiled_cell = toxoid_tiled::parse_cell(data_str);
+                    
+                    // Add Size component with map dimensions
+                    cell_entity.add::<Size>();
+                    let size = cell_entity.get::<Size>();
+                    let map_width = tiled_cell.width * tiled_cell.tilewidth;
+                    let map_height = tiled_cell.height * tiled_cell.tileheight;
+                    println!("Setting TiledCell size: {}x{}", map_width, map_height);
+                    size.set_width(map_width);
+                    size.set_height(map_height);
+                    
                     cell.set_cell(Box::into_raw(Box::new(tiled_cell.clone())) as u64);
                     let tileset = tiled_cell.tilesets.get(0).unwrap();
                     let mut tileset_entity = toxoid_api::load_tileset(format!("assets/{}", tileset.image.as_str()).as_str(), true);

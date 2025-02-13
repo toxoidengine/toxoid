@@ -316,7 +316,7 @@ pub fn draw_render_targets_system(iter: &Iter) {
         let x = position.get_x();
         let y = position.get_y();
         
-        println!("Drawing RT at: ({}, {})", x, y);
+        // println!("Drawing RT at: ({}, {})", x, y);
 
         // Apply camera transform to world position
         let world_x = position.get_x() - camera_pos.get_x();
