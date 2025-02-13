@@ -1,10 +1,13 @@
 mod renderer;
-mod input;
+mod events;
 mod systems;
 mod entities;
 mod prefabs;
+mod config;
 #[cfg(not(target_arch = "wasm32"))]
 mod watch;
+
+use toxoid_api::*;
 
 #[no_mangle]
 pub extern "C" fn init_bootstrap(user_data: *mut core::ffi::c_void) {
@@ -12,8 +15,8 @@ pub extern "C" fn init_bootstrap(user_data: *mut core::ffi::c_void) {
     toxoid_sokol::sokol_init();
     
     // Enable render systems
-    let render_systems = toxoid_api::World::get_singleton::<toxoid_api::RenderSystems>();
-    let mut entity = toxoid_api::Entity::from_id(render_systems.get_entity());
+    let render_systems = World::get_singleton::<RenderSystems>();
+    let mut entity = Entity::from_id(render_systems.get_entity());
     entity.enable();
 
     // Initialize engine bootstrap entities
@@ -36,10 +39,8 @@ pub extern "C" fn init_bootstrap(user_data: *mut core::ffi::c_void) {
 pub fn init(init_host: extern "C" fn()) {
     // Initialize ECS
     toxoid_api::components::init();
-    // Game settings
-    let mut game_config = toxoid_api::World::get_singleton::<toxoid_api::GameConfig>();
-    game_config.set_width(1280);
-    game_config.set_height(720);
+    // Initialize config
+    config::init();
     // Initialize systems
     systems::init();
 

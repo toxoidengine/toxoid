@@ -139,35 +139,42 @@ impl Renderer2D for SokolRenderer2D {
     }
 
     fn window_size() -> (u32, u32) {
-        (sapp::width() as u32, sapp::height() as u32)
+        let game_config = World::get_singleton::<GameConfig>();
+        (game_config.get_window_width(), game_config.get_window_height())
     }
 
     fn begin() {
-        // Get the size of the window
-        let (window_width, window_height) = (sapp::width(), sapp::height());
         let game_config = World::get_singleton::<GameConfig>();
-        let game_width = game_config.get_width();
-        let game_height = game_config.get_height();
-        let scale_factor = window_width as f32 / game_width as f32;
-        unsafe {
-            // Begin recording draw commands for a frame buffer of size (width, height).
-            sgp_begin(window_width, window_height);
-            // Set frame buffer drawing region to (0,0,width,height).
-            sgp_viewport(0, 0, window_width, window_height);
-            // Set drawing coordinate space to (left=0, right=width, top=0, bottom=height).
-            sgp_project(0.0, window_width as f32, 0.0, window_height as f32);
-            // Clear the frame buffer.
-            // sgp_set_color(1., 1., 1., 1.);
-            // TODO: Make customizable
-            // sgp_set_color(0.1, 0.1, 0.1, 1.0);
-            // sgp_clear();
+        let window_width = game_config.get_window_width() as i32;
+        let window_height = game_config.get_window_height() as i32;
+        let game_width = game_config.get_game_width() as f32;
+        let game_height = game_config.get_game_height() as f32;
 
-            // Initialize ImGui frame
+        // Calculate viewport position to center the game
+        let viewport_x = ((sapp::width() - window_width) / 2).max(0);
+        let viewport_y = ((sapp::height() - window_height) / 2).max(0);
+
+        unsafe {
+            // Clear entire window to pure black (for letterboxing)
+            sgp_begin(sapp::width(), sapp::height());
+            sgp_viewport(0, 0, sapp::width(), sapp::height());
+            sgp_project(0.0, sapp::width() as f32, 0.0, sapp::height() as f32);
+            sgp_reset_color();
+            sgp_set_color(0.0, 0.0, 0.0, 1.0);
+            sgp_clear();
+            
+            // Set up game viewport with dark gray background
+            sgp_viewport(viewport_x, viewport_y, window_width, window_height);
+            sgp_project(0.0, game_width, 0.0, game_height);
+            sgp_reset_color();
+            sgp_set_color(0.1, 0.1, 0.1, 1.0);  // Dark gray for viewport
+            sgp_clear();
+            
             #[cfg(feature = "imgui")]
             {
                 let desc = simgui_frame_desc_t {
                     width: window_width,
-                    height: window_height, 
+                    height: window_height,
                     delta_time: sapp::frame_duration(),
                     dpi_scale: sapp::dpi_scale(),
                 };
@@ -422,7 +429,12 @@ impl Renderer2D for SokolRenderer2D {
         }
     }
 
-    fn draw_render_target(source: &Box<dyn RenderTarget>, sx: f32, sy: f32, sw: f32, sh: f32, dx: f32, dy: f32, dw: f32, dh: f32, blend_mode: u8) {
+    fn draw_render_target(
+        rt_trait_object: &Box<dyn RenderTarget>,
+        sx: f32, sy: f32, sw: f32, sh: f32,
+        dx: f32, dy: f32, dw: f32, dh: f32,
+        blend_mode: u8
+    ) {
         unsafe {
             sgp_reset_color();
             if blend_mode == 0 {
@@ -430,71 +442,54 @@ impl Renderer2D for SokolRenderer2D {
             } else {
                 sgp_set_blend_mode((blend_mode as u32).try_into().unwrap());
             }
-            // Get scale factor for resolution
-            let (window_width, window_height) = SokolRenderer2D::window_size();
-            // println!("Window width {:?}, window height {:?}", window_width, window_height);
-            // let scale_factor = window_width as f32 / crate::GAME_WIDTH as f32;
-            let scale_factor = window_width as f32 / 720 as f32;
-    
-            let sokol_source = source.as_any().downcast_ref::<SokolRenderTarget>().unwrap();
+
+            let sokol_source = rt_trait_object.as_any().downcast_ref::<SokolRenderTarget>().unwrap();
             let sprite = sokol_source.sprite.as_any().downcast_ref::<SokolSprite>().unwrap();
-
-            // println!("Drawing render target! Sprite: {:?}", (*(sokol_source.sprite)).width());
-            // println!("Drawing render target! Depth image: {:?}", sokol_source.depth_image);
-            // println!("Drawing render target! Sampler: {:?}", sokol_source.sampler);
-            // println!("Drawing render target! Pass: {:?}", sokol_source.pass);
     
-            // Define the source rectangle from the render target
+            // Draw using game coordinates directly
             let src_rect = sgp_rect { x: sx, y: sy, w: sw, h: sh };
-    
-            // Define the destination rectangle on the canvas
-            let dest_rect = sgp_rect { 
-                x: (dx * scale_factor).round(), 
-                y: (dy * scale_factor).round(), 
-                w: (dw as f32 * scale_factor).round(), 
-                h: (dh as f32 * scale_factor).round()
-            };
-            // let mut dest_rect = sgp_rect { 
-            //     x: 0., 
-            //     y: 0., 
-            //     w: 18., 
-            //     h: 100.
-            // };
+            let dest_rect = sgp_rect { x: dx, y: dy, w: dw, h: dh };
 
-            // Set the source image for drawing, using the color attachment of the render target
             sgp_set_image(0, sg_image { id: sprite.image.id });
-
-            // println!("SPrite ID {:?}", sprite.image.id);
-
-            // Draw the render target onto the canvas
             sgp_draw_textured_rect(0, dest_rect, src_rect);
-
-            // println!("Drawing render target! Dest rect: {:?}", dest_rect);
-            // println!("Drawing render target! Src rect: {:?}", src_rect);
         }
     }
 
     fn draw_filled_rect(pos: &Position, size: &Size, color: &Color) {
         unsafe {
-            let (window_width, _) = SokolRenderer2D::window_size();
             let game_config = World::get_singleton::<GameConfig>();
-            let game_width = game_config.get_width();
-            let game_height = game_config.get_height();
-            let scale_factor = window_width as f32 / game_width as f32;
+            let window_width = game_config.get_window_width() as f32;
+            let game_width = game_config.get_game_width() as f32;
+            let min_width = game_config.get_min_window_width() as f32;
+            
+            let scale_factor = (window_width / game_width).max(min_width / game_width);
+            
             sgp_reset_color();
             sgp_set_color(color.get_r(), color.get_g(), color.get_b(), color.get_a());
-            sgp_draw_filled_rect(pos.get_x() as f32 * scale_factor, pos.get_y() as f32 * scale_factor, size.get_width() as f32 * scale_factor, size.get_height() as f32 * scale_factor);
+            sgp_draw_filled_rect(
+                pos.get_x() as f32 * scale_factor, 
+                pos.get_y() as f32 * scale_factor, 
+                size.get_width() as f32 * scale_factor, 
+                size.get_height() as f32 * scale_factor
+            );
         }
     }
 
     fn draw_line(ax: f32, ay: f32, bx: f32, by: f32) {
         unsafe {
-            let (window_width, _) = SokolRenderer2D::window_size();
-            let game_config = World::get_singleton::<GameConfig>(); 
-            let game_width = game_config.get_width();
-            let game_height = game_config.get_height();
-            let scale_factor = window_width as f32 / game_width as f32;
-            sgp_draw_line(ax * scale_factor, ay * scale_factor, bx * scale_factor, by * scale_factor);
+            let game_config = World::get_singleton::<GameConfig>();
+            let window_width = game_config.get_window_width() as f32;
+            let game_width = game_config.get_game_width() as f32;
+            let min_width = game_config.get_min_window_width() as f32;
+            
+            let scale_factor = (window_width / game_width).max(min_width / game_width);
+            
+            sgp_draw_line(
+                ax * scale_factor, 
+                ay * scale_factor, 
+                bx * scale_factor, 
+                by * scale_factor
+            );
         }
     }
 

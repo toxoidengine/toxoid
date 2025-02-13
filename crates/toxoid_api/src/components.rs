@@ -104,6 +104,9 @@ component! {
     FrameByFrameAnimationRelationship {},
     SpriteRelationship {},
     RectRelationship {},
+    Player {
+        entity: u64
+    },
 
     // -- Singletons --
     KeyboardInput {
@@ -116,9 +119,24 @@ component! {
         entity: u64
     },
     GameConfig {
-        width: u32,
-        height: u32
-    }
+        window_width: u32,
+        window_height: u32,
+        game_width: u32,
+        game_height: u32,
+        min_window_width: u32,
+        min_window_height: u32
+    },
+
+    // Camera components
+    Camera {
+        viewport_width: f32,
+        viewport_height: f32,
+        zoom: f32
+    },
+    // Add to singletons section
+    MainCamera {
+        entity: u64
+    },
 }
 
 pub fn init() {
@@ -169,14 +187,22 @@ pub fn init() {
     FrameByFrameAnimationRelationship::register();
     SpriteRelationship::register();
     RectRelationship::register();
+    Player::register();
     
     // Register singletons
     KeyboardInput::register();
     RenderSystems::register();
     GameConfig::register();
 
+    // Register camera components
+    Camera::register();
+    MainCamera::register();
+    Player::register();
+
     // Add singletons
     World::add_singleton::<KeyboardInput>();
     World::add_singleton::<RenderSystems>();
     World::add_singleton::<GameConfig>();
+    World::add_singleton::<MainCamera>();
+    World::add_singleton::<Player>();
 }
