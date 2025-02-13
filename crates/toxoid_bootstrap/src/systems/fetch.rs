@@ -135,9 +135,27 @@ pub fn bone_animation_loaded(entity: &mut Entity) {
     }
 
     let game_config = World::get_singleton::<GameConfig>();
-    let width = game_config.get_width();
-    let height = game_config.get_height();
-    let rt_entity = create_render_target(1280, 720);
+    let window_width = game_config.get_window_width();
+    let game_width = game_config.get_game_width();
+    
+    // Set player entity in singleton
+    let player_singleton = World::get_singleton::<Player>();
+    let player_entity = Entity::from_id(player_singleton.get_entity());
+
+    // Create render target with scaled size
+    let scale_factor = window_width as f32 / game_width as f32;
+    // TODO: Make this configurable for animations
+    let rt_width = (150.0 * scale_factor) as u32;
+    let rt_height = (150.0 * scale_factor) as u32;
+    let mut rt_entity = create_render_target(rt_width, rt_height);
+    rt_entity.add::<Position>();  // Make sure Position component is added
+    rt_entity.add::<Size>();
+    let rt_size = rt_entity.get::<Size>();
+    rt_size.set_width(rt_width);
+    rt_size.set_height(rt_height);
+    rt_entity.child_of_id(player_entity.get_id());
+
+    // Make spine instance child of render target
     entity.child_of_id(rt_entity.get_id());
     entity.add::<Blittable>();
 }
@@ -233,6 +251,7 @@ pub fn init() {
                     let tiled_world = toxoid_tiled::parse_world(data_str);
                     world.set_world(Box::into_raw(Box::new(tiled_world.clone())) as u64);
                     let world_entity_id = world_entity.get_id();
+                    
                     tiled_world
                         .maps
                         .unwrap()
@@ -240,14 +259,26 @@ pub fn init() {
                         .for_each(|cell| {
                             let mut cell_entity = toxoid_api::load_cell(format!("assets/{}", cell.file_name).as_str(), true);
                             cell_entity.child_of_id(world_entity_id);
-                            // cell_entity.set_name(format!("TiledCellEntity{}", cell_entity.get_id()));
-                            let game_config = World::get_singleton::<GameConfig>();
-                            // let game_width = game_config.get_width();
-                            // let game_height = game_config.get_height();
-                            let mut render_target = create_render_target(4800, 720);
-                            // cell_entity.add_relationship(Relationship::Custom(RenderTargetRelationship::get_id()), render_target);
-                            render_target.child_of_id(cell_entity.get_id());
+                            
+                            // Set cell position
+                            cell_entity.add::<Position>();
+                            let cell_pos = cell_entity.get::<Position>();
+                            cell_pos.set_x(cell.x);
+                            cell_pos.set_y(cell.y);
+                            
+                            // Set cell size
+                            cell_entity.add::<Size>();
+                            let cell_size = cell_entity.get::<Size>();
+                            cell_size.set_width(cell.width);
+                            cell_size.set_height(cell.height);
+
+                            // Add blittable component
                             cell_entity.add::<Blittable>();
+
+                            // Parent cell to player
+                            let player_singleton = World::get_singleton::<Player>();
+                            let mut player_entity = Entity::from_id(player_singleton.get_entity());
+                            player_entity.child_of_id(cell_entity.get_id());
                         });
                 },
                 d if d == DataType::Cell as u8 => {
@@ -255,6 +286,15 @@ pub fn init() {
                     let cell = cell_entity.get::<TiledCell>();
                     let data_str = std::str::from_utf8(data.as_slice()).unwrap();
                     let tiled_cell = toxoid_tiled::parse_cell(data_str);
+                    
+                    // Add Size component with map dimensions
+                    cell_entity.add::<Size>();
+                    let size = cell_entity.get::<Size>();
+                    let map_width = tiled_cell.width * tiled_cell.tilewidth;
+                    let map_height = tiled_cell.height * tiled_cell.tileheight;
+                    size.set_width(map_width);
+                    size.set_height(map_height);
+                    
                     cell.set_cell(Box::into_raw(Box::new(tiled_cell.clone())) as u64);
                     let tileset = tiled_cell.tilesets.get(0).unwrap();
                     let mut tileset_entity = toxoid_api::load_tileset(format!("assets/{}", tileset.image.as_str()).as_str(), true);

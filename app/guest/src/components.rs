@@ -1,45 +1,31 @@
+
 use toxoid_api::*;
 
 component! {
-    // Components
-    // Tags
-    Head {},
-    Tail {},
-    Player {},
-    Food {},
-    // Singleton
-    FoodEntity {
-        entity: EcsEntityT
+    TestChild {
+        test: String,
     },
-    Direction {
-        direction: u8
+    TestParent {
+        test: String,
     },
-    Tails {
-        max_length: u32
-    },
-    Stats {
-        score: u32,
-        high_score: u32,
-        tail_length: u32
+    TestGrandParent {
+        test: String,
     },
 }
 
 pub fn init() {
-    // Tags
-    Head::register();
-    Tail::register();
-    Player::register();
-    Food::register();
+    println!("Components initialized");
+    TestChild::register();
+    TestParent::register();
+    TestGrandParent::register();
 
-    // Singletons
-    FoodEntity::register();
-    Direction::register();
-    Tails::register();
-    Stats::register();
+    let mut test_child = Entity::new(None);
+    test_child.add::<TestChild>();
+    let mut test_parent = Entity::new(None);
+    test_parent.add::<TestParent>();
+    let mut test_grand_parent = Entity::new(None);
+    test_grand_parent.add::<TestGrandParent>();
 
-    // Add singletons
-    World::add_singleton::<FoodEntity>();
-    World::add_singleton::<Direction>();
-    World::add_singleton::<Tails>();
-    World::add_singleton::<Stats>();
+    test_child.child_of_id(test_parent.get_id());
+    test_parent.child_of_id(test_grand_parent.get_id());
 }
