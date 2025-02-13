@@ -149,19 +149,24 @@ impl Renderer2D for SokolRenderer2D {
         let window_height = game_config.get_window_height() as i32;
         let game_width = game_config.get_game_width() as f32;
         let game_height = game_config.get_game_height() as f32;
-        let scale_factor = window_width as f32 / game_width;
+        
+        // Never scale below the minimum game size
+        let min_width = game_config.get_min_window_width() as f32;
+        let scale_factor = (window_width as f32 / game_width).max(min_width / game_width);
 
         unsafe {
             sgp_begin(window_width, window_height);
-            sgp_viewport(0, 0, window_width, window_height);
-            sgp_project(0.0, window_width as f32, 0.0, window_height as f32);
+            // Use the minimum-clamped viewport
+            let viewport_width = (game_width * scale_factor) as i32;
+            let viewport_height = (game_height * scale_factor) as i32;
+            sgp_viewport(0, 0, viewport_width, viewport_height);
+            sgp_project(0.0, viewport_width as f32, 0.0, viewport_height as f32);
             
-            // Initialize ImGui frame
             #[cfg(feature = "imgui")]
             {
                 let desc = simgui_frame_desc_t {
-                    width: window_width,
-                    height: window_height,
+                    width: viewport_width,
+                    height: viewport_height,
                     delta_time: sapp::frame_duration(),
                     dpi_scale: sapp::dpi_scale(),
                 };
@@ -416,7 +421,20 @@ impl Renderer2D for SokolRenderer2D {
         }
     }
 
-    fn draw_render_target(source: &Box<dyn RenderTarget>, sx: f32, sy: f32, sw: f32, sh: f32, dx: f32, dy: f32, dw: f32, dh: f32, blend_mode: u8) {
+    fn draw_render_target(
+        rt_trait_object: &Box<dyn RenderTarget>,
+        sx: f32, sy: f32, sw: f32, sh: f32,
+        dx: f32, dy: f32, dw: f32, dh: f32,
+        blend_mode: u8
+    ) {
+        let game_config = World::get_singleton::<GameConfig>();
+        let window_width = game_config.get_window_width() as f32;
+        let game_width = game_config.get_game_width() as f32;
+        let min_width = game_config.get_min_window_width() as f32;
+        
+        // Never scale below minimum size
+        let scale_factor = (window_width / game_width).max(min_width / game_width);
+
         unsafe {
             sgp_reset_color();
             if blend_mode == 0 {
@@ -430,7 +448,7 @@ impl Renderer2D for SokolRenderer2D {
             // let scale_factor = window_width as f32 / crate::GAME_WIDTH as f32;
             let scale_factor = window_width as f32 / 720 as f32;
     
-            let sokol_source = source.as_any().downcast_ref::<SokolRenderTarget>().unwrap();
+            let sokol_source = rt_trait_object.as_any().downcast_ref::<SokolRenderTarget>().unwrap();
             let sprite = sokol_source.sprite.as_any().downcast_ref::<SokolSprite>().unwrap();
 
             // println!("Drawing render target! Sprite: {:?}", (*(sokol_source.sprite)).width());
@@ -445,8 +463,8 @@ impl Renderer2D for SokolRenderer2D {
             let dest_rect = sgp_rect { 
                 x: (dx * scale_factor).round(), 
                 y: (dy * scale_factor).round(), 
-                w: (dw as f32 * scale_factor).round(), 
-                h: (dh as f32 * scale_factor).round()
+                w: (dw * scale_factor).round(), 
+                h: (dh * scale_factor).round()
             };
             // let mut dest_rect = sgp_rect { 
             //     x: 0., 
@@ -470,25 +488,39 @@ impl Renderer2D for SokolRenderer2D {
 
     fn draw_filled_rect(pos: &Position, size: &Size, color: &Color) {
         unsafe {
-            let (window_width, _) = SokolRenderer2D::window_size();
             let game_config = World::get_singleton::<GameConfig>();
-            let game_width = game_config.get_game_width();
-            let game_height = game_config.get_game_height();
-            let scale_factor = window_width as f32 / game_width as f32;
+            let window_width = game_config.get_window_width() as f32;
+            let game_width = game_config.get_game_width() as f32;
+            let min_width = game_config.get_min_window_width() as f32;
+            
+            let scale_factor = (window_width / game_width).max(min_width / game_width);
+            
             sgp_reset_color();
             sgp_set_color(color.get_r(), color.get_g(), color.get_b(), color.get_a());
-            sgp_draw_filled_rect(pos.get_x() as f32 * scale_factor, pos.get_y() as f32 * scale_factor, size.get_width() as f32 * scale_factor, size.get_height() as f32 * scale_factor);
+            sgp_draw_filled_rect(
+                pos.get_x() as f32 * scale_factor, 
+                pos.get_y() as f32 * scale_factor, 
+                size.get_width() as f32 * scale_factor, 
+                size.get_height() as f32 * scale_factor
+            );
         }
     }
 
     fn draw_line(ax: f32, ay: f32, bx: f32, by: f32) {
         unsafe {
-            let (window_width, _) = SokolRenderer2D::window_size();
-            let game_config = World::get_singleton::<GameConfig>(); 
-            let game_width = game_config.get_game_width();
-            let game_height = game_config.get_game_height();
-            let scale_factor = window_width as f32 / game_width as f32;
-            sgp_draw_line(ax * scale_factor, ay * scale_factor, bx * scale_factor, by * scale_factor);
+            let game_config = World::get_singleton::<GameConfig>();
+            let window_width = game_config.get_window_width() as f32;
+            let game_width = game_config.get_game_width() as f32;
+            let min_width = game_config.get_min_window_width() as f32;
+            
+            let scale_factor = (window_width / game_width).max(min_width / game_width);
+            
+            sgp_draw_line(
+                ax * scale_factor, 
+                ay * scale_factor, 
+                bx * scale_factor, 
+                by * scale_factor
+            );
         }
     }
 
