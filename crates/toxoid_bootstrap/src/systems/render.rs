@@ -17,12 +17,11 @@ pub fn blit_bone_animation_system(iter: &Iter) {
                 let rt_ptr_box = Box::from_raw(rt_ptr as *mut SokolRenderTarget);
                 let rt_trait_object: &Box<dyn toxoid_render::RenderTarget> = Box::leak(Box::new(rt_ptr_box as Box<dyn toxoid_render::RenderTarget>));
                 let instance = spine_instance.get_instance() as *mut sspine_instance;
-                // Update and draw spine instance
+                
+                // Update spine instance but don't set position
                 sspine_update_instance(*instance, sapp_frame_duration() as f32);
-                sspine_set_position(*instance, sspine_vec2 {
-                    x: position.get_x() as f32,
-                    y: position.get_y() as f32
-                });
+                
+                // Draw spine instance
                 sspine_draw_instance_in_layer(*instance, 0);
 
                 let (window_width, window_height) = (sapp::width(), sapp::height());
@@ -32,7 +31,6 @@ pub fn blit_bone_animation_system(iter: &Iter) {
                         x: window_width as f32, 
                         y: window_height as f32
                     },
-                    // TODO: Figure out some way to reliably set the offset
                     origin: sspine_vec2 { 
                         x: 30., 
                         y: 70.
@@ -45,8 +43,6 @@ pub fn blit_bone_animation_system(iter: &Iter) {
                 rt.set_flip_y(true);
                 rt.set_z_depth(ZDepth::SameAsPlayer as u32);
                 rt_entity.add::<Renderable>();
-
-                // Box::leak(rt_ptr_box);
             }
         }
     }
@@ -282,6 +278,15 @@ pub extern "C" fn draw_render_target_sort(_e1: ecs_entity_t, v1: *const std::ffi
 // Draw Render Targets to screen as final output
 #[components(RenderTarget, _, Size, Position, BlendMode)]
 pub fn draw_render_targets_system(iter: &Iter) {
+    // Get camera position
+    let main_camera = World::get_singleton::<MainCamera>();
+    let mut camera_entity = Entity::from_id(main_camera.get_entity());
+    let camera_pos = camera_entity.get::<Position>();
+    let camera = camera_entity.get::<Camera>();
+    let camera_x = camera_pos.get_x() as f32;
+    let camera_y = camera_pos.get_y() as f32;
+    let zoom = camera.get_zoom();
+
     for (rt, size, position, blend_mode) in components {
         // Get render target object / pointer
         let rt_ptr = rt.get_render_target();
@@ -296,14 +301,31 @@ pub fn draw_render_targets_system(iter: &Iter) {
         let x = position.get_x();
         let y = position.get_y();
 
+        // Apply camera transform to world position
+        let world_x = position.get_x() as f32 - camera_x;
+        let world_y = position.get_y() as f32 - camera_y;
+        
+        // Scale positions and sizes by zoom
+        let scaled_x = world_x * zoom;
+        let scaled_y = world_y * zoom;
+        let scaled_width = width as f32 * zoom;
+        let scaled_height = height as f32 * zoom;
+
         // Flip Y for Spine
         // TODO: Figure out some other way to do this
         #[cfg(all(target_arch="wasm32", target_os="emscripten"))]
         let source_height = if rt.get_flip_y() { -(height as f32) } else { height as f32 };
         #[cfg(not(all(target_arch="wasm32", target_os="emscripten")))]
         let source_height = height as f32;
-        // Draw render target
-        SokolRenderer2D::draw_render_target(rt_trait_object, 0., 0., width as f32, source_height, x as f32, y as f32, width as f32, height as f32, blend_mode);
+        // Draw render target with camera transform applied
+        SokolRenderer2D::draw_render_target(
+            rt_trait_object,
+            0., 0.,
+            width as f32, source_height,
+            scaled_x, scaled_y,
+            scaled_width, scaled_height,
+            blend_mode
+        );
     }
 }
 
