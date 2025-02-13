@@ -133,7 +133,6 @@ component! {
         viewport_height: f32,
         zoom: f32
     },
-
     // Add to singletons section
     MainCamera {
         entity: u64

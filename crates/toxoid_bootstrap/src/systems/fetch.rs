@@ -144,6 +144,7 @@ pub fn bone_animation_loaded(entity: &mut Entity) {
 
     // Create render target with scaled size
     let scale_factor = window_width as f32 / game_width as f32;
+    // TODO: Make this configurable for animations
     let rt_width = (150.0 * scale_factor) as u32;
     let rt_height = (150.0 * scale_factor) as u32;
     let mut rt_entity = create_render_target(rt_width, rt_height);
@@ -153,8 +154,6 @@ pub fn bone_animation_loaded(entity: &mut Entity) {
     rt_size.set_width(rt_width);
     rt_size.set_height(rt_height);
     rt_entity.child_of_id(player_entity.get_id());
-
-    println!("Created RT: size {}x{}", rt_width, rt_height);
 
     // Make spine instance child of render target
     entity.child_of_id(rt_entity.get_id());
@@ -261,29 +260,22 @@ pub fn init() {
                             let mut cell_entity = toxoid_api::load_cell(format!("assets/{}", cell.file_name).as_str(), true);
                             cell_entity.child_of_id(world_entity_id);
                             
-                            // Set cell position and size
+                            // Set cell position
                             cell_entity.add::<Position>();
-                            let mut cell_pos = cell_entity.get::<Position>();
+                            let cell_pos = cell_entity.get::<Position>();
                             cell_pos.set_x(cell.x);
                             cell_pos.set_y(cell.y);
                             
+                            // Set cell size
                             cell_entity.add::<Size>();
-                            let mut cell_size = cell_entity.get::<Size>();
+                            let cell_size = cell_entity.get::<Size>();
                             cell_size.set_width(cell.width);
                             cell_size.set_height(cell.height);
-                            
-                            // Create render target
-                            let mut render_target = create_render_target(cell.width, cell.height);
-                            render_target.child_of_id(cell_entity.get_id());
-                            
-                            // Set render target's position to match cell's world position
-                            let mut rt_pos = render_target.get::<Position>();
-                            rt_pos.set_x(cell.x);  // Use cell's world position from world file
-                            rt_pos.set_y(cell.y);
-                            
+
+                            // Add blittable component
                             cell_entity.add::<Blittable>();
 
-                            // Parent player to this cell entity
+                            // Parent cell to player
                             let player_singleton = World::get_singleton::<Player>();
                             let mut player_entity = Entity::from_id(player_singleton.get_entity());
                             player_entity.child_of_id(cell_entity.get_id());
@@ -300,7 +292,6 @@ pub fn init() {
                     let size = cell_entity.get::<Size>();
                     let map_width = tiled_cell.width * tiled_cell.tilewidth;
                     let map_height = tiled_cell.height * tiled_cell.tileheight;
-                    println!("Setting TiledCell size: {}x{}", map_width, map_height);
                     size.set_width(map_width);
                     size.set_height(map_height);
                     
