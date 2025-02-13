@@ -2,11 +2,13 @@ use toxoid_api::*;
 use toxoid_sokol::{bindings::*, SokolRenderTarget, SokolRenderer2D, SokolSprite, sapp};
 use toxoid_render::Renderer2D;
 
+use crate::prefabs::create_render_target;
+
 // SpineInstance, Position, BoneAnimation
-#[components(SpineInstance, Position, _)]
+#[components(SpineInstance, _, _)]
 pub fn blit_bone_animation_system(iter: &Iter) {
     let mut entities = iter.entities();
-    for (i, (spine_instance, position)) in components.into_iter().enumerate() {
+    for (i, spine_instance) in components.into_iter().enumerate() {
         let entity = entities.get_mut(i).unwrap();
         if spine_instance.get_instantiated() {
             unsafe {
@@ -17,18 +19,6 @@ pub fn blit_bone_animation_system(iter: &Iter) {
                 let rt_ptr_box = Box::from_raw(rt_ptr as *mut SokolRenderTarget);
                 let rt_trait_object: &Box<dyn toxoid_render::RenderTarget> = Box::leak(Box::new(rt_ptr_box as Box<dyn toxoid_render::RenderTarget>));
                 let instance = spine_instance.get_instance() as *mut sspine_instance;
-
-                // Get render target size (with fallback values if Size component is missing)
-                let rt_width = if rt_entity.has::<Size>() {
-                    rt_entity.get::<Size>().get_width()
-                } else {
-                    150  // Default width
-                };
-                let rt_height = if rt_entity.has::<Size>() {
-                    rt_entity.get::<Size>().get_height()
-                } else {
-                    150  // Default height
-                };
                 
                 // Update spine instance but don't set position
                 sspine_update_instance(*instance, sapp_frame_duration() as f32);
@@ -101,9 +91,8 @@ pub fn blit_cell_system(iter: &Iter) {
             // TODO: Make this into Flecs Query with custom relationships
             let mut tileset_entities = children.iter_mut().filter(|child| child.has::<Tileset>() && child.has::<Blittable>()).collect::<Vec<_>>();
             let mut children = cell_entity.children();
-            let render_target_entities = children.iter_mut().filter(|child| child.has::<RenderTarget>()).collect::<Vec<_>>();
 
-            if tileset_entities.len() > 0 && render_target_entities.len() > 0 {
+            if tileset_entities.len() > 0 {
                 // Get tileset 
                 let tileset_entity = tileset_entities.get_mut(0).unwrap();
                 let sprite = tileset_entity.get::<Sprite>();
@@ -111,17 +100,6 @@ pub fn blit_cell_system(iter: &Iter) {
                 let sprite_ptr = sprite.get_sprite();
                 let sprite_box = unsafe { Box::from_raw(sprite_ptr as *mut SokolSprite) };
                 let tileset_sprite: &Box<dyn toxoid_render::Sprite> = Box::leak(Box::new(sprite_box as Box<dyn toxoid_render::Sprite>));
-                // let tileset_size = tileset_entity.get::<Size>();
-                // let width = tileset_size.get_width();
-                // let height = tileset_size.get_height();
-
-                // let rt_entity = render_target_entities.get_mut(0).unwrap();
-                // let render_target = rt_entity.get::<RenderTarget>();
-                // let render_target_ptr = render_target.get_render_target();
-                // let render_target_box = unsafe { Box::from_raw(render_target_ptr as *mut SokolRenderTarget) };
-                // let render_target_trait_object: &Box<dyn toxoid_render::RenderTarget> = Box::leak(Box::new(render_target_box as Box<dyn toxoid_render::RenderTarget>));
-                // let rt_width = 800.;
-                // let rt_height = 600.;
 
                 let cell = cell_entity.get::<TiledCell>();
                 let cell = cell.get_cell() as *mut toxoid_tiled::TiledCell;
@@ -129,6 +107,9 @@ pub fn blit_cell_system(iter: &Iter) {
                 let pixel_height = unsafe { (*cell).height * (*cell).tileheight };
                 let tile_width = unsafe { (*cell).tilewidth };
                 let tile_height = unsafe { (*cell).tileheight };
+                let position = cell_entity.get::<Position>();
+                let cell_x = position.get_x();
+                let cell_y = position.get_y();
                 let image_width = 4800;
                 // let image_height = 720;
                 let rt = SokolRenderer2D::create_render_target(pixel_width, pixel_height);
@@ -223,40 +204,21 @@ pub fn blit_cell_system(iter: &Iter) {
                 }
                 SokolRenderer2D::end_rt();
 
-                // Create render target entity
-                let mut entity = Entity::new(None);
-                entity.add::<RenderTarget>();
-                entity.add::<Position>();
-                entity.add::<Size>();
-                entity.add::<BlendMode>();
-                
-                let position = entity.get::<Position>();
-                // Assuming grid dimensions are known
-                let grid_width = 2; // Number of cells horizontally
-                let index = cell_entity.get::<TiledCell>().get_index();
-                // Calculate grid positions based on the index
-                let grid_x = index % grid_width; // Calculate x position in the grid
-                let grid_y = index / grid_width; // Calculate y position in the grid
-                let position_x = grid_x as i32 * pixel_width as i32; // Position x for the cell
-                let position_y = grid_y as i32 * pixel_height as i32; // Position y for the cell
-                position.set_x(position_x);
-                position.set_y(position_y);
-                // println!("i: {}, pixel_width: {}, pixel_height: {}", index, pixel_width, pixel_height);
-                // println!("Position: {}, {}", position_x, position_y);
-                
-                // Set the position of the cell entity
-                let position = cell_entity.get::<Position>();
-                position.set_x(position_x);
-                position.set_y(position_y);
-                let size = entity.get::<Size>();
-                size.set_width(pixel_width);
-                size.set_height(pixel_height);
-                let render_target = entity.get::<RenderTarget>();
+                // Get render target entity
+                let mut rt_entity = create_render_target(pixel_width, pixel_height);
+                let render_target = rt_entity.get::<RenderTarget>();
+                // Set render target
                 render_target.set_render_target(Box::leak(rt) as *const _ as *const std::ffi::c_void as u64);
+                // Set z depth
                 render_target.set_z_depth(ZDepth::BottomLayer as u32);
-                
+
+                // Set position
+                let position = rt_entity.get::<Position>();
+                position.set_x(cell_x);
+                position.set_y(cell_y);
+
                 // Add renderable component
-                entity.add::<Renderable>();
+                rt_entity.add::<Renderable>();
                 
                 // Remove the blittable component
                 cell_entity.remove::<Blittable>();
@@ -294,13 +256,6 @@ pub fn draw_render_targets_system(iter: &Iter) {
     let main_camera = World::get_singleton::<MainCamera>();
     let mut camera_entity = Entity::from_id(main_camera.get_entity());
     let camera_pos = camera_entity.get::<Position>();
-    let camera = camera_entity.get::<Camera>();
-    
-    // Get game config for scaling
-    let game_config = World::get_singleton::<GameConfig>();
-    let window_width = game_config.get_window_width() as f32;
-    let game_width = game_config.get_game_width() as f32;
-    let scale_factor = window_width / game_width;
 
     for (rt, size, position, blend_mode) in components {
         // Get render target object / pointer
@@ -312,11 +267,6 @@ pub fn draw_render_targets_system(iter: &Iter) {
         // Get size
         let width = size.get_width();
         let height = size.get_height();
-        // Get position
-        let x = position.get_x();
-        let y = position.get_y();
-        
-        // println!("Drawing RT at: ({}, {})", x, y);
 
         // Remove all scaling calculations and use raw positions
         let world_x = position.get_x() - camera_pos.get_x();
