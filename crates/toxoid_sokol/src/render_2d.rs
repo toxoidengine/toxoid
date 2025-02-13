@@ -150,17 +150,31 @@ impl Renderer2D for SokolRenderer2D {
         let game_width = game_config.get_game_width() as f32;
         let game_height = game_config.get_game_height() as f32;
         
-        // Never scale below the minimum game size
-        let min_width = game_config.get_min_window_width() as f32;
-        let scale_factor = (window_width as f32 / game_width).max(min_width / game_width);
+        // Calculate integer scale factor that maintains aspect ratio
+        let scale_x = (window_width as f32 / game_width).floor();
+        let scale_y = (window_height as f32 / game_height).floor();
+        let scale_factor = scale_x.min(scale_y).max(1.0);
+        
+        // Calculate viewport dimensions
+        let viewport_width = (game_width * scale_factor) as i32;
+        let viewport_height = (game_height * scale_factor) as i32;
+        
+        // Center the viewport
+        let viewport_x = (window_width - viewport_width) / 2;
+        let viewport_y = (window_height - viewport_height) / 2;
 
         unsafe {
+            // Clear to black
             sgp_begin(window_width, window_height);
-            // Use the minimum-clamped viewport
-            let viewport_width = (game_width * scale_factor) as i32;
-            let viewport_height = (game_height * scale_factor) as i32;
-            sgp_viewport(0, 0, viewport_width, viewport_height);
-            sgp_project(0.0, viewport_width as f32, 0.0, viewport_height as f32);
+            sgp_viewport(0, 0, window_width, window_height);
+            sgp_project(0.0, window_width as f32, 0.0, window_height as f32);
+            sgp_reset_color();
+            sgp_set_color(0.0, 0.0, 0.0, 1.0);
+            sgp_clear();
+            
+            // Set up pixel-perfect viewport
+            sgp_viewport(viewport_x, viewport_y, viewport_width, viewport_height);
+            sgp_project(0.0, game_width, 0.0, game_height);
             
             #[cfg(feature = "imgui")]
             {
@@ -427,14 +441,6 @@ impl Renderer2D for SokolRenderer2D {
         dx: f32, dy: f32, dw: f32, dh: f32,
         blend_mode: u8
     ) {
-        let game_config = World::get_singleton::<GameConfig>();
-        let window_width = game_config.get_window_width() as f32;
-        let game_width = game_config.get_game_width() as f32;
-        let min_width = game_config.get_min_window_width() as f32;
-        
-        // Never scale below minimum size
-        let scale_factor = (window_width / game_width).max(min_width / game_width);
-
         unsafe {
             sgp_reset_color();
             if blend_mode == 0 {
@@ -442,47 +448,16 @@ impl Renderer2D for SokolRenderer2D {
             } else {
                 sgp_set_blend_mode((blend_mode as u32).try_into().unwrap());
             }
-            // Get scale factor for resolution
-            let (window_width, window_height) = SokolRenderer2D::window_size();
-            // println!("Window width {:?}, window height {:?}", window_width, window_height);
-            // let scale_factor = window_width as f32 / crate::GAME_WIDTH as f32;
-            let scale_factor = window_width as f32 / 720 as f32;
-    
+
             let sokol_source = rt_trait_object.as_any().downcast_ref::<SokolRenderTarget>().unwrap();
             let sprite = sokol_source.sprite.as_any().downcast_ref::<SokolSprite>().unwrap();
-
-            // println!("Drawing render target! Sprite: {:?}", (*(sokol_source.sprite)).width());
-            // println!("Drawing render target! Depth image: {:?}", sokol_source.depth_image);
-            // println!("Drawing render target! Sampler: {:?}", sokol_source.sampler);
-            // println!("Drawing render target! Pass: {:?}", sokol_source.pass);
     
-            // Define the source rectangle from the render target
+            // Define the source and destination rectangles in game coordinates
             let src_rect = sgp_rect { x: sx, y: sy, w: sw, h: sh };
-    
-            // Define the destination rectangle on the canvas
-            let dest_rect = sgp_rect { 
-                x: (dx * scale_factor).round(), 
-                y: (dy * scale_factor).round(), 
-                w: (dw * scale_factor).round(), 
-                h: (dh * scale_factor).round()
-            };
-            // let mut dest_rect = sgp_rect { 
-            //     x: 0., 
-            //     y: 0., 
-            //     w: 18., 
-            //     h: 100.
-            // };
+            let dest_rect = sgp_rect { x: dx, y: dy, w: dw, h: dh };
 
-            // Set the source image for drawing, using the color attachment of the render target
             sgp_set_image(0, sg_image { id: sprite.image.id });
-
-            // println!("SPrite ID {:?}", sprite.image.id);
-
-            // Draw the render target onto the canvas
             sgp_draw_textured_rect(0, dest_rect, src_rect);
-
-            // println!("Drawing render target! Dest rect: {:?}", dest_rect);
-            // println!("Drawing render target! Src rect: {:?}", src_rect);
         }
     }
 
