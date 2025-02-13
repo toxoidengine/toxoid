@@ -150,7 +150,7 @@ pub fn bone_animation_loaded(entity: &mut Entity) {
     let mut rt_entity = create_render_target(rt_width, rt_height);
     rt_entity.add::<Position>();  // Make sure Position component is added
     rt_entity.add::<Size>();
-    let mut rt_size = rt_entity.get::<Size>();
+    let rt_size = rt_entity.get::<Size>();
     rt_size.set_width(rt_width);
     rt_size.set_height(rt_height);
     rt_entity.child_of_id(player_entity.get_id());
