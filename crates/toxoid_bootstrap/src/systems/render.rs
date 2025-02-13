@@ -17,6 +17,18 @@ pub fn blit_bone_animation_system(iter: &Iter) {
                 let rt_ptr_box = Box::from_raw(rt_ptr as *mut SokolRenderTarget);
                 let rt_trait_object: &Box<dyn toxoid_render::RenderTarget> = Box::leak(Box::new(rt_ptr_box as Box<dyn toxoid_render::RenderTarget>));
                 let instance = spine_instance.get_instance() as *mut sspine_instance;
+
+                // Get render target size (with fallback values if Size component is missing)
+                let rt_width = if rt_entity.has::<Size>() {
+                    rt_entity.get::<Size>().get_width()
+                } else {
+                    150  // Default width
+                };
+                let rt_height = if rt_entity.has::<Size>() {
+                    rt_entity.get::<Size>().get_height()
+                } else {
+                    150  // Default height
+                };
                 
                 // Update spine instance but don't set position
                 sspine_update_instance(*instance, sapp_frame_duration() as f32);
@@ -25,15 +37,15 @@ pub fn blit_bone_animation_system(iter: &Iter) {
                 sspine_draw_instance_in_layer(*instance, 0);
 
                 let (window_width, window_height) = (sapp::width(), sapp::height());
-                // Set up render target pass
+                // Set up render target pass with fixed spine size
                 let layer_transform = sspine_layer_transform {
                     size: sspine_vec2 { 
-                        x: window_width as f32, 
-                        y: window_height as f32
+                        x: 150.0,    // Fixed size for spine animation
+                        y: 150.0     // Keep spine animation size consistent
                     },
                     origin: sspine_vec2 { 
-                        x: 30., 
-                        y: 70.
+                        x: 75.0,    // Half of width to center
+                        y: 75.0     // Half of height to center
                     }
                 };
                 SokolRenderer2D::begin_rt(&rt_trait_object, window_width as f32, window_height as f32);
@@ -300,6 +312,8 @@ pub fn draw_render_targets_system(iter: &Iter) {
         // Get position
         let x = position.get_x();
         let y = position.get_y();
+        
+        println!("Drawing RT at: ({}, {})", x, y);
 
         // Apply camera transform to world position
         let world_x = position.get_x() as f32 - camera_x;

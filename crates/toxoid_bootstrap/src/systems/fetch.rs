@@ -144,11 +144,18 @@ pub fn bone_animation_loaded(entity: &mut Entity) {
     player_entity.add::<Position>();
 
     // Create render target with scaled size
-    let scale_factor = window_width as f32 / 720.0;  // 720 is the base resolution
-    let rt_width = (1280.0 * scale_factor) as u32;
-    let rt_height = (720.0 * scale_factor) as u32;
+    let scale_factor = window_width as f32 / 720.0;
+    let rt_width = (150.0 * scale_factor) as u32;
+    let rt_height = (150.0 * scale_factor) as u32;
     let mut rt_entity = create_render_target(rt_width, rt_height);
+    rt_entity.add::<Position>();  // Make sure Position component is added
+    rt_entity.add::<Size>();
+    let mut rt_size = rt_entity.get::<Size>();
+    rt_size.set_width(rt_width);
+    rt_size.set_height(rt_height);
     rt_entity.child_of_id(player_entity.get_id());
+
+    println!("Created RT: size {}x{}", rt_width, rt_height);
 
     // Make spine instance child of render target
     entity.child_of_id(rt_entity.get_id());
