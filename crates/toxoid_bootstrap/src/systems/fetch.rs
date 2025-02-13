@@ -53,13 +53,6 @@ fn sokol_fetch(path: &str, entity: &mut Entity) {
     unsafe { sfetch_send(&sfetch_request) };
 }
 
-fn c_string(rust_str: &str) -> *const i8 {
-    let c_string = std::ffi::CString::new(rust_str).expect("CString::new failed");
-    let c_ptr = c_string.as_ptr();
-    std::mem::forget(c_string); // Prevent CString from being deallocated
-    c_ptr
-}
-
 // #[cfg(feature = "spine")]
 pub fn bone_animation_loaded(entity: &mut Entity) {
     // Create spine atlas object from loaded atlas data.
