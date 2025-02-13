@@ -3,28 +3,27 @@ use toxoid_sokol::sokol::app as sapp;
 use toxoid_api::*;
 
 fn clamp_window_size(width: u32, height: u32, game_config: &GameConfig) -> (u32, u32) {
-    let min_width = game_config.get_min_window_width();
-    let min_height = game_config.get_min_window_height();
+    let base_width = game_config.get_game_width();
+    let base_height = game_config.get_game_height();
+    let base_aspect = base_width as f32 / base_height as f32;
     
-    // Maintain aspect ratio while enforcing minimum size
-    let aspect_ratio = min_width as f32 / min_height as f32;
-    let current_ratio = width as f32 / height as f32;
+    // Calculate scale while maintaining aspect ratio
+    let scale_by_width = (width as f32 / base_width as f32).floor().max(1.0);
+    let scale_by_height = (height as f32 / base_height as f32).floor().max(1.0);
     
-    if width < min_width || height < min_height {
-        if current_ratio > aspect_ratio {
-            // Too wide, scale based on height
-            let new_height = min_height;
-            let new_width = (new_height as f32 * current_ratio) as u32;
-            (new_width.max(min_width), new_height)
-        } else {
-            // Too tall, scale based on width
-            let new_width = min_width;
-            let new_height = (new_width as f32 / current_ratio) as u32;
-            (new_width, new_height.max(min_height))
-        }
+    // Choose scale that maintains aspect ratio without stretching
+    let scale = if width as f32 / height as f32 > base_aspect {
+        // Window is wider - scale by height
+        scale_by_height
     } else {
-        (width, height)
-    }
+        // Window is taller - scale by width
+        scale_by_width
+    };
+    
+    (
+        (base_width as f32 * scale) as u32,
+        (base_height as f32 * scale) as u32
+    )
 }
 
 fn key_up(key_code: Keycode) {
@@ -73,18 +72,19 @@ pub extern "C" fn sokol_event(event: *const Event) {
             let game_config = World::get_singleton::<GameConfig>();
             let (window_width, window_height) = (sapp::width(), sapp::height());
             
-            // Clamp to minimum size while maintaining aspect ratio
+            // Calculate the clamped size for rendering
             let (clamped_width, clamped_height) = clamp_window_size(
                 window_width as u32, 
                 window_height as u32,
                 &game_config
             );
             
+            // Update game config with the clamped dimensions for rendering
             game_config.set_window_width(clamped_width);
             game_config.set_window_height(clamped_height);
             
             if clamped_width != window_width as u32 || clamped_height != window_height as u32 {
-                println!("Window size clamped to: {}x{} (from: {}x{})", 
+                println!("Render size clamped to: {}x{} (window: {}x{})", 
                     clamped_width, clamped_height, window_width, window_height);
             }
         },
