@@ -197,8 +197,6 @@ pub fn init() {
     // Register camera components
     Camera::register();
     MainCamera::register();
-    AnimationState::register();
-    MovementState::register();
     Player::register();
 
     // Add singletons
@@ -206,7 +204,5 @@ pub fn init() {
     World::add_singleton::<RenderSystems>();
     World::add_singleton::<GameConfig>();
     World::add_singleton::<MainCamera>();
-    World::add_singleton::<AnimationState>();
-    World::add_singleton::<MovementState>();
     World::add_singleton::<Player>();
 }
