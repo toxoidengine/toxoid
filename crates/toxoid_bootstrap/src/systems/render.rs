@@ -295,9 +295,12 @@ pub fn draw_render_targets_system(iter: &Iter) {
     let mut camera_entity = Entity::from_id(main_camera.get_entity());
     let camera_pos = camera_entity.get::<Position>();
     let camera = camera_entity.get::<Camera>();
-    let camera_x = camera_pos.get_x() as f32;
-    let camera_y = camera_pos.get_y() as f32;
-    let zoom = camera.get_zoom();
+    
+    // Get game config for scaling
+    let game_config = World::get_singleton::<GameConfig>();
+    let window_width = game_config.get_window_width() as f32;
+    let game_width = game_config.get_game_width() as f32;
+    let scale_factor = window_width / game_width;
 
     for (rt, size, position, blend_mode) in components {
         // Get render target object / pointer
@@ -316,14 +319,14 @@ pub fn draw_render_targets_system(iter: &Iter) {
         println!("Drawing RT at: ({}, {})", x, y);
 
         // Apply camera transform to world position
-        let world_x = position.get_x() as f32 - camera_x;
-        let world_y = position.get_y() as f32 - camera_y;
+        let world_x = position.get_x() - camera_pos.get_x();
+        let world_y = position.get_y() - camera_pos.get_y();
         
         // Scale positions and sizes by zoom
-        let scaled_x = world_x * zoom;
-        let scaled_y = world_y * zoom;
-        let scaled_width = width as f32 * zoom;
-        let scaled_height = height as f32 * zoom;
+        let scaled_x = world_x as f32 * scale_factor;
+        let scaled_y = world_y as f32 * scale_factor;
+        let scaled_width = width as f32 * scale_factor;
+        let scaled_height = height as f32 * scale_factor;
 
         // Flip Y for Spine
         // TODO: Figure out some other way to do this

@@ -117,8 +117,10 @@ component! {
         entity: u64
     },
     GameConfig {
-        width: u32,
-        height: u32
+        window_width: u32,
+        window_height: u32,
+        game_width: u32,
+        game_height: u32
     },
 
     // Camera components
