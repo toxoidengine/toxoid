@@ -795,14 +795,6 @@ pub enum ZDepth {
     UILayer
 }
 
-#[repr(u8)]
-pub enum DirectionEnum {
-    Up,
-    Down,
-    Left,
-    Right
-}
-
 // Fetch assets / resources from the asset server or local file system
 pub fn fetch(path: &str, data_type: DataType, user_data: Option<u64>) {
     let mut entity = Entity::new(None);
@@ -888,4 +880,25 @@ pub fn load_tileset(path: &str, rendered_on_load: bool) -> Entity {
     }
     fetch(path, DataType::Tileset, Some(entity.get_id()));
     entity
+}
+
+pub fn c_string(rust_str: &str) -> *const i8 {
+    use std::collections::HashMap;
+    use std::sync::Once;
+
+    static mut STRING_CACHE: Option<HashMap<String, std::ffi::CString>> = None;
+    static INIT: Once = Once::new();
+
+    // Initialize the static HashMap if it hasn't been initialized
+    unsafe {
+        INIT.call_once(|| {
+            STRING_CACHE = Some(HashMap::new());
+        });
+
+        // Get or insert the CString
+        let cache = STRING_CACHE.as_mut().unwrap();
+        cache.entry(rust_str.to_string())
+            .or_insert_with(|| std::ffi::CString::new(rust_str).expect("CString::new failed"))
+            .as_ptr()
+    }
 }

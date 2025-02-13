@@ -166,13 +166,6 @@ unsafe fn map_member_type(member_type: u8) -> ecs_entity_t {
     }
 }
 
-fn c_string(rust_str: &str) -> *const i8 {
-    let c_string = std::ffi::CString::new(rust_str).expect("CString::new failed");
-    let c_ptr = c_string.as_ptr();
-    std::mem::forget(c_string); // Prevent CString from being deallocated
-    c_ptr
-}
-
 impl GuestComponentType for ComponentType {
     fn new(desc: ComponentDesc) -> ComponentType {
         unsafe {
@@ -1343,4 +1336,25 @@ impl Guest for ToxoidApi {
 // I'll need to hook this into your component lifecycle management
 fn cleanup_array_lengths(ptr: *const c_void) {
     ARRAY_LENGTH_CACHE.lock().unwrap().retain(|&(array_ptr, _), _| array_ptr.0 != ptr);
+}
+
+fn c_string(rust_str: &str) -> *const i8 {
+    use std::collections::HashMap;
+    use std::sync::Once;
+
+    static mut STRING_CACHE: Option<HashMap<String, std::ffi::CString>> = None;
+    static INIT: Once = Once::new();
+
+    // Initialize the static HashMap if it hasn't been initialized
+    unsafe {
+        INIT.call_once(|| {
+            STRING_CACHE = Some(HashMap::new());
+        });
+
+        // Get or insert the CString
+        let cache = STRING_CACHE.as_mut().unwrap();
+        cache.entry(rust_str.to_string())
+            .or_insert_with(|| std::ffi::CString::new(rust_str).expect("CString::new failed"))
+            .as_ptr()
+    }
 }
