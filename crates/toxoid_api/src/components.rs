@@ -137,15 +137,6 @@ component! {
     MainCamera {
         entity: u64
     },
-
-    // Update AnimationState component
-    AnimationState {
-        current_animation: String,
-        last_valid_direction: u8
-    },
-    MovementState {
-        is_moving: bool
-    },
 }
 
 pub fn init() {
