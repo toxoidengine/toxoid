@@ -149,38 +149,32 @@ impl Renderer2D for SokolRenderer2D {
         let window_height = game_config.get_window_height() as i32;
         let game_width = game_config.get_game_width() as f32;
         let game_height = game_config.get_game_height() as f32;
-        
-        // Calculate integer scale factor that maintains aspect ratio
-        let scale_x = (window_width as f32 / game_width).floor();
-        let scale_y = (window_height as f32 / game_height).floor();
-        let scale_factor = scale_x.min(scale_y).max(1.0);
-        
-        // Calculate viewport dimensions
-        let viewport_width = (game_width * scale_factor) as i32;
-        let viewport_height = (game_height * scale_factor) as i32;
-        
-        // Center the viewport
-        let viewport_x = (window_width - viewport_width) / 2;
-        let viewport_y = (window_height - viewport_height) / 2;
+
+        // Calculate viewport position to center the game
+        let viewport_x = ((sapp::width() - window_width) / 2).max(0);
+        let viewport_y = ((sapp::height() - window_height) / 2).max(0);
 
         unsafe {
-            // Clear to black
-            sgp_begin(window_width, window_height);
-            sgp_viewport(0, 0, window_width, window_height);
-            sgp_project(0.0, window_width as f32, 0.0, window_height as f32);
+            // Clear entire window to pure black (for letterboxing)
+            sgp_begin(sapp::width(), sapp::height());
+            sgp_viewport(0, 0, sapp::width(), sapp::height());
+            sgp_project(0.0, sapp::width() as f32, 0.0, sapp::height() as f32);
             sgp_reset_color();
             sgp_set_color(0.0, 0.0, 0.0, 1.0);
             sgp_clear();
             
-            // Set up pixel-perfect viewport
-            sgp_viewport(viewport_x, viewport_y, viewport_width, viewport_height);
+            // Set up game viewport with dark gray background
+            sgp_viewport(viewport_x, viewport_y, window_width, window_height);
             sgp_project(0.0, game_width, 0.0, game_height);
+            sgp_reset_color();
+            sgp_set_color(0.1, 0.1, 0.1, 1.0);  // Dark gray for viewport
+            sgp_clear();
             
             #[cfg(feature = "imgui")]
             {
                 let desc = simgui_frame_desc_t {
-                    width: viewport_width,
-                    height: viewport_height,
+                    width: window_width,
+                    height: window_height,
                     delta_time: sapp::frame_duration(),
                     dpi_scale: sapp::dpi_scale(),
                 };
@@ -452,7 +446,7 @@ impl Renderer2D for SokolRenderer2D {
             let sokol_source = rt_trait_object.as_any().downcast_ref::<SokolRenderTarget>().unwrap();
             let sprite = sokol_source.sprite.as_any().downcast_ref::<SokolSprite>().unwrap();
     
-            // Define the source and destination rectangles in game coordinates
+            // Draw using game coordinates directly
             let src_rect = sgp_rect { x: sx, y: sy, w: sw, h: sh };
             let dest_rect = sgp_rect { x: dx, y: dy, w: dw, h: dh };
 
