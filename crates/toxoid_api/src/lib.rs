@@ -902,17 +902,3 @@ pub fn c_string(rust_str: &str) -> *const i8 {
             .as_ptr()
     }
 }
-
-// Add this new function to create a player with a spine instance
-pub fn create_player_with_spine(atlas_filename: &str, skeleton_filename: &str) -> Entity {
-    // Create the player entity
-    let mut player_entity = Entity::new(None);
-    player_entity.add::<Player>();
-    player_entity.add::<Position>();
-    
-    // Create the spine instance as a child of player
-    let mut spine_entity = load_animation(atlas_filename, skeleton_filename, true);
-    spine_entity.child_of_id(player_entity.get_id());
-
-    player_entity
-}

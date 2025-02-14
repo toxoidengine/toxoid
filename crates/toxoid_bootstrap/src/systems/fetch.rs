@@ -186,9 +186,10 @@ pub fn init() {
                     let img_info = unsafe { Box::from_raw(img_info as *mut sspine_image_info) };
                     // let img_info = unsafe { &*(img_info as *const sspine_image_info) };
                     // let filename = unsafe { core::ffi::CStr::from_ptr(img_info.filename.cstr.as_ptr()) };
-                    let data_ptr = data.as_ptr() as *const u8;
+                    let data_box = data.into_boxed_slice();
+                    let data_ptr = Box::into_raw(data_box);
                     // Initialize sokol-gfx image object
-                    SokolRenderer2D::init_image(img_info.sgimage, data_ptr, size);
+                    SokolRenderer2D::init_image(img_info.sgimage, data_ptr as *const u8, size);
                     // Initialize sokol-gfx sampler object
                     SokolRenderer2D::init_sampler(
                         img_info.sgsampler,
@@ -204,9 +205,10 @@ pub fn init() {
                     // Create entity from entity ID passed to user data
                     let mut sprite_entity = Entity::from_id(fetch_request.get_user_data());
                     // Get data
-                    let data = data.as_slice().as_ptr();
+                    let data_box = data.into_boxed_slice();
+                    let data_ptr = Box::into_raw(data_box);
                     // Create sokol sprite
-                    let sokol_sprite = SokolRenderer2D::create_sprite(data, size);
+                    let sokol_sprite = SokolRenderer2D::create_sprite(data_ptr as *const u8, size);
                     let sprite_width = sokol_sprite.width();
                     let sprite_height = sokol_sprite.height();
                     // Set size
@@ -224,7 +226,6 @@ pub fn init() {
                     if sprite_entity.has::<RenderableOnLoad>() {
                         rt_entity.add::<Renderable>();
                     }
-                    sprite_entity.add::<Loaded>();
                 }
                 d if d == DataType::BoneAnimationAtlas as u8 => {
                     let mut animation_entity = Entity::from_id(fetch_request.get_user_data());
@@ -306,10 +307,11 @@ pub fn init() {
                 },
                 d if d == DataType::Tileset as u8 => {
                     let mut tileset_entity = Entity::from_id(fetch_request.get_user_data());
-                    // Get data
-                    let data = data.as_slice().as_ptr();
-                    // Create sokol sprite
-                    let sokol_sprite = SokolRenderer2D::create_sprite(data, size);
+                    // Convert Vec into Box to keep the data alive while creating the sprite
+                    let data_box = data.into_boxed_slice();
+                    let data_ptr = Box::into_raw(data_box);
+                    // Create sokol sprite using the boxed data
+                    let sokol_sprite = SokolRenderer2D::create_sprite(data_ptr as *const u8, size);
                     // Set size
                     let size = tileset_entity.get::<Size>();
                     size.set_width(sokol_sprite.width());
