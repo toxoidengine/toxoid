@@ -68,7 +68,7 @@ fn handle_mouse_scroll(scroll_y: f32) {
     
     // Update zoom (negative scroll_y means zoom in)
     let current_zoom = camera.get_zoom();
-    let new_zoom = current_zoom * (1.0 - (scroll_y * zoom_speed));
+    let new_zoom = current_zoom * (1.0 - (-scroll_y * zoom_speed));
     
     // Clamp zoom to min/max values
     let clamped_zoom = new_zoom.clamp(camera.get_min_zoom(), camera.get_max_zoom());
