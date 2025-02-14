@@ -4,8 +4,9 @@ use crate::bindings::*;
 use crate::bindings_x86::*;
 use sokol::{app as sapp, gfx as sg, glue as sglue};
 use toxoid_render::{Renderer2D, RenderTarget, Sprite};
-use toxoid_api::{components::{Color, Position, Size, GameConfig}, World};
+use toxoid_api::{components::{Color, Position, Size, GameConfig, MainCamera, Camera}, World};
 use std::any::Any;
+use toxoid_api::*;
 
 pub struct SokolRenderer2D {
     pass_action: sg::PassAction,
@@ -150,9 +151,11 @@ impl Renderer2D for SokolRenderer2D {
         let game_width = game_config.get_game_width() as f32;
         let game_height = game_config.get_game_height() as f32;
 
-        // Calculate viewport position to center the game
-        let viewport_x = ((sapp::width() - window_width) / 2).max(0);
-        let viewport_y = ((sapp::height() - window_height) / 2).max(0);
+        // Get camera zoom
+        let main_camera = World::get_singleton::<MainCamera>();
+        let mut camera_entity = Entity::from_id(main_camera.get_entity());
+        let camera = camera_entity.get::<Camera>();
+        let zoom = camera.get_zoom();
 
         unsafe {
             // Clear entire window to pure black (for letterboxing)
@@ -163,11 +166,15 @@ impl Renderer2D for SokolRenderer2D {
             sgp_set_color(0.0, 0.0, 0.0, 1.0);
             sgp_clear();
             
-            // Set up game viewport with dark gray background
+            // Calculate viewport size and position accounting for zoom
+            let viewport_x = ((sapp::width() - window_width) / 2).max(0);
+            let viewport_y = ((sapp::height() - window_height) / 2).max(0);
+            
+            // Set up game viewport with zoomed projection
             sgp_viewport(viewport_x, viewport_y, window_width, window_height);
-            sgp_project(0.0, game_width, 0.0, game_height);
+            sgp_project(0.0, game_width / zoom, 0.0, game_height / zoom);
             sgp_reset_color();
-            sgp_set_color(0.1, 0.1, 0.1, 1.0);  // Dark gray for viewport
+            sgp_set_color(0.1, 0.1, 0.1, 1.0);
             sgp_clear();
             
             #[cfg(feature = "imgui")]

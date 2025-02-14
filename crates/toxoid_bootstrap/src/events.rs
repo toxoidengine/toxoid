@@ -58,6 +58,23 @@ fn key_down(key_code: Keycode) {
     }
 }
 
+fn handle_mouse_scroll(scroll_y: f32) {
+    let main_camera = World::get_singleton::<MainCamera>();
+    let mut camera_entity = Entity::from_id(main_camera.get_entity());
+    let camera = camera_entity.get::<Camera>();
+    
+    let game_config = World::get_singleton::<GameConfig>();
+    let zoom_speed = game_config.get_zoom_speed();
+    
+    // Update zoom (negative scroll_y means zoom in)
+    let current_zoom = camera.get_zoom();
+    let new_zoom = current_zoom * (1.0 - (scroll_y * zoom_speed));
+    
+    // Clamp zoom to min/max values
+    let clamped_zoom = new_zoom.clamp(camera.get_min_zoom(), camera.get_max_zoom());
+    camera.set_zoom(clamped_zoom);
+}
+
 #[no_mangle]
 pub extern "C" fn sokol_event(event: *const Event) {
     let event = unsafe { *event };
@@ -87,6 +104,9 @@ pub extern "C" fn sokol_event(event: *const Event) {
                 println!("Render size clamped to: {}x{} (window: {}x{})", 
                     clamped_width, clamped_height, window_width, window_height);
             }
+        },
+        EventType::MouseScroll => {
+            handle_mouse_scroll(event.scroll_y);
         },
         // EventType::MouseDown => {
         //     println!("Mouse down: {:?}", event.mouse_button);
