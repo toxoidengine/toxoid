@@ -124,14 +124,18 @@ component! {
         game_width: u32,
         game_height: u32,
         min_window_width: u32,
-        min_window_height: u32
+        min_window_height: u32,
+        default_zoom: f32,
+        zoom_speed: f32
     },
 
     // Camera components
     Camera {
         viewport_width: f32,
         viewport_height: f32,
-        zoom: f32
+        zoom: f32,
+        min_zoom: f32,
+        max_zoom: f32
     },
     // Add to singletons section
     MainCamera {

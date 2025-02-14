@@ -145,7 +145,7 @@ pub fn bone_animation_loaded(entity: &mut Entity) {
     // Create render target with scaled size
     let scale_factor = window_width as f32 / game_width as f32;
     // TODO: Make this configurable for animations
-    let rt_width = (150.0 * scale_factor) as u32;
+    let rt_width = (150.0 * scale_factor) as u32;  // Keep original size since we're zooming with camera
     let rt_height = (150.0 * scale_factor) as u32;
     let mut rt_entity = create_render_target(rt_width, rt_height);
     rt_entity.add::<Position>();  // Make sure Position component is added
