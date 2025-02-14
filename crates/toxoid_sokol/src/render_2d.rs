@@ -4,7 +4,6 @@ use crate::bindings::*;
 use crate::bindings_x86::*;
 use sokol::{app as sapp, gfx as sg, glue as sglue};
 use toxoid_render::{Renderer2D, RenderTarget, Sprite};
-use toxoid_api::{components::{Color, Position, Size, GameConfig, MainCamera, Camera}, World};
 use std::any::Any;
 use toxoid_api::*;
 
