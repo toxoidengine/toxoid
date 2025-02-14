@@ -226,6 +226,7 @@ pub fn init() {
                     if sprite_entity.has::<RenderableOnLoad>() {
                         rt_entity.add::<Renderable>();
                     }
+                    sprite_entity.add::<Loaded>();
                 }
                 d if d == DataType::BoneAnimationAtlas as u8 => {
                     let mut animation_entity = Entity::from_id(fetch_request.get_user_data());
