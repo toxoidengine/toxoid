@@ -126,12 +126,10 @@ pub fn bone_animation_loaded(entity: &mut Entity) {
         // The downside is that loading multiple images would take longer.
         let file_path = format!("assets/animations/{}", filename_c_str.to_str().unwrap());
         let file_path = file_path.as_str();
-        let mut image_entity = Entity::new(None);
+        let mut image_entity = load_bone_animation_image(file_path);
         image_entity.child_of_id(entity.get_id());
-        image_entity.add::<Image>();
-        let mut image = image_entity.get::<Image>();
+        let image = image_entity.get::<BoneAnimationImage>();
         image.set_info(Box::into_raw(Box::new(img_info)) as u64);
-        fetch(file_path, DataType::Image, Some(image_entity.get_id()));
     }
 
     let game_config = World::get_singleton::<GameConfig>();
@@ -178,14 +176,11 @@ pub fn init() {
             let data_type = fetch_request.get_data_type();
             let size = data.len() as usize;
             match data_type as u8 {
-                d if d == DataType::Image as u8 => {
-                    // Get image data
+                d if d == DataType::BoneAnimationImage as u8 => {
                     let mut image_entity = Entity::from_id(fetch_request.get_user_data());
-                    let image = image_entity.get::<Image>();
+                    let image = image_entity.get::<BoneAnimationImage>();
                     let img_info = image.get_info();
-                    let img_info = unsafe { Box::from_raw(img_info as *mut sspine_image_info) };
-                    // let img_info = unsafe { &*(img_info as *const sspine_image_info) };
-                    // let filename = unsafe { core::ffi::CStr::from_ptr(img_info.filename.cstr.as_ptr()) };
+                    let img_info = unsafe { &*(img_info as *const sspine_image_info) };
                     let data_box = data.into_boxed_slice();
                     let data_ptr = Box::into_raw(data_box);
                     // Initialize sokol-gfx image object
@@ -201,6 +196,32 @@ pub fn init() {
                         &img_info.filename.cstr as *const _ as *const i8
                     );
                 },
+                d if d == DataType::Image as u8 => {
+                    // Create entity from entity ID passed to user data
+                    let mut image_entity = Entity::from_id(fetch_request.get_user_data());
+                    // Get data
+                    let data_box = data.into_boxed_slice();
+                    let data_ptr = Box::into_raw(data_box);
+                    // Create sokol image
+                    let sokol_image = SokolRenderer2D::create_image(data_ptr as *const u8, size);
+                    let image_width = sokol_image.width();
+                    let image_height = sokol_image.height();
+                    // Set size
+                    let size = image_entity.get::<Size>();
+                    size.set_width(image_width);
+                    size.set_height(image_height);
+                    // Set image
+                    let image = image_entity.get::<toxoid_api::Image>();
+                    image.set_image(Box::into_raw(sokol_image) as *mut () as u64);
+                    // Create render target entity
+                    let mut rt_entity = create_render_target(image_width, image_height);
+                    image_entity.child_of_id(rt_entity.get_id());
+                    // Create renderable entity
+                    if image_entity.has::<RenderableOnLoad>() {
+                        rt_entity.add::<Renderable>();
+                    }
+                    image_entity.add::<Loaded>();
+                }
                 d if d == DataType::Sprite as u8 => {
                     // Create entity from entity ID passed to user data
                     let mut sprite_entity = Entity::from_id(fetch_request.get_user_data());
@@ -227,7 +248,7 @@ pub fn init() {
                         rt_entity.add::<Renderable>();
                     }
                     sprite_entity.add::<Loaded>();
-                }
+                },
                 d if d == DataType::BoneAnimationAtlas as u8 => {
                     let mut animation_entity = Entity::from_id(fetch_request.get_user_data());
                     let atlas = animation_entity.get::<Atlas>();
@@ -323,7 +344,7 @@ pub fn init() {
                     tileset_entity.add::<Blittable>();
                 },
                 _ => {
-                    unimplemented!();
+                    println!("File with unknown data type fetched: {:?}", data_type);
                 }
             }
 

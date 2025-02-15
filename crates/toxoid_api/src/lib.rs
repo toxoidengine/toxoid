@@ -773,6 +773,7 @@ pub enum DataType {
     Raw,
     Image,
     Sprite,
+    BoneAnimationImage,
     BoneAnimationAtlas,
     BoneAnimationSkeleton,
     Worldmap,
@@ -808,6 +809,20 @@ pub fn fetch(path: &str, data_type: DataType, user_data: Option<u64>) {
     entity.add::<Loading>();
     // println!("Fetch request data type: {}", fetch_request.get_data_type());
     // println!("Entity ID origin: {}", entity.get_id());
+}
+
+pub fn load_image(path: &str) -> Entity {
+    let mut entity = Entity::new(None);
+    entity.add::<Image>();
+    fetch(path, DataType::Image, Some(entity.get_id()));
+    entity
+}
+
+pub fn load_bone_animation_image(path: &str) -> Entity {
+    let mut entity = Entity::new(None);
+    entity.add::<BoneAnimationImage>();
+    fetch(path, DataType::BoneAnimationImage, Some(entity.get_id()));
+    entity
 }
 
 pub fn load_sprite(path: &str, rendered_on_load: bool) -> Entity {

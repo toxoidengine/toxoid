@@ -11,10 +11,16 @@ pub struct SokolRenderer2D {
     pass_action: sg::PassAction,
 }
 
+pub struct SokolImage {
+    pub width: u32,
+    pub height: u32,
+    pub image: sg::Image
+}
+
 pub struct SokolSprite {
     pub width: u32,
     pub height: u32,
-    pub image: sg::Image,
+    pub image: sg::Image
 }
 
 pub struct SokolRenderTarget {
@@ -51,6 +57,20 @@ fn wrap_from_c_int(value: u32) -> Option<sg::Wrap> {
         4 => Some(sg::Wrap::MirroredRepeat),
         5 => Some(sg::Wrap::Num),
         _ => None, // Return None for undefined integer values
+    }
+}
+
+impl toxoid_render::Image for SokolImage {
+    fn as_any(&self) -> &dyn Any {
+        self
+    }
+    
+    fn width(&self) -> u32 {
+        self.width
+    }
+    
+    fn height(&self) -> u32 {
+        self.height
     }
 }
 
@@ -305,6 +325,32 @@ impl Renderer2D for SokolRenderer2D {
         })
     }
 
+    fn create_image(data: *const u8, size: usize) -> Box<dyn toxoid_render::Image> {
+        let mut width: i32 = 0;
+        let mut height: i32 = 0;
+        let mut channels: i32 = 0;
+        let image_data = unsafe {
+            // Converts from PNG format to RGBA8 format
+            stbi_load_from_memory(data as *const u8, size as core::ffi::c_int, &mut width, &mut height, &mut channels, 0)
+        };
+        let image_desc = sg::ImageDesc {
+            width,
+            height,
+            pixel_format: sg::PixelFormat::Rgba8,
+            data: sg::ImageData {
+                subimage: [[sg::Range { ptr: image_data as *const core::ffi::c_void, size: (width * height * 4) as usize }; 16]; 6],
+                ..Default::default()
+            },
+            ..Default::default()
+        };
+        let image = sg::make_image(&image_desc);
+        Box::new(SokolImage {
+            width: width as u32,
+            height: height as u32,
+            image: sg::Image { id: image.id },
+        })
+    }
+    
     fn create_sprite(data: *const u8, size: usize) -> Box<dyn Sprite> {
         let mut width: i32 = 0;
         let mut height: i32 = 0;
