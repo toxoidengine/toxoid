@@ -31,7 +31,7 @@ component! {
         sprite: u64
     },
     Image {
-        info: u64
+        image: u64
     },
     // Fetch
     FetchRequest {
@@ -52,6 +52,9 @@ component! {
         filename: String,
         data: Vec::<u8>,
         loaded: bool,
+    },
+    BoneAnimationImage {
+        info: u64
     },
     Images {
         images: Vec::<u64>,
@@ -161,6 +164,7 @@ pub fn init() {
     Skeleton::register();
     Images::register();
     BoneAnimation::register();
+    BoneAnimationImage::register();
     SpineInstance::register();
     // Frame by Frame Animation
     FrameByFrameAnimation::register();

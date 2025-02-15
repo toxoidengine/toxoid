@@ -1,6 +1,12 @@
 use std::any::Any;
-use std::ffi::c_void;
-use toxoid_api::components::{Position, Size, Color};
+use toxoid_api::*;
+
+pub trait Image: Any {
+    // Define methods that all images should have
+    fn as_any(&self) -> &dyn Any;
+    fn width(&self) -> u32;
+    fn height(&self) -> u32;
+}
 
 pub trait Sprite: Any {
     // Define methods that all sprites should have
@@ -31,6 +37,8 @@ pub trait Renderer2D {
     fn window_size() -> (u32, u32);
     // Create render target that we can blit sprites on (Tilemaps for example)
     fn create_render_target(width: u32, height: u32) -> Box<dyn RenderTarget>;
+    // Create image
+    fn create_image(data: *const u8, size: usize) -> Box<dyn Image>;
     // Create sprite
     fn create_sprite(data: *const u8, size: usize) -> Box<dyn Sprite>;
     // Blit sprite (draw sprite on another base sprite)
