@@ -5,7 +5,7 @@ pub mod bindings;
 use bindings::exports::toxoid::engine::ecs::{EcsEntityT, GuestIter, GuestObserver, ObserverDesc, Phases, PointerT, Relationship};
 use bindings::exports::toxoid::engine::ecs::{self, ComponentDesc, EntityDesc, Guest, GuestCallback, GuestComponent, GuestComponentType, GuestEntity, GuestQuery, GuestSystem, GuestPhase, GuestPipeline, QueryDesc, SystemDesc, PipelineDesc, Event, SortingDesc};
 pub use toxoid_flecs::bindings::{ecs_add_id, ecs_entity_desc_t, ecs_entity_init, ecs_fini, ecs_get_mut_id, ecs_init, ecs_iter_t, ecs_lookup, ecs_make_pair, ecs_member_t, ecs_progress, ecs_query_desc_t, ecs_query_init, ecs_query_iter, ecs_query_next, ecs_iter_next, ecs_query_t, ecs_struct_desc_t, ecs_struct_init, ecs_system_desc_t, ecs_system_init, ecs_system_t, ecs_world_t, EcsDependsOn, EcsOnUpdate, ecs_set_rate, ecs_get_id, ecs_remove_id};
-use toxoid_flecs::{ecs_children, ecs_children_next, ecs_delete, ecs_enable, ecs_ensure_id, ecs_field_size, ecs_field_w_size, ecs_get_name, ecs_get_parent, ecs_get_path_w_sep, ecs_has_id, ecs_modified_id, ecs_new_w_id, ecs_observer_desc_t, ecs_observer_init, ecs_observer_t, ecs_pipeline_desc_t, ecs_pipeline_init, ecs_set_name, EcsChildOf, EcsInherit, EcsIsA, EcsOnInstantiate, EcsOnLoad, EcsOnStart, EcsOnStore, EcsOnValidate, EcsPhase, EcsPostLoad, EcsPostUpdate, EcsPreStore, EcsPreUpdate, EcsPrefab};
+use toxoid_flecs::{ecs_children, ecs_children_next, ecs_delete, ecs_enable, ecs_ensure_id, ecs_field_size, ecs_field_w_size, ecs_get_name, ecs_get_parent, ecs_get_path_w_sep, ecs_get_target, ecs_has_id, ecs_modified_id, ecs_new_w_id, ecs_observer_desc_t, ecs_observer_init, ecs_observer_t, ecs_pipeline_desc_t, ecs_pipeline_init, ecs_set_name, EcsChildOf, EcsInherit, EcsIsA, EcsOnInstantiate, EcsOnLoad, EcsOnStart, EcsOnStore, EcsOnValidate, EcsPhase, EcsPostLoad, EcsPostUpdate, EcsPreStore, EcsPreUpdate, EcsPrefab};
 use std::ffi::CStr;
 use std::{borrow::BorrowMut, mem::MaybeUninit};
 use core::ffi::c_void;
@@ -894,9 +894,21 @@ impl GuestEntity for Entity {
         }
     }
 
-    fn relationships(&self) -> Vec<EcsEntityT> {
-        // TODO: Needs Flecs filter
-        unimplemented!("Relationships not implemented");
+    fn relationship_entities(&self, relationship: Relationship) -> Vec<EcsEntityT> {
+        let mut relationships = Vec::new();
+        unsafe {
+            let mut index = 0;
+            let relationship_entity = match relationship {
+                Relationship::IsA => EcsIsA,
+                Relationship::ChildOf => EcsChildOf,
+                Relationship::Custom(entity) => entity
+            };
+            while ecs_get_target(WORLD.0, self.id, relationship_entity, index) > 0 {
+                relationships.push(ecs_get_target(WORLD.0, self.id, relationship_entity, index));
+                index += 1;
+            }
+        }
+        relationships
     }
 
     fn add_relationship(&self, relationship: Relationship, target: ecs_entity_t) {
@@ -1079,13 +1091,6 @@ impl GuestIter for Iter {
 
 pub static mut QUERY_TRAMPOLINE: Option<unsafe extern "C" fn(*mut ecs_iter_t)> = None;
 
-impl System {
-    pub fn named(&mut self, name: &str) {
-        let entity = self.entity.borrow();
-        unsafe { ecs_set_name(WORLD.0, *entity, c_string(name)) };
-    }
-}
-
 impl GuestSystem for System {
     fn new(desc: SystemDesc) -> System {
         // Create system entity
@@ -1119,6 +1124,11 @@ impl GuestSystem for System {
                 unsafe { MaybeUninit::zeroed().assume_init() }
             )
         }
+    }
+
+    fn named(&self, name: String) {
+        let entity = self.entity.borrow();
+        unsafe { ecs_set_name(WORLD.0, *entity, c_string(&name)) };
     }
     
     #[cfg(not(target_os = "emscripten"))]

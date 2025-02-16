@@ -303,18 +303,23 @@ impl Entity {
     }
 
     #[cfg(any(not(target_arch = "wasm32"), target_os = "emscripten"))]
-    pub fn relationships(&self) -> Vec<Entity> {
+    pub fn relationship_entities(&self, relationship: Relationship) -> Vec<Entity> {
         self
             .entity
-            .relationships()
+            .relationship_entities(relationship)
             .iter()
             .map(|relationship| Entity { entity: ToxoidEntity { id: *relationship } })
             .collect()
     }
 
     #[cfg(all(target_arch = "wasm32", not(target_os = "emscripten")))]
-    pub fn relationships(&self) -> Vec<Entity> {
-        return self.entity.relationships().iter().map(|relationship| Entity { entity: ToxoidEntity::from_id(relationship.get_id()) }).collect();
+    pub fn relationship_entities(&self, relationship: Relationship) -> Vec<Entity> {
+        self
+            .entity
+            .relationship_entities(relationship)
+            .iter()
+            .map(|relationship| Entity { entity: ToxoidEntity::from_id(relationship.get_id()) })
+            .collect()
     }
 
     pub fn disable(&mut self) {
@@ -497,6 +502,9 @@ impl System {
     }
 
     pub fn named(mut self, name: &str) -> Self {
+        #[cfg(any(not(target_arch = "wasm32"), target_os = "emscripten"))]
+        self.system.named(name.to_string());
+        #[cfg(all(target_arch = "wasm32", not(target_os = "emscripten")))]
         self.system.named(name);
         self
     }
