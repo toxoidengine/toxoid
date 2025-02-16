@@ -9,7 +9,6 @@ pub trait Guest {
 }
 #[doc(hidden)]
 #[macro_export]
-#[macro_export]
 macro_rules! __export_world_toxoid_component_world_cabi {
     ($ty:ident with_types_in $($path_to_types:tt)*) => {
         const _ : () = { #[export_name = "init"] unsafe extern "C" fn export_init() {
@@ -2430,40 +2429,48 @@ pub mod toxoid_component {
             }
             impl Entity {
                 #[allow(unused_unsafe, clippy::all)]
-                pub fn relationships(&self) -> _rt::Vec<Entity> {
+                pub fn relationship_entities(
+                    &self,
+                    relationship: Relationship,
+                ) -> _rt::Vec<Entity> {
                     unsafe {
                         #[repr(align(4))]
                         struct RetArea([::core::mem::MaybeUninit<u8>; 8]);
                         let mut ret_area = RetArea(
                             [::core::mem::MaybeUninit::uninit(); 8],
                         );
-                        let ptr0 = ret_area.0.as_mut_ptr().cast::<u8>();
+                        let (result0_0, result0_1) = match relationship {
+                            Relationship::IsA => (0i32, 0i64),
+                            Relationship::ChildOf => (1i32, 0i64),
+                            Relationship::Custom(e) => (2i32, _rt::as_i64(e)),
+                        };
+                        let ptr1 = ret_area.0.as_mut_ptr().cast::<u8>();
                         #[cfg(target_arch = "wasm32")]
                         #[link(wasm_import_module = "toxoid-component:component/ecs")]
                         extern "C" {
-                            #[link_name = "[method]entity.relationships"]
-                            fn wit_import(_: i32, _: *mut u8);
+                            #[link_name = "[method]entity.relationship-entities"]
+                            fn wit_import(_: i32, _: i32, _: i64, _: *mut u8);
                         }
                         #[cfg(not(target_arch = "wasm32"))]
-                        fn wit_import(_: i32, _: *mut u8) {
+                        fn wit_import(_: i32, _: i32, _: i64, _: *mut u8) {
                             unreachable!()
                         }
-                        wit_import((self).handle() as i32, ptr0);
-                        let l1 = *ptr0.add(0).cast::<*mut u8>();
-                        let l2 = *ptr0.add(4).cast::<usize>();
-                        let base4 = l1;
-                        let len4 = l2;
-                        let mut result4 = _rt::Vec::with_capacity(len4);
-                        for i in 0..len4 {
-                            let base = base4.add(i * 4);
-                            let e4 = {
-                                let l3 = *base.add(0).cast::<i32>();
-                                Entity::from_handle(l3 as u32)
+                        wit_import((self).handle() as i32, result0_0, result0_1, ptr1);
+                        let l2 = *ptr1.add(0).cast::<*mut u8>();
+                        let l3 = *ptr1.add(4).cast::<usize>();
+                        let base5 = l2;
+                        let len5 = l3;
+                        let mut result5 = _rt::Vec::with_capacity(len5);
+                        for i in 0..len5 {
+                            let base = base5.add(i * 4);
+                            let e5 = {
+                                let l4 = *base.add(0).cast::<i32>();
+                                Entity::from_handle(l4 as u32)
                             };
-                            result4.push(e4);
+                            result5.push(e5);
                         }
-                        _rt::cabi_dealloc(base4, len4 * 4, 4);
-                        result4
+                        _rt::cabi_dealloc(base5, len5 * 4, 4);
+                        result5
                     }
                 }
             }
@@ -2982,6 +2989,27 @@ pub mod toxoid_component {
                             unreachable!()
                         }
                         wit_import((self).handle() as i32);
+                    }
+                }
+            }
+            impl System {
+                #[allow(unused_unsafe, clippy::all)]
+                pub fn named(&self, name: &str) {
+                    unsafe {
+                        let vec0 = name;
+                        let ptr0 = vec0.as_ptr().cast::<u8>();
+                        let len0 = vec0.len();
+                        #[cfg(target_arch = "wasm32")]
+                        #[link(wasm_import_module = "toxoid-component:component/ecs")]
+                        extern "C" {
+                            #[link_name = "[method]system.named"]
+                            fn wit_import(_: i32, _: *mut u8, _: usize);
+                        }
+                        #[cfg(not(target_arch = "wasm32"))]
+                        fn wit_import(_: i32, _: *mut u8, _: usize) {
+                            unreachable!()
+                        }
+                        wit_import((self).handle() as i32, ptr0.cast_mut(), len0);
                     }
                 }
             }
@@ -3568,7 +3596,6 @@ pub mod exports {
                 }
                 #[doc(hidden)]
                 #[macro_export]
-#[macro_export]
 macro_rules! __export_toxoid_component_component_callbacks_cabi {
                     ($ty:ident with_types_in $($path_to_types:tt)*) => {
                         const _ : () = { #[export_name =
@@ -3844,9 +3871,9 @@ pub use __export_toxoid_component_world_impl as export;
 #[cfg(target_arch = "wasm32")]
 #[link_section = "component-type:wit-bindgen:0.35.0:toxoid-component:component:toxoid-component-world:encoded world"]
 #[doc(hidden)]
-pub static __WIT_BINDGEN_COMPONENT_TYPE: [u8; 6778] = *b"\
-\0asm\x0d\0\x01\0\0\x19\x16wit-component-encoding\x04\0\x07\xed3\x01A\x02\x01A\x07\
-\x01B\x9a\x02\x01w\x04\0\x0cecs-entity-t\x03\0\0\x01w\x04\0\x09pointer-t\x03\0\x02\
+pub static __WIT_BINDGEN_COMPONENT_TYPE: [u8; 6857] = *b"\
+\0asm\x0d\0\x01\0\0\x19\x16wit-component-encoding\x04\0\x07\xbc4\x01A\x02\x01A\x07\
+\x01B\x9d\x02\x01w\x04\0\x0cecs-entity-t\x03\0\0\x01w\x04\0\x09pointer-t\x03\0\x02\
 \x01q\x03\x04is-a\0\0\x08child-of\0\0\x06custom\x01\x01\0\x04\0\x0crelationship\x03\
 \0\x04\x01q\x0a\x08on-start\0\0\x07on-load\0\0\x09post-load\0\0\x0apre-update\0\0\
 \x09on-update\0\0\x0bon-validate\0\0\x0bpost-update\0\0\x09pre-store\0\0\x08on-s\
@@ -3934,52 +3961,54 @@ arget\x01\x01\0\x04\0\x1f[method]entity.add-relationship\x01t\x04\0\"[method]ent
 ity.remove-relationship\x01t\x01@\x02\x04self\xed\0\x06target\x01\x01\0\x04\0\x18\
 [method]entity.parent-of\x01u\x04\0\x17[method]entity.child-of\x01u\x01@\x01\x04\
 self\xed\0\0\xea\0\x04\0\x15[method]entity.parent\x01v\x01p\xea\0\x01@\x01\x04se\
-lf\xed\0\0\xf7\0\x04\0\x17[method]entity.children\x01x\x04\0\x1c[method]entity.r\
-elationships\x01x\x01@\x01\x04self\xed\0\x01\0\x04\0\x16[method]entity.disable\x01\
-y\x04\0\x15[method]entity.enable\x01y\x01i\x1c\x01@\x01\x04desc\x16\0\xfa\0\x04\0\
-\x12[constructor]query\x01{\x01h\x1c\x01@\x01\x04self\xfc\0\x01\0\x04\0\x13[meth\
-od]query.build\x01}\x01@\x02\x04self\xfc\0\x07sorting!\x01\0\x04\0\x16[method]qu\
-ery.order-by\x01~\x01i\x1d\x01@\x01\x04self\xfc\0\0\xff\0\x04\0\x12[method]query\
-.iter\x01\x80\x01\x01@\x01\x04self\xfc\0\0\x7f\x04\0\x12[method]query.next\x01\x81\
-\x01\x01@\x01\x04self\xfc\0\0z\x04\0\x13[method]query.count\x01\x82\x01\x01@\x01\
-\x04self\xfc\0\0\xf7\0\x04\0\x16[method]query.entities\x01\x83\x01\x01p\x03\x01@\
-\x02\x04self\xfc\0\x05index~\0\x84\x01\x04\0\x18[method]query.components\x01\x85\
-\x01\x01@\x01\x03ptrw\0\xff\0\x04\0\x11[constructor]iter\x01\x86\x01\x01h\x1d\x01\
-@\x01\x04self\x87\x01\0\x7f\x04\0\x11[method]iter.next\x01\x88\x01\x01@\x01\x04s\
-elf\x87\x01\0z\x04\0\x12[method]iter.count\x01\x89\x01\x01@\x01\x04self\x87\x01\0\
-\xf7\0\x04\0\x15[method]iter.entities\x01\x8a\x01\x01@\x02\x04self\x87\x01\x05in\
-dex~\0\x84\x01\x04\0\x17[method]iter.components\x01\x8b\x01\x01@\x01\x06handlew\0\
-\x1f\x04\0\x15[constructor]callback\x01\x8c\x01\x01h\x1e\x01@\x02\x04self\x8d\x01\
-\x04iter\xff\0\x01\0\x04\0\x14[method]callback.run\x01\x8e\x01\x01@\x01\x04self\x8d\
-\x01\0\x03\x04\0\x1a[method]callback.cb-handle\x01\x8f\x01\x01i(\x01@\x01\x04des\
-c$\0\x90\x01\x04\0\x13[constructor]system\x01\x91\x01\x01h(\x01@\x01\x04self\x92\
-\x01\0\x01\x04\0\x15[method]system.get-id\x01\x93\x01\x01@\x01\x04self\x92\x01\x01\
-\0\x04\0\x14[method]system.build\x01\x94\x01\x01@\x02\x04self\x92\x01\x07sorting\
-!\x01\0\x04\0\x17[method]system.order-by\x01\x95\x01\x01@\x01\x04self\x92\x01\0\x1f\
-\x04\0\x17[method]system.callback\x01\x96\x01\x04\0\x16[method]system.disable\x01\
-\x94\x01\x04\0\x15[method]system.enable\x01\x94\x01\x01i)\x01@\x01\x04names\0\x97\
-\x01\x04\0\x12[constructor]phase\x01\x98\x01\x01h)\x01@\x02\x04self\x99\x01\x05p\
-hase\x07\x01\0\x04\0\x18[method]phase.depends-on\x01\x9a\x01\x01@\x01\x04self\x99\
-\x01\0\x01\x04\0\x14[method]phase.get-id\x01\x9b\x01\x01i*\x01@\x01\x04desc\x19\0\
-\x9c\x01\x04\0\x15[constructor]pipeline\x01\x9d\x01\x01h*\x01@\x01\x04self\x9e\x01\
-\x01\0\x04\0\x16[method]pipeline.build\x01\x9f\x01\x01@\x02\x04self\x9e\x01\x05p\
-hase\x01\x01\0\x04\0\x1a[method]pipeline.add-phase\x01\xa0\x01\x01@\x01\x04self\x9e\
-\x01\0\x01\x04\0\x17[method]pipeline.get-id\x01\xa1\x01\x04\0\x18[method]pipelin\
-e.disable\x01\x9f\x01\x04\0\x17[method]pipeline.enable\x01\x9f\x01\x01i+\x01@\x01\
-\x04desc'\0\xa2\x01\x04\0\x15[constructor]observer\x01\xa3\x01\x01h+\x01@\x01\x04\
-self\xa4\x01\x01\0\x04\0\x16[method]observer.build\x01\xa5\x01\x01@\x01\x04self\xa4\
-\x01\0\x1f\x04\0\x19[method]observer.callback\x01\xa6\x01\x01@\x01\x09component\x01\
-\x01\0\x04\0\x0dadd-singleton\x01\xa7\x01\x01@\x01\x09component\x01\00\x04\0\x0d\
-get-singleton\x01\xa8\x01\x04\0\x10remove-singleton\x01\xa7\x01\x01@\x01\x06enti\
-ty\x01\x01\0\x04\0\x0aadd-entity\x01\xa9\x01\x04\0\x0dremove-entity\x01\xa9\x01\x01\
-@\x01\x04names\0\x7f\x04\0\x10has-entity-named\x01\xaa\x01\x01@\x01\x0ecomponent\
--names\0\x01\x04\0\x10get-component-id\x01\xab\x01\x03\0\x1etoxoid-component:com\
-ponent/ecs\x05\0\x01@\0\x01\0\x04\0\x04init\x01\x01\x02\x03\0\0\x04iter\x01B\x05\
-\x02\x03\x02\x01\x02\x04\0\x04iter\x03\0\0\x01i\x01\x01@\x02\x04iter\x02\x06hand\
-lew\x01\0\x04\0\x03run\x01\x03\x04\0$toxoid-component:component/callbacks\x05\x03\
-\x04\01toxoid-component:component/toxoid-component-world\x04\0\x0b\x1c\x01\0\x16\
-toxoid-component-world\x03\0\0\0G\x09producers\x01\x0cprocessed-by\x02\x0dwit-co\
-mponent\x070.220.0\x10wit-bindgen-rust\x060.35.0";
+lf\xed\0\0\xf7\0\x04\0\x17[method]entity.children\x01x\x01@\x02\x04self\xed\0\x0c\
+relationship\x05\0\xf7\0\x04\0$[method]entity.relationship-entities\x01y\x01@\x01\
+\x04self\xed\0\x01\0\x04\0\x16[method]entity.disable\x01z\x04\0\x15[method]entit\
+y.enable\x01z\x01i\x1c\x01@\x01\x04desc\x16\0\xfb\0\x04\0\x12[constructor]query\x01\
+|\x01h\x1c\x01@\x01\x04self\xfd\0\x01\0\x04\0\x13[method]query.build\x01~\x01@\x02\
+\x04self\xfd\0\x07sorting!\x01\0\x04\0\x16[method]query.order-by\x01\x7f\x01i\x1d\
+\x01@\x01\x04self\xfd\0\0\x80\x01\x04\0\x12[method]query.iter\x01\x81\x01\x01@\x01\
+\x04self\xfd\0\0\x7f\x04\0\x12[method]query.next\x01\x82\x01\x01@\x01\x04self\xfd\
+\0\0z\x04\0\x13[method]query.count\x01\x83\x01\x01@\x01\x04self\xfd\0\0\xf7\0\x04\
+\0\x16[method]query.entities\x01\x84\x01\x01p\x03\x01@\x02\x04self\xfd\0\x05inde\
+x~\0\x85\x01\x04\0\x18[method]query.components\x01\x86\x01\x01@\x01\x03ptrw\0\x80\
+\x01\x04\0\x11[constructor]iter\x01\x87\x01\x01h\x1d\x01@\x01\x04self\x88\x01\0\x7f\
+\x04\0\x11[method]iter.next\x01\x89\x01\x01@\x01\x04self\x88\x01\0z\x04\0\x12[me\
+thod]iter.count\x01\x8a\x01\x01@\x01\x04self\x88\x01\0\xf7\0\x04\0\x15[method]it\
+er.entities\x01\x8b\x01\x01@\x02\x04self\x88\x01\x05index~\0\x85\x01\x04\0\x17[m\
+ethod]iter.components\x01\x8c\x01\x01@\x01\x06handlew\0\x1f\x04\0\x15[constructo\
+r]callback\x01\x8d\x01\x01h\x1e\x01@\x02\x04self\x8e\x01\x04iter\x80\x01\x01\0\x04\
+\0\x14[method]callback.run\x01\x8f\x01\x01@\x01\x04self\x8e\x01\0\x03\x04\0\x1a[\
+method]callback.cb-handle\x01\x90\x01\x01i(\x01@\x01\x04desc$\0\x91\x01\x04\0\x13\
+[constructor]system\x01\x92\x01\x01h(\x01@\x01\x04self\x93\x01\0\x01\x04\0\x15[m\
+ethod]system.get-id\x01\x94\x01\x01@\x01\x04self\x93\x01\x01\0\x04\0\x14[method]\
+system.build\x01\x95\x01\x01@\x02\x04self\x93\x01\x04names\x01\0\x04\0\x14[metho\
+d]system.named\x01\x96\x01\x01@\x02\x04self\x93\x01\x07sorting!\x01\0\x04\0\x17[\
+method]system.order-by\x01\x97\x01\x01@\x01\x04self\x93\x01\0\x1f\x04\0\x17[meth\
+od]system.callback\x01\x98\x01\x04\0\x16[method]system.disable\x01\x95\x01\x04\0\
+\x15[method]system.enable\x01\x95\x01\x01i)\x01@\x01\x04names\0\x99\x01\x04\0\x12\
+[constructor]phase\x01\x9a\x01\x01h)\x01@\x02\x04self\x9b\x01\x05phase\x07\x01\0\
+\x04\0\x18[method]phase.depends-on\x01\x9c\x01\x01@\x01\x04self\x9b\x01\0\x01\x04\
+\0\x14[method]phase.get-id\x01\x9d\x01\x01i*\x01@\x01\x04desc\x19\0\x9e\x01\x04\0\
+\x15[constructor]pipeline\x01\x9f\x01\x01h*\x01@\x01\x04self\xa0\x01\x01\0\x04\0\
+\x16[method]pipeline.build\x01\xa1\x01\x01@\x02\x04self\xa0\x01\x05phase\x01\x01\
+\0\x04\0\x1a[method]pipeline.add-phase\x01\xa2\x01\x01@\x01\x04self\xa0\x01\0\x01\
+\x04\0\x17[method]pipeline.get-id\x01\xa3\x01\x04\0\x18[method]pipeline.disable\x01\
+\xa1\x01\x04\0\x17[method]pipeline.enable\x01\xa1\x01\x01i+\x01@\x01\x04desc'\0\xa4\
+\x01\x04\0\x15[constructor]observer\x01\xa5\x01\x01h+\x01@\x01\x04self\xa6\x01\x01\
+\0\x04\0\x16[method]observer.build\x01\xa7\x01\x01@\x01\x04self\xa6\x01\0\x1f\x04\
+\0\x19[method]observer.callback\x01\xa8\x01\x01@\x01\x09component\x01\x01\0\x04\0\
+\x0dadd-singleton\x01\xa9\x01\x01@\x01\x09component\x01\00\x04\0\x0dget-singleto\
+n\x01\xaa\x01\x04\0\x10remove-singleton\x01\xa9\x01\x01@\x01\x06entity\x01\x01\0\
+\x04\0\x0aadd-entity\x01\xab\x01\x04\0\x0dremove-entity\x01\xab\x01\x01@\x01\x04\
+names\0\x7f\x04\0\x10has-entity-named\x01\xac\x01\x01@\x01\x0ecomponent-names\0\x01\
+\x04\0\x10get-component-id\x01\xad\x01\x03\0\x1etoxoid-component:component/ecs\x05\
+\0\x01@\0\x01\0\x04\0\x04init\x01\x01\x02\x03\0\0\x04iter\x01B\x05\x02\x03\x02\x01\
+\x02\x04\0\x04iter\x03\0\0\x01i\x01\x01@\x02\x04iter\x02\x06handlew\x01\0\x04\0\x03\
+run\x01\x03\x04\0$toxoid-component:component/callbacks\x05\x03\x04\01toxoid-comp\
+onent:component/toxoid-component-world\x04\0\x0b\x1c\x01\0\x16toxoid-component-w\
+orld\x03\0\0\0G\x09producers\x01\x0cprocessed-by\x02\x0dwit-component\x070.220.0\
+\x10wit-bindgen-rust\x060.35.0";
 #[inline(never)]
 #[doc(hidden)]
 pub fn __link_custom_section_describing_imports() {
