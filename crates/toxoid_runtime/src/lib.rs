@@ -261,6 +261,13 @@ impl toxoid_component::component::ecs::HostSystem for StoreState {
         id
     }
 
+    fn named(&mut self, system: Resource<toxoid_component::component::ecs::System>, name: String) -> () {
+        let system_proxy = self.table.get(&system).unwrap() as &SystemProxy;
+        let mut system = unsafe { Box::from_raw(system_proxy.ptr) };
+        system.as_mut().named(name);
+        Box::into_raw(system);
+    }
+
     fn get_id(&mut self, system: Resource<toxoid_component::component::ecs::System>) -> u64 {
         let system_proxy = self.table.get(&system).unwrap() as &SystemProxy;
         let system = unsafe { Box::from_raw(system_proxy.ptr) };
@@ -517,10 +524,15 @@ impl toxoid_component::component::ecs::HostEntity for StoreState {
         children.iter().map(|child| self.from_id(*child)).collect()
     }
 
-    fn relationships(&mut self, entity: Resource<toxoid_component::component::ecs::Entity>) -> Vec<Resource<EntityProxy>> {
+    fn relationship_entities(&mut self, entity: Resource<toxoid_component::component::ecs::Entity>, relationship: toxoid_component::component::ecs::Relationship) -> Vec<Resource<EntityProxy>> {
         let entity_proxy = self.table.get(&entity).unwrap() as &EntityProxy;
         let entity = unsafe { Box::from_raw(entity_proxy.ptr) };
-        let relationships = entity.relationships();
+        let relationship = match relationship {
+            toxoid_component::component::ecs::Relationship::IsA => toxoid_api::Relationship::IsA,
+            toxoid_component::component::ecs::Relationship::ChildOf => toxoid_api::Relationship::ChildOf,
+            toxoid_component::component::ecs::Relationship::Custom(entity) => toxoid_api::Relationship::Custom(entity)
+        };
+        let relationships = entity.relationship_entities(relationship);
         Box::into_raw(entity);
         relationships.iter().map(|relationship| self.from_id(*relationship)).collect()
     }

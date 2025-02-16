@@ -183,7 +183,7 @@ interface ecs {
         child-of: func(target: ecs-entity-t);
         parent: func() -> ecs-entity-t;
         children: func() -> list<ecs-entity-t>;
-        relationships: func() -> list<ecs-entity-t>;
+        relationship-entities: func(relationship: relationship) -> list<ecs-entity-t>;
         disable: func();
         enable: func();
     }
@@ -218,6 +218,7 @@ interface ecs {
         constructor(desc: system-desc);
         get-id: func() -> ecs-entity-t;
         build: func();
+        named: func(name: string);
         order-by: func(desc: sorting-desc);
         callback: func() -> pointer-t;
         disable: func();
