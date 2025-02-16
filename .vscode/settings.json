@@ -1,0 +1,15 @@
+{
+    "rust-analyzer.check.overrideCommand": [
+        "cargo",
+        "component",
+        "check",
+        "--workspace",
+        "--all-targets",
+        "--message-format=json"
+    ],
+    "files.associations": {
+        "sokol_log.h": "c"
+    },
+    // "rust-analyzer.cargo.target": "wasm32-wasip1"
+    // "rust-analyzer.cargo.target": "wasm32-unknown-unknown"
+}
