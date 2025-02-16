@@ -1,0 +1,17 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+      {
+        "type": "lldb",
+        "request": "launch",
+        "name": "Debug Rust",
+        "program": "${workspaceFolder}/target/debug/host",
+        "args": [],
+        "cwd": "${workspaceFolder}",
+        "stopAtEntry": false,
+        "terminal": "integrated",
+        "console": "internalConsole",
+        "sourceLanguages": ["rust"]
+      }
+    ]
+  }

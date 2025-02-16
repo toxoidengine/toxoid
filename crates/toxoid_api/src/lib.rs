@@ -473,11 +473,7 @@ impl System {
         // Create the Toxoid callback with the registered callback handle
         let callback = ToxoidCallback::new(callback.cb_handle());
         let desc = SystemDesc { 
-            // TODO: Only do this in dev mode with hot reload enabled
-            // TODO: Map something other than the query string to the system name
-            // so that multiple systems can have the same query on
-            // hot reload
-            name: Some(dsl.to_string()), 
+            name: Some("".to_string()), 
             callback, 
             is_guest: true, 
             query_desc: QueryDesc { expr: dsl.to_string() },
@@ -491,11 +487,7 @@ impl System {
         // Register the callback in the guest environment
         let callback = Callback::new(callback_fn);
         let desc = SystemDesc { 
-            // TODO: Only do this in dev mode with hot reload enabled
-            // TODO: Map something other than the query string to the system name
-            // so that multiple systems can have the same query on
-            // hot reload
-            name: Some(dsl.to_string()), 
+            name: Some("".to_string()), 
             callback: callback.cb_handle(), 
             query_desc: QueryDesc { expr: dsl.to_string() }, 
             is_guest: false,
@@ -504,22 +496,30 @@ impl System {
         Self { system: ToxoidSystem::new(desc) }
     }
 
-    pub fn build(&mut self) {
+    pub fn named(mut self, name: &str) -> Self {
+        self.system.named(name);
+        self
+    }
+
+    pub fn build(mut self) -> Self {
         self.system.build();
+        self
     }
 
     // TODO: Use query trampoline instead of C functions directlyand use callback resource to make this work on WASM.
     #[cfg(not(target_os = "emscripten"))]
-    pub fn order_by(&mut self, id: EcsEntityT, callback: unsafe extern "C" fn(u64, *const std::ffi::c_void, u64, *const std::ffi::c_void) -> i32) {
+    pub fn order_by(mut self, id: EcsEntityT, callback: unsafe extern "C" fn(u64, *const std::ffi::c_void, u64, *const std::ffi::c_void) -> i32) -> Self {
         let sorting = SortingDesc { id, callback: unsafe { std::mem::transmute(callback) } };
         self.system.order_by(sorting);
+        self
     }
 
     #[cfg(target_os = "emscripten")]
-    pub fn order_by(&mut self, id: EcsEntityT, callback: unsafe extern "C" fn(u64, *const std::ffi::c_void, u64, *const std::ffi::c_void) -> i32) {
+    pub fn order_by(mut self, id: EcsEntityT, callback: unsafe extern "C" fn(u64, *const std::ffi::c_void, u64, *const std::ffi::c_void) -> i32) -> Self {
         let callback_ptr: u32 = unsafe { std::mem::transmute(callback as u32) };
         let sorting = SortingDesc { id, callback: callback_ptr as u64 };
         self.system.order_by(sorting);
+        self
     }
 
     pub fn disable(&mut self) {

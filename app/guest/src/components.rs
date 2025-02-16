@@ -2,30 +2,46 @@
 use toxoid_api::*;
 
 component! {
-    TestChild {
+    // TestChild {
+    //     test: String,
+    // },
+    // TestParent {
+    //     test: String,
+    // },
+    // TestGrandParent {
+    //     test: String,
+    // },
+    TestComponent {
         test: String,
     },
-    TestParent {
-        test: String,
+    TestRelated {
+        related: u64,
     },
-    TestGrandParent {
-        test: String,
-    },
+    TestRelationship {}
 }
 
 pub fn init() {
     println!("Components initialized");
-    TestChild::register();
-    TestParent::register();
-    TestGrandParent::register();
+   
+    TestComponent::register();
+    TestRelated::register();
+    TestRelationship::register();
 
-    let mut test_child = Entity::new(None);
-    test_child.add::<TestChild>();
-    let mut test_parent = Entity::new(None);
-    test_parent.add::<TestParent>();
-    let mut test_grand_parent = Entity::new(None);
-    test_grand_parent.add::<TestGrandParent>();
+    let mut test_component = Entity::new(None);
+    test_component.add::<TestComponent>();
 
-    test_child.child_of_id(test_parent.get_id());
-    test_parent.child_of_id(test_grand_parent.get_id());
+    let mut test_related = Entity::new(None);
+    test_related.add::<TestRelated>();
+
+    let mut entity = Entity::new(None);
+    entity.add::<TestComponent>();
+    let mut entity_2 = Entity::new(None);
+    entity_2.add::<TestRelated>();
+    entity_2.add_relationship(Relationship::Custom(TestRelationship::get_id()), entity);
+
+    System::dsl("(TestRelationship, *)", None, |_iter| {
+        println!("Hello world!");
+    })
+        .named("TestSystem")
+        .build();
 }

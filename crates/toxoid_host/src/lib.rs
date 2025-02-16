@@ -906,7 +906,7 @@ impl GuestEntity for Entity {
                 Relationship::ChildOf => EcsChildOf,
                 Relationship::Custom(entity) => entity
             };
-            let pair = ecs_make_pair(EcsChildOf, target);
+            let pair = ecs_make_pair(relationship_entity, target);
             ecs_add_id(WORLD.0, self.id, pair); 
         };
     }
@@ -1078,6 +1078,13 @@ impl GuestIter for Iter {
 }
 
 pub static mut QUERY_TRAMPOLINE: Option<unsafe extern "C" fn(*mut ecs_iter_t)> = None;
+
+impl System {
+    pub fn named(&mut self, name: &str) {
+        let entity = self.entity.borrow();
+        unsafe { ecs_set_name(WORLD.0, *entity, c_string(name)) };
+    }
+}
 
 impl GuestSystem for System {
     fn new(desc: SystemDesc) -> System {

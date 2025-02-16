@@ -293,27 +293,27 @@ pub fn draw_render_targets_system(iter: &Iter) {
 // Systems that draw render targets to the screen as a final output
 pub fn draw_systems(render_systems_entity: &mut Entity) {
     // Draw Render Targets
-    let mut system = System::dsl("RenderTarget, Renderable, Size, Position, BlendMode", None, draw_render_targets_system);
-    system.order_by(RenderTarget::get_id(), draw_render_target_sort);
-    system.build();
+    let system = System::dsl("RenderTarget, Renderable, Size, Position, BlendMode", None, draw_render_targets_system)
+        .order_by(RenderTarget::get_id(), draw_render_target_sort)
+        .build();
     render_systems_entity.parent_of_id(system.get_id());
 }
 
 // Systems that blit render targets
 pub fn blit_systems(render_systems_entity: &mut Entity) {
     // Blit cell to render target
-    let mut system = System::dsl("TiledCell, Blittable, Size", None, blit_cell_system);
-    system.build();
+    let system = System::dsl("TiledCell, Blittable, Size", None, blit_cell_system)
+        .build();
     render_systems_entity.parent_of_id(system.get_id());
 
     // Bone Animation Renderer
-    let mut system = System::dsl("SpineInstance, Position, Blittable", None, blit_bone_animation_system);
-    system.build();
+    let system = System::dsl("SpineInstance, Position, Blittable", None, blit_bone_animation_system)
+        .build();
     render_systems_entity.parent_of_id(system.get_id());
 
     // Blit sprite to render target
-    let mut system = System::dsl("Sprite, Blittable, Size, (ChildOf, $Parent), RenderTarget($Parent), Size($Parent)", None, blit_sprite_system);
-    system.build();
+    let system = System::dsl("Sprite, Blittable, Size, (ChildOf, $Parent), RenderTarget($Parent), Size($Parent)", None, blit_sprite_system)
+        .build();
     render_systems_entity.parent_of_id(system.get_id());
 
     // // Rect Renderer
