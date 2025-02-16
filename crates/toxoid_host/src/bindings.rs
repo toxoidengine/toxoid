@@ -2715,27 +2715,37 @@ pub mod exports {
                 }
                 #[doc(hidden)]
                 #[allow(non_snake_case)]
-                pub unsafe fn _export_method_entity_relationships_cabi<T: GuestEntity>(
-                    arg0: *mut u8,
-                ) -> *mut u8 {
+                pub unsafe fn _export_method_entity_relationship_entities_cabi<
+                    T: GuestEntity,
+                >(arg0: *mut u8, arg1: i32, arg2: i64) -> *mut u8 {
                     #[cfg(target_arch = "wasm32")] _rt::run_ctors_once();
-                    let result0 = T::relationships(
+                    let v0 = match arg1 {
+                        0 => Relationship::IsA,
+                        1 => Relationship::ChildOf,
+                        n => {
+                            debug_assert_eq!(n, 2, "invalid enum discriminant");
+                            let e0 = arg2 as u64;
+                            Relationship::Custom(e0)
+                        }
+                    };
+                    let result1 = T::relationship_entities(
                         EntityBorrow::lift(arg0 as u32 as usize).get(),
+                        v0,
                     );
-                    let ptr1 = _RET_AREA.0.as_mut_ptr().cast::<u8>();
-                    let vec2 = (result0).into_boxed_slice();
-                    let ptr2 = vec2.as_ptr().cast::<u8>();
-                    let len2 = vec2.len();
-                    ::core::mem::forget(vec2);
-                    *ptr1.add(4).cast::<usize>() = len2;
-                    *ptr1.add(0).cast::<*mut u8>() = ptr2.cast_mut();
-                    ptr1
+                    let ptr2 = _RET_AREA.0.as_mut_ptr().cast::<u8>();
+                    let vec3 = (result1).into_boxed_slice();
+                    let ptr3 = vec3.as_ptr().cast::<u8>();
+                    let len3 = vec3.len();
+                    ::core::mem::forget(vec3);
+                    *ptr2.add(4).cast::<usize>() = len3;
+                    *ptr2.add(0).cast::<*mut u8>() = ptr3.cast_mut();
+                    ptr2
                 }
                 #[doc(hidden)]
                 #[allow(non_snake_case)]
-                pub unsafe fn __post_return_method_entity_relationships<T: GuestEntity>(
-                    arg0: *mut u8,
-                ) {
+                pub unsafe fn __post_return_method_entity_relationship_entities<
+                    T: GuestEntity,
+                >(arg0: *mut u8) {
                     let l0 = *arg0.add(0).cast::<*mut u8>();
                     let l1 = *arg0.add(4).cast::<usize>();
                     let base2 = l0;
@@ -3081,6 +3091,21 @@ pub mod exports {
                 ) {
                     #[cfg(target_arch = "wasm32")] _rt::run_ctors_once();
                     T::build(SystemBorrow::lift(arg0 as u32 as usize).get());
+                }
+                #[doc(hidden)]
+                #[allow(non_snake_case)]
+                pub unsafe fn _export_method_system_named_cabi<T: GuestSystem>(
+                    arg0: *mut u8,
+                    arg1: *mut u8,
+                    arg2: usize,
+                ) {
+                    #[cfg(target_arch = "wasm32")] _rt::run_ctors_once();
+                    let len0 = arg2;
+                    let bytes0 = _rt::Vec::from_raw_parts(arg1.cast(), len0, len0);
+                    T::named(
+                        SystemBorrow::lift(arg0 as u32 as usize).get(),
+                        _rt::string_lift(bytes0),
+                    );
                 }
                 #[doc(hidden)]
                 #[allow(non_snake_case)]
@@ -3606,7 +3631,10 @@ pub mod exports {
                     fn child_of(&self, target: EcsEntityT);
                     fn parent(&self) -> EcsEntityT;
                     fn children(&self) -> _rt::Vec<EcsEntityT>;
-                    fn relationships(&self) -> _rt::Vec<EcsEntityT>;
+                    fn relationship_entities(
+                        &self,
+                        relationship: Relationship,
+                    ) -> _rt::Vec<EcsEntityT>;
                     fn disable(&self);
                     fn enable(&self);
                 }
@@ -3797,6 +3825,7 @@ pub mod exports {
                     fn new(desc: SystemDesc) -> Self;
                     fn get_id(&self) -> EcsEntityT;
                     fn build(&self);
+                    fn named(&self, name: _rt::String);
                     fn order_by(&self, desc: SortingDesc);
                     fn callback(&self) -> PointerT;
                     fn disable(&self);
@@ -4403,16 +4432,18 @@ pub mod exports {
                         u8,) { $($path_to_types)*::
                         __post_return_method_entity_children::<<$ty as
                         $($path_to_types)*:: Guest >::Entity > (arg0) } #[export_name =
-                        "toxoid:engine/ecs#[method]entity.relationships"] unsafe extern
-                        "C" fn export_method_entity_relationships(arg0 : * mut u8,) -> *
-                        mut u8 { $($path_to_types)*::
-                        _export_method_entity_relationships_cabi::<<$ty as
-                        $($path_to_types)*:: Guest >::Entity > (arg0) } #[export_name =
-                        "cabi_post_toxoid:engine/ecs#[method]entity.relationships"]
-                        unsafe extern "C" fn
-                        _post_return_method_entity_relationships(arg0 : * mut u8,) {
+                        "toxoid:engine/ecs#[method]entity.relationship-entities"] unsafe
+                        extern "C" fn export_method_entity_relationship_entities(arg0 : *
+                        mut u8, arg1 : i32, arg2 : i64,) -> * mut u8 {
                         $($path_to_types)*::
-                        __post_return_method_entity_relationships::<<$ty as
+                        _export_method_entity_relationship_entities_cabi::<<$ty as
+                        $($path_to_types)*:: Guest >::Entity > (arg0, arg1, arg2) }
+                        #[export_name =
+                        "cabi_post_toxoid:engine/ecs#[method]entity.relationship-entities"]
+                        unsafe extern "C" fn
+                        _post_return_method_entity_relationship_entities(arg0 : * mut
+                        u8,) { $($path_to_types)*::
+                        __post_return_method_entity_relationship_entities::<<$ty as
                         $($path_to_types)*:: Guest >::Entity > (arg0) } #[export_name =
                         "toxoid:engine/ecs#[method]entity.disable"] unsafe extern "C" fn
                         export_method_entity_disable(arg0 : * mut u8,) {
@@ -4525,6 +4556,11 @@ pub mod exports {
                         export_method_system_build(arg0 : * mut u8,) {
                         $($path_to_types)*:: _export_method_system_build_cabi::<<$ty as
                         $($path_to_types)*:: Guest >::System > (arg0) } #[export_name =
+                        "toxoid:engine/ecs#[method]system.named"] unsafe extern "C" fn
+                        export_method_system_named(arg0 : * mut u8, arg1 : * mut u8, arg2
+                        : usize,) { $($path_to_types)*::
+                        _export_method_system_named_cabi::<<$ty as $($path_to_types)*::
+                        Guest >::System > (arg0, arg1, arg2) } #[export_name =
                         "toxoid:engine/ecs#[method]system.order-by"] unsafe extern "C" fn
                         export_method_system_order_by(arg0 : * mut u8, arg1 : i64, arg2 :
                         i64,) { $($path_to_types)*::
@@ -4760,7 +4796,6 @@ mod _rt {
     pub fn run_ctors_once() {
         #[cfg(not(target_os = "emscripten"))]
 #[cfg(not(target_os = "emscripten"))]
-#[cfg(not(target_os = "emscripten"))]
 wit_bindgen_rt::run_ctors_once();
     }
     pub unsafe fn string_lift(bytes: Vec<u8>) -> String {
@@ -4947,9 +4982,9 @@ pub(crate) use __export_toxoid_engine_world_impl as export;
 #[cfg(target_arch = "wasm32")]
 #[link_section = "component-type:wit-bindgen:0.35.0:toxoid:engine:toxoid-engine-world:encoded world"]
 #[doc(hidden)]
-pub static __WIT_BINDGEN_COMPONENT_TYPE: [u8; 6612] = *b"\
-\0asm\x0d\0\x01\0\0\x19\x16wit-component-encoding\x04\0\x07\xca2\x01A\x02\x01A\x02\
-\x01B\x98\x02\x01w\x04\0\x0cecs-entity-t\x03\0\0\x01w\x04\0\x09pointer-t\x03\0\x02\
+pub static __WIT_BINDGEN_COMPONENT_TYPE: [u8; 6691] = *b"\
+\0asm\x0d\0\x01\0\0\x19\x16wit-component-encoding\x04\0\x07\x993\x01A\x02\x01A\x02\
+\x01B\x9b\x02\x01w\x04\0\x0cecs-entity-t\x03\0\0\x01w\x04\0\x09pointer-t\x03\0\x02\
 \x01q\x03\x04is-a\0\0\x08child-of\0\0\x06custom\x01\x01\0\x04\0\x0crelationship\x03\
 \0\x04\x01q\x0a\x08on-start\0\0\x07on-load\0\0\x09post-load\0\0\x0apre-update\0\0\
 \x09on-update\0\0\x0bon-validate\0\0\x0bpost-update\0\0\x09pre-store\0\0\x08on-s\
@@ -5036,54 +5071,55 @@ e\x01q\x01@\x03\x04self\xeb\0\x0crelationship\x05\x06target\x01\x01\0\x04\0\x1f[
 method]entity.add-relationship\x01s\x04\0\"[method]entity.remove-relationship\x01\
 s\x01@\x02\x04self\xeb\0\x06target\x01\x01\0\x04\0\x18[method]entity.parent-of\x01\
 t\x04\0\x17[method]entity.child-of\x01t\x04\0\x15[method]entity.parent\x01l\x01@\
-\x01\x04self\xeb\0\0\x11\x04\0\x17[method]entity.children\x01u\x04\0\x1c[method]\
-entity.relationships\x01u\x01@\x01\x04self\xeb\0\x01\0\x04\0\x16[method]entity.d\
-isable\x01v\x04\0\x15[method]entity.enable\x01v\x01i$\x01@\x01\x04desc\x16\0\xf7\
-\0\x04\0\x12[constructor]query\x01x\x01h$\x01@\x01\x04self\xf9\0\x01\0\x04\0\x13\
-[method]query.build\x01z\x01@\x02\x04self\xf9\0\x04desc\x18\x01\0\x04\0\x16[meth\
-od]query.order-by\x01{\x01@\x01\x04self\xf9\0\0\x03\x04\0\x12[method]query.iter\x01\
-|\x01@\x01\x04self\xf9\0\0\x7f\x04\0\x12[method]query.next\x01}\x01@\x01\x04self\
-\xf9\0\0z\x04\0\x13[method]query.count\x01~\x01@\x01\x04self\xf9\0\0\x11\x04\0\x16\
-[method]query.entities\x01\x7f\x01p\x03\x01@\x02\x04self\xf9\0\x05index~\0\x80\x01\
-\x04\0\x18[method]query.components\x01\x81\x01\x01i%\x01@\x01\x03ptrw\0\x82\x01\x04\
-\0\x11[constructor]iter\x01\x83\x01\x01h%\x01@\x01\x04self\x84\x01\0\x7f\x04\0\x11\
-[method]iter.next\x01\x85\x01\x01@\x01\x04self\x84\x01\0z\x04\0\x12[method]iter.\
-count\x01\x86\x01\x01@\x01\x04self\x84\x01\0\x11\x04\0\x15[method]iter.entities\x01\
-\x87\x01\x01@\x02\x04self\x84\x01\x05index~\0\x80\x01\x04\0\x17[method]iter.comp\
-onents\x01\x88\x01\x01i&\x01@\x01\x06handlew\0\x89\x01\x04\0\x15[constructor]cal\
-lback\x01\x8a\x01\x01h&\x01@\x02\x04self\x8b\x01\x04iter\x82\x01\x01\0\x04\0\x14\
-[method]callback.run\x01\x8c\x01\x01@\x01\x04self\x8b\x01\0\x03\x04\0\x1a[method\
-]callback.cb-handle\x01\x8d\x01\x01i'\x01@\x01\x04desc\x1b\0\x8e\x01\x04\0\x13[c\
-onstructor]system\x01\x8f\x01\x01h'\x01@\x01\x04self\x90\x01\0\x01\x04\0\x15[met\
-hod]system.get-id\x01\x91\x01\x01@\x01\x04self\x90\x01\x01\0\x04\0\x14[method]sy\
-stem.build\x01\x92\x01\x01@\x02\x04self\x90\x01\x04desc\x18\x01\0\x04\0\x17[meth\
-od]system.order-by\x01\x93\x01\x01@\x01\x04self\x90\x01\0\x03\x04\0\x17[method]s\
-ystem.callback\x01\x94\x01\x04\0\x16[method]system.disable\x01\x92\x01\x04\0\x15\
-[method]system.enable\x01\x92\x01\x01i(\x01@\x01\x04names\0\x95\x01\x04\0\x12[co\
-nstructor]phase\x01\x96\x01\x01h(\x01@\x02\x04self\x97\x01\x05phase\x07\x01\0\x04\
-\0\x18[method]phase.depends-on\x01\x98\x01\x01@\x01\x04self\x97\x01\0\x01\x04\0\x14\
-[method]phase.get-id\x01\x99\x01\x01i)\x01@\x01\x04desc\x1d\0\x9a\x01\x04\0\x15[\
-constructor]pipeline\x01\x9b\x01\x01h)\x01@\x01\x04self\x9c\x01\x01\0\x04\0\x16[\
-method]pipeline.build\x01\x9d\x01\x01@\x02\x04self\x9c\x01\x05phase\x01\x01\0\x04\
-\0\x1a[method]pipeline.add-phase\x01\x9e\x01\x01@\x01\x04self\x9c\x01\0\x01\x04\0\
-\x17[method]pipeline.get-id\x01\x9f\x01\x04\0\x18[method]pipeline.disable\x01\x9d\
-\x01\x04\0\x17[method]pipeline.enable\x01\x9d\x01\x01i*\x01@\x01\x04desc\x20\0\xa0\
-\x01\x04\0\x15[constructor]observer\x01\xa1\x01\x01h*\x01@\x01\x04self\xa2\x01\x01\
-\0\x04\0\x16[method]observer.build\x01\xa3\x01\x01@\x01\x04self\xa2\x01\0\x03\x04\
-\0\x19[method]observer.callback\x01\xa4\x01\x01@\x01\x0ccomponent-id\x01\x01\0\x04\
-\0\x0dadd-singleton\x01\xa5\x01\x01@\x01\x0ccomponent-id\x01\0w\x04\0\x0dget-sin\
-gleton\x01\xa6\x01\x04\0\x10remove-singleton\x01\xa5\x01\x01@\x01\x09entity-id\x01\
-\x01\0\x04\0\x0aadd-entity\x01\xa7\x01\x04\0\x0dremove-entity\x01\xa7\x01\x01@\x01\
-\x04names\0\x7f\x04\0\x10has-entity-named\x01\xa8\x01\x01@\x01\x0ecomponent-name\
-s\0\x01\x04\0\x10get-component-id\x01\xa9\x01\x04\0\x11toxoid:engine/ecs\x05\0\x04\
-\0!toxoid:engine/toxoid-engine-world\x04\0\x0b\x19\x01\0\x13toxoid-engine-world\x03\
-\0\0\0G\x09producers\x01\x0cprocessed-by\x02\x0dwit-component\x070.220.0\x10wit-\
-bindgen-rust\x060.35.0";
+\x01\x04self\xeb\0\0\x11\x04\0\x17[method]entity.children\x01u\x01@\x02\x04self\xeb\
+\0\x0crelationship\x05\0\x11\x04\0$[method]entity.relationship-entities\x01v\x01\
+@\x01\x04self\xeb\0\x01\0\x04\0\x16[method]entity.disable\x01w\x04\0\x15[method]\
+entity.enable\x01w\x01i$\x01@\x01\x04desc\x16\0\xf8\0\x04\0\x12[constructor]quer\
+y\x01y\x01h$\x01@\x01\x04self\xfa\0\x01\0\x04\0\x13[method]query.build\x01{\x01@\
+\x02\x04self\xfa\0\x04desc\x18\x01\0\x04\0\x16[method]query.order-by\x01|\x01@\x01\
+\x04self\xfa\0\0\x03\x04\0\x12[method]query.iter\x01}\x01@\x01\x04self\xfa\0\0\x7f\
+\x04\0\x12[method]query.next\x01~\x01@\x01\x04self\xfa\0\0z\x04\0\x13[method]que\
+ry.count\x01\x7f\x01@\x01\x04self\xfa\0\0\x11\x04\0\x16[method]query.entities\x01\
+\x80\x01\x01p\x03\x01@\x02\x04self\xfa\0\x05index~\0\x81\x01\x04\0\x18[method]qu\
+ery.components\x01\x82\x01\x01i%\x01@\x01\x03ptrw\0\x83\x01\x04\0\x11[constructo\
+r]iter\x01\x84\x01\x01h%\x01@\x01\x04self\x85\x01\0\x7f\x04\0\x11[method]iter.ne\
+xt\x01\x86\x01\x01@\x01\x04self\x85\x01\0z\x04\0\x12[method]iter.count\x01\x87\x01\
+\x01@\x01\x04self\x85\x01\0\x11\x04\0\x15[method]iter.entities\x01\x88\x01\x01@\x02\
+\x04self\x85\x01\x05index~\0\x81\x01\x04\0\x17[method]iter.components\x01\x89\x01\
+\x01i&\x01@\x01\x06handlew\0\x8a\x01\x04\0\x15[constructor]callback\x01\x8b\x01\x01\
+h&\x01@\x02\x04self\x8c\x01\x04iter\x83\x01\x01\0\x04\0\x14[method]callback.run\x01\
+\x8d\x01\x01@\x01\x04self\x8c\x01\0\x03\x04\0\x1a[method]callback.cb-handle\x01\x8e\
+\x01\x01i'\x01@\x01\x04desc\x1b\0\x8f\x01\x04\0\x13[constructor]system\x01\x90\x01\
+\x01h'\x01@\x01\x04self\x91\x01\0\x01\x04\0\x15[method]system.get-id\x01\x92\x01\
+\x01@\x01\x04self\x91\x01\x01\0\x04\0\x14[method]system.build\x01\x93\x01\x01@\x02\
+\x04self\x91\x01\x04names\x01\0\x04\0\x14[method]system.named\x01\x94\x01\x01@\x02\
+\x04self\x91\x01\x04desc\x18\x01\0\x04\0\x17[method]system.order-by\x01\x95\x01\x01\
+@\x01\x04self\x91\x01\0\x03\x04\0\x17[method]system.callback\x01\x96\x01\x04\0\x16\
+[method]system.disable\x01\x93\x01\x04\0\x15[method]system.enable\x01\x93\x01\x01\
+i(\x01@\x01\x04names\0\x97\x01\x04\0\x12[constructor]phase\x01\x98\x01\x01h(\x01\
+@\x02\x04self\x99\x01\x05phase\x07\x01\0\x04\0\x18[method]phase.depends-on\x01\x9a\
+\x01\x01@\x01\x04self\x99\x01\0\x01\x04\0\x14[method]phase.get-id\x01\x9b\x01\x01\
+i)\x01@\x01\x04desc\x1d\0\x9c\x01\x04\0\x15[constructor]pipeline\x01\x9d\x01\x01\
+h)\x01@\x01\x04self\x9e\x01\x01\0\x04\0\x16[method]pipeline.build\x01\x9f\x01\x01\
+@\x02\x04self\x9e\x01\x05phase\x01\x01\0\x04\0\x1a[method]pipeline.add-phase\x01\
+\xa0\x01\x01@\x01\x04self\x9e\x01\0\x01\x04\0\x17[method]pipeline.get-id\x01\xa1\
+\x01\x04\0\x18[method]pipeline.disable\x01\x9f\x01\x04\0\x17[method]pipeline.ena\
+ble\x01\x9f\x01\x01i*\x01@\x01\x04desc\x20\0\xa2\x01\x04\0\x15[constructor]obser\
+ver\x01\xa3\x01\x01h*\x01@\x01\x04self\xa4\x01\x01\0\x04\0\x16[method]observer.b\
+uild\x01\xa5\x01\x01@\x01\x04self\xa4\x01\0\x03\x04\0\x19[method]observer.callba\
+ck\x01\xa6\x01\x01@\x01\x0ccomponent-id\x01\x01\0\x04\0\x0dadd-singleton\x01\xa7\
+\x01\x01@\x01\x0ccomponent-id\x01\0w\x04\0\x0dget-singleton\x01\xa8\x01\x04\0\x10\
+remove-singleton\x01\xa7\x01\x01@\x01\x09entity-id\x01\x01\0\x04\0\x0aadd-entity\
+\x01\xa9\x01\x04\0\x0dremove-entity\x01\xa9\x01\x01@\x01\x04names\0\x7f\x04\0\x10\
+has-entity-named\x01\xaa\x01\x01@\x01\x0ecomponent-names\0\x01\x04\0\x10get-comp\
+onent-id\x01\xab\x01\x04\0\x11toxoid:engine/ecs\x05\0\x04\0!toxoid:engine/toxoid\
+-engine-world\x04\0\x0b\x19\x01\0\x13toxoid-engine-world\x03\0\0\0G\x09producers\
+\x01\x0cprocessed-by\x02\x0dwit-component\x070.220.0\x10wit-bindgen-rust\x060.35\
+.0";
 #[inline(never)]
 #[doc(hidden)]
 pub fn __link_custom_section_describing_imports() {
     #[cfg(not(target_os = "emscripten"))]
-#[cfg(not(target_os = "emscripten"))]
 #[cfg(not(target_os = "emscripten"))]
 wit_bindgen_rt::maybe_link_cabi_realloc();
 }
