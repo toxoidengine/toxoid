@@ -13,7 +13,7 @@ pub extern "C" fn fetch_callback(response: *const sfetch_response_t) {
     // println!("Failed: {:?}", response.failed);
     let entity_id = unsafe { *(response.user_data as *mut u64) };
     let mut entity = Entity::from_id(entity_id);
-    let mut fetch_request = entity.get::<FetchRequest>();
+    let fetch_request = entity.get::<FetchRequest>();
     let data = unsafe { std::slice::from_raw_parts(response.data.ptr as *const u8, response.data.size) };
     let data = data.to_vec();
     fetch_request.set_data(data);
@@ -57,7 +57,7 @@ fn sokol_fetch(path: &str, entity: &mut Entity) {
 pub fn bone_animation_loaded(entity: &mut Entity) {
     // Create spine atlas object from loaded atlas data.
     let mut atlas_desc: sspine_atlas_desc = unsafe { core::mem::MaybeUninit::zeroed().assume_init() };
-    let mut atlas = entity.get::<Atlas>();
+    let atlas = entity.get::<Atlas>();
     let data = atlas.get_data();
     let size = data.len() as usize;
     
@@ -77,7 +77,7 @@ pub fn bone_animation_loaded(entity: &mut Entity) {
     // text (JSON) or binary (in our case, 'raptor-pro.skel' is a binary skeleton file).
     // In case of JSON data, make sure that the data is 0-terminated!
     let mut skeleton_desc: sspine_skeleton_desc = unsafe { core::mem::MaybeUninit::zeroed().assume_init() };
-    let mut skeleton = entity.get::<Skeleton>();
+    let skeleton = entity.get::<Skeleton>();
     let data = skeleton.get_data();
     skeleton_desc.atlas = spine_atlas;
     
