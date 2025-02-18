@@ -457,11 +457,11 @@ pub fn component(input: TokenStream) -> TokenStream {
                 #[repr(C)]
                 pub struct #name {
                     // #[serde(skip)]
-                    entity_added: ecs_entity_t,
-                    component_type: ecs_entity_t,
+                    entity_added: EcsEntityT,
+                    component_type: EcsEntityT,
                     component: *mut ToxoidComponent,
                     singleton: bool,
-                    id: ecs_entity_t,
+                    id: EcsEntityT,
                     #(#struct_fields)*
                 }
 
@@ -483,10 +483,10 @@ pub fn component(input: TokenStream) -> TokenStream {
                         // TODO: Remove this boxed pointer for host (and possibly guest)
                         self.component = Box::into_raw(Box::new(component));
                     }
-                    fn set_entity_added(&mut self, entity_id: ecs_entity_t) {
+                    fn set_entity_added(&mut self, entity_id: EcsEntityT) {
                         self.entity_added = entity_id;
                     }
-                    fn set_component_type(&mut self, component_type_id: ecs_entity_t) {
+                    fn set_component_type(&mut self, component_type_id: EcsEntityT) {
                         self.component_type = component_type_id;
                     }
                 }

@@ -215,7 +215,6 @@ pub fn init() {
                     image.set_image(Box::into_raw(sokol_image) as *mut () as u64);
                     image.set_path(fetch_request.get_path());
                     image.set_data(data);
-
                     image_entity.add::<Loaded>();
                 }
                 d if d == DataType::Sprite as u8 => {
