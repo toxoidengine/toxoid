@@ -75,7 +75,6 @@ pub fn blit_sprite_system(iter: &Iter) {
         SokolRenderer2D::blit_sprite(sprite_trait_object, 0., 0., width as f32, height as f32, rt_trait_object, 0., 0.);
         // End render target
         SokolRenderer2D::end_rt();
-        render_target.set_z_depth(ZDepth::AbovePlayer as u32);
         entities[i].remove::<Blittable>();
     }
 }
@@ -205,12 +204,10 @@ pub fn blit_cell_system(iter: &Iter) {
                 SokolRenderer2D::end_rt();
 
                 // Get render target entity
-                let mut rt_entity = create_render_target(pixel_width, pixel_height);
+                let mut rt_entity = create_render_target(pixel_width, pixel_height, ZDepth::BottomLayer as u32);
                 let render_target = rt_entity.get::<RenderTarget>();
                 // Set render target
                 render_target.set_render_target(Box::leak(rt) as *const _ as *const std::ffi::c_void as u64);
-                // Set z depth
-                render_target.set_z_depth(ZDepth::BottomLayer as u32);
 
                 // Set position
                 let position = rt_entity.get::<Position>();
@@ -312,7 +309,7 @@ pub fn blit_systems(render_systems_entity: &mut Entity) {
     render_systems_entity.parent_of_id(system.get_id());
 
     // Blit sprite to render target
-    let system = System::dsl("Sprite, Blittable, Size, (ChildOf, $Parent), RenderTarget($Parent), Size($Parent)", None, blit_sprite_system)
+    let system = System::dsl("Sprite, Blittable, Size, (RenderTargetRelationship, $Related), RenderTarget($Related), Size($Related)", None, blit_sprite_system)
         .build();
     render_systems_entity.parent_of_id(system.get_id());
 
