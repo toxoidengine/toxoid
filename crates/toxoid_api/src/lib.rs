@@ -77,14 +77,12 @@ pub use toxoid_guest;
 // Both (Native + WASM)
 pub use toxoid_api_macro::{component, components};
 
-pub type ecs_entity_t = u64;
-
 pub struct ToxoidWasmComponent;
 
 pub trait ComponentType {
     fn get_name() -> &'static str;
-    fn get_id() -> ecs_entity_t;
-    fn register() -> ecs_entity_t;
+    fn get_id() -> EcsEntityT;
+    fn register() -> EcsEntityT;
 }
 
 pub trait Component {
@@ -92,8 +90,8 @@ pub trait Component {
     fn set_component(&mut self, ptr: toxoid_guest::bindings::toxoid_component::component::ecs::Component);
     #[cfg(any(not(target_arch = "wasm32"), target_os = "emscripten"))]
     fn set_component(&mut self, ptr: ToxoidComponent);
-    fn set_entity_added(&mut self, entity_id: ecs_entity_t);
-    fn set_component_type(&mut self, component_type_id: ecs_entity_t);
+    fn set_entity_added(&mut self, entity_id: EcsEntityT);
+    fn set_component_type(&mut self, component_type_id: EcsEntityT);
 }
 
 pub struct Entity {
@@ -249,6 +247,10 @@ impl Entity {
         self.entity.add_relationship(relationship, target.get_id());
     }
 
+    pub fn add_relationship_id(&mut self, relationship: Relationship, target: EcsEntityT) {
+        self.entity.add_relationship(relationship, target);
+    }
+
     pub fn remove_relationship(&mut self, relationship: Relationship, target: Entity) {
         self.entity.remove_relationship(relationship, target.get_id());
     }
@@ -257,7 +259,7 @@ impl Entity {
         self.entity.add_relationship(Relationship::IsA, target.get_id());
     }
 
-    pub fn is_a_id(&mut self, target: ecs_entity_t) {
+    pub fn is_a_id(&mut self, target: EcsEntityT) {
         self.entity.add_relationship(Relationship::IsA, target);
     }
 
@@ -269,11 +271,11 @@ impl Entity {
         self.entity.child_of(target.get_id());
     }
 
-    pub fn parent_of_id(&mut self, target: ecs_entity_t) {
+    pub fn parent_of_id(&mut self, target: EcsEntityT) {
         self.entity.parent_of(target);
     }
 
-    pub fn child_of_id(&mut self, target: ecs_entity_t) {
+    pub fn child_of_id(&mut self, target: EcsEntityT) {
         self.entity.child_of(target);
     }
 
@@ -467,7 +469,7 @@ impl System {
         Self { system: ToxoidSystem::new(desc) }
     }
 
-    pub fn get_id(&self) -> ecs_entity_t {
+    pub fn get_id(&self) -> EcsEntityT {
         self.system.get_id()
     }
 
@@ -750,7 +752,7 @@ pub fn run_callback(iter: ToxoidIter, handle: u64) {
 }
 
 #[cfg(all(target_arch = "wasm32", not(target_os = "emscripten")))]
-pub fn register_component(component_name: &str, member_names: Vec<String>, member_types: Vec<u8>) -> ecs_entity_t {
+pub fn register_component(component_name: &str, member_names: Vec<String>, member_types: Vec<u8>) -> EcsEntityT {
     let component_type = ToxoidComponentType::new(&ComponentDesc {
         name: component_name.to_string(),
         member_names,
@@ -760,7 +762,7 @@ pub fn register_component(component_name: &str, member_names: Vec<String>, membe
 }
 
 #[cfg(any(not(target_arch = "wasm32"), target_os = "emscripten"))]
-pub fn register_component(component_name: &str, member_names: Vec<String>, member_types: Vec<u8>) -> ecs_entity_t {
+pub fn register_component(component_name: &str, member_names: Vec<String>, member_types: Vec<u8>) -> EcsEntityT {
     let component_type = ToxoidComponentType::new(ComponentDesc {
         name: component_name.to_string(),
         member_names,
@@ -769,7 +771,7 @@ pub fn register_component(component_name: &str, member_names: Vec<String>, membe
     component_type.get_id()
 }
 
-pub fn get_component_id(component_name: &str) -> ecs_entity_t {
+pub fn get_component_id(component_name: &str) -> EcsEntityT {
     #[cfg(all(target_arch = "wasm32", not(target_os = "emscripten")))]
     return ToxoidApi::get_component_id(component_name);
     #[cfg(any(not(target_arch = "wasm32"), target_os = "emscripten"))]

@@ -237,7 +237,7 @@ pub fn blit_cell_system(iter: &Iter) {
 
 // Sort Render Targets by Z-Index
 // TODO: Use query trampoline instead of C functions directly and use callback resource to make this work on WASM.
-pub extern "C" fn draw_render_target_sort(_e1: ecs_entity_t, v1: *const std::ffi::c_void, _e2: ecs_entity_t, v2: *const std::ffi::c_void) -> i32 {
+pub extern "C" fn draw_render_target_sort(_e1: EcsEntityT, v1: *const std::ffi::c_void, _e2: EcsEntityT, v2: *const std::ffi::c_void) -> i32 {
     let mut rt1 = RenderTarget::default();
     let mut rt2 = RenderTarget::default();
     let rt1_component = ToxoidComponent::from_ptr_host(v1 as u64);

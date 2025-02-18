@@ -46,8 +46,9 @@ pub fn create_sprite_from_data(data: Vec<u8>) -> Entity {
     sprite_entity.add::<Blittable>();
     // Create render target entity
     let mut rt_entity = create_render_target(sprite_width, sprite_height);
-    sprite_entity.child_of_id(rt_entity.get_id());
-    // Create renderable entity
+    // sprite_entity.child_of_id(rt_entity.get_id());
+    sprite_entity.add_relationship_id(Relationship::Custom(RenderTargetRelationship::get_id()), rt_entity.get_id());
+    // // Create renderable entity
     rt_entity.add::<Renderable>();
     sprite_entity.add::<Loaded>();
     sprite_entity
