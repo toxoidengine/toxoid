@@ -2,7 +2,7 @@ use toxoid_api::*;
 use toxoid_render::Renderer2D;
 use toxoid_sokol::*;
 
-pub fn create_render_target(width: u32, height: u32) -> Entity {
+pub fn create_render_target(width: u32, height: u32, z_depth: u32) -> Entity {
     // Create entity
     let mut entity = Entity::new(None);
     entity.add::<RenderTarget>();
@@ -16,6 +16,7 @@ pub fn create_render_target(width: u32, height: u32) -> Entity {
         .set_render_target(
             Box::leak(rt) as *const _ as *const std::ffi::c_void as u64
         );
+    rt_component.set_z_depth(z_depth);
     // Set size
     let size = entity.get::<Size>();
     size.set_width(width);
@@ -45,8 +46,7 @@ pub fn create_sprite_from_data(data: Vec<u8>) -> Entity {
     sprite.set_sprite(Box::into_raw(sokol_sprite) as *mut () as u64);
     sprite_entity.add::<Blittable>();
     // Create render target entity
-    let mut rt_entity = create_render_target(sprite_width, sprite_height);
-    // sprite_entity.child_of_id(rt_entity.get_id());
+    let mut rt_entity = create_render_target(sprite_width, sprite_height, ZDepth::AbovePlayer as u32);
     sprite_entity.add_relationship_id(Relationship::Custom(RenderTargetRelationship::get_id()), rt_entity.get_id());
     // // Create renderable entity
     rt_entity.add::<Renderable>();

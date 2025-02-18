@@ -145,7 +145,7 @@ pub fn bone_animation_loaded(entity: &mut Entity) {
     // TODO: Make this configurable for animations
     let rt_width = (150.0 * scale_factor) as u32;  // Keep original size since we're zooming with camera
     let rt_height = (150.0 * scale_factor) as u32;
-    let mut rt_entity = create_render_target(rt_width, rt_height);
+    let mut rt_entity = create_render_target(rt_width, rt_height, ZDepth::BottomLayer as u32);
     rt_entity.add::<Position>();  // Make sure Position component is added
     rt_entity.add::<Size>();
     let rt_size = rt_entity.get::<Size>();
@@ -236,8 +236,8 @@ pub fn init() {
                     sprite.set_sprite(Box::into_raw(sokol_sprite) as *mut () as u64);
                     sprite_entity.add::<Blittable>();
                     // Create render target entity
-                    let mut rt_entity = create_render_target(sprite_width, sprite_height);
-                    sprite_entity.child_of_id(rt_entity.get_id());
+                    let mut rt_entity = create_render_target(sprite_width, sprite_height, ZDepth::AbovePlayer as u32);
+                    sprite_entity.add_relationship_id(Relationship::Custom(RenderTargetRelationship::get_id()), rt_entity.get_id());
                     // Create renderable entity
                     if sprite_entity.has::<RenderableOnLoad>() {
                         rt_entity.add::<Renderable>();
