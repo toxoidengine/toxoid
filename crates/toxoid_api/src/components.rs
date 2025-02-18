@@ -32,7 +32,8 @@ component! {
     },
     Image {
         path: String,
-        image: u64
+        image: u64,
+        data: Vec::<u8>
     },
     // Fetch
     FetchRequest {

@@ -200,7 +200,7 @@ pub fn init() {
                     // Create entity from entity ID passed to user data
                     let mut image_entity = Entity::from_id(fetch_request.get_user_data());
                     // Get data
-                    let data_box = data.into_boxed_slice();
+                    let data_box = data.clone().into_boxed_slice();
                     let data_ptr = Box::into_raw(data_box);
                     // Create sokol image
                     let sokol_image = SokolRenderer2D::create_image(data_ptr as *const u8, size);
@@ -214,6 +214,8 @@ pub fn init() {
                     let image = image_entity.get::<toxoid_api::Image>();
                     image.set_image(Box::into_raw(sokol_image) as *mut () as u64);
                     image.set_path(fetch_request.get_path());
+                    image.set_data(data);
+
                     image_entity.add::<Loaded>();
                 }
                 d if d == DataType::Sprite as u8 => {

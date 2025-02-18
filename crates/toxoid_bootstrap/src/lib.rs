@@ -2,7 +2,7 @@ mod renderer;
 mod events;
 mod systems;
 mod entities;
-mod prefabs;
+pub mod prefabs;
 mod config;
 #[cfg(not(target_arch = "wasm32"))]
 mod watch;
