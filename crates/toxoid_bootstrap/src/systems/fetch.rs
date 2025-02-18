@@ -213,13 +213,7 @@ pub fn init() {
                     // Set image
                     let image = image_entity.get::<toxoid_api::Image>();
                     image.set_image(Box::into_raw(sokol_image) as *mut () as u64);
-                    // Create render target entity
-                    let mut rt_entity = create_render_target(image_width, image_height);
-                    image_entity.child_of_id(rt_entity.get_id());
-                    // Create renderable entity
-                    if image_entity.has::<RenderableOnLoad>() {
-                        rt_entity.add::<Renderable>();
-                    }
+                    image.set_path(fetch_request.get_path());
                     image_entity.add::<Loaded>();
                 }
                 d if d == DataType::Sprite as u8 => {

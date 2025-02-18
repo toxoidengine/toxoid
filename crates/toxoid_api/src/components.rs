@@ -31,6 +31,7 @@ component! {
         sprite: u64
     },
     Image {
+        path: String,
         image: u64
     },
     // Fetch
