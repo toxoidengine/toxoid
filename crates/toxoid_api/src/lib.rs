@@ -838,6 +838,7 @@ pub fn load_bone_animation_image(path: &str) -> Entity {
 pub fn load_sprite(path: &str, rendered_on_load: bool) -> Entity {
     let mut entity = Entity::new(None);
     entity.add::<Sprite>();
+    entity.add::<Image>();
     entity.add::<Position>();
     entity.add::<Size>();
     if rendered_on_load {

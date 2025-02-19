@@ -120,6 +120,15 @@ component! {
         left: bool,
         right: bool, 
     },
+    MouseInput {
+        x: f32,
+        y: f32,
+        dx: f32,
+        dy: f32,
+        left: bool,
+        right: bool,
+        middle: bool,
+    },
     RenderSystems {
         entity: u64
     },
@@ -145,7 +154,7 @@ component! {
     // Add to singletons section
     MainCamera {
         entity: u64
-    },
+    }
 }
 
 pub fn init() {
@@ -201,6 +210,7 @@ pub fn init() {
     
     // Register singletons
     KeyboardInput::register();
+    MouseInput::register();
     RenderSystems::register();
     GameConfig::register();
 
@@ -211,6 +221,7 @@ pub fn init() {
 
     // Add singletons
     World::add_singleton::<KeyboardInput>();
+    World::add_singleton::<MouseInput>();
     World::add_singleton::<RenderSystems>();
     World::add_singleton::<GameConfig>();
     World::add_singleton::<MainCamera>();
