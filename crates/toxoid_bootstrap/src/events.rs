@@ -1,3 +1,4 @@
+use toxoid_sokol::sapp::Mousebutton;
 use toxoid_sokol::sokol::app::{EventType, Event, Keycode};
 use toxoid_sokol::sokol::app as sapp;
 use toxoid_api::*;
@@ -105,8 +106,72 @@ pub extern "C" fn sokol_event(event: *const Event) {
                     clamped_width, clamped_height, window_width, window_height);
             }
         },
+        EventType::MouseDown => {
+            let mouse_input = World::get_singleton::<MouseInput>();
+            mouse_input.set_x(event.mouse_x as f32);
+            mouse_input.set_y(event.mouse_y as f32);
+            mouse_input.set_dx(event.mouse_dx as f32);
+            mouse_input.set_dy(event.mouse_dy as f32);
+            match event.mouse_button {
+                Mousebutton::Left => {
+                    mouse_input.set_left(true);
+                }
+                Mousebutton::Right => {
+                    mouse_input.set_right(true);
+                }
+                Mousebutton::Middle => {
+                    mouse_input.set_middle(true);
+                }
+                _ => {}
+            }
+        },
+        EventType::MouseUp => {
+            let mouse_input = World::get_singleton::<MouseInput>();
+            mouse_input.set_x(event.mouse_x as f32);
+            mouse_input.set_y(event.mouse_y as f32);
+            mouse_input.set_dx(event.mouse_dx as f32);
+            mouse_input.set_dy(event.mouse_dy as f32);
+            match event.mouse_button { 
+                Mousebutton::Left => {
+                    mouse_input.set_left(false);
+                }
+                Mousebutton::Right => {
+                    mouse_input.set_right(false);
+                }
+                Mousebutton::Middle => {
+                    mouse_input.set_middle(false);
+                }
+                _ => {}
+            }
+        }
+        EventType::MouseMove => {
+            let mouse_input = World::get_singleton::<MouseInput>();
+            mouse_input.set_x(event.mouse_x as f32);
+            mouse_input.set_y(event.mouse_y as f32);
+            mouse_input.set_dx(event.mouse_dx as f32);
+            mouse_input.set_dy(event.mouse_dy as f32);
+        },
+        EventType::MouseEnter => {
+            let mouse_input = World::get_singleton::<MouseInput>();
+            mouse_input.set_x(event.mouse_x as f32);
+            mouse_input.set_y(event.mouse_y as f32);
+            mouse_input.set_dx(event.mouse_dx as f32);
+            mouse_input.set_dy(event.mouse_dy as f32);
+        },
+        EventType::MouseLeave => {
+            let mouse_input = World::get_singleton::<MouseInput>();
+            mouse_input.set_x(event.mouse_x as f32);
+            mouse_input.set_y(event.mouse_y as f32);
+            mouse_input.set_dx(event.mouse_dx as f32);
+            mouse_input.set_dy(event.mouse_dy as f32);
+        },
         EventType::MouseScroll => {
             handle_mouse_scroll(event.scroll_y);
+            let mouse_input = World::get_singleton::<MouseInput>();
+            mouse_input.set_x(event.mouse_x as f32);
+            mouse_input.set_y(event.mouse_y as f32);
+            mouse_input.set_dx(event.mouse_dx as f32);
+            mouse_input.set_dy(event.mouse_dy as f32);
         },
         // EventType::MouseDown => {
         //     println!("Mouse down: {:?}", event.mouse_button);

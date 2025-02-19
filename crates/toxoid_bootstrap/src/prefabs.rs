@@ -28,6 +28,7 @@ pub fn create_sprite_from_data(data: Vec<u8>) -> Entity {
     // Create entity from entity ID passed to user data
     let mut sprite_entity = Entity::new(None);
     sprite_entity.add::<Sprite>();
+    sprite_entity.add::<Image>();
     sprite_entity.add::<Position>();
     sprite_entity.add::<Size>();
     let size = data.len();
