@@ -1,6 +1,5 @@
 use toxoid_api::*;
 
-
 component! {
     // TestChild {
     //     test: String,
@@ -30,7 +29,7 @@ pub fn init() {
     let mut entity = Entity::new(None);
     entity.add::<TestComponent>();
     entity.add::<TestRelated>();
-let test_component = entity.get::<TestComponent>();
+    let test_component = entity.get::<TestComponent>();
     test_component.set_test("Hello world!".to_string());
 
     let mut entity_2 = Entity::new(None);
