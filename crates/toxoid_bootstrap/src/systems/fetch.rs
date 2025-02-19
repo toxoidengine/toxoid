@@ -14,7 +14,9 @@ pub extern "C" fn fetch_callback(response: *const sfetch_response_t) {
     let entity_id = unsafe { *(response.user_data as *mut u64) };
     let mut entity = Entity::from_id(entity_id);
     let fetch_request = entity.get::<FetchRequest>();
-    let data = unsafe { std::slice::from_raw_parts(response.data.ptr as *const u8, response.data.size) };
+    let data = unsafe {
+        std::slice::from_raw_parts(response.data.ptr as *const u8, response.data.size) 
+    };
     let data = data.to_vec();
     fetch_request.set_data(data);
     entity.remove::<Loading>();
@@ -64,7 +66,6 @@ pub fn bone_animation_loaded(entity: &mut Entity) {
     // Convert Vec into Box to keep the data alive
     let data_box = data.into_boxed_slice();
     let data_ptr = Box::into_raw(data_box);
-    
     atlas_desc.data = sspine_range {
         ptr: data_ptr as *const std::ffi::c_void,
         size
@@ -84,7 +85,6 @@ pub fn bone_animation_loaded(entity: &mut Entity) {
     // Convert Vec into Box to keep the data alive
     let data_box = data.into_boxed_slice();
     let data_ptr = Box::into_raw(data_box);
-    
     skeleton_desc.json_data = data_ptr as *const i8;
     skeleton_desc.prescale = 1.0;
     skeleton_desc.anim_default_mix = 0.2;
@@ -103,7 +103,6 @@ pub fn bone_animation_loaded(entity: &mut Entity) {
     instance_component.set_instantiated(true);
 
     // configure a simple animation sequence
-
     unsafe { sspine_add_animation(instance, sspine_anim_by_name(spine_skeleton, c_string("idle_down")), 0, true, 0.) };
     unsafe { sspine_set_animation(instance, sspine_anim_by_name(spine_skeleton, c_string("idle_down")), 0, true) };
 
@@ -269,7 +268,6 @@ pub fn init() {
                     let tiled_world = toxoid_tiled::parse_world(data_str);
                     world.set_world(Box::into_raw(Box::new(tiled_world.clone())) as u64);
                     let world_entity_id = world_entity.get_id();
-                    
                     tiled_world
                         .maps
                         .unwrap()
