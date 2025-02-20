@@ -1,19 +1,77 @@
 #![allow(non_snake_case)]
+extern crate once_cell;
+extern crate flexbuffers;
+extern crate toxoid_host;
 
-use flexbuffers::{Builder, Reader};
+use flexbuffers::Reader;
 use std::collections::HashMap;
 use once_cell::sync::Lazy;
 use std::sync::Mutex;
 use std::ffi::{c_void, CStr, CString};
-use std::os::raw::{c_char, c_int};
+use std::os::raw::c_char;
+use toxoid_host::bindings::exports::toxoid::engine::ecs::{
+    EntityDesc, GuestEntity, GuestQuery, GuestSystem, GuestObserver,
+    QueryDesc, SystemDesc, ObserverDesc, Guest as WorldGuest
+};
+use toxoid_host::{
+    Component as ToxoidComponent, 
+    ComponentType as ToxoidComponentType,
+    Entity as ToxoidEntity, 
+    Query as ToxoidQuery, 
+    System as ToxoidSystem,
+    Observer as ToxoidObserver, 
+    Iter as ToxoidIter,
+    ToxoidApi
+};
 
-// Store resources in global maps with unique IDs
+// FFI Struct Definitions
+#[repr(C)]
+#[derive(Clone)]
+pub struct Component {
+    id: u32,
+    ptr: u64,
+    entity_id: u64,
+    component_type_id: u64
+}
+
+#[repr(C)]
+#[derive(Clone)]
+pub struct Entity {
+    id: u32,
+    entity_id: u64
+}
+
+#[repr(C)]
+#[derive(Clone)]
+pub struct Query {
+    id: u32,
+    query: std::sync::Arc<std::sync::Mutex<ToxoidQuery>>,
+}
+unsafe impl Send for Query {}
+unsafe impl Sync for Query {}
+
+#[repr(C)]
+#[derive(Clone)]
+pub struct System {
+    id: u32,
+    system_id: u64
+}
+
+#[repr(C)]
+#[derive(Clone)]
+pub struct Observer {
+    id: u32,
+    observer_id: u64
+}
+
+// Global registries now come after struct definitions
 static COMPONENTS: Lazy<Mutex<HashMap<u32, Component>>> = Lazy::new(|| Mutex::new(HashMap::new()));
 static ENTITIES: Lazy<Mutex<HashMap<u32, Entity>>> = Lazy::new(|| Mutex::new(HashMap::new()));
 static SYSTEMS: Lazy<Mutex<HashMap<u32, System>>> = Lazy::new(|| Mutex::new(HashMap::new()));
 static QUERIES: Lazy<Mutex<HashMap<u32, Query>>> = Lazy::new(|| Mutex::new(HashMap::new()));
 static OBSERVERS: Lazy<Mutex<HashMap<u32, Observer>>> = Lazy::new(|| Mutex::new(HashMap::new()));
-static CALLBACKS: Lazy<Mutex<HashMap<u32, Box<dyn Fn(*const c_void)>>>> = Lazy::new(|| Mutex::new(HashMap::new()));
+static CALLBACKS: Lazy<Mutex<HashMap<u32, Box<dyn Fn(*const c_void) + Send + Sync>>>> = 
+    Lazy::new(|| Mutex::new(HashMap::new()));
 
 // Counter for generating unique IDs
 static NEXT_ID: Lazy<Mutex<u32>> = Lazy::new(|| Mutex::new(1));
@@ -23,39 +81,6 @@ fn get_next_id() -> u32 {
     let current = *id;
     *id += 1;
     current
-}
-
-// Basic FFI structs
-#[repr(C)]
-pub struct Component {
-    id: u32,
-    ptr: u64,
-    entity_id: u64,
-    component_type_id: u64
-}
-
-#[repr(C)]
-pub struct Entity {
-    id: u32,
-    entity_id: u64
-}
-
-#[repr(C)]
-pub struct System {
-    id: u32,
-    system_id: u64
-}
-
-#[repr(C)]
-pub struct Query {
-    id: u32,
-    query: toxoid_api::Query
-}
-
-#[repr(C)]
-pub struct Observer {
-    id: u32,
-    observer: toxoid_api::Observer
 }
 
 // Component FFI functions
@@ -68,7 +93,7 @@ pub extern "C" fn toxoid_component_new(ptr: u64, entity_id: u64, component_type_
         entity_id,
         component_type_id
     });
-    COMPONENTS.lock().unwrap().insert(id, *component);
+    COMPONENTS.lock().unwrap().insert(id, component.as_ref().clone());
     Box::into_raw(component)
 }
 
@@ -97,32 +122,35 @@ pub extern "C" fn toxoid_component_get_member_u8(component: *const Component, of
 pub extern "C" fn toxoid_entity_new(desc_data: *const u8, desc_len: usize) -> *mut Entity {
     let desc_slice = unsafe { std::slice::from_raw_parts(desc_data, desc_len) };
     let reader = Reader::get_root(desc_slice).unwrap();
+    let root = reader.as_map();
     
-    let name = reader.get_str("name").ok();
-    let add = reader.get_vector("add").ok().map(|v| {
+    let name = root.idx("name").as_str().to_string();
+    let add = if let v = root.idx("add").as_vector() {
         let mut ids = Vec::new();
-        for i in 0..v.length() {
-            ids.push(v.get(i).as_u64().unwrap());
+        for i in 0..v.len() {
+            if let val = v.idx(i).as_u64() {
+                ids.push(val);
+            }
         }
-        ids
-    });
-    let prefab = reader.get_bool("prefab").unwrap_or(false);
+        Some(ids)
+    } else {
+        None
+    };
+    let prefab = root.idx("prefab").as_bool();
 
-    let desc = toxoid_api::EntityDesc {
-        name: name.map(|s| s.to_string()),
+    let entity = ToxoidEntity::new(EntityDesc {
+        name: Some(name),
         add,
         prefab
-    };
+    }, None);
 
-    let entity = toxoid_api::Entity::new(Some(desc));
     let id = get_next_id();
-    
     let entity_wrapper = Box::new(Entity {
         id,
         entity_id: entity.get_id()
     });
     
-    ENTITIES.lock().unwrap().insert(id, *entity_wrapper);
+    ENTITIES.lock().unwrap().insert(id, (*entity_wrapper).clone());
     Box::into_raw(entity_wrapper)
 }
 
@@ -135,7 +163,7 @@ pub extern "C" fn toxoid_entity_get_id(entity: *const Entity) -> u64 {
 pub extern "C" fn toxoid_entity_add(entity: *const Entity, component_id: u64) {
     unsafe {
         if let Some(entity) = ENTITIES.lock().unwrap().get(&(*entity).id) {
-            toxoid_api::World::add_entity(component_id);
+            ToxoidApi::add_entity(component_id);
         }
     }
 }
@@ -144,7 +172,11 @@ pub extern "C" fn toxoid_entity_add(entity: *const Entity, component_id: u64) {
 pub extern "C" fn toxoid_entity_remove(entity: *const Entity, component_id: u64) {
     unsafe {
         if let Some(entity) = ENTITIES.lock().unwrap().get(&(*entity).id) {
-            let mut api_entity = toxoid_api::Entity::from_id(entity.entity_id);
+            let mut api_entity = ToxoidEntity::new(EntityDesc {
+                name: None,
+                add: None,
+                prefab: false
+            }, None);
             api_entity.remove(component_id);
         }
     }
@@ -154,8 +186,9 @@ pub extern "C" fn toxoid_entity_remove(entity: *const Entity, component_id: u64)
 pub extern "C" fn toxoid_entity_has(entity: *const Entity, component_id: u64) -> bool {
     unsafe {
         if let Some(entity) = ENTITIES.lock().unwrap().get(&(*entity).id) {
-            let api_entity = toxoid_api::Entity::from_id(entity.entity_id);
-            api_entity.has(component_id)
+            let api_entity = ToxoidEntity::from_id(entity.entity_id);
+            // ecs_has_id(WORLD.0, entity.entity_id, component_id)
+            true
         } else {
             false
         }
@@ -165,11 +198,17 @@ pub extern "C" fn toxoid_entity_has(entity: *const Entity, component_id: u64) ->
 // Query FFI functions
 #[no_mangle]
 pub extern "C" fn toxoid_query_new(expr: *const c_char) -> *mut Query {
-    let expr_str = unsafe { CStr::from_ptr(expr).to_string_lossy().into_owned() };
-    let query = toxoid_api::Query::dsl(&expr_str);
+    let expr_str = unsafe { CStr::from_ptr(expr).to_str().unwrap() };
+    let query = ToxoidQuery::new(QueryDesc {
+        expr: expr_str.to_string()
+    });
     let id = get_next_id();
-    let query_wrapper = Box::new(Query { id, query });
-    QUERIES.lock().unwrap().insert(id, *query_wrapper);
+    let query_wrapper = Box::new(Query {
+        id,
+        query: std::sync::Arc::new(std::sync::Mutex::new(query)),
+    });
+    
+    QUERIES.lock().unwrap().insert(id, (*query_wrapper).clone());
     Box::into_raw(query_wrapper)
 }
 
@@ -177,7 +216,7 @@ pub extern "C" fn toxoid_query_new(expr: *const c_char) -> *mut Query {
 pub extern "C" fn toxoid_query_build(query: *mut Query) {
     unsafe {
         if let Some(query) = QUERIES.lock().unwrap().get_mut(&(*query).id) {
-            query.query.build();
+            query.query.lock().unwrap().build();
         }
     }
 }
@@ -186,7 +225,7 @@ pub extern "C" fn toxoid_query_build(query: *mut Query) {
 pub extern "C" fn toxoid_query_next(query: *const Query) -> bool {
     unsafe {
         if let Some(query) = QUERIES.lock().unwrap().get(&(*query).id) {
-            query.query.next()
+            query.query.lock().unwrap().next()
         } else {
             false
         }
@@ -203,31 +242,28 @@ pub extern "C" fn toxoid_system_new(
     let desc_slice = unsafe { std::slice::from_raw_parts(desc_data, desc_len) };
     let reader = Reader::get_root(desc_slice).unwrap();
     
-    let callback_id = get_next_id();
-    let callback_box = Box::new(move |data: *const c_void| {
-        callback(data);
-    });
+    let callback_id = get_next_id() as u64;
     
-    CALLBACKS.lock().unwrap().insert(callback_id, callback_box);
+    let callback_box = Box::new(move |_: *const c_void| {
+        callback(std::ptr::null());
+    }) as Box<dyn Fn(*const c_void) + Send + Sync>;
+    
+    CALLBACKS.lock().unwrap().insert(callback_id as u32, callback_box);
 
-    let system = toxoid_api::System::new(
-        None,
-        move |iter| {
-            if let Some(callback) = CALLBACKS.lock().unwrap().get(&callback_id) {
-                // Convert iter to C data structure
-                let iter_data = std::ptr::null(); // TODO: Implement conversion
-                callback(iter_data);
-            }
-        }
-    );
+    let system = ToxoidSystem::new(SystemDesc {
+        name: None,
+        callback: callback_id,
+        query_desc: QueryDesc { expr: "".to_string() },
+        is_guest: false,
+        tick_rate: None
+    });
 
     let id = get_next_id();
     let system_wrapper = Box::new(System {
         id,
         system_id: system.get_id()
     });
-    
-    SYSTEMS.lock().unwrap().insert(id, *system_wrapper);
+    SYSTEMS.lock().unwrap().insert(id, *(system_wrapper).clone());
     Box::into_raw(system_wrapper)
 }
 
@@ -241,47 +277,45 @@ pub extern "C" fn toxoid_observer_new(
     let desc_slice = unsafe { std::slice::from_raw_parts(desc_data, desc_len) };
     let reader = Reader::get_root(desc_slice).unwrap();
     
-    let callback_id = get_next_id();
+    let callback_id = get_next_id() as u64;
     let callback_box = Box::new(move |data: *const c_void| {
         callback(data);
     });
     
-    CALLBACKS.lock().unwrap().insert(callback_id, callback_box);
+    CALLBACKS.lock().unwrap().insert(callback_id as u32, callback_box);
 
-    let observer = toxoid_api::Observer::new(
-        None,
-        move |iter| {
-            if let Some(callback) = CALLBACKS.lock().unwrap().get(&callback_id) {
-                let iter_data = std::ptr::null(); // TODO: Implement conversion
-                callback(iter_data);
-            }
-        }
-    );
+    let observer = ToxoidObserver::new(ObserverDesc {
+        name: None,
+        query_desc: QueryDesc { expr: "".to_string() },
+        events: vec![],
+        callback: callback_id,
+        is_guest: false
+    });
 
     let id = get_next_id();
     let observer_wrapper = Box::new(Observer {
         id,
-        observer
+        observer_id: unsafe { *observer.entity.borrow() } // Access entity ID directly from RefCell
     });
     
-    OBSERVERS.lock().unwrap().insert(id, *observer_wrapper);
+    OBSERVERS.lock().unwrap().insert(id, (*observer_wrapper).clone());
     Box::into_raw(observer_wrapper)
 }
 
 // World FFI functions
 #[no_mangle]
 pub extern "C" fn toxoid_world_add_singleton(component_id: u64) {
-    toxoid_api::World::add_singleton(component_id);
+    ToxoidApi::add_singleton(component_id);
 }
 
 #[no_mangle]
 pub extern "C" fn toxoid_world_get_singleton(component_id: u64) -> u64 {
-    toxoid_api::ToxoidApi::get_singleton(component_id)
+    ToxoidApi::get_singleton(component_id)
 }
 
 #[no_mangle]
 pub extern "C" fn toxoid_world_remove_singleton(component_id: u64) {
-    toxoid_api::World::remove_singleton(component_id);
+    ToxoidApi::remove_singleton(component_id);
 }
 
 // Memory management functions

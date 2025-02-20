@@ -1,5 +1,5 @@
 [package]
-name = "toxoid_wasm"
+name = "toxoid_ffi"
 version = "0.1.0"
 
 [lib]
@@ -8,4 +8,4 @@ crate-type = ["cdylib"]
 [dependencies]
 flexbuffers = "2.0"
 once_cell = "1.8"
-toxoid_api = { path = "../toxoid_api" } 
+toxoid_host = { path = "../toxoid_host" } 

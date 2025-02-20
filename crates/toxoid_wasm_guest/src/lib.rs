@@ -1,26 +1,35 @@
 mod ffi;
 
 use std::ffi::{CStr, CString};
-use flexbuffers::Builder;
+use flexbuffers::{Builder, MapBuilder};
 
+#[derive(Clone, Copy)]
 pub struct ComponentType {
     id: u64
 }
+unsafe impl Send for ComponentType {}
+unsafe impl Sync for ComponentType {}
 
+#[derive(Clone, Copy)]
 pub struct Component {
     ptr: u64,
     entity_id: u64,
     component_type_id: u64
 }
+unsafe impl Send for Component {}
+unsafe impl Sync for Component {}
 
+#[derive(Clone, Copy)]
 pub struct Entity {
     id: u64
 }
 
+#[derive(Clone, Copy)]
 pub struct Query {
     id: u64
 }
 
+#[derive(Clone, Copy)]
 pub struct System {
     id: u64
 }
@@ -28,10 +37,13 @@ pub struct System {
 impl ComponentType {
     pub fn new(name: &str, member_names: Vec<String>, member_types: Vec<u8>) -> Self {
         let mut builder = Builder::default();
-        builder.start_map();
-        builder.push("name", name);
-        // Serialize member info...
-        builder.end_map();
+        {
+            let mut map = builder.start_map();
+            map.push("name", name);
+            map.push("member_names", &member_names);
+            map.push("member_types", &member_types);
+            map.end_map();
+        }
         
         let data = builder.build();
         let id = unsafe { 
@@ -58,7 +70,7 @@ impl Component {
         }
     }
 
-    pub fn set_member_u8(&self, offset: u32, value: u8) {
+    pub fn set_member_u8(&mut self, offset: u32, value: u8) {
         unsafe {
             ffi::toxoid_component_set_member_u8(self.ptr, offset, value)
         }
@@ -75,19 +87,25 @@ impl Component {
 
 impl Entity {
     pub fn new() -> Self {
-        let desc_data = Builder::default().build();
+        let mut builder = Builder::default();
+        {
+            let mut map = builder.start_map();
+            map.end_map();
+        }
+        let data = builder.build();
         let id = unsafe {
-            ffi::toxoid_entity_new(desc_data.as_ptr(), desc_data.len())
+            ffi::toxoid_entity_new(data.as_ptr(), data.len())
         };
         Self { id }
     }
 
     pub fn named(name: &str) -> Self {
         let mut builder = Builder::default();
-        builder.start_map();
-        builder.push("name", name);
-        builder.end_map();
-        
+        {
+            let mut map = builder.start_map();
+            map.push("name", name);
+            map.end_map();
+        }
         let data = builder.build();
         let id = unsafe {
             ffi::toxoid_entity_new(data.as_ptr(), data.len())
@@ -99,15 +117,15 @@ impl Entity {
         unsafe { ffi::toxoid_entity_get_id(self.id) }
     }
 
-    pub fn add<T: ComponentType>(&mut self, component_id: u64) {
+    pub fn add(&mut self, component_id: u64) {
         unsafe { ffi::toxoid_entity_add(self.id, component_id) }
     }
 
-    pub fn has<T: ComponentType>(&self, component_id: u64) -> bool {
+    pub fn has(&self, component_id: u64) -> bool {
         unsafe { ffi::toxoid_entity_has(self.id, component_id) }
     }
 
-    pub fn remove<T: ComponentType>(&mut self, component_id: u64) {
+    pub fn remove(&mut self, component_id: u64) {
         unsafe { ffi::toxoid_entity_remove(self.id, component_id) }
     }
 }
@@ -147,15 +165,18 @@ impl Query {
 pub struct World;
 
 impl World {
-    pub fn add_singleton(component_id: u64) {
+    pub fn add_singleton<T: Component + ComponentType + 'static>() {
+        let component_id = std::any::TypeId::of::<T>().as_u64();
         unsafe { ffi::toxoid_world_add_singleton(component_id) }
     }
 
-    pub fn get_singleton(component_id: u64) -> u64 {
-        unsafe { ffi::toxoid_world_get_singleton(component_id) }
+    pub fn get_singleton<T: Component + ComponentType + 'static>() -> *mut T {
+        let component_id = std::any::TypeId::of::<T>().as_u64();
+        unsafe { ffi::toxoid_world_get_singleton(component_id) as *mut T }
     }
 
-    pub fn remove_singleton(component_id: u64) {
+    pub fn remove_singleton<T: Component + ComponentType + 'static>() {
+        let component_id = std::any::TypeId::of::<T>().as_u64();
         unsafe { ffi::toxoid_world_remove_singleton(component_id) }
     }
 
@@ -165,5 +186,41 @@ impl World {
 
     pub fn remove_entity(entity_id: u64) {
         unsafe { ffi::toxoid_world_remove_entity(entity_id) }
+    }
+}
+
+// Traits
+pub trait ComponentTrait: Send + Sync {
+    fn get_id(&self) -> u64;
+}
+
+pub trait EntityTrait: Send + Sync {
+    fn get_id(&self) -> u64;
+    fn add<T: ComponentTrait>(&mut self, component: T);
+    fn remove<T: ComponentTrait>(&mut self, component: T);
+    fn has<T: ComponentTrait>(&self, component: T) -> bool;
+}
+
+impl ComponentTrait for ComponentType {
+    fn get_id(&self) -> u64 {
+        self.get_id()
+    }
+}
+
+impl EntityTrait for Entity {
+    fn get_id(&self) -> u64 {
+        self.get_id()
+    }
+
+    fn add<T: ComponentTrait>(&mut self, component: T) {
+        self.add(component.get_id())
+    }
+
+    fn remove<T: ComponentTrait>(&mut self, component: T) {
+        self.remove(component.get_id())
+    }
+
+    fn has<T: ComponentTrait>(&self, component: T) -> bool {
+        self.has(component.get_id())
     }
 }
