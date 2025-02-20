@@ -1,5 +1,5 @@
 // #[cfg(target_os = "emscripten")]
-use toxoid_ffi::*;
+// use toxoid_ffi::*;
 
 #[no_mangle]
 pub extern "C" fn init_host() {

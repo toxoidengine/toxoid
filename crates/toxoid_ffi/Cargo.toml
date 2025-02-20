@@ -3,7 +3,7 @@ name = "toxoid_ffi"
 version = "0.1.0"
 
 [lib]
-crate-type = ["cdylib"]
+crate-type = ["rlib"]
 
 [dependencies]
 flexbuffers = "2.0"
