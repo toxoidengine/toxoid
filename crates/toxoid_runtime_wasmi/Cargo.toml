@@ -1,5 +1,5 @@
 [package]
-name = "toxoid_wasmi"
+name = "toxoid_runtime_wasmi"
 version = "0.1.0"
 
 [dependencies]
