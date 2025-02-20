@@ -9,7 +9,7 @@ guest = { path = "../guest", optional = true }
 
 # if emscripten target
 # [target.'cfg(target_os = "emscripten")'.dependencies]
-toxoid_ffi = { path = "../../crates/toxoid_ffi" }
+# toxoid_ffi = { path = "../../crates/toxoid_ffi" }
 
 [features]
 # default = ["wasm-linking"]
