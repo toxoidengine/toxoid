@@ -1,0 +1,9 @@
+[package]
+name = "toxoid_wasm_guest"
+version = "0.1.0"
+
+[lib]
+crate-type = ["cdylib", "rlib"] # Allow both dynamic linking and static linking
+
+[dependencies]
+flexbuffers = "2.0" 
