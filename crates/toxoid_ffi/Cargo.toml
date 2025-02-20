@@ -1,0 +1,11 @@
+[package]
+name = "toxoid_wasm"
+version = "0.1.0"
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+flexbuffers = "2.0"
+once_cell = "1.8"
+toxoid_api = { path = "../toxoid_api" } 
