@@ -1,0 +1,11 @@
+[package]
+name = "toxoid_ffi"
+version = "0.1.0"
+
+[lib]
+crate-type = ["rlib"]
+
+[dependencies]
+flexbuffers = "2.0"
+once_cell = "1.8"
+toxoid_host = { path = "../toxoid_host" } 

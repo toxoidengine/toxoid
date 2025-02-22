@@ -1,0 +1,9 @@
+[package]
+name = "toxoid_runtime_wasmi"
+version = "0.1.0"
+
+[dependencies]
+wasmi = "0.30"
+toxoid_wasm = { path = "../toxoid_wasm" }
+toxoid_wasm_guest = { path = "../toxoid_wasm_guest" }
+toxoid_api = { path = "../toxoid_api" } 
