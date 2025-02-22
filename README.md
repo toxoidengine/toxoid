@@ -35,9 +35,6 @@ https://github.com/toxoidengine/toxoid/assets/16667416/4474e276-3675-462e-909a-7
 # Notes
 - Supported Spine Version - 4.1.24 ESS
 
-# Related Projects
-- Powers my UGC game / multiplayer online sandbox RPG [Legend of Worlds](http://legendofworlds.com/).
-
 # Credits
 This technology would not be possible without:
 - [Flecs](https://github.com/SanderMertens/flecs): A fast, lightweight (zero dependency), and portable entity component system written in C.
